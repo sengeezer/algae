@@ -1,0 +1,86 @@
+---
+title: Greedy Interval Scheduling
+slug: greedy-interval-scheduling
+category: Scheduling
+summary: Sort by finishing time, then keep the next interval that starts after the last accepted end.
+description: Interval scheduling is the classic greedy answer for selecting the maximum number of non-overlapping activities.
+dataStructures:
+  - Array
+techniques:
+  - Greedy
+  - Sorting
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - activity selection
+  - maximum non-overlapping intervals
+useCases:
+  - Choosing the most meetings that fit without overlap
+  - Scheduling compatible tasks or jobs
+  - Selecting the largest conflict-free subset of intervals
+complexity:
+  time: O(n log n)
+  space: O(1)
+  notes: The greedy rule works because choosing the earliest finishing interval leaves the most room for future choices.
+interviewSignals:
+  - The prompt asks for the maximum number of compatible intervals.
+  - A local choice needs a justification for why it stays globally optimal.
+relatedSlugs:
+  - interval-merging
+  - quick-sort
+  - sliding-window
+---
+
+## Why It Surfaces
+
+Some interval problems are not about merging everything. They are about selecting the best compatible subset. In that case, the right move is usually to sort by end time and greedily take the next interval that still fits.
+
+> The proof matters here. Interviewers often care more about why earliest finish is optimal than about the scan itself.
+
+## Worked Example
+
+For intervals `[[1, 3], [2, 4], [3, 5], [6, 8]]`, sort by end time. Take `[1, 3]`, skip `[2, 4]` because it overlaps, take `[3, 5]` if touching endpoints are allowed, then take `[6, 8]`.
+
+## JavaScript
+
+```js
+function maxNonOverlapping(intervals) {
+  const sorted = [...intervals].sort((a, b) => a[1] - b[1]);
+  let count = 0;
+  let currentEnd = -Infinity;
+
+  for (const [start, end] of sorted) {
+    if (start >= currentEnd) {
+      count += 1;
+      currentEnd = end;
+    }
+  }
+
+  return count;
+}
+```
+
+## TypeScript
+
+```ts
+export function maxNonOverlapping(intervals: Array<[number, number]>): number {
+  const sorted = [...intervals].sort((a, b) => a[1] - b[1]);
+  let count = 0;
+  let currentEnd = Number.NEGATIVE_INFINITY;
+
+  for (const [start, end] of sorted) {
+    if (start >= currentEnd) {
+      count += 1;
+      currentEnd = end;
+    }
+  }
+
+  return count;
+}
+```
+
+## Interview Notes
+
+- Clarify whether touching endpoints count as overlap.
+- Be ready to justify the greedy choice, not just state it.
+- Distinguish this problem from interval merging or meeting-room counting.

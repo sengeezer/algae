@@ -1,0 +1,194 @@
+---
+title: Priority Queue
+slug: priority-queue
+category: Heap
+summary: Keep the next most important item on top so repeated min or max extraction stays efficient.
+description: Priority queues drive interview problems about top-k elements, k-way merges, scheduling by next event, and shortest-path expansions.
+dataStructures:
+  - Heap
+  - Array
+techniques:
+  - Priority Queue
+  - Heap
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - min heap
+  - max heap
+  - top k
+useCases:
+  - Maintaining the smallest or largest k elements
+  - Repeatedly pulling the next best candidate
+  - Merging sorted streams or lists
+complexity:
+  time: O(n log k)
+  space: O(k)
+  notes: The real interview question is usually why the heap size stays bounded instead of growing to all n elements.
+interviewSignals:
+  - You need repeated access to the current min or max while new items keep arriving.
+  - Sorting the full input feels more expensive than necessary.
+relatedSlugs:
+  - dijkstra
+  - merge-sort
+  - sliding-window
+---
+
+## Why It Surfaces
+
+Priority queues appear when the prompt keeps asking for the next best item under a changing set of candidates. Instead of sorting the entire input up front, a heap lets you keep only the pieces that matter right now.
+
+> When the problem says top k, k closest, next event, or repeatedly choose the smallest, a heap should be one of the first tools you consider.
+
+## Worked Example
+
+For top-k frequency problems, keep a min heap of size `k`. Each new entry can replace the smallest heap element if it is more frequent, so the heap never stores more than the best `k` candidates.
+
+## JavaScript
+
+```js
+function kthLargest(nums, k) {
+  const heap = [];
+
+  function swap(left, right) {
+    [heap[left], heap[right]] = [heap[right], heap[left]];
+  }
+
+  function siftUp(index) {
+    let child = index;
+
+    while (child > 0) {
+      const parent = Math.floor((child - 1) / 2);
+
+      if (heap[parent] <= heap[child]) {
+        break;
+      }
+
+      swap(parent, child);
+      child = parent;
+    }
+  }
+
+  function siftDown(index) {
+    let parent = index;
+
+    while (true) {
+      let smallest = parent;
+      const left = parent * 2 + 1;
+      const right = parent * 2 + 2;
+
+      if (left < heap.length && heap[left] < heap[smallest]) {
+        smallest = left;
+      }
+
+      if (right < heap.length && heap[right] < heap[smallest]) {
+        smallest = right;
+      }
+
+      if (smallest === parent) {
+        break;
+      }
+
+      swap(parent, smallest);
+      parent = smallest;
+    }
+  }
+
+  function push(value) {
+    heap.push(value);
+    siftUp(heap.length - 1);
+  }
+
+  function replaceTop(value) {
+    heap[0] = value;
+    siftDown(0);
+  }
+
+  for (const value of nums) {
+    if (heap.length < k) {
+      push(value);
+    } else if (value > heap[0]) {
+      replaceTop(value);
+    }
+  }
+
+  return heap[0];
+}
+```
+
+## TypeScript
+
+```ts
+export function kthLargest(nums: number[], k: number): number {
+  const heap: number[] = [];
+
+  function swap(left: number, right: number) {
+    [heap[left], heap[right]] = [heap[right], heap[left]];
+  }
+
+  function siftUp(index: number) {
+    let child = index;
+
+    while (child > 0) {
+      const parent = Math.floor((child - 1) / 2);
+
+      if (heap[parent] <= heap[child]) {
+        break;
+      }
+
+      swap(parent, child);
+      child = parent;
+    }
+  }
+
+  function siftDown(index: number) {
+    let parent = index;
+
+    while (true) {
+      let smallest = parent;
+      const left = parent * 2 + 1;
+      const right = parent * 2 + 2;
+
+      if (left < heap.length && heap[left] < heap[smallest]) {
+        smallest = left;
+      }
+
+      if (right < heap.length && heap[right] < heap[smallest]) {
+        smallest = right;
+      }
+
+      if (smallest === parent) {
+        break;
+      }
+
+      swap(parent, smallest);
+      parent = smallest;
+    }
+  }
+
+  function push(value: number) {
+    heap.push(value);
+    siftUp(heap.length - 1);
+  }
+
+  function replaceTop(value: number) {
+    heap[0] = value;
+    siftDown(0);
+  }
+
+  for (const value of nums) {
+    if (heap.length < k) {
+      push(value);
+    } else if (value > heap[0]) {
+      replaceTop(value);
+    }
+  }
+
+  return heap[0];
+}
+```
+
+## Interview Notes
+
+- Explain whether you want a min heap or a max heap.
+- Keep the heap bounded when the problem only needs the best `k` items.
+- Mention that each insertion or replacement costs `O(log k)`.

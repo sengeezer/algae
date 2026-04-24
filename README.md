@@ -8,7 +8,7 @@ Algae is a quick algorithm reference tool built on Next.js App Router for Vercel
 - Browse algorithm reference pages with complexity notes, interview cues, and authored MDX study notes.
 - Read JavaScript and TypeScript examples directly inside each algorithm entry.
 - Save or complete algorithms with local-first study state stored in the browser.
-- The catalog currently includes 20 MDX-backed interview-core algorithms.
+- The catalog currently includes 24 MDX-backed interview-core algorithms.
 
 ## Tech Stack
 
@@ -45,6 +45,14 @@ Lint the project:
 npm run lint
 ```
 
+Run the official Playwright smoke check against a running local server:
+
+```bash
+npm run smoke:ui
+```
+
+The smoke check defaults to `http://localhost:3001`. Override it with `ALGAE_BASE_URL` if needed.
+
 ## Project Structure
 
 ```text
@@ -60,7 +68,7 @@ src/types/algorithm.ts           Shared domain model
 
 ## Roadmap
 
-- Expand the catalog from the current 20-entry core toward the broader launch target.
+- Expand the catalog from the current 24-entry core toward the broader launch target.
 - Add richer MDX components for diagrams, callouts, and side-by-side example presentation.
 - Add account-backed sync later without changing the study-state UI contract.
 

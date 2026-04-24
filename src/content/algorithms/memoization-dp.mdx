@@ -1,0 +1,98 @@
+---
+title: Memoization DP
+slug: memoization-dp
+category: Dynamic Programming
+summary: Cache recursive subproblems so repeated states are solved once instead of recomputed.
+description: Memoization is the top-down dynamic-programming pattern for recursive problems with overlapping subproblems and a clear state definition.
+dataStructures:
+  - Map
+  - Recursion Stack
+techniques:
+  - Dynamic Programming
+  - Memoization
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - top-down dp
+  - cached recursion
+useCases:
+  - Counting paths or ways under repeated states
+  - String segmentation or edit-style recursion
+  - Turning exponential recursion into polynomial time
+complexity:
+  time: O(number of states)
+  space: O(number of states)
+  notes: The hard part is choosing the right state key so equivalent subproblems map to the same cache entry.
+interviewSignals:
+  - A recursive solution repeats the same inputs many times.
+  - The problem can be described by a small state, such as an index, remaining capacity, or substring position.
+relatedSlugs:
+  - knapsack-dp
+  - minimax
+  - backtracking-search
+---
+
+## Why It Surfaces
+
+Memoization is what turns a workable recursive idea into an efficient solution. Instead of recomputing the same suffix, index, or remaining capacity over and over, you solve that state once and store the result.
+
+> If you can name the recursive state clearly, memoization is often only one hash map away.
+
+## Worked Example
+
+The climbing-stairs recurrence repeats the same smaller stair counts many times. Caching `n` after it is solved once reduces the recursion from exponential growth to linear work.
+
+## JavaScript
+
+```js
+function climbStairs(n) {
+  const memo = new Map();
+
+  function solve(stepsRemaining) {
+    if (stepsRemaining <= 2) {
+      return stepsRemaining;
+    }
+
+    if (memo.has(stepsRemaining)) {
+      return memo.get(stepsRemaining);
+    }
+
+    const ways = solve(stepsRemaining - 1) + solve(stepsRemaining - 2);
+    memo.set(stepsRemaining, ways);
+    return ways;
+  }
+
+  return solve(n);
+}
+```
+
+## TypeScript
+
+```ts
+export function climbStairs(n: number): number {
+  const memo = new Map<number, number>();
+
+  function solve(stepsRemaining: number): number {
+    if (stepsRemaining <= 2) {
+      return stepsRemaining;
+    }
+
+    const cached = memo.get(stepsRemaining);
+    if (cached !== undefined) {
+      return cached;
+    }
+
+    const ways = solve(stepsRemaining - 1) + solve(stepsRemaining - 2);
+    memo.set(stepsRemaining, ways);
+    return ways;
+  }
+
+  return solve(n);
+}
+```
+
+## Interview Notes
+
+- Define the state before writing the recursion.
+- Use a cache key that uniquely identifies equivalent subproblems.
+- Mention when a bottom-up table might be more space-efficient.

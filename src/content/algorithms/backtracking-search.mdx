@@ -1,0 +1,99 @@
+---
+title: Backtracking Search
+slug: backtracking-search
+category: Combinatorial Search
+summary: Build a candidate path, recurse, and undo state immediately when a branch no longer helps.
+description: Backtracking is the interview pattern for generating combinations, permutations, subsets, and constraint-satisfying search paths.
+dataStructures:
+  - Array
+  - Recursion Stack
+techniques:
+  - Backtracking
+  - Depth-First Search
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - choose explore unchoose
+  - recursive search tree
+useCases:
+  - Generating subsets or permutations
+  - Solving combination-sum style search problems
+  - Exploring boards, strings, or choices under constraints
+complexity:
+  time: O(branch^depth)
+  space: O(depth)
+  notes: The key interview skill is explaining how state is mutated and then restored after each recursive branch.
+interviewSignals:
+  - The prompt asks for all valid combinations, arrangements, or paths.
+  - Partial choices can be rejected early when they violate a constraint.
+relatedSlugs:
+  - depth-first-search
+  - knapsack-dp
+  - trie
+---
+
+## Why It Surfaces
+
+Backtracking shows up when an interviewer wants a complete search, but not a careless brute-force search. You are expected to build a path incrementally, prune impossible states, and undo each choice cleanly before exploring the next branch.
+
+> The pattern is usually summarized as choose, recurse, unchoose. If that last step is missing, the solution leaks state across branches.
+
+## Worked Example
+
+For `nums = [1, 2, 3]`, subset generation starts with the empty path. At each index, you either include the current value and continue, or skip it and move on. The answer collects every path that reaches the end.
+
+## JavaScript
+
+```js
+function subsets(nums) {
+  const results = [];
+  const path = [];
+
+  function dfs(index) {
+    if (index === nums.length) {
+      results.push([...path]);
+      return;
+    }
+
+    path.push(nums[index]);
+    dfs(index + 1);
+    path.pop();
+
+    dfs(index + 1);
+  }
+
+  dfs(0);
+  return results;
+}
+```
+
+## TypeScript
+
+```ts
+export function subsets(nums: number[]): number[][] {
+  const results: number[][] = [];
+  const path: number[] = [];
+
+  function dfs(index: number) {
+    if (index === nums.length) {
+      results.push([...path]);
+      return;
+    }
+
+    path.push(nums[index]);
+    dfs(index + 1);
+    path.pop();
+
+    dfs(index + 1);
+  }
+
+  dfs(0);
+  return results;
+}
+```
+
+## Interview Notes
+
+- State exactly what the recursion parameters mean.
+- Mention pruning as soon as a branch violates the constraint.
+- Restore shared state immediately after the recursive call.

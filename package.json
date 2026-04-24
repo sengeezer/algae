@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "smoke:ui": "node ./scripts/smoke-check.mjs",
     "session:reset": "npm run cleanup:dev"
   },
   "dependencies": {

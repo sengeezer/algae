@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 
 import { AlgorithmMdx } from "@/components/algorithm-mdx";
 import { StudyActions } from "@/components/study-actions";
+import { extractMdxHeadings } from "@/lib/mdx-navigation";
 import {
   getAlgorithmBySlug,
   listAlgorithms,
@@ -43,6 +44,7 @@ export default async function AlgorithmPage({ params }: AlgorithmPageProps) {
   }
 
   const relatedAlgorithms = listRelatedAlgorithms(algorithm.relatedSlugs);
+  const mdxHeadings = extractMdxHeadings(algorithm.body);
 
   return (
     <main className="shell-grid min-h-screen px-4 py-6 sm:px-6 lg:px-10">
@@ -106,6 +108,40 @@ export default async function AlgorithmPage({ params }: AlgorithmPageProps) {
           </div>
 
           <div className="space-y-6">
+            {mdxHeadings.length > 0 ? (
+              <section className="glass-panel rounded-[28px] p-5 sm:p-6">
+                <p className="text-xs uppercase tracking-[0.3em] text-[var(--muted)]">
+                  On This Page
+                </p>
+                <nav className="mt-4 space-y-2">
+                  {mdxHeadings.map((heading) => (
+                    <a
+                      key={heading.id}
+                      href={`#${heading.id}`}
+                      className={`flex rounded-[18px] px-3 py-2 text-sm transition hover:bg-white/70 hover:text-[var(--foreground)] ${
+                        heading.level === 3
+                          ? "ml-3 text-[var(--muted)]"
+                          : "bg-white/55 font-medium text-[var(--foreground)]"
+                      }`}
+                    >
+                      {heading.title}
+                    </a>
+                  ))}
+                </nav>
+              </section>
+            ) : null}
+
+            <section className="glass-panel rounded-[28px] p-5 sm:p-6">
+              <p className="text-xs uppercase tracking-[0.3em] text-[var(--muted)]">
+                Quick Scan
+              </p>
+              <div className="mt-4 space-y-3">
+                <CalloutCard label="Best fit" value={algorithm.summary} />
+                <CalloutCard label="Watch for" value={algorithm.interviewSignals[0]} />
+                <CalloutCard label="Boundary risk" value={algorithm.complexity.notes} />
+              </div>
+            </section>
+
             <StudyActions slug={algorithm.slug} />
           </div>
         </section>
@@ -153,6 +189,22 @@ export default async function AlgorithmPage({ params }: AlgorithmPageProps) {
         </section>
       </div>
     </main>
+  );
+}
+
+type CalloutCardProps = {
+  label: string;
+  value: string;
+};
+
+function CalloutCard({ label, value }: CalloutCardProps) {
+  return (
+    <div className="rounded-[22px] border border-black/8 bg-[linear-gradient(135deg,rgba(255,255,255,0.94),rgba(255,243,221,0.9))] px-4 py-4 shadow-[0_20px_50px_-40px_rgba(184,92,56,0.75)]">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[var(--muted)]">
+        {label}
+      </p>
+      <p className="mt-2 text-sm leading-6 text-[var(--foreground)]">{value}</p>
+    </div>
   );
 }
 
