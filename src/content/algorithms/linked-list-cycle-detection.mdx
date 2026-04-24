@@ -1,0 +1,86 @@
+---
+title: Linked List Cycle Detection
+slug: linked-list-cycle-detection
+category: Linked Lists
+summary: Use fast and slow pointers to detect whether a linked list loops back on itself.
+description: Floyd's cycle detection surfaces in interviews for linked-list loops, repeated states, and pointer-motion problems where one pointer moves faster than another.
+dataStructures:
+  - Linked List
+techniques:
+  - Two Pointers
+  - Floyd's Algorithm
+difficulty: Easy
+interviewFrequency: High
+aliases:
+  - tortoise and hare
+  - cycle check
+useCases:
+  - Detecting loops in linked lists
+  - Finding the start of a cycle
+  - Repeated state detection in pointer systems
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: Fast and slow pointers let you detect a cycle without a hash set.
+interviewSignals:
+  - The prompt asks whether a linked structure loops forever.
+  - Space efficiency matters and a hash set feels too expensive.
+relatedSlugs:
+  - two-pointers
+  - breadth-first-search
+---
+
+## Why It Surfaces
+
+This is the clean pointer interview question: detect a loop with constant extra space. It often starts with a yes-or-no check, then extends into finding the node where the cycle begins.
+
+## JavaScript
+
+```js
+function hasCycle(head) {
+  let slow = head;
+  let fast = head;
+
+  while (fast !== null && fast.next !== null) {
+    slow = slow.next;
+    fast = fast.next.next;
+
+    if (slow === fast) {
+      return true;
+    }
+  }
+
+  return false;
+}
+```
+
+## TypeScript
+
+```ts
+type Node = {
+  value: number;
+  next: Node | null;
+};
+
+export function hasCycle(head: Node | null): boolean {
+  let slow = head;
+  let fast = head;
+
+  while (fast !== null && fast.next !== null) {
+    slow = slow?.next ?? null;
+    fast = fast.next.next;
+
+    if (slow !== null && slow === fast) {
+      return true;
+    }
+  }
+
+  return false;
+}
+```
+
+## Interview Notes
+
+- Explain why two pointers must eventually meet inside a cycle.
+- Mention that resetting one pointer to the head helps locate the cycle start.
+- Contrast with a hash-set solution if the interviewer asks for a simpler but less space-efficient approach.

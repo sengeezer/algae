@@ -1,0 +1,85 @@
+---
+title: Quick Sort
+slug: quick-sort
+category: Sorting
+summary: Partition around a pivot so smaller values move left and larger values move right.
+description: Quick sort appears in interviews as the classic in-place divide-and-conquer sort and as a gateway to partition-based selection problems.
+dataStructures:
+  - Array
+techniques:
+  - Divide and Conquer
+  - Sorting
+  - Partitioning
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - partition sort
+useCases:
+  - In-place sorting
+  - Partitioning around a pivot
+  - Building toward quickselect for kth-element questions
+complexity:
+  time: O(n log n) average, O(n^2) worst case
+  space: O(log n) average recursion
+  notes: Interviewers care about the average case, pivot choice, and why partitioning leads to quickselect.
+interviewSignals:
+  - The prompt emphasizes in-place partitioning or kth-element extensions.
+  - You need a sorting strategy with small auxiliary memory.
+relatedSlugs:
+  - merge-sort
+  - monotonic-stack
+---
+
+## Why It Surfaces
+
+Quick sort is less about raw sorting in interviews and more about partitioning. Once you explain the partition step clearly, you are close to quickselect and many selection-style questions.
+
+## JavaScript
+
+```js
+function quickSort(nums, left = 0, right = nums.length - 1) {
+  if (left >= right) {
+    return nums;
+  }
+
+  const pivot = nums[right];
+  let boundary = left;
+
+  for (let index = left; index < right; index += 1) {
+    if (nums[index] <= pivot) {
+      [nums[index], nums[boundary]] = [nums[boundary], nums[index]];
+      boundary += 1;
+    }
+  }
+
+  [nums[boundary], nums[right]] = [nums[right], nums[boundary]];
+  quickSort(nums, left, boundary - 1);
+  quickSort(nums, boundary + 1, right);
+  return nums;
+}
+```
+
+## TypeScript
+
+```ts
+export function partition(values: number[], left: number, right: number): number {
+  const pivot = values[right];
+  let boundary = left;
+
+  for (let index = left; index < right; index += 1) {
+    if (values[index] <= pivot) {
+      [values[index], values[boundary]] = [values[boundary], values[index]];
+      boundary += 1;
+    }
+  }
+
+  [values[boundary], values[right]] = [values[right], values[boundary]];
+  return boundary;
+}
+```
+
+## Interview Notes
+
+- State the partition invariant before you swap.
+- Mention randomized pivots if worst-case input is a concern.
+- Connect the partition step directly to quickselect when asked for the kth largest element.

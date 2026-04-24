@@ -1,0 +1,116 @@
+---
+title: Trie
+slug: trie
+category: Strings
+summary: Store characters by prefix so starts-with and autocomplete queries avoid rescanning whole words.
+description: Tries appear in interviews for autocomplete, dictionary lookup, prefix validation, and wildcard word-search tasks.
+dataStructures:
+  - Tree
+  - String
+  - Hash Map
+techniques:
+  - Trie
+  - Prefix Matching
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - prefix tree
+useCases:
+  - Autocomplete suggestions
+  - Dictionary or spell-check prefixes
+  - Word search on a board with repeated prefix pruning
+complexity:
+  time: O(k) per insert or query
+  space: O(total characters stored)
+  notes: The tradeoff is memory for faster prefix operations, which interviewers often ask you to justify.
+interviewSignals:
+  - The question repeatedly asks whether many strings share a prefix.
+  - Brute force would compare each query string against a whole dictionary.
+relatedSlugs:
+  - depth-first-search
+  - kmp-string-search
+---
+
+## Why It Surfaces
+
+A trie is the specialized data structure for prefix-heavy workloads. It usually appears when many strings share prefixes and the interviewer wants faster repeated lookup than scanning every word each time.
+
+## JavaScript
+
+```js
+class TrieNode {
+  constructor() {
+    this.children = new Map();
+    this.isWord = false;
+  }
+}
+
+class Trie {
+  constructor() {
+    this.root = new TrieNode();
+  }
+
+  insert(word) {
+    let node = this.root;
+
+    for (const char of word) {
+      if (!node.children.has(char)) {
+        node.children.set(char, new TrieNode());
+      }
+
+      node = node.children.get(char);
+    }
+
+    node.isWord = true;
+  }
+}
+```
+
+## TypeScript
+
+```ts
+class TrieNode {
+  children = new Map<string, TrieNode>();
+  isWord = false;
+}
+
+export class Trie {
+  private root = new TrieNode();
+
+  insert(word: string): void {
+    let node = this.root;
+
+    for (const char of word) {
+      if (!node.children.has(char)) {
+        node.children.set(char, new TrieNode());
+      }
+
+      node = node.children.get(char)!;
+    }
+
+    node.isWord = true;
+  }
+
+  startsWith(prefix: string): boolean {
+    let node = this.root;
+
+    for (const char of prefix) {
+      const next = node.children.get(char);
+
+      if (!next) {
+        return false;
+      }
+
+      node = next;
+    }
+
+    return true;
+  }
+}
+```
+
+## Interview Notes
+
+- Mention the memory tradeoff immediately.
+- Keep an end-of-word flag so exact word checks still work.
+- Pair tries with DFS for board search and autocomplete expansions.

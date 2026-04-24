@@ -1,0 +1,103 @@
+---
+title: Dijkstra's Algorithm
+slug: dijkstra
+category: Graphs
+summary: Use a priority queue to keep extending the cheapest known path in a graph with non-negative weights.
+description: Dijkstra is the interview answer when edges have costs, BFS is no longer correct, and every weight is non-negative.
+dataStructures:
+  - Graph
+  - Heap
+  - Priority Queue
+techniques:
+  - Shortest Path
+  - Greedy
+  - Priority Queue
+difficulty: Hard
+interviewFrequency: High
+aliases:
+  - weighted shortest path
+useCases:
+  - Minimum travel time between cities
+  - Network delay problems
+  - Routing with road or latency weights
+complexity:
+  time: O((V + E) log V)
+  space: O(V)
+  notes: The interview shortcut is to allow duplicate priority-queue entries and ignore stale ones when they pop.
+interviewSignals:
+  - The graph edges carry non-negative costs.
+  - The shortest route is asked for, but BFS would ignore weights.
+relatedSlugs:
+  - breadth-first-search
+  - topological-sort
+---
+
+## Why It Surfaces
+
+Dijkstra appears as soon as the graph becomes weighted but remains non-negative. It is the correct next step after BFS when the prompt starts talking about travel time, network latency, or weighted routes.
+
+## JavaScript
+
+```js
+function dijkstra(graph, start) {
+  const distances = new Map([[start, 0]]);
+  const queue = [[0, start]];
+
+  while (queue.length > 0) {
+    queue.sort((a, b) => a[0] - b[0]);
+    const [distance, node] = queue.shift();
+
+    if (distance > (distances.get(node) ?? Infinity)) {
+      continue;
+    }
+
+    for (const [neighbor, weight] of graph.get(node) ?? []) {
+      const candidate = distance + weight;
+
+      if (candidate < (distances.get(neighbor) ?? Infinity)) {
+        distances.set(neighbor, candidate);
+        queue.push([candidate, neighbor]);
+      }
+    }
+  }
+
+  return distances;
+}
+```
+
+## TypeScript
+
+```ts
+type Edge = [to: string, weight: number];
+
+export function dijkstra(graph: Map<string, Edge[]>, start: string): Map<string, number> {
+  const distances = new Map<string, number>([[start, 0]]);
+  const queue: Array<[distance: number, node: string]> = [[0, start]];
+
+  while (queue.length > 0) {
+    queue.sort((a, b) => a[0] - b[0]);
+    const [distance, node] = queue.shift()!;
+
+    if (distance > (distances.get(node) ?? Number.POSITIVE_INFINITY)) {
+      continue;
+    }
+
+    for (const [neighbor, weight] of graph.get(node) ?? []) {
+      const candidate = distance + weight;
+
+      if (candidate < (distances.get(neighbor) ?? Number.POSITIVE_INFINITY)) {
+        distances.set(neighbor, candidate);
+        queue.push([candidate, neighbor]);
+      }
+    }
+  }
+
+  return distances;
+}
+```
+
+## Interview Notes
+
+- State explicitly that negative edges break Dijkstra.
+- Mention that stale queue entries can be skipped instead of updated in place.
+- Contrast it with BFS when every edge weight is one.

@@ -1,0 +1,95 @@
+---
+title: Depth-First Search
+slug: depth-first-search
+category: Graphs
+summary: Dive down one branch before backtracking, which makes DFS ideal for exhaustive exploration and structural checks.
+description: DFS appears in traversal, cycle detection, connected components, backtracking, and recursive tree questions where you need context from the current path.
+dataStructures:
+  - Graph
+  - Stack
+  - Tree
+  - Matrix
+techniques:
+  - Depth-First Search
+  - Graph Traversal
+  - Recursion
+difficulty: Medium
+interviewFrequency: Very High
+aliases:
+  - recursive traversal
+  - backtracking traversal
+useCases:
+  - Counting islands in a matrix
+  - Cycle detection in directed graphs
+  - Subtree property checks
+complexity:
+  time: O(V + E)
+  space: O(V)
+  notes: Recursive DFS also consumes call-stack space, which interviewers often ask you to acknowledge.
+interviewSignals:
+  - You need to explore every branch or maintain path-specific state.
+  - The prompt references connected components, recursion, or backtracking.
+relatedSlugs:
+  - breadth-first-search
+  - topological-sort
+---
+
+## Why It Surfaces
+
+DFS is the workhorse traversal for exhaustive exploration. It is especially strong when the current path matters, such as cycle detection, backtracking, subtree checks, and matrix component counting.
+
+## JavaScript
+
+```js
+function dfs(graph, start, visited = new Set(), order = []) {
+  if (visited.has(start)) {
+    return order;
+  }
+
+  visited.add(start);
+  order.push(start);
+
+  for (const neighbor of graph.get(start) ?? []) {
+    dfs(graph, neighbor, visited, order);
+  }
+
+  return order;
+}
+```
+
+## TypeScript
+
+```ts
+export function dfsIterative(graph: Map<string, string[]>, start: string): string[] {
+  const stack = [start];
+  const visited = new Set<string>();
+  const order: string[] = [];
+
+  while (stack.length > 0) {
+    const node = stack.pop()!;
+
+    if (visited.has(node)) {
+      continue;
+    }
+
+    visited.add(node);
+    order.push(node);
+
+    const neighbors = graph.get(node) ?? [];
+
+    for (let index = neighbors.length - 1; index >= 0; index -= 1) {
+      if (!visited.has(neighbors[index])) {
+        stack.push(neighbors[index]);
+      }
+    }
+  }
+
+  return order;
+}
+```
+
+## Interview Notes
+
+- Mark a node before recursing so you do not revisit it.
+- Separate global visited state from path-local state in backtracking questions.
+- Call out recursion depth if the graph or tree can be very large.

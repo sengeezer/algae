@@ -1,0 +1,72 @@
+---
+title: Kadane's Algorithm
+slug: kadane-algorithm
+category: Dynamic Programming
+summary: Keep the best subarray ending here and the best subarray seen so far in a single pass.
+description: Kadane's algorithm appears in interviews whenever the best answer is a contiguous segment with a maximum sum or score.
+dataStructures:
+  - Array
+techniques:
+  - Dynamic Programming
+  - Prefix Intuition
+difficulty: Easy
+interviewFrequency: High
+aliases:
+  - maximum subarray
+useCases:
+  - Maximum subarray sum
+  - Best streak or gain over a timeline
+  - Contiguous profit or score optimization
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The algorithm is really a DP recurrence over the best subarray ending at each index.
+interviewSignals:
+  - The answer must be contiguous and optimized by sum or score.
+  - A brute-force solution would inspect every subarray.
+relatedSlugs:
+  - prefix-sum
+  - sliding-window
+---
+
+## Why It Surfaces
+
+Kadane's algorithm is the standard solution when the interviewer asks for the best contiguous run. It is not a sliding window, because negative values can force a reset instead of a simple shrink.
+
+## JavaScript
+
+```js
+function maxSubArray(nums) {
+  let bestEndingHere = nums[0];
+  let bestOverall = nums[0];
+
+  for (let index = 1; index < nums.length; index += 1) {
+    bestEndingHere = Math.max(nums[index], bestEndingHere + nums[index]);
+    bestOverall = Math.max(bestOverall, bestEndingHere);
+  }
+
+  return bestOverall;
+}
+```
+
+## TypeScript
+
+```ts
+export function maxSubArray(values: number[]): number {
+  let bestEndingHere = values[0];
+  let bestOverall = values[0];
+
+  for (let index = 1; index < values.length; index += 1) {
+    bestEndingHere = Math.max(values[index], bestEndingHere + values[index]);
+    bestOverall = Math.max(bestOverall, bestEndingHere);
+  }
+
+  return bestOverall;
+}
+```
+
+## Interview Notes
+
+- Explain the recurrence instead of memorizing the name alone.
+- Mention how to track start and end indices if the interviewer wants the actual subarray.
+- Contrast it with prefix-sum reasoning when the prompt becomes about counts or exact targets.

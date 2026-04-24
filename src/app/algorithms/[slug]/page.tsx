@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
-import { CodeTabs } from "@/components/code-tabs";
+import { AlgorithmMdx } from "@/components/algorithm-mdx";
 import { StudyActions } from "@/components/study-actions";
 import {
   getAlgorithmBySlug,
@@ -102,57 +102,11 @@ export default async function AlgorithmPage({ params }: AlgorithmPageProps) {
               </ul>
             </section>
 
-            <CodeTabs variants={algorithm.codeVariants} />
-
-            <section className="glass-panel rounded-[28px] p-5 sm:p-6">
-              <p className="text-xs uppercase tracking-[0.3em] text-[var(--muted)]">
-                Worked Examples
-              </p>
-              <div className="mt-4 grid gap-4">
-                {algorithm.workedExamples.map((example) => (
-                  <article key={example.title} className="rounded-[24px] bg-white/70 p-4">
-                    <h2 className="text-xl font-semibold">{example.title}</h2>
-                    <p className="mt-3 text-sm text-[var(--muted)]">
-                      <span className="font-semibold text-[var(--foreground)]">Input:</span> {example.input}
-                    </p>
-                    <p className="mt-2 text-sm text-[var(--muted)]">
-                      <span className="font-semibold text-[var(--foreground)]">Output:</span> {example.output}
-                    </p>
-                    <p className="mt-3 text-sm leading-6 text-[var(--muted)]">{example.explanation}</p>
-                  </article>
-                ))}
-              </div>
-            </section>
+            <AlgorithmMdx source={algorithm.body} />
           </div>
 
           <div className="space-y-6">
             <StudyActions slug={algorithm.slug} />
-
-            <section className="glass-panel rounded-[28px] p-5">
-              <p className="text-xs uppercase tracking-[0.3em] text-[var(--muted)]">
-                Follow-up Questions
-              </p>
-              <ul className="mt-4 space-y-3 text-sm leading-6 text-[var(--muted)]">
-                {algorithm.followUps.map((followUp) => (
-                  <li key={followUp} className="rounded-[20px] bg-white/70 px-4 py-3">
-                    {followUp}
-                  </li>
-                ))}
-              </ul>
-            </section>
-
-            <section className="glass-panel rounded-[28px] p-5">
-              <p className="text-xs uppercase tracking-[0.3em] text-[var(--muted)]">
-                Common Pitfalls
-              </p>
-              <ul className="mt-4 space-y-3 text-sm leading-6 text-[var(--muted)]">
-                {algorithm.pitfalls.map((pitfall) => (
-                  <li key={pitfall} className="rounded-[20px] bg-white/70 px-4 py-3">
-                    {pitfall}
-                  </li>
-                ))}
-              </ul>
-            </section>
           </div>
         </section>
 

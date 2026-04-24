@@ -1,0 +1,84 @@
+---
+title: Monotonic Stack
+slug: monotonic-stack
+category: Array Patterns
+summary: Maintain a stack in sorted order so each element is pushed and popped at most once.
+description: Monotonic stacks surface in next-greater-element, histogram, temperature, and visibility problems where each value needs a nearest previous or next comparison.
+dataStructures:
+  - Array
+  - Stack
+techniques:
+  - Monotonic Stack
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - next greater element
+  - decreasing stack
+useCases:
+  - Daily temperatures
+  - Largest rectangle in a histogram
+  - Next greater or smaller element problems
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: The key argument is that every element is pushed once and popped once.
+interviewSignals:
+  - You need the nearest larger or smaller value on one side.
+  - A nested scan would compare every element against many neighbors.
+relatedSlugs:
+  - quick-sort
+  - interval-merging
+---
+
+## Why It Surfaces
+
+Monotonic stacks are the interview pattern for nearest greater or smaller relationships. The stack stores unresolved candidates in sorted order so the current element can settle several pending answers at once.
+
+## JavaScript
+
+```js
+function dailyTemperatures(temperatures) {
+  const answer = new Array(temperatures.length).fill(0);
+  const stack = [];
+
+  for (let index = 0; index < temperatures.length; index += 1) {
+    while (
+      stack.length > 0 &&
+      temperatures[index] > temperatures[stack[stack.length - 1]]
+    ) {
+      const previousIndex = stack.pop();
+      answer[previousIndex] = index - previousIndex;
+    }
+
+    stack.push(index);
+  }
+
+  return answer;
+}
+```
+
+## TypeScript
+
+```ts
+export function nextGreater(values: number[]): number[] {
+  const answer = new Array<number>(values.length).fill(-1);
+  const stack: number[] = [];
+
+  for (let index = 0; index < values.length; index += 1) {
+    while (stack.length > 0 && values[index] > values[stack[stack.length - 1]]) {
+      const previous = stack.pop()!;
+      answer[previous] = values[index];
+    }
+
+    stack.push(index);
+  }
+
+  return answer;
+}
+```
+
+## Interview Notes
+
+- State whether the stack is increasing or decreasing before coding.
+- Explain why each index is pushed and popped at most once.
+- Watch out for unresolved elements that should keep a default value.

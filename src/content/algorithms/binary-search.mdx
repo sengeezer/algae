@@ -1,0 +1,97 @@
+---
+title: Binary Search
+slug: binary-search
+category: Searching
+summary: Halve a sorted search space until the target either surfaces or the interval collapses.
+description: Binary search is the default interview move whenever the input is sorted or you can transform the question into a monotonic yes-or-no decision.
+dataStructures:
+  - Array
+techniques:
+  - Binary Search
+  - Divide and Conquer
+difficulty: Easy
+interviewFrequency: Very High
+aliases:
+  - lower bound
+  - upper bound
+  - sorted lookup
+useCases:
+  - Finding a value in a sorted array
+  - Searching an answer range for the first feasible value
+  - Shipping capacity or allocation threshold problems
+complexity:
+  time: O(log n)
+  space: O(1)
+  notes: The real interview risk is incorrect boundary movement, not the asymptotic cost.
+interviewSignals:
+  - The prompt mentions sorted order, monotonic rules, or minimum feasible values.
+  - Interviewers often pivot from value lookup to first true or last true variants.
+relatedSlugs:
+  - merge-sort
+  - topological-sort
+---
+
+## Why It Surfaces
+
+Binary search is rarely about finding a number once. In interviews, it usually appears because the answer space has a monotonic rule: once a capacity, time, or threshold works, every larger value also works.
+
+## Worked Example
+
+For `nums = [1, 3, 5, 7, 11]` and `target = 7`, the middle starts at `5`. Because `7` is larger, the valid search space becomes the right half only.
+
+## JavaScript
+
+```js
+function binarySearch(nums, target) {
+  let left = 0;
+  let right = nums.length - 1;
+
+  while (left <= right) {
+    const mid = left + Math.floor((right - left) / 2);
+
+    if (nums[mid] === target) {
+      return mid;
+    }
+
+    if (nums[mid] < target) {
+      left = mid + 1;
+    } else {
+      right = mid - 1;
+    }
+  }
+
+  return -1;
+}
+```
+
+## TypeScript
+
+```ts
+export function firstTrue(low: number, high: number, check: (value: number) => boolean): number {
+  let left = low;
+  let right = high;
+
+  while (left < right) {
+    const mid = left + Math.floor((right - left) / 2);
+
+    if (check(mid)) {
+      right = mid;
+    } else {
+      left = mid + 1;
+    }
+  }
+
+  return left;
+}
+```
+
+## Follow-up Questions
+
+- Return the insertion point instead of a boolean.
+- Adapt the search to a rotated sorted array.
+- Explain how you find the first valid answer in a range of capacities.
+
+## Common Pitfalls
+
+- Using the wrong loop condition and skipping the final candidate.
+- Returning `mid` immediately when the task asks for a boundary position instead of any matching value.

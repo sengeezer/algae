@@ -1,0 +1,91 @@
+---
+title: Interval Merging
+slug: interval-merging
+category: Scheduling
+summary: Sort intervals, then either merge overlaps into the current range or start a new one.
+description: Interval merging appears in interview prompts about calendars, scheduling, time ranges, and overlapping numeric spans.
+dataStructures:
+  - Array
+techniques:
+  - Sorting
+  - Interval Scan
+difficulty: Easy
+interviewFrequency: High
+aliases:
+  - merge intervals
+  - overlapping ranges
+useCases:
+  - Calendar availability
+  - Consolidating overlapping reservations
+  - Meeting-room style range processing
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: Sorting is the expensive step; the scan after that is linear.
+interviewSignals:
+  - The prompt talks about start and end times or numeric ranges.
+  - Overlaps need to be merged, counted, or scanned for gaps.
+relatedSlugs:
+  - merge-sort
+  - monotonic-stack
+---
+
+## Why It Surfaces
+
+Interval problems are really about sorted scans over ranges. Once the intervals are sorted by start time, the interview usually reduces to deciding whether the next interval overlaps with the current one.
+
+## JavaScript
+
+```js
+function mergeIntervals(intervals) {
+  if (intervals.length === 0) {
+    return [];
+  }
+
+  const sorted = [...intervals].sort((a, b) => a[0] - b[0]);
+  const merged = [sorted[0]];
+
+  for (const [start, end] of sorted.slice(1)) {
+    const last = merged[merged.length - 1];
+
+    if (start <= last[1]) {
+      last[1] = Math.max(last[1], end);
+    } else {
+      merged.push([start, end]);
+    }
+  }
+
+  return merged;
+}
+```
+
+## TypeScript
+
+```ts
+export function mergeIntervals(intervals: Array<[number, number]>): Array<[number, number]> {
+  if (intervals.length === 0) {
+    return [];
+  }
+
+  const sorted = [...intervals].sort((a, b) => a[0] - b[0]);
+  const merged: Array<[number, number]> = [sorted[0]];
+
+  for (const [start, end] of sorted.slice(1)) {
+    const last = merged[merged.length - 1];
+
+    if (start <= last[1]) {
+      last[1] = Math.max(last[1], end);
+    } else {
+      merged.push([start, end]);
+    }
+  }
+
+  return merged;
+}
+```
+
+## Interview Notes
+
+- Sort first, then explain the linear merge scan.
+- Clarify whether touching endpoints count as overlap.
+- Watch for follow-ups such as counting rooms or finding free time gaps.

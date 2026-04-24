@@ -10,19 +10,6 @@ export interface ComplexityProfile {
   notes: string;
 }
 
-export interface WorkedExample {
-  title: string;
-  input: string;
-  output: string;
-  explanation: string;
-}
-
-export interface CodeVariant {
-  label: string;
-  language: CodeLanguage;
-  code: string;
-}
-
 export interface AlgorithmEntry {
   slug: string;
   title: string;
@@ -37,11 +24,8 @@ export interface AlgorithmEntry {
   useCases: string[];
   complexity: ComplexityProfile;
   interviewSignals: string[];
-  followUps: string[];
-  pitfalls: string[];
-  workedExamples: WorkedExample[];
-  codeVariants: CodeVariant[];
   relatedSlugs: string[];
+  body: string;
 }
 
 export interface CatalogFilters {

@@ -1,0 +1,100 @@
+---
+title: Sliding Window
+slug: sliding-window
+category: Array Patterns
+summary: Expand and contract a contiguous range while preserving an invariant about what is inside the window.
+description: Sliding window is the go-to pattern for substring, subarray, and stream problems where the answer lives inside a contiguous segment.
+dataStructures:
+  - Array
+  - String
+  - Hash Map
+techniques:
+  - Sliding Window
+  - Two Pointers
+difficulty: Medium
+interviewFrequency: Very High
+aliases:
+  - variable window
+  - contiguous range
+useCases:
+  - Longest substring without repeats
+  - Minimum window substring
+  - Rate limiting or rolling statistics
+complexity:
+  time: O(n)
+  space: O(k)
+  notes: Each pointer usually moves at most n steps, which is why the pattern stays linear.
+interviewSignals:
+  - The prompt says subarray, substring, contiguous, or at most k distinct items.
+  - You can describe the valid range using a small state object or counter map.
+relatedSlugs:
+  - two-pointers
+  - prefix-sum
+---
+
+## Why It Surfaces
+
+Sliding window works when the answer is inside a contiguous segment and you can maintain the validity of that segment incrementally. If the prompt says `substring`, `subarray`, `contiguous`, or `at most k`, this pattern should be near the top of your shortlist.
+
+## Worked Example
+
+For `"abcabcbb"`, keep extending the right pointer while characters remain unique. When a duplicate appears, move the left edge until the window is valid again.
+
+## JavaScript
+
+```js
+function lengthOfLongestSubstring(text) {
+  const lastSeen = new Map();
+  let left = 0;
+  let best = 0;
+
+  for (let right = 0; right < text.length; right += 1) {
+    const char = text[right];
+
+    if (lastSeen.has(char) && lastSeen.get(char) >= left) {
+      left = lastSeen.get(char) + 1;
+    }
+
+    lastSeen.set(char, right);
+    best = Math.max(best, right - left + 1);
+  }
+
+  return best;
+}
+```
+
+## TypeScript
+
+```ts
+export function maxWindowSum(values: number[], size: number): number {
+  if (size > values.length) {
+    return Number.NEGATIVE_INFINITY;
+  }
+
+  let windowSum = 0;
+
+  for (let index = 0; index < size; index += 1) {
+    windowSum += values[index];
+  }
+
+  let best = windowSum;
+
+  for (let right = size; right < values.length; right += 1) {
+    windowSum += values[right] - values[right - size];
+    best = Math.max(best, windowSum);
+  }
+
+  return best;
+}
+```
+
+## Follow-up Questions
+
+- Convert a fixed-size window into a variable-size one.
+- Explain why negative numbers can break some sliding-window assumptions.
+- Show how a `Map` changes the solution when duplicates matter.
+
+## Common Pitfalls
+
+- Shrinking too late and recording an invalid answer.
+- Recomputing the whole window state instead of updating it incrementally.

@@ -1,0 +1,72 @@
+---
+title: 0/1 Knapsack
+slug: knapsack-dp
+category: Dynamic Programming
+summary: Choose the best subset of items without exceeding capacity by reusing overlapping subproblems.
+description: Knapsack is a canonical dynamic-programming pattern for maximize-under-constraint questions where each item can be taken at most once.
+dataStructures:
+  - Array
+  - Table
+techniques:
+  - Dynamic Programming
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - take-or-skip dp
+useCases:
+  - Resource allocation under capacity limits
+  - Budgeted selection problems
+  - Subset optimization with value and weight
+complexity:
+  time: O(n * capacity)
+  space: O(capacity)
+  notes: Interviewers often reward the one-dimensional optimization that iterates capacity backward.
+interviewSignals:
+  - Each choice is either taken or skipped.
+  - The score is optimized under a maximum capacity, budget, or time limit.
+relatedSlugs:
+  - prefix-sum
+  - minimax
+---
+
+## Why It Surfaces
+
+Knapsack is the classic dynamic-programming frame for choosing the best subset under a hard limit. The story changes from backpacks to budgets, staffing, or time allocation, but the state transition stays the same.
+
+## JavaScript
+
+```js
+function knapsack(weights, values, capacity) {
+  const dp = new Array(capacity + 1).fill(0);
+
+  for (let item = 0; item < weights.length; item += 1) {
+    for (let space = capacity; space >= weights[item]; space -= 1) {
+      dp[space] = Math.max(dp[space], dp[space - weights[item]] + values[item]);
+    }
+  }
+
+  return dp[capacity];
+}
+```
+
+## TypeScript
+
+```ts
+export function knapsack(weights: number[], values: number[], capacity: number): number {
+  const dp = new Array<number>(capacity + 1).fill(0);
+
+  for (let item = 0; item < weights.length; item += 1) {
+    for (let space = capacity; space >= weights[item]; space -= 1) {
+      dp[space] = Math.max(dp[space], dp[space - weights[item]] + values[item]);
+    }
+  }
+
+  return dp[capacity];
+}
+```
+
+## Interview Notes
+
+- Iterate capacity backward so an item is not reused in the same row.
+- Explain the difference between 0/1 knapsack and complete knapsack.
+- If asked for the chosen items, mention reconstructing the path from a 2D table.

@@ -1,0 +1,112 @@
+---
+title: KMP String Search
+slug: kmp-string-search
+category: Strings
+summary: Precompute the pattern's fallback table so mismatches reuse earlier work instead of restarting from scratch.
+description: Knuth-Morris-Pratt appears in interviews when substring search needs better worst-case behavior than naive matching.
+dataStructures:
+  - String
+  - Array
+techniques:
+  - String Matching
+  - Prefix Table
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - KMP
+  - prefix function
+useCases:
+  - Efficient substring search
+  - Pattern matching in long logs or DNA strings
+  - Reusing overlap information after mismatches
+complexity:
+  time: O(n + m)
+  space: O(m)
+  notes: The hardest part in interviews is explaining the prefix table clearly, not coding the scan itself.
+interviewSignals:
+  - The prompt asks for repeated substring matching with many overlapping prefixes.
+  - Naive matching would restart too much after partial progress.
+relatedSlugs:
+  - trie
+  - sliding-window
+---
+
+## Why It Surfaces
+
+KMP matters when a pattern overlaps with itself enough that restarting the match from scratch wastes work. The interviewer usually wants to hear how the prefix table preserves what you already know after a mismatch.
+
+## JavaScript
+
+```js
+function buildLps(pattern) {
+  const lps = new Array(pattern.length).fill(0);
+  let length = 0;
+
+  for (let index = 1; index < pattern.length; ) {
+    if (pattern[index] === pattern[length]) {
+      length += 1;
+      lps[index] = length;
+      index += 1;
+    } else if (length > 0) {
+      length = lps[length - 1];
+    } else {
+      lps[index] = 0;
+      index += 1;
+    }
+  }
+
+  return lps;
+}
+```
+
+## TypeScript
+
+```ts
+export function containsPattern(text: string, pattern: string): boolean {
+  const lps = buildLps(pattern);
+  let textIndex = 0;
+  let patternIndex = 0;
+
+  while (textIndex < text.length) {
+    if (text[textIndex] === pattern[patternIndex]) {
+      textIndex += 1;
+      patternIndex += 1;
+
+      if (patternIndex === pattern.length) {
+        return true;
+      }
+    } else if (patternIndex > 0) {
+      patternIndex = lps[patternIndex - 1];
+    } else {
+      textIndex += 1;
+    }
+  }
+
+  return false;
+}
+
+function buildLps(pattern: string): number[] {
+  const lps = new Array<number>(pattern.length).fill(0);
+  let length = 0;
+
+  for (let index = 1; index < pattern.length; ) {
+    if (pattern[index] === pattern[length]) {
+      length += 1;
+      lps[index] = length;
+      index += 1;
+    } else if (length > 0) {
+      length = lps[length - 1];
+    } else {
+      index += 1;
+    }
+  }
+
+  return lps;
+}
+```
+
+## Interview Notes
+
+- Spend time explaining the prefix table with a short pattern example.
+- Say that KMP is about reusing partial matches after mismatch.
+- If the interviewer only needs average-case matching, explain why simpler methods might be good enough.

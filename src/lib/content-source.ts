@@ -1,4 +1,9 @@
-import { algorithms } from "@/content/algorithms";
+import fs from "node:fs";
+import path from "node:path";
+
+import matter from "gray-matter";
+import { cache } from "react";
+
 import type { AlgorithmEntry } from "@/types/algorithm";
 
 export interface AlgorithmContentSource {
@@ -6,23 +11,51 @@ export interface AlgorithmContentSource {
   getAlgorithmBySlug(slug: string): AlgorithmEntry | undefined;
 }
 
-const staticContentSource: AlgorithmContentSource = {
+const algorithmDirectory = path.join(process.cwd(), "src", "content", "algorithms");
+
+function parseAlgorithmFile(fileName: string): AlgorithmEntry {
+  const filePath = path.join(algorithmDirectory, fileName);
+  const source = fs.readFileSync(filePath, "utf8");
+  const { data, content } = matter(source);
+
+  const algorithm = data as Omit<AlgorithmEntry, "body">;
+
+  return {
+    ...algorithm,
+    aliases: algorithm.aliases ?? [],
+    body: content.trim(),
+    dataStructures: algorithm.dataStructures ?? [],
+    interviewSignals: algorithm.interviewSignals ?? [],
+    relatedSlugs: algorithm.relatedSlugs ?? [],
+    techniques: algorithm.techniques ?? [],
+    useCases: algorithm.useCases ?? [],
+  };
+}
+
+const readAlgorithmDocuments = cache(() => {
+  return fs
+    .readdirSync(algorithmDirectory)
+    .filter((fileName) => fileName.endsWith(".mdx"))
+    .map(parseAlgorithmFile);
+});
+
+const filesystemContentSource: AlgorithmContentSource = {
   getAllAlgorithms() {
-    return algorithms;
+    return readAlgorithmDocuments();
   },
   getAlgorithmBySlug(slug) {
-    return algorithms.find((algorithm) => algorithm.slug === slug);
+    return readAlgorithmDocuments().find((algorithm) => algorithm.slug === slug);
   },
 };
 
 export function listAlgorithms(): AlgorithmEntry[] {
-  return [...staticContentSource.getAllAlgorithms()].sort((left, right) =>
+  return [...filesystemContentSource.getAllAlgorithms()].sort((left, right) =>
     left.title.localeCompare(right.title),
   );
 }
 
 export function getAlgorithmBySlug(slug: string): AlgorithmEntry | undefined {
-  return staticContentSource.getAlgorithmBySlug(slug);
+  return filesystemContentSource.getAlgorithmBySlug(slug);
 }
 
 export function listDataStructures(): string[] {

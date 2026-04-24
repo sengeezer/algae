@@ -1,0 +1,79 @@
+---
+title: Prefix Sum
+slug: prefix-sum
+category: Array Patterns
+summary: Precompute cumulative totals so any range sum becomes a constant-time subtraction.
+description: Prefix sums surface in interviews whenever repeated range queries or balance checks would otherwise force the same work to be repeated.
+dataStructures:
+  - Array
+  - Matrix
+  - Hash Map
+techniques:
+  - Prefix Sum
+  - Precomputation
+difficulty: Easy
+interviewFrequency: High
+aliases:
+  - cumulative sum
+  - running total
+useCases:
+  - Fast subarray sums
+  - 2D matrix region queries
+  - Checking whether a subarray sums to k with a hash map
+complexity:
+  time: O(n) preprocess, O(1) range query
+  space: O(n)
+  notes: Prefix sums are often combined with a map to count how many previous states create the desired gap.
+interviewSignals:
+  - Many range questions target the same array or matrix.
+  - You need to compare a current cumulative state against earlier ones.
+relatedSlugs:
+  - sliding-window
+  - kadane-algorithm
+---
+
+## Why It Surfaces
+
+Prefix sums are the cleanest answer when the question repeats range queries or asks you to compare the current running state against earlier ones. They also rescue cases where negative numbers make a standard sliding window invalid.
+
+## JavaScript
+
+```js
+function buildPrefixSums(nums) {
+  const prefix = new Array(nums.length + 1).fill(0);
+
+  for (let index = 0; index < nums.length; index += 1) {
+    prefix[index + 1] = prefix[index] + nums[index];
+  }
+
+  return prefix;
+}
+
+function rangeSum(prefix, left, right) {
+  return prefix[right + 1] - prefix[left];
+}
+```
+
+## TypeScript
+
+```ts
+export function countSubarraysWithSum(values: number[], target: number): number {
+  const seen = new Map<number, number>([[0, 1]]);
+  let prefix = 0;
+  let count = 0;
+
+  for (const value of values) {
+    prefix += value;
+    count += seen.get(prefix - target) ?? 0;
+    seen.set(prefix, (seen.get(prefix) ?? 0) + 1);
+  }
+
+  return count;
+}
+```
+
+## Interview Notes
+
+- Add a leading zero slot so `prefix[right + 1] - prefix[left]` works cleanly.
+- Mention 2D prefix sums when the prompt says matrix region.
+- Call out that prefix sums still work when negative values break monotonic windows.

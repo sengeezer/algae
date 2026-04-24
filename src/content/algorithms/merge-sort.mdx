@@ -1,0 +1,93 @@
+---
+title: Merge Sort
+slug: merge-sort
+category: Sorting
+summary: Recursively split the array, sort the halves, and merge them back in linear time.
+description: Merge sort is a stable divide-and-conquer sort that appears in interviews when you need sorted output and predictable O(n log n) behavior.
+dataStructures:
+  - Array
+techniques:
+  - Divide and Conquer
+  - Sorting
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - stable sort
+  - merge halves
+useCases:
+  - Sorting linked data with stable ordering
+  - Counting inversions while sorting
+  - Preparing for interval merging or sweep-line tasks
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: The merge step is linear, but interviewers often ask whether the extra array can be reused.
+interviewSignals:
+  - The problem needs stable ordering or an inversion count.
+  - You need to reason about two sorted halves before combining them.
+relatedSlugs:
+  - binary-search
+  - quick-sort
+---
+
+## Why It Surfaces
+
+Merge sort shows up when the interviewer wants predictable sorting cost, stable output, or a divide-and-conquer frame that can carry extra bookkeeping such as inversion counts.
+
+## JavaScript
+
+```js
+function mergeSort(nums) {
+  if (nums.length <= 1) {
+    return nums;
+  }
+
+  const middle = Math.floor(nums.length / 2);
+  const left = mergeSort(nums.slice(0, middle));
+  const right = mergeSort(nums.slice(middle));
+  const merged = [];
+
+  let leftIndex = 0;
+  let rightIndex = 0;
+
+  while (leftIndex < left.length && rightIndex < right.length) {
+    if (left[leftIndex] <= right[rightIndex]) {
+      merged.push(left[leftIndex++]);
+    } else {
+      merged.push(right[rightIndex++]);
+    }
+  }
+
+  return merged.concat(left.slice(leftIndex), right.slice(rightIndex));
+}
+```
+
+## TypeScript
+
+```ts
+export function mergeSort(values: number[]): number[] {
+  if (values.length <= 1) {
+    return values;
+  }
+
+  const midpoint = Math.floor(values.length / 2);
+  const left = mergeSort(values.slice(0, midpoint));
+  const right = mergeSort(values.slice(midpoint));
+  const merged: number[] = [];
+
+  let i = 0;
+  let j = 0;
+
+  while (i < left.length && j < right.length) {
+    merged.push(left[i] <= right[j] ? left[i++] : right[j++]);
+  }
+
+  return merged.concat(left.slice(i), right.slice(j));
+}
+```
+
+## Interview Notes
+
+- Explain why the merge step stays linear.
+- Mention stability as the differentiator from quick sort.
+- If asked about inversion counts, point out that each right-side win can count remaining left items.

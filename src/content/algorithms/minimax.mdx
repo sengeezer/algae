@@ -1,0 +1,138 @@
+---
+title: Minimax
+slug: minimax
+category: Game Search
+summary: Model alternating turns by choosing the move that maximizes your outcome while assuming the opponent minimizes it.
+description: Minimax appears in interviews when a game or rules engine needs optimal play over a small search space, especially on board states such as tic tac toe.
+dataStructures:
+  - Tree
+  - Matrix
+techniques:
+  - Backtracking
+  - Game Theory
+  - Minimax
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - optimal game search
+  - tic tac toe strategy
+useCases:
+  - Evaluating rules of tic tac toe
+  - Turn-based board games with a small branching factor
+  - Building a simple AI opponent for a deterministic game
+complexity:
+  time: O(b^d)
+  space: O(d)
+  notes: Interviewers usually accept a small-state-space version and may ask when alpha-beta pruning becomes useful.
+interviewSignals:
+  - Players alternate turns and both choose optimally.
+  - The prompt mentions board rules, tic tac toe, or evaluating future responses.
+relatedSlugs:
+  - depth-first-search
+  - knapsack-dp
+---
+
+## Why It Surfaces
+
+Minimax is the clean answer when two players alternate moves and both are assumed to play optimally. Interview prompts often wrap it in a small game such as tic tac toe, a win-loss rules engine, or a board search with deterministic turns.
+
+## Worked Example
+
+On a tic tac toe board, each candidate move becomes a branch in the game tree. The maximizing player chooses the branch with the best worst-case score, assuming the opponent always replies with the strongest counter.
+
+## JavaScript
+
+```js
+function minimax(board, isMaximizingPlayer) {
+  const score = evaluateBoard(board);
+
+  if (score !== null) {
+    return score;
+  }
+
+  const moves = getAvailableMoves(board);
+
+  if (isMaximizingPlayer) {
+    let best = -Infinity;
+
+    for (const move of moves) {
+      const nextBoard = applyMove(board, move, "X");
+      best = Math.max(best, minimax(nextBoard, false));
+    }
+
+    return best;
+  }
+
+  let best = Infinity;
+
+  for (const move of moves) {
+    const nextBoard = applyMove(board, move, "O");
+    best = Math.min(best, minimax(nextBoard, true));
+  }
+
+  return best;
+}
+```
+
+## TypeScript
+
+```ts
+type Cell = "X" | "O" | null;
+type Board = Cell[];
+
+export function chooseMove(board: Board, availableMoves: number[]): number | null {
+  let bestMove: number | null = null;
+  let bestScore = Number.NEGATIVE_INFINITY;
+
+  for (const move of availableMoves) {
+    const nextBoard = [...board];
+    nextBoard[move] = "X";
+    const score = minimax(nextBoard, false);
+
+    if (score > bestScore) {
+      bestScore = score;
+      bestMove = move;
+    }
+  }
+
+  return bestMove;
+}
+
+function minimax(board: Board, maximizing: boolean): number {
+  const terminalScore = evaluateBoard(board);
+
+  if (terminalScore !== null) {
+    return terminalScore;
+  }
+
+  const nextPlayer: Cell = maximizing ? "X" : "O";
+  const scores: number[] = [];
+
+  for (let index = 0; index < board.length; index += 1) {
+    if (board[index] !== null) {
+      continue;
+    }
+
+    const nextBoard = [...board];
+    nextBoard[index] = nextPlayer;
+    scores.push(minimax(nextBoard, !maximizing));
+  }
+
+  return maximizing ? Math.max(...scores) : Math.min(...scores);
+}
+
+function evaluateBoard(board: Board): number | null {
+  return board.every((cell) => cell !== null) ? 0 : null;
+}
+```
+
+## Follow-up Questions
+
+- Add alpha-beta pruning and explain which branches can be skipped.
+- Memoize repeated board states if the game allows transpositions.
+- Explain why the search is only practical when the branching factor stays small.
+
+## Common Pitfalls
+
+- Scoring terminal states inconsistently for maximizing and minimizing turns.
+- Searching too deeply when the current position already proves a forced win or draw.

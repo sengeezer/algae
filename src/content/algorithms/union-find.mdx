@@ -1,0 +1,123 @@
+---
+title: Union-Find
+slug: union-find
+category: Graphs
+summary: Track disjoint sets so connectivity checks and merges stay nearly constant time.
+description: Union-Find, or Disjoint Set Union, appears in interviews for connectivity, grouping, and cycle-detection questions where components evolve as edges are added.
+dataStructures:
+  - Graph
+  - Array
+techniques:
+  - Disjoint Set Union
+  - Graph Connectivity
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - disjoint set union
+  - DSU
+useCases:
+  - Dynamic connectivity
+  - Detecting cycles in undirected graphs
+  - Grouping accounts or equivalent items
+complexity:
+  time: Near O(1) amortized with path compression
+  space: O(n)
+  notes: Path compression and union by rank are the optimizations interviewers usually want to hear.
+interviewSignals:
+  - The graph changes as edges are added.
+  - You need fast answers to whether two nodes belong to the same component.
+relatedSlugs:
+  - breadth-first-search
+  - topological-sort
+---
+
+## Why It Surfaces
+
+Union-Find is the compact answer when components merge over time. It shows up in connectivity, redundant connection, account merge, and minimum spanning tree style questions.
+
+## JavaScript
+
+```js
+class UnionFind {
+  constructor(size) {
+    this.parent = Array.from({ length: size }, (_, index) => index);
+    this.rank = new Array(size).fill(0);
+  }
+
+  find(node) {
+    if (this.parent[node] !== node) {
+      this.parent[node] = this.find(this.parent[node]);
+    }
+
+    return this.parent[node];
+  }
+
+  union(left, right) {
+    const rootLeft = this.find(left);
+    const rootRight = this.find(right);
+
+    if (rootLeft === rootRight) {
+      return false;
+    }
+
+    if (this.rank[rootLeft] < this.rank[rootRight]) {
+      this.parent[rootLeft] = rootRight;
+    } else if (this.rank[rootLeft] > this.rank[rootRight]) {
+      this.parent[rootRight] = rootLeft;
+    } else {
+      this.parent[rootRight] = rootLeft;
+      this.rank[rootLeft] += 1;
+    }
+
+    return true;
+  }
+}
+```
+
+## TypeScript
+
+```ts
+export class UnionFind {
+  private parent: number[];
+  private rank: number[];
+
+  constructor(size: number) {
+    this.parent = Array.from({ length: size }, (_, index) => index);
+    this.rank = new Array(size).fill(0);
+  }
+
+  find(node: number): number {
+    if (this.parent[node] !== node) {
+      this.parent[node] = this.find(this.parent[node]);
+    }
+
+    return this.parent[node];
+  }
+
+  union(left: number, right: number): boolean {
+    const rootLeft = this.find(left);
+    const rootRight = this.find(right);
+
+    if (rootLeft === rootRight) {
+      return false;
+    }
+
+    if (this.rank[rootLeft] < this.rank[rootRight]) {
+      this.parent[rootLeft] = rootRight;
+    } else if (this.rank[rootLeft] > this.rank[rootRight]) {
+      this.parent[rootRight] = rootLeft;
+    } else {
+      this.parent[rootRight] = rootLeft;
+      this.rank[rootLeft] += 1;
+    }
+
+    return true;
+  }
+}
+```
+
+## Interview Notes
+
+- Name path compression and union by rank explicitly.
+- Use it when repeated connectivity checks would make graph traversal too expensive.
+- Mention Kruskal's algorithm if the interviewer pivots toward MSTs.

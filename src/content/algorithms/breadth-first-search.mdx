@@ -1,0 +1,112 @@
+---
+title: Breadth-First Search
+slug: breadth-first-search
+category: Graphs
+summary: Explore level by level so the first time you reach a node is also the shortest unweighted distance.
+description: BFS is essential for shortest-path problems on unweighted graphs, level-order tree traversals, and grid wavefront searches.
+dataStructures:
+  - Graph
+  - Queue
+  - Tree
+  - Matrix
+techniques:
+  - Breadth-First Search
+  - Graph Traversal
+difficulty: Medium
+interviewFrequency: Very High
+aliases:
+  - level-order traversal
+  - wavefront search
+useCases:
+  - Shortest path in an unweighted graph
+  - Rotting oranges or flood spread in a matrix
+  - Tree level-order traversal
+complexity:
+  time: O(V + E)
+  space: O(V)
+  notes: On grid problems, V and E are often expressed in terms of rows and columns instead of graph notation.
+interviewSignals:
+  - The prompt asks for the fewest moves on an unweighted state space.
+  - The solution should expand in rings or levels.
+relatedSlugs:
+  - depth-first-search
+  - dijkstra
+---
+
+## Why It Surfaces
+
+BFS is the shortest-path tool for unweighted graphs and state spaces. If the prompt says minimum number of steps, nearest distance, or level-order traversal, BFS is often the first correct answer.
+
+## JavaScript
+
+```js
+function bfs(graph, start) {
+  const queue = [start];
+  const visited = new Set([start]);
+  const order = [];
+
+  while (queue.length > 0) {
+    const node = queue.shift();
+    order.push(node);
+
+    for (const neighbor of graph.get(node) ?? []) {
+      if (visited.has(neighbor)) {
+        continue;
+      }
+
+      visited.add(neighbor);
+      queue.push(neighbor);
+    }
+  }
+
+  return order;
+}
+```
+
+## TypeScript
+
+```ts
+type Point = [row: number, column: number];
+
+export function shortestPath(grid: number[][], start: Point, target: Point): number {
+  const queue: Array<[Point, number]> = [[start, 0]];
+  const visited = new Set([start.join(":")]);
+  const directions: Point[] = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+
+  while (queue.length > 0) {
+    const [[row, column], steps] = queue.shift()!;
+
+    if (row === target[0] && column === target[1]) {
+      return steps;
+    }
+
+    for (const [dr, dc] of directions) {
+      const nextRow = row + dr;
+      const nextColumn = column + dc;
+      const key = `${nextRow}:${nextColumn}`;
+
+      if (
+        nextRow < 0 ||
+        nextRow >= grid.length ||
+        nextColumn < 0 ||
+        nextColumn >= grid[0].length ||
+        grid[nextRow][nextColumn] === 1 ||
+        visited.has(key)
+      ) {
+        continue;
+      }
+
+      visited.add(key);
+      queue.push([[nextRow, nextColumn], steps + 1]);
+    }
+  }
+
+  return -1;
+}
+```
+
+## Interview Notes
+
+- Mark nodes visited when they are enqueued, not when they are popped.
+- Mention multi-source BFS when several starting cells spread at once.
+- Contrast BFS with Dijkstra as soon as weighted edges appear.

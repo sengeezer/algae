@@ -1,0 +1,87 @@
+---
+title: Two Pointers
+slug: two-pointers
+category: Array Patterns
+summary: Move two indices through ordered or bounded data to avoid nested loops.
+description: Two pointers is a family of patterns for sorted arrays, palindrome checks, partitioning, and interval-style scans where one pointer alone is not enough context.
+dataStructures:
+  - Array
+  - String
+  - Linked List
+techniques:
+  - Two Pointers
+difficulty: Easy
+interviewFrequency: Very High
+aliases:
+  - fast and slow
+  - left and right
+useCases:
+  - Pair sum in a sorted array
+  - Checking palindromes in place
+  - Cycle detection with fast and slow pointers
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: Interviewers usually care more about the invariant behind pointer movement than the syntax.
+interviewSignals:
+  - The data is sorted, mirrored, or bounded on both ends.
+  - A brute-force solution would compare every pair or rescan the same range.
+relatedSlugs:
+  - sliding-window
+  - linked-list-cycle-detection
+---
+
+## Why It Surfaces
+
+Two-pointer problems reward you for preserving a simple invariant while avoiding nested loops. It is a natural fit for sorted arrays, mirrored strings, and linked-list scans where fast and slow pointers expose structure.
+
+## JavaScript
+
+```js
+function pairSumSorted(nums, target) {
+  let left = 0;
+  let right = nums.length - 1;
+
+  while (left < right) {
+    const sum = nums[left] + nums[right];
+
+    if (sum === target) {
+      return [nums[left], nums[right]];
+    }
+
+    if (sum < target) {
+      left += 1;
+    } else {
+      right -= 1;
+    }
+  }
+
+  return null;
+}
+```
+
+## TypeScript
+
+```ts
+export function isPalindrome(text: string): boolean {
+  let left = 0;
+  let right = text.length - 1;
+
+  while (left < right) {
+    if (text[left] !== text[right]) {
+      return false;
+    }
+
+    left += 1;
+    right -= 1;
+  }
+
+  return true;
+}
+```
+
+## What To Say In Interviews
+
+- State the invariant before you move either pointer.
+- Explain why sorting or mirrored structure makes the two-pointer scan valid.
+- Mention when a hash map would be better on unsorted data.
