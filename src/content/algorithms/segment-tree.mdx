@@ -1,0 +1,168 @@
+---
+title: Segment Tree
+slug: segment-tree
+category: Range Queries
+summary: Partition an array into queryable intervals so range answers and point updates both stay logarithmic.
+description: Segment trees surface in interview questions that mix dynamic range queries with updates and need richer operations than prefix sums or Fenwick trees can support comfortably.
+dataStructures:
+  - Array
+  - Binary Tree
+techniques:
+  - Range Queries
+  - Tree Decomposition
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - interval tree for sums
+  - range tree
+useCases:
+  - Range minimum, maximum, or sum queries
+  - Dynamic array queries with updates
+  - Problems that later grow into lazy propagation follow-ups
+complexity:
+  time: O(log n)
+  space: O(n)
+  notes: The real interview decision is when the extra implementation cost is justified over a simpler prefix-based structure.
+interviewSignals:
+  - The prompt needs both repeated range queries and updates.
+  - The aggregated operation is richer than a simple invertible prefix sum.
+relatedSlugs:
+  - fenwick-tree
+  - prefix-sum
+  - interval-merging
+---
+
+## Why It Surfaces
+
+Segment trees appear when the array changes over time and the query needs information about arbitrary intervals. They recursively partition the array so each node owns a segment and can answer or combine only the parts that overlap a query.
+
+## Worked Example
+
+To query the sum over `[2, 6]`, a segment tree skips nodes whose ranges are fully outside, returns nodes fully inside, and recursively splits only the partial overlaps. That is where the logarithmic behavior comes from.
+
+<Callout title="When to choose it" tone="note">
+  If the problem only needs dynamic prefix sums, a Fenwick tree is lighter. If it needs range minimums, richer combines, or a path to lazy propagation, a segment tree is the safer abstraction.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class SegmentTree {
+  constructor(values) {
+    this.size = values.length;
+    this.tree = new Array(this.size * 4).fill(0);
+    this.build(values, 1, 0, this.size - 1);
+  }
+
+  build(values, node, left, right) {
+    if (left === right) {
+      this.tree[node] = values[left];
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    this.build(values, node * 2, left, mid);
+    this.build(values, node * 2 + 1, mid + 1, right);
+    this.tree[node] = this.tree[node * 2] + this.tree[node * 2 + 1];
+  }
+
+  update(index, value, node = 1, left = 0, right = this.size - 1) {
+    if (left === right) {
+      this.tree[node] = value;
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    if (index <= mid) {
+      this.update(index, value, node * 2, left, mid);
+    } else {
+      this.update(index, value, node * 2 + 1, mid + 1, right);
+    }
+
+    this.tree[node] = this.tree[node * 2] + this.tree[node * 2 + 1];
+  }
+
+  query(queryLeft, queryRight, node = 1, left = 0, right = this.size - 1) {
+    if (queryRight < left || right < queryLeft) {
+      return 0;
+    }
+
+    if (queryLeft <= left && right <= queryRight) {
+      return this.tree[node];
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    return (
+      this.query(queryLeft, queryRight, node * 2, left, mid)
+      + this.query(queryLeft, queryRight, node * 2 + 1, mid + 1, right)
+    );
+  }
+}
+```
+
+```ts
+export class SegmentTree {
+  private readonly size: number;
+  private readonly tree: number[];
+
+  constructor(values: number[]) {
+    this.size = values.length;
+    this.tree = new Array<number>(this.size * 4).fill(0);
+    this.build(values, 1, 0, this.size - 1);
+  }
+
+  private build(values: number[], node: number, left: number, right: number): void {
+    if (left === right) {
+      this.tree[node] = values[left];
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    this.build(values, node * 2, left, mid);
+    this.build(values, node * 2 + 1, mid + 1, right);
+    this.tree[node] = this.tree[node * 2] + this.tree[node * 2 + 1];
+  }
+
+  update(index: number, value: number, node = 1, left = 0, right = this.size - 1): void {
+    if (left === right) {
+      this.tree[node] = value;
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    if (index <= mid) {
+      this.update(index, value, node * 2, left, mid);
+    } else {
+      this.update(index, value, node * 2 + 1, mid + 1, right);
+    }
+
+    this.tree[node] = this.tree[node * 2] + this.tree[node * 2 + 1];
+  }
+
+  query(queryLeft: number, queryRight: number, node = 1, left = 0, right = this.size - 1): number {
+    if (queryRight < left || right < queryLeft) {
+      return 0;
+    }
+
+    if (queryLeft <= left && right <= queryRight) {
+      return this.tree[node];
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    return (
+      this.query(queryLeft, queryRight, node * 2, left, mid)
+      + this.query(queryLeft, queryRight, node * 2 + 1, mid + 1, right)
+    );
+  }
+}
+```
+
+</ExamplePair>
+
+## Interview Notes
+
+- Define what each node stores before talking about code.
+- Call out the three overlap cases: none, full, and partial.
+- Mention lazy propagation only if the interviewer introduces range updates.

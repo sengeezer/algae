@@ -34,21 +34,25 @@ function scoreCandidate(query: string, text: string, multiplier: number): number
   return 0;
 }
 
+function weightedField(text: string, multiplier: number): [text: string, multiplier: number] {
+  return [text, multiplier];
+}
+
 function scoreAlgorithm(algorithm: AlgorithmEntry, query: string): number {
   if (!query) {
     return 1;
   }
 
   const fields: Array<[text: string, multiplier: number]> = [
-    [algorithm.title, 5],
-    [algorithm.summary, 4],
-    [algorithm.description, 3],
-    [algorithm.category, 2],
-    ...algorithm.dataStructures.map((value) => [value, 3] as const),
-    ...algorithm.techniques.map((value) => [value, 3] as const),
-    ...algorithm.aliases.map((value) => [value, 4] as const),
-    ...algorithm.useCases.map((value) => [value, 4] as const),
-    ...algorithm.interviewSignals.map((value) => [value, 2] as const),
+    weightedField(algorithm.title, 5),
+    weightedField(algorithm.summary, 4),
+    weightedField(algorithm.description, 3),
+    weightedField(algorithm.category, 2),
+    ...algorithm.dataStructures.map((value) => weightedField(value, 3)),
+    ...algorithm.techniques.map((value) => weightedField(value, 3)),
+    ...algorithm.aliases.map((value) => weightedField(value, 4)),
+    ...algorithm.useCases.map((value) => weightedField(value, 4)),
+    ...algorithm.interviewSignals.map((value) => weightedField(value, 2)),
   ];
 
   return fields.reduce((score, [text, multiplier]) => {

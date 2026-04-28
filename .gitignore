@@ -32,6 +32,10 @@ yarn-error.log*
 dev_server.log
 lint_output.txt
 server.pid
+page_content.html
+playwright_validation.spec.ts
+playwright-report/
+test-results/
 
 # env files (can opt-in for committing if needed)
 .env*

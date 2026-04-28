@@ -2,6 +2,7 @@ import { Children, isValidElement } from "react";
 import type { ReactNode } from "react";
 import { MDXRemote } from "next-mdx-remote/rsc";
 
+import { Callout, ExamplePair } from "@/components/mdx-reference-blocks";
 import { slugifyHeading } from "@/lib/mdx-navigation";
 
 type AlgorithmMdxProps = {
@@ -85,7 +86,7 @@ const mdxComponents = {
     }
 
     return (
-      <div className="mt-5 overflow-hidden rounded-[24px] border border-black/10 bg-[#0f1726] shadow-[0_20px_60px_-30px_rgba(15,23,38,0.8)]">
+      <div className="mdx-code-surface mt-5 overflow-hidden rounded-[24px] border border-black/10 bg-[#0f1726] shadow-[0_20px_60px_-30px_rgba(15,23,38,0.8)]">
         <div className="flex items-center justify-between border-b border-white/10 px-4 py-3 text-[11px] font-semibold tracking-[0.18em] text-white/70">
           <span>{languageLabel}</span>
           <span>Reference implementation</span>
@@ -116,6 +117,8 @@ const mdxComponents = {
       {...props}
     />
   ),
+  Callout,
+  ExamplePair,
 };
 
 export function AlgorithmMdx({ source }: AlgorithmMdxProps) {

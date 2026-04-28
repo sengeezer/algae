@@ -1,0 +1,95 @@
+---
+title: Floyd-Warshall
+slug: floyd-warshall
+category: Graphs
+summary: Build all-pairs shortest paths by asking whether every node is a better intermediate stop than the current answer.
+description: Floyd-Warshall is the dense-graph dynamic-programming pattern for all-pairs shortest paths and transitive-closure style questions.
+dataStructures:
+  - Matrix
+  - Table
+techniques:
+  - Dynamic Programming
+  - All-Pairs Shortest Paths
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - all-pairs shortest paths
+  - triple-loop graph dp
+useCases:
+  - Shortest distances between every pair of nodes
+  - Reachability or transitive-closure problems
+  - Dense graph questions where repeated single-source runs are wasteful
+complexity:
+  time: O(V^3)
+  space: O(V^2)
+  notes: Floyd-Warshall is about small `V` and dense reuse, not sparse graphs with huge node counts.
+interviewSignals:
+  - The prompt asks about every pair of nodes rather than one source.
+  - A matrix representation is natural and node count is small enough for cubic time.
+relatedSlugs:
+  - bellman-ford
+  - dijkstra
+  - topological-sort
+---
+
+## Why It Surfaces
+
+Floyd-Warshall is the all-pairs version of shortest-path dynamic programming. It asks a precise question for every pair `(i, j)`: does allowing node `k` as an intermediate stop improve the best route we already know?
+
+## Worked Example
+
+If the best known route from `i` to `j` is expensive, but both `i -> k` and `k -> j` are cheap, then node `k` becomes a better bridge. The algorithm tries that possibility for every `k`.
+
+<Callout title="Matrix mindset" tone="note">
+  This is one of the clearest interview cases where a full `V x V` table is the right answer instead of something you should optimize away.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function floydWarshall(matrix) {
+  const distances = matrix.map((row) => row.slice());
+
+  for (let via = 0; via < distances.length; via += 1) {
+    for (let from = 0; from < distances.length; from += 1) {
+      for (let to = 0; to < distances.length; to += 1) {
+        const throughVia = distances[from][via] + distances[via][to];
+        if (throughVia < distances[from][to]) {
+          distances[from][to] = throughVia;
+        }
+      }
+    }
+  }
+
+  return distances;
+}
+```
+
+```ts
+export function floydWarshall(matrix: number[][]): number[][] {
+  const distances = matrix.map((row) => row.slice());
+
+  for (let via = 0; via < distances.length; via += 1) {
+    for (let from = 0; from < distances.length; from += 1) {
+      for (let to = 0; to < distances.length; to += 1) {
+        const throughVia = distances[from][via] + distances[via][to];
+        if (throughVia < distances[from][to]) {
+          distances[from][to] = throughVia;
+        }
+      }
+    }
+  }
+
+  return distances;
+}
+```
+
+</ExamplePair>
+
+## Interview Notes
+
+- Explain what each loop variable represents: source, destination, and allowed intermediate node.
+- If diagonal entries become negative, call out that a negative cycle exists.
+- Prefer Floyd-Warshall only when the graph is small enough that `O(V^3)` is acceptable.

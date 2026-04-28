@@ -27,7 +27,17 @@ for pid in "${open_pids[@]}"; do
   esac
 done
 
-rm -f "$root_dir/dev_server.log" "$root_dir/lint_output.txt" "$root_dir/server.pid"
+rm -f \
+  "$root_dir/dev_server.log" \
+  "$root_dir/lint_output.txt" \
+  "$root_dir/page_content.html" \
+  "$root_dir/playwright_validation.spec.ts" \
+  "$root_dir/server.pid"
+
+rm -rf \
+  "$root_dir/.next" \
+  "$root_dir/playwright-report" \
+  "$root_dir/test-results"
 
 if [[ ${#matched_pids[@]} -eq 0 ]]; then
   echo "No repo-owned dev processes found."

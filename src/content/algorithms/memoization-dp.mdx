@@ -36,13 +36,17 @@ relatedSlugs:
 
 Memoization is what turns a workable recursive idea into an efficient solution. Instead of recomputing the same suffix, index, or remaining capacity over and over, you solve that state once and store the result.
 
-> If you can name the recursive state clearly, memoization is often only one hash map away.
+<Callout title="State test" tone="tip">
+  If you can name the recursive state clearly, memoization is often only one hash map away.
+</Callout>
 
 ## Worked Example
 
 The climbing-stairs recurrence repeats the same smaller stair counts many times. Caching `n` after it is solved once reduces the recursion from exponential growth to linear work.
 
-## JavaScript
+## Reference Implementations
+
+<ExamplePair>
 
 ```js
 function climbStairs(n) {
@@ -66,8 +70,6 @@ function climbStairs(n) {
 }
 ```
 
-## TypeScript
-
 ```ts
 export function climbStairs(n: number): number {
   const memo = new Map<number, number>();
@@ -90,6 +92,8 @@ export function climbStairs(n: number): number {
   return solve(n);
 }
 ```
+
+</ExamplePair>
 
 ## Interview Notes
 

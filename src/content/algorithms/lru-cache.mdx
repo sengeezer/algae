@@ -1,0 +1,204 @@
+---
+title: LRU Cache
+slug: lru-cache
+category: Design
+summary: Pair a hash map with a doubly linked list so reads and writes can both evict the least recently used item in O(1).
+description: LRU cache is a classic interview design exercise because it forces you to combine constant-time lookup with constant-time recency ordering.
+dataStructures:
+  - Hash Map
+  - Doubly Linked List
+techniques:
+  - Cache Design
+  - Data Structure Composition
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - least recently used cache
+  - hashmap plus linked list
+useCases:
+  - Fixed-capacity cache eviction
+  - Recently used session or page tracking
+  - Design interviews requiring O(1) get and put
+complexity:
+  time: O(1)
+  space: O(capacity)
+  notes: A map alone is not enough because it cannot update recency order in constant time.
+interviewSignals:
+  - The prompt requires both constant-time access and constant-time eviction by recency.
+  - Interviewers care about which item becomes oldest after each get or put.
+relatedSlugs:
+  - linked-list-cycle-detection
+  - priority-queue
+  - memoization-dp
+---
+
+## Why It Surfaces
+
+LRU cache is the standard example of combining two data structures to satisfy two conflicting requirements. The map gives constant-time lookup, while the linked list gives constant-time removal and insertion at the recency ends.
+
+## Worked Example
+
+After a successful `get`, the key becomes most recent, so it must move to the front of the linked list. When capacity is full, the node at the tail is the one to evict.
+
+<Callout title="Design constraint" tone="warning">
+  If either `get` or `put` scans the list, the solution no longer meets the required `O(1)` contract. The map and linked list have to cooperate.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class Node {
+  constructor(key = 0, value = 0) {
+    this.key = key;
+    this.value = value;
+    this.prev = null;
+    this.next = null;
+  }
+}
+
+class LRUCache {
+  constructor(capacity) {
+    this.capacity = capacity;
+    this.nodes = new Map();
+    this.head = new Node();
+    this.tail = new Node();
+    this.head.next = this.tail;
+    this.tail.prev = this.head;
+  }
+
+  detach(node) {
+    node.prev.next = node.next;
+    node.next.prev = node.prev;
+  }
+
+  attach(node) {
+    node.next = this.head.next;
+    node.prev = this.head;
+    this.head.next.prev = node;
+    this.head.next = node;
+  }
+
+  get(key) {
+    const node = this.nodes.get(key);
+    if (!node) {
+      return -1;
+    }
+
+    this.detach(node);
+    this.attach(node);
+    return node.value;
+  }
+
+  put(key, value) {
+    if (this.nodes.has(key)) {
+      const node = this.nodes.get(key);
+      node.value = value;
+      this.detach(node);
+      this.attach(node);
+      return;
+    }
+
+    const node = new Node(key, value);
+    this.nodes.set(key, node);
+    this.attach(node);
+
+    if (this.nodes.size > this.capacity) {
+      const lru = this.tail.prev;
+      this.detach(lru);
+      this.nodes.delete(lru.key);
+    }
+  }
+}
+```
+
+```ts
+class Node {
+  key: number;
+  value: number;
+  prev: Node | null = null;
+  next: Node | null = null;
+
+  constructor(key = 0, value = 0) {
+    this.key = key;
+    this.value = value;
+  }
+}
+
+export class LRUCache {
+  private readonly capacity: number;
+  private readonly nodes = new Map<number, Node>();
+  private readonly head = new Node();
+  private readonly tail = new Node();
+
+  constructor(capacity: number) {
+    this.capacity = capacity;
+    this.head.next = this.tail;
+    this.tail.prev = this.head;
+  }
+
+  private detach(node: Node): void {
+    if (!node.prev || !node.next) {
+      return;
+    }
+
+    node.prev.next = node.next;
+    node.next.prev = node.prev;
+  }
+
+  private attach(node: Node): void {
+    const first = this.head.next;
+    node.next = first;
+    node.prev = this.head;
+    this.head.next = node;
+
+    if (first) {
+      first.prev = node;
+    }
+  }
+
+  get(key: number): number {
+    const node = this.nodes.get(key);
+    if (!node) {
+      return -1;
+    }
+
+    this.detach(node);
+    this.attach(node);
+    return node.value;
+  }
+
+  put(key: number, value: number): void {
+    const existing = this.nodes.get(key);
+    if (existing) {
+      existing.value = value;
+      this.detach(existing);
+      this.attach(existing);
+      return;
+    }
+
+    const node = new Node(key, value);
+    this.nodes.set(key, node);
+    this.attach(node);
+
+    if (this.nodes.size > this.capacity) {
+      const lru = this.tail.prev;
+      if (!lru || lru === this.head) {
+        return;
+      }
+
+      this.detach(lru);
+      this.nodes.delete(lru.key);
+    }
+  }
+}
+```
+
+</ExamplePair>
+
+## Interview Notes
+
+- State which end of the list is most recent and which is least recent.
+- Use dummy head and tail nodes to avoid special-case pointer code.
+- If the interviewer asks for LFU instead, say the linked-list policy is no longer enough.

@@ -1,0 +1,132 @@
+---
+title: Bellman-Ford
+slug: bellman-ford
+category: Graphs
+summary: Relax every edge repeatedly so shortest paths still work even when weights can go negative.
+description: Bellman-Ford is the safe shortest-path choice when the graph can contain negative edges and you may need to detect a negative-weight cycle.
+dataStructures:
+  - Graph
+  - Array
+techniques:
+  - Shortest Paths
+  - Dynamic Programming
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - negative edge shortest path
+  - edge relaxation
+useCases:
+  - Currency or scoring graphs with penalties
+  - Shortest path with negative edge weights
+  - Detecting profitable or unstable negative cycles
+complexity:
+  time: O(V * E)
+  space: O(V)
+  notes: The extra relaxation pass is not optional if the prompt asks whether a negative cycle exists.
+interviewSignals:
+  - Edge weights can be negative.
+  - Dijkstra stops being safe because a later edge can still lower a settled distance.
+relatedSlugs:
+  - dijkstra
+  - a-star-search
+  - floyd-warshall
+---
+
+## Why It Surfaces
+
+Bellman-Ford appears when a shortest-path problem removes Dijkstra's main guarantee by allowing negative edges. Instead of greedily settling one node at a time, it repeatedly relaxes every edge until no distance can improve.
+
+## Worked Example
+
+If an edge from `u` to `v` can subtract cost, then a route reaching `u` later may still improve the best known distance to `v`. That is exactly why Dijkstra breaks and Bellman-Ford stays correct.
+
+<Callout title="Cycle check" tone="warning">
+  After `V - 1` full passes, any edge that can still lower a distance proves that a negative-weight cycle is reachable.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function bellmanFord(nodeCount, edges, source) {
+  const distances = new Array(nodeCount).fill(Infinity);
+  distances[source] = 0;
+
+  for (let pass = 1; pass < nodeCount; pass += 1) {
+    let changed = false;
+
+    for (const [from, to, weight] of edges) {
+      if (distances[from] === Infinity) {
+        continue;
+      }
+
+      const candidate = distances[from] + weight;
+      if (candidate < distances[to]) {
+        distances[to] = candidate;
+        changed = true;
+      }
+    }
+
+    if (!changed) {
+      break;
+    }
+  }
+
+  for (const [from, to, weight] of edges) {
+    if (distances[from] !== Infinity && distances[from] + weight < distances[to]) {
+      throw new Error("Negative cycle detected");
+    }
+  }
+
+  return distances;
+}
+```
+
+```ts
+type Edge = [from: number, to: number, weight: number];
+
+export function bellmanFord(nodeCount: number, edges: Edge[], source: number): number[] {
+  const distances = new Array<number>(nodeCount).fill(Number.POSITIVE_INFINITY);
+  distances[source] = 0;
+
+  for (let pass = 1; pass < nodeCount; pass += 1) {
+    let changed = false;
+
+    for (const [from, to, weight] of edges) {
+      if (distances[from] === Number.POSITIVE_INFINITY) {
+        continue;
+      }
+
+      const candidate = distances[from] + weight;
+      if (candidate < distances[to]) {
+        distances[to] = candidate;
+        changed = true;
+      }
+    }
+
+    if (!changed) {
+      break;
+    }
+  }
+
+  for (const [from, to, weight] of edges) {
+    if (
+      distances[from] !== Number.POSITIVE_INFINITY
+      && distances[from] + weight < distances[to]
+    ) {
+      throw new Error("Negative cycle detected");
+    }
+  }
+
+  return distances;
+}
+```
+
+</ExamplePair>
+
+## Interview Notes
+
+- Say `V - 1` passes out loud and explain why that number matters.
+- Mention early exit when a full pass makes no changes.
+- Distinguish negative edges from negative cycles; one is allowed, the other makes shortest paths undefined.

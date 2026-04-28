@@ -1,0 +1,139 @@
+---
+title: Bitmask DP
+slug: bitmask-dp
+category: Dynamic Programming
+summary: Encode subset state as bits so exponential search over small sets becomes memoizable and structured.
+description: Bitmask DP is the interview pattern for subset optimization when `n` is small enough that `2^n` states are acceptable but brute-force permutation search is not.
+dataStructures:
+  - Bitmask
+  - Table
+techniques:
+  - Dynamic Programming
+  - State Compression
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - subset dp
+  - state compression dp
+useCases:
+  - Traveling salesperson style problems
+  - Assignment problems over small sets
+  - Visiting all nodes with minimum cost when `n` is small
+complexity:
+  time: O(n^2 * 2^n)
+  space: O(n * 2^n)
+  notes: The prompt almost always hints at a small `n`, because that is the only time subset-state DP is tractable.
+interviewSignals:
+  - The state is a subset of visited or chosen items.
+  - The problem size is small enough that `2^n` is realistic but `n!` is not.
+relatedSlugs:
+  - memoization-dp
+  - knapsack-dp
+  - backtracking-search
+---
+
+## Why It Surfaces
+
+Bitmask DP is the structured answer when the important state is which items have been visited so far. Instead of carrying a set object around, you compress membership into bits and memoize or tabulate by `(mask, end)` or a similar pair.
+
+## Worked Example
+
+In a traveling-salesperson variant, `mask` records which cities are already included and `end` records the city where the current path stops. Each transition adds one new city and updates the best cost for that larger subset.
+
+<Callout title="Scale check" tone="warning">
+  If `n` is 25 or 30, bitmask DP is usually already too large. The technique exists for small-set exhaustive optimization, not general large-graph search.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function travelingSalesperson(cost) {
+  const cityCount = cost.length;
+  const fullMask = 1 << cityCount;
+  const dp = Array.from({ length: fullMask }, () =>
+    new Array(cityCount).fill(Infinity),
+  );
+
+  dp[1][0] = 0;
+
+  for (let mask = 1; mask < fullMask; mask += 1) {
+    for (let end = 0; end < cityCount; end += 1) {
+      if (dp[mask][end] === Infinity) {
+        continue;
+      }
+
+      for (let next = 0; next < cityCount; next += 1) {
+        if (mask & (1 << next)) {
+          continue;
+        }
+
+        const nextMask = mask | (1 << next);
+        dp[nextMask][next] = Math.min(
+          dp[nextMask][next],
+          dp[mask][end] + cost[end][next],
+        );
+      }
+    }
+  }
+
+  let answer = Infinity;
+  const visitedAll = fullMask - 1;
+
+  for (let end = 1; end < cityCount; end += 1) {
+    answer = Math.min(answer, dp[visitedAll][end] + cost[end][0]);
+  }
+
+  return answer;
+}
+```
+
+```ts
+export function travelingSalesperson(cost: number[][]): number {
+  const cityCount = cost.length;
+  const fullMask = 1 << cityCount;
+  const dp = Array.from({ length: fullMask }, () =>
+    new Array<number>(cityCount).fill(Number.POSITIVE_INFINITY),
+  );
+
+  dp[1][0] = 0;
+
+  for (let mask = 1; mask < fullMask; mask += 1) {
+    for (let end = 0; end < cityCount; end += 1) {
+      if (dp[mask][end] === Number.POSITIVE_INFINITY) {
+        continue;
+      }
+
+      for (let next = 0; next < cityCount; next += 1) {
+        if (mask & (1 << next)) {
+          continue;
+        }
+
+        const nextMask = mask | (1 << next);
+        dp[nextMask][next] = Math.min(
+          dp[nextMask][next],
+          dp[mask][end] + cost[end][next],
+        );
+      }
+    }
+  }
+
+  let answer = Number.POSITIVE_INFINITY;
+  const visitedAll = fullMask - 1;
+
+  for (let end = 1; end < cityCount; end += 1) {
+    answer = Math.min(answer, dp[visitedAll][end] + cost[end][0]);
+  }
+
+  return answer;
+}
+```
+
+</ExamplePair>
+
+## Interview Notes
+
+- Define the meaning of the bitmask before writing transitions.
+- Mention why `2^n` is acceptable only for small `n`.
+- If recursion is more natural, say the same state can be memoized top-down instead of tabulated bottom-up.

@@ -1,0 +1,125 @@
+---
+title: Fenwick Tree
+slug: fenwick-tree
+category: Range Queries
+summary: Store partial sums in bit-structured buckets so prefix queries and point updates both stay logarithmic.
+description: Fenwick trees show up when you need repeated prefix or range totals with frequent point updates but a full segment tree would be more machinery than the prompt needs.
+dataStructures:
+  - Array
+  - Binary Indexed Tree
+techniques:
+  - Prefix Aggregation
+  - Tree Indexing
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - Binary Indexed Tree
+  - BIT
+useCases:
+  - Dynamic prefix sums
+  - Range-sum queries with point updates
+  - Frequency tables over integer indices
+complexity:
+  time: O(log n)
+  space: O(n)
+  notes: The bit trick `index += index & -index` and its reverse are the entire interview story.
+interviewSignals:
+  - The prompt mixes point updates with repeated prefix or range queries.
+  - Prefix sums alone are too static because values change after preprocessing.
+relatedSlugs:
+  - prefix-sum
+  - segment-tree
+  - sliding-window
+---
+
+## Why It Surfaces
+
+Fenwick trees are the lightest-weight dynamic upgrade from prefix sums. Instead of storing one fixed prefix array, they keep overlapping buckets whose sizes come from the least significant set bit of each index.
+
+## Worked Example
+
+If index `12` stores the sum for the last `4` elements ending there, then moving to `12 - 4 = 8` peels off the next bucket while a query walks upward through the covered prefixes.
+
+<Callout title="Bit trick" tone="tip">
+  The lowest set bit controls both movement directions: subtract it when querying upward toward the root, add it when propagating an update to larger buckets.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class FenwickTree {
+  constructor(size) {
+    this.tree = new Array(size + 1).fill(0);
+  }
+
+  update(index, delta) {
+    let cursor = index + 1;
+
+    while (cursor < this.tree.length) {
+      this.tree[cursor] += delta;
+      cursor += cursor & -cursor;
+    }
+  }
+
+  query(index) {
+    let cursor = index + 1;
+    let total = 0;
+
+    while (cursor > 0) {
+      total += this.tree[cursor];
+      cursor -= cursor & -cursor;
+    }
+
+    return total;
+  }
+
+  rangeQuery(left, right) {
+    return this.query(right) - (left > 0 ? this.query(left - 1) : 0);
+  }
+}
+```
+
+```ts
+export class FenwickTree {
+  private readonly tree: number[];
+
+  constructor(size: number) {
+    this.tree = new Array<number>(size + 1).fill(0);
+  }
+
+  update(index: number, delta: number): void {
+    let cursor = index + 1;
+
+    while (cursor < this.tree.length) {
+      this.tree[cursor] += delta;
+      cursor += cursor & -cursor;
+    }
+  }
+
+  query(index: number): number {
+    let cursor = index + 1;
+    let total = 0;
+
+    while (cursor > 0) {
+      total += this.tree[cursor];
+      cursor -= cursor & -cursor;
+    }
+
+    return total;
+  }
+
+  rangeQuery(left: number, right: number): number {
+    return this.query(right) - (left > 0 ? this.query(left - 1) : 0);
+  }
+}
+```
+
+</ExamplePair>
+
+## Interview Notes
+
+- Say explicitly whether the external API is zero-indexed or one-indexed.
+- Mention that Fenwick trees are best when the operation is invertible, such as sums or counts.
+- If the prompt asks for more complex range operations, pivot to a segment tree.

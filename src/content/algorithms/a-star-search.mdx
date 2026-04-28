@@ -1,0 +1,234 @@
+---
+title: A* Search
+slug: a-star-search
+category: Graphs
+summary: Combine the path cost so far with a heuristic to keep shortest-path search pointed toward the goal.
+description: A* surfaces in grid and route-planning interviews where you know both the current path cost and a useful estimate of how far the goal still is.
+dataStructures:
+  - Graph
+  - Heap
+techniques:
+  - Graph Search
+  - Heuristic Search
+  - Priority Queue
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - A-star
+  - informed shortest path
+useCases:
+  - Grid pathfinding with Manhattan distance
+  - Navigation between named nodes with a goal estimate
+  - Game maps where Dijkstra explores too broadly
+complexity:
+  time: O((V + E) log V)
+  space: O(V)
+  notes: The heuristic must stay admissible if you want A* to preserve optimal shortest-path results.
+interviewSignals:
+  - The prompt gives both a start, a goal, and some notion of estimated distance.
+  - Exploring every frontier like Dijkstra feels wasteful because the target is already known.
+relatedSlugs:
+  - dijkstra
+  - priority-queue
+  - breadth-first-search
+---
+
+## Why It Surfaces
+
+A* is the targeted version of shortest-path search. Instead of treating every unexplored frontier equally, it combines the exact path cost so far with a heuristic estimate of how far the goal still is.
+
+## Worked Example
+
+On a grid, the common heuristic is Manhattan distance. If one frontier node is farther from the goal by both actual path cost and estimated remaining distance, A* avoids wasting work there until cheaper-looking options are exhausted.
+
+<Callout title="Heuristic rule" tone="tip">
+  If the heuristic never overestimates the remaining distance, A* keeps the same optimality guarantee you rely on in Dijkstra while exploring much less of the graph.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function aStar(graph, start, goal, heuristic) {
+  const openSet = [];
+  const distances = new Map([[start, 0]]);
+
+  function swap(left, right) {
+    [openSet[left], openSet[right]] = [openSet[right], openSet[left]];
+  }
+
+  function push(entry) {
+    openSet.push(entry);
+    let child = openSet.length - 1;
+
+    while (child > 0) {
+      const parent = Math.floor((child - 1) / 2);
+
+      if (openSet[parent].priority <= openSet[child].priority) {
+        break;
+      }
+
+      swap(parent, child);
+      child = parent;
+    }
+  }
+
+  function pop() {
+    const top = openSet[0];
+    const last = openSet.pop();
+
+    if (openSet.length > 0 && last) {
+      openSet[0] = last;
+      let parent = 0;
+
+      while (true) {
+        let smallest = parent;
+        const left = parent * 2 + 1;
+        const right = parent * 2 + 2;
+
+        if (left < openSet.length && openSet[left].priority < openSet[smallest].priority) {
+          smallest = left;
+        }
+
+        if (right < openSet.length && openSet[right].priority < openSet[smallest].priority) {
+          smallest = right;
+        }
+
+        if (smallest === parent) {
+          break;
+        }
+
+        swap(parent, smallest);
+        parent = smallest;
+      }
+    }
+
+    return top;
+  }
+
+  push({ node: start, priority: heuristic(start) });
+
+  while (openSet.length > 0) {
+    const current = pop();
+    const bestDistance = distances.get(current.node);
+
+    if (current.node === goal) {
+      return bestDistance;
+    }
+
+    for (const [next, weight] of graph.get(current.node) ?? []) {
+      const candidate = bestDistance + weight;
+
+      if (candidate < (distances.get(next) ?? Infinity)) {
+        distances.set(next, candidate);
+        push({ node: next, priority: candidate + heuristic(next) });
+      }
+    }
+  }
+
+  return Infinity;
+}
+```
+
+```ts
+type Edge = [node: string, weight: number];
+type QueueEntry = { node: string; priority: number };
+
+export function aStar(
+  graph: Map<string, Edge[]>,
+  start: string,
+  goal: string,
+  heuristic: (node: string) => number,
+): number {
+  const openSet: QueueEntry[] = [];
+  const distances = new Map<string, number>([[start, 0]]);
+
+  function swap(left: number, right: number) {
+    [openSet[left], openSet[right]] = [openSet[right], openSet[left]];
+  }
+
+  function push(entry: QueueEntry) {
+    openSet.push(entry);
+    let child = openSet.length - 1;
+
+    while (child > 0) {
+      const parent = Math.floor((child - 1) / 2);
+
+      if (openSet[parent].priority <= openSet[child].priority) {
+        break;
+      }
+
+      swap(parent, child);
+      child = parent;
+    }
+  }
+
+  function pop(): QueueEntry {
+    const top = openSet[0];
+    const last = openSet.pop();
+
+    if (openSet.length > 0 && last) {
+      openSet[0] = last;
+      let parent = 0;
+
+      while (true) {
+        let smallest = parent;
+        const left = parent * 2 + 1;
+        const right = parent * 2 + 2;
+
+        if (left < openSet.length && openSet[left].priority < openSet[smallest].priority) {
+          smallest = left;
+        }
+
+        if (right < openSet.length && openSet[right].priority < openSet[smallest].priority) {
+          smallest = right;
+        }
+
+        if (smallest === parent) {
+          break;
+        }
+
+        swap(parent, smallest);
+        parent = smallest;
+      }
+    }
+
+    return top;
+  }
+
+  push({ node: start, priority: heuristic(start) });
+
+  while (openSet.length > 0) {
+    const current = pop();
+    const bestDistance = distances.get(current.node);
+
+    if (bestDistance === undefined) {
+      continue;
+    }
+
+    if (current.node === goal) {
+      return bestDistance;
+    }
+
+    for (const [next, weight] of graph.get(current.node) ?? []) {
+      const candidate = bestDistance + weight;
+
+      if (candidate < (distances.get(next) ?? Number.POSITIVE_INFINITY)) {
+        distances.set(next, candidate);
+        push({ node: next, priority: candidate + heuristic(next) });
+      }
+    }
+  }
+
+  return Number.POSITIVE_INFINITY;
+}
+```
+
+</ExamplePair>
+
+## Interview Notes
+
+- State the difference between the true path cost `g(n)` and the heuristic `h(n)`.
+- Mention that a zero heuristic degenerates A* back into Dijkstra.
+- Call out admissibility if the interviewer asks why the result is still optimal.

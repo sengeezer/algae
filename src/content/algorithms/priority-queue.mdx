@@ -37,13 +37,17 @@ relatedSlugs:
 
 Priority queues appear when the prompt keeps asking for the next best item under a changing set of candidates. Instead of sorting the entire input up front, a heap lets you keep only the pieces that matter right now.
 
-> When the problem says top k, k closest, next event, or repeatedly choose the smallest, a heap should be one of the first tools you consider.
+<Callout title="Trigger phrase" tone="note">
+  When the problem says top `k`, k closest, next event, or repeatedly choose the smallest, a heap should be one of the first tools you consider.
+</Callout>
 
 ## Worked Example
 
 For top-k frequency problems, keep a min heap of size `k`. Each new entry can replace the smallest heap element if it is more frequent, so the heap never stores more than the best `k` candidates.
 
-## JavaScript
+## Reference Implementations
+
+<ExamplePair>
 
 ```js
 function kthLargest(nums, k) {
@@ -115,8 +119,6 @@ function kthLargest(nums, k) {
 }
 ```
 
-## TypeScript
-
 ```ts
 export function kthLargest(nums: number[], k: number): number {
   const heap: number[] = [];
@@ -186,6 +188,8 @@ export function kthLargest(nums: number[], k: number): number {
   return heap[0];
 }
 ```
+
+</ExamplePair>
 
 ## Interview Notes
 

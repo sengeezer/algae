@@ -36,13 +36,17 @@ relatedSlugs:
 
 Backtracking shows up when an interviewer wants a complete search, but not a careless brute-force search. You are expected to build a path incrementally, prune impossible states, and undo each choice cleanly before exploring the next branch.
 
-> The pattern is usually summarized as choose, recurse, unchoose. If that last step is missing, the solution leaks state across branches.
+<Callout title="Path hygiene" tone="warning">
+  The pattern is usually summarized as choose, recurse, unchoose. If that last step is missing, the solution leaks state across branches.
+</Callout>
 
 ## Worked Example
 
 For `nums = [1, 2, 3]`, subset generation starts with the empty path. At each index, you either include the current value and continue, or skip it and move on. The answer collects every path that reaches the end.
 
-## JavaScript
+## Reference Implementations
+
+<ExamplePair>
 
 ```js
 function subsets(nums) {
@@ -67,8 +71,6 @@ function subsets(nums) {
 }
 ```
 
-## TypeScript
-
 ```ts
 export function subsets(nums: number[]): number[][] {
   const results: number[][] = [];
@@ -91,6 +93,8 @@ export function subsets(nums: number[]): number[][] {
   return results;
 }
 ```
+
+</ExamplePair>
 
 ## Interview Notes
 
