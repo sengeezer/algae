@@ -1,3 +1,4 @@
+// Shared VS Code workspace settings are committed intentionally to support Algae's development workflow.
 {
   "chat.tools.terminal.autoApprove": {
     "./node_modules/.bin/eslint": true,
@@ -9,6 +10,8 @@
     },
     "nohup": true,
     "git rev-parse": true,
-    "git ls-remote": true
+    "git ls-remote": true,
+    "npx vercel": true,
+    "npx playwright": true
   }
 }

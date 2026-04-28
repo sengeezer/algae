@@ -15,6 +15,7 @@ import { buildCatalogQueryString, filterAlgorithms } from "@/lib/catalog";
 import {
   getStudyStateServerSnapshot,
   getStudyMarker,
+  isReviewDue,
   readStudyState,
   subscribeToStudyState,
   toggleStudyFlag,
@@ -66,12 +67,40 @@ export function CatalogExperience({
     studyState,
   );
 
-  const bookmarkedCount = Object.values(studyState).filter(
-    (marker) => marker.bookmarked,
+  const studyEntries = algorithms.map((algorithm) => ({
+    algorithm,
+    marker: getStudyMarker(studyState, algorithm.slug),
+  }));
+
+  const bookmarkedCount = studyEntries.filter(({ marker }) => marker.bookmarked).length;
+  const completedCount = studyEntries.filter(({ marker }) => marker.completed).length;
+  const dueReviewCount = studyEntries.filter(
+    ({ marker }) => marker.bookmarked && isReviewDue(marker),
   ).length;
-  const completedCount = Object.values(studyState).filter(
-    (marker) => marker.completed,
-  ).length;
+  const practiceQueue = studyEntries
+    .filter(({ marker }) => marker.bookmarked && !marker.completed)
+    .sort((left, right) => {
+      const leftDueRank = isReviewDue(left.marker) ? 0 : 1;
+      const rightDueRank = isReviewDue(right.marker) ? 0 : 1;
+
+      if (leftDueRank !== rightDueRank) {
+        return leftDueRank - rightDueRank;
+      }
+
+      const leftReviewedAt = left.marker.lastReviewedAt
+        ? new Date(left.marker.lastReviewedAt).getTime()
+        : 0;
+      const rightReviewedAt = right.marker.lastReviewedAt
+        ? new Date(right.marker.lastReviewedAt).getTime()
+        : 0;
+
+      if (leftReviewedAt !== rightReviewedAt) {
+        return leftReviewedAt - rightReviewedAt;
+      }
+
+      return left.algorithm.title.localeCompare(right.algorithm.title);
+    })
+    .slice(0, 4);
 
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 py-4 sm:py-8">
@@ -88,7 +117,7 @@ export function CatalogExperience({
               Algae keeps the catalog centered on JavaScript and TypeScript, with searchable data structures, worked examples, and cues for how questions show up in software engineering interviews.
             </p>
           </div>
-          <div className="grid min-w-full gap-3 sm:grid-cols-3 lg:min-w-[320px] lg:max-w-sm">
+          <div className="grid min-w-full gap-3 sm:grid-cols-2 lg:min-w-[420px] lg:max-w-xl xl:grid-cols-4">
             <div className="rounded-[24px] bg-white/70 p-4">
               <p className="text-xs uppercase tracking-[0.25em] text-[var(--muted)]">Algorithms</p>
               <p className="mt-2 text-3xl font-semibold">{algorithms.length}</p>
@@ -100,6 +129,10 @@ export function CatalogExperience({
             <div className="rounded-[24px] bg-white/70 p-4">
               <p className="text-xs uppercase tracking-[0.25em] text-[var(--muted)]">Completed</p>
               <p className="mt-2 text-3xl font-semibold">{completedCount}</p>
+            </div>
+            <div className="rounded-[24px] bg-white/70 p-4">
+              <p className="text-xs uppercase tracking-[0.25em] text-[var(--muted)]">Due Today</p>
+              <p className="mt-2 text-3xl font-semibold">{dueReviewCount}</p>
             </div>
           </div>
         </div>
@@ -270,20 +303,90 @@ export function CatalogExperience({
           </div>
         </div>
 
-        <aside className="glass-panel h-fit rounded-[28px] p-5">
-          <p className="text-xs uppercase tracking-[0.25em] text-[var(--muted)]">
-            Search Notes
-          </p>
-          <h2 className="mt-2 text-2xl font-semibold">Prompt-aware indexing</h2>
-          <ul className="mt-4 space-y-3 text-sm leading-6 text-[var(--muted)]">
-            <li>Search reads aliases, use cases, interview signals, and taxonomy fields, not titles alone.</li>
-            <li>Data-structure filters are explicit so prompts like matrix or queue collapse the catalog quickly.</li>
-            <li>Study-state filters stay local-first for now, but the state model is isolated for future account sync.</li>
-          </ul>
+        <aside className="flex h-fit flex-col gap-4">
+          <section className="glass-panel rounded-[28px] p-5">
+            <p className="text-xs uppercase tracking-[0.25em] text-[var(--muted)]">
+              Practice Queue
+            </p>
+            <h2 className="mt-2 text-2xl font-semibold">Keep review momentum</h2>
+            <p className="mt-3 text-sm leading-6 text-[var(--muted)]">
+              Saved references stay local-first, and anything due for review rises to the top of the queue.
+            </p>
+            {practiceQueue.length > 0 ? (
+              <div className="mt-4 space-y-3">
+                {practiceQueue.map(({ algorithm, marker }) => (
+                  <Link
+                    key={algorithm.slug}
+                    href={`/algorithms/${algorithm.slug}`}
+                    className="block rounded-[22px] bg-white/70 p-4 transition hover:-translate-y-0.5 hover:shadow-lg"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-xs uppercase tracking-[0.22em] text-[var(--muted)]">
+                          {algorithm.category}
+                        </p>
+                        <h3 className="mt-2 text-lg font-semibold">{algorithm.title}</h3>
+                      </div>
+                      <span
+                        className={`rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] ${
+                          isReviewDue(marker)
+                            ? "bg-[var(--accent)] text-white"
+                            : "bg-[var(--accent-soft)] text-[var(--accent-strong)]"
+                        }`}
+                      >
+                        {getQueueLabel(marker)}
+                      </span>
+                    </div>
+                    <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{algorithm.summary}</p>
+                    <p className="mt-3 text-xs uppercase tracking-[0.22em] text-[var(--muted)]">
+                      {marker.reviewCount > 0
+                        ? `${marker.reviewCount} reviews logged`
+                        : "First review not logged yet"}
+                    </p>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className="mt-4 rounded-[22px] bg-white/70 p-4 text-sm leading-6 text-[var(--muted)]">
+                Save algorithms from the catalog to build a lightweight practice queue.
+              </div>
+            )}
+          </section>
+
+          <section className="glass-panel rounded-[28px] p-5">
+            <p className="text-xs uppercase tracking-[0.25em] text-[var(--muted)]">
+              Search Notes
+            </p>
+            <h2 className="mt-2 text-2xl font-semibold">Prompt-aware indexing</h2>
+            <ul className="mt-4 space-y-3 text-sm leading-6 text-[var(--muted)]">
+              <li>Search reads aliases, use cases, interview signals, and taxonomy fields, not titles alone.</li>
+              <li>Data-structure filters are explicit so prompts like matrix or queue collapse the catalog quickly.</li>
+              <li>Study-state filters stay local-first for now, but the state model is isolated for future account sync.</li>
+            </ul>
+          </section>
         </aside>
       </section>
     </div>
   );
+}
+
+function formatReviewDate(value: string): string {
+  return new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "numeric",
+  }).format(new Date(value));
+}
+
+function getQueueLabel(marker: ReturnType<typeof getStudyMarker>): string {
+  if (isReviewDue(marker)) {
+    return "Due now";
+  }
+
+  if (marker.nextReviewAt) {
+    return `Next ${formatReviewDate(marker.nextReviewAt)}`;
+  }
+
+  return "New";
 }
 
 type FilterSelectProps = {

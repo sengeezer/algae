@@ -1,0 +1,96 @@
+---
+title: Longest Increasing Subsequence
+slug: longest-increasing-subsequence
+category: Dynamic Programming
+summary: Track the smallest tail for each subsequence length so LIS length can be updated with binary search.
+description: Longest Increasing Subsequence is a common interview progression from O(n^2) dynamic programming to the faster patience-sorting style O(n log n) solution.
+dataStructures:
+  - Array
+techniques:
+  - Dynamic Programming
+  - Binary Search
+difficulty: Hard
+interviewFrequency: High
+aliases:
+  - LIS
+  - patience sorting approach
+useCases:
+  - Finding the longest strictly increasing trend
+  - Turning quadratic subsequence DP into O(n log n)
+  - Comparing sequence growth under ordering constraints
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: The optimized method gives the subsequence length directly; reconstructing the actual path requires extra bookkeeping.
+interviewSignals:
+  - The prompt asks for the longest increasing subsequence, not necessarily contiguous values.
+  - A quadratic dynamic-programming baseline works, but the interviewer asks whether it can be improved.
+relatedSlugs:
+  - binary-search
+  - memoization-dp
+  - knapsack-dp
+---
+
+## Why It Surfaces
+
+LIS is a standard interview checkpoint because it rewards both dynamic-programming intuition and the ability to replace a slower state transition with binary search. The important distinction is subsequence versus subarray: the numbers do not need to stay contiguous.
+
+## JavaScript
+
+```js
+function lengthOfLIS(values) {
+  const tails = [];
+
+  for (const value of values) {
+    let left = 0;
+    let right = tails.length;
+
+    while (left < right) {
+      const middle = Math.floor((left + right) / 2);
+
+      if (tails[middle] < value) {
+        left = middle + 1;
+      } else {
+        right = middle;
+      }
+    }
+
+    tails[left] = value;
+  }
+
+  return tails.length;
+}
+```
+
+## TypeScript
+
+```ts
+export function lengthOfLIS(values: number[]): number {
+  const tails: number[] = [];
+
+  for (const value of values) {
+    let left = 0;
+    let right = tails.length;
+
+    while (left < right) {
+      const middle = Math.floor((left + right) / 2);
+
+      if (tails[middle] < value) {
+        left = middle + 1;
+      } else {
+        right = middle;
+      }
+    }
+
+    tails[left] = value;
+  }
+
+  return tails.length;
+}
+```
+
+## Interview Notes
+
+- Lead with the O(n^2) DP if needed, then upgrade to the tails array when the interviewer asks for better performance.
+- Emphasize that `tails[length]` stores the smallest possible tail for subsequences of that length.
+- If they want the actual subsequence, mention predecessor indices and reconstruction arrays.

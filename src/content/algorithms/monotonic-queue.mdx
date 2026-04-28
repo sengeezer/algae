@@ -1,0 +1,98 @@
+---
+title: Monotonic Queue
+slug: monotonic-queue
+category: Array Patterns
+summary: Keep a deque in sorted order so each sliding window can answer max or min queries in amortized O(1).
+description: Monotonic queue appears in interviews when sliding-window problems need the maximum or minimum at every step without rescanning the whole window.
+dataStructures:
+  - Array
+  - Queue
+  - Deque
+techniques:
+  - Sliding Window
+  - Monotonic Data Structure
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - sliding window maximum
+  - deque optimization
+useCases:
+  - Window maximum or minimum queries
+  - Streaming range extrema over fixed-size windows
+  - Replacing repeated O(k) rescans in sliding-window problems
+complexity:
+  time: O(n)
+  space: O(k)
+  notes: Each index enters and leaves the deque at most once, which is why the total work stays linear.
+interviewSignals:
+  - Every window needs its max or min, not just its sum or count.
+  - A basic sliding window still rescans too much within each window.
+relatedSlugs:
+  - sliding-window
+  - monotonic-stack
+  - priority-queue
+---
+
+## Why It Surfaces
+
+Monotonic queue is the upgrade path when plain sliding window is not enough. The interviewer usually wants the maximum or minimum for every window, and recomputing that value from scratch would make the solution too slow.
+
+## JavaScript
+
+```js
+function maxSlidingWindow(values, windowSize) {
+  const deque = [];
+  const result = [];
+
+  for (let index = 0; index < values.length; index += 1) {
+    while (deque.length > 0 && deque[0] <= index - windowSize) {
+      deque.shift();
+    }
+
+    while (deque.length > 0 && values[deque[deque.length - 1]] <= values[index]) {
+      deque.pop();
+    }
+
+    deque.push(index);
+
+    if (index >= windowSize - 1) {
+      result.push(values[deque[0]]);
+    }
+  }
+
+  return result;
+}
+```
+
+## TypeScript
+
+```ts
+export function maxSlidingWindow(values: number[], windowSize: number): number[] {
+  const deque: number[] = [];
+  const result: number[] = [];
+
+  for (let index = 0; index < values.length; index += 1) {
+    while (deque.length > 0 && deque[0] <= index - windowSize) {
+      deque.shift();
+    }
+
+    while (deque.length > 0 && values[deque[deque.length - 1]] <= values[index]) {
+      deque.pop();
+    }
+
+    deque.push(index);
+
+    if (index >= windowSize - 1) {
+      result.push(values[deque[0]]);
+    }
+  }
+
+  return result;
+}
+```
+
+## Interview Notes
+
+- Store indices, not just values, so you can evict elements that leave the window.
+- Be precise about the monotonic property: decreasing deque for window maximum, increasing deque for window minimum.
+- If the interviewer suggests a heap, explain why lazy deletion still makes the deque cleaner for fixed windows.

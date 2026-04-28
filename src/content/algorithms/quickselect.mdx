@@ -1,0 +1,123 @@
+---
+title: Quickselect
+slug: quickselect
+category: Selection
+summary: Partition around a pivot so you recurse only into the side that can still contain the kth element.
+description: Quickselect is a standard interview answer for kth-largest, kth-smallest, and median-style selection without fully sorting the array.
+dataStructures:
+  - Array
+techniques:
+  - Selection
+  - Partitioning
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - kth largest element
+  - kth smallest element
+useCases:
+  - Finding the kth largest value in an unsorted array
+  - Median and percentile style selection
+  - Top-k workflows where full sorting is unnecessary
+complexity:
+  time: O(n) average
+  space: O(1)
+  notes: Randomized or shuffled pivots keep the average case linear, but the naive worst case is still O(n^2).
+interviewSignals:
+  - The prompt wants one rank statistic, not a full sorted order.
+  - Sorting everything would work but feels more expensive than necessary.
+relatedSlugs:
+  - quick-sort
+  - binary-search
+  - priority-queue
+---
+
+## Why It Surfaces
+
+Quickselect shows up when an interviewer asks for the kth element and wants you to avoid paying for a full sort. The key observation is that partitioning already tells you which side can contain the target rank.
+
+## JavaScript
+
+```js
+function quickselect(values, kthIndex) {
+  let left = 0;
+  let right = values.length - 1;
+
+  while (left <= right) {
+    const pivotIndex = partition(values, left, right);
+
+    if (pivotIndex === kthIndex) {
+      return values[pivotIndex];
+    }
+
+    if (pivotIndex < kthIndex) {
+      left = pivotIndex + 1;
+    } else {
+      right = pivotIndex - 1;
+    }
+  }
+
+  return undefined;
+}
+
+function partition(values, left, right) {
+  const pivot = values[right];
+  let storeIndex = left;
+
+  for (let index = left; index < right; index += 1) {
+    if (values[index] <= pivot) {
+      [values[storeIndex], values[index]] = [values[index], values[storeIndex]];
+      storeIndex += 1;
+    }
+  }
+
+  [values[storeIndex], values[right]] = [values[right], values[storeIndex]];
+  return storeIndex;
+}
+```
+
+## TypeScript
+
+```ts
+export function kthLargest(values: number[], k: number): number {
+  const targetIndex = values.length - k;
+  let left = 0;
+  let right = values.length - 1;
+
+  while (left <= right) {
+    const pivotIndex = partition(values, left, right);
+
+    if (pivotIndex === targetIndex) {
+      return values[pivotIndex];
+    }
+
+    if (pivotIndex < targetIndex) {
+      left = pivotIndex + 1;
+    } else {
+      right = pivotIndex - 1;
+    }
+  }
+
+  throw new Error("k is out of range");
+}
+
+function partition(values: number[], left: number, right: number): number {
+  const pivot = values[right];
+  let storeIndex = left;
+
+  for (let index = left; index < right; index += 1) {
+    if (values[index] <= pivot) {
+      [values[storeIndex], values[index]] = [values[index], values[storeIndex]];
+      storeIndex += 1;
+    }
+  }
+
+  [values[storeIndex], values[right]] = [values[right], values[storeIndex]];
+  return storeIndex;
+}
+```
+
+## Interview Notes
+
+- Say explicitly that you only recurse or iterate into one side of the partition.
+- Clarify whether `k` is 1-indexed and whether the prompt wants kth-largest or kth-smallest.
+- Mention randomized pivots if the interviewer asks about protecting the average case.

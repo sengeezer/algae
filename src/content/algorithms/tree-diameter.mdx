@@ -1,0 +1,115 @@
+---
+title: Tree Diameter
+slug: tree-diameter
+category: Trees
+summary: Run two traversals so the farthest node from an arbitrary start leads you to the tree's longest path.
+description: Tree diameter is a frequent interview problem because it tests whether you can turn a longest-path question on a tree into a pair of linear traversals.
+dataStructures:
+  - Tree
+  - Graph
+  - Queue
+techniques:
+  - Tree Traversal
+  - Graph Traversal
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - longest path in a tree
+useCases:
+  - Measuring the longest communication path in a hierarchy
+  - Finding maximum distance between tree nodes
+  - Reusing BFS or DFS on tree-shaped graphs
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: A tree has no cycles, so two BFS or DFS passes are enough to identify the longest simple path.
+interviewSignals:
+  - The graph is a tree and the prompt asks for the longest path or largest distance.
+  - Running all-pairs shortest paths would be massive overkill on an acyclic graph.
+relatedSlugs:
+  - breadth-first-search
+  - depth-first-search
+  - lowest-common-ancestor
+---
+
+## Why It Surfaces
+
+Tree diameter is one of the cleanest examples of exploiting tree structure. The farthest node from any starting point lies on a diameter, so a second traversal from that farthest node finds the answer.
+
+## JavaScript
+
+```js
+function treeDiameter(adjacency) {
+  const [start] = bfs(0, adjacency);
+  const [, distance] = bfs(start, adjacency);
+  return distance;
+}
+
+function bfs(source, adjacency) {
+  const queue = [[source, 0]];
+  const seen = new Set([source]);
+  let farthestNode = source;
+  let farthestDistance = 0;
+
+  while (queue.length > 0) {
+    const [node, distance] = queue.shift();
+
+    if (distance > farthestDistance) {
+      farthestNode = node;
+      farthestDistance = distance;
+    }
+
+    for (const neighbor of adjacency[node] ?? []) {
+      if (!seen.has(neighbor)) {
+        seen.add(neighbor);
+        queue.push([neighbor, distance + 1]);
+      }
+    }
+  }
+
+  return [farthestNode, farthestDistance];
+}
+```
+
+## TypeScript
+
+```ts
+export function treeDiameter(adjacency: number[][]): number {
+  const [start] = bfs(0, adjacency);
+  const [, distance] = bfs(start, adjacency);
+  return distance;
+}
+
+function bfs(source: number, adjacency: number[][]): [number, number] {
+  const queue: Array<[number, number]> = [[source, 0]];
+  const seen = new Set<number>([source]);
+  let front = 0;
+  let farthestNode = source;
+  let farthestDistance = 0;
+
+  while (front < queue.length) {
+    const [node, distance] = queue[front];
+    front += 1;
+
+    if (distance > farthestDistance) {
+      farthestNode = node;
+      farthestDistance = distance;
+    }
+
+    for (const neighbor of adjacency[node] ?? []) {
+      if (!seen.has(neighbor)) {
+        seen.add(neighbor);
+        queue.push([neighbor, distance + 1]);
+      }
+    }
+  }
+
+  return [farthestNode, farthestDistance];
+}
+```
+
+## Interview Notes
+
+- Call out that the two-pass method works because the graph is specifically a tree.
+- If edge weights are non-unit, replace BFS with DFS accumulation or Dijkstra depending on the constraints.
+- Be clear whether the answer is measured in edges or nodes; interviews use both conventions.

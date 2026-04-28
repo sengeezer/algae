@@ -1,0 +1,124 @@
+---
+title: Rabin-Karp
+slug: rabin-karp
+category: Strings
+summary: Slide a rolling hash across the text so candidate matches can be filtered before doing direct string comparison.
+description: Rabin-Karp appears in interviews when substring search needs hashing, rolling windows, or many repeated pattern checks.
+dataStructures:
+  - String
+  - Array
+techniques:
+  - String Matching
+  - Rolling Hash
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - rolling hash search
+useCases:
+  - Finding a substring with a sliding hash
+  - Detecting repeated patterns efficiently
+  - Comparing many candidate windows before exact verification
+complexity:
+  time: O(n + m) average
+  space: O(1)
+  notes: Hash collisions are possible, so exact character comparison still matters before returning a match.
+interviewSignals:
+  - The prompt involves substring matching together with rolling windows or hashes.
+  - You want to avoid comparing every character in every window from scratch.
+relatedSlugs:
+  - kmp-string-search
+  - sliding-window
+  - trie
+---
+
+## Why It Surfaces
+
+Rabin-Karp is the rolling-hash version of substring search. It matters most when the interviewer wants hashing or repeated window comparisons, not just a single straightforward match.
+
+## JavaScript
+
+```js
+function rabinKarp(text, pattern) {
+  if (pattern.length > text.length) {
+    return -1;
+  }
+
+  const base = 256;
+  const mod = 1_000_000_007;
+  let highPlace = 1;
+  let patternHash = 0;
+  let windowHash = 0;
+
+  for (let index = 0; index < pattern.length - 1; index += 1) {
+    highPlace = (highPlace * base) % mod;
+  }
+
+  for (let index = 0; index < pattern.length; index += 1) {
+    patternHash = (patternHash * base + pattern.charCodeAt(index)) % mod;
+    windowHash = (windowHash * base + text.charCodeAt(index)) % mod;
+  }
+
+  for (let start = 0; start <= text.length - pattern.length; start += 1) {
+    if (patternHash === windowHash && text.slice(start, start + pattern.length) === pattern) {
+      return start;
+    }
+
+    const end = start + pattern.length;
+
+    if (end < text.length) {
+      windowHash = (windowHash - text.charCodeAt(start) * highPlace) % mod;
+      windowHash = (windowHash + mod) % mod;
+      windowHash = (windowHash * base + text.charCodeAt(end)) % mod;
+    }
+  }
+
+  return -1;
+}
+```
+
+## TypeScript
+
+```ts
+export function findSubstring(text: string, pattern: string): number {
+  if (pattern.length > text.length) {
+    return -1;
+  }
+
+  const base = 256;
+  const mod = 1_000_000_007;
+  let highPlace = 1;
+  let patternHash = 0;
+  let windowHash = 0;
+
+  for (let index = 0; index < pattern.length - 1; index += 1) {
+    highPlace = (highPlace * base) % mod;
+  }
+
+  for (let index = 0; index < pattern.length; index += 1) {
+    patternHash = (patternHash * base + pattern.charCodeAt(index)) % mod;
+    windowHash = (windowHash * base + text.charCodeAt(index)) % mod;
+  }
+
+  for (let start = 0; start <= text.length - pattern.length; start += 1) {
+    if (patternHash === windowHash && text.slice(start, start + pattern.length) === pattern) {
+      return start;
+    }
+
+    const end = start + pattern.length;
+
+    if (end < text.length) {
+      windowHash = (windowHash - text.charCodeAt(start) * highPlace) % mod;
+      windowHash = (windowHash + mod) % mod;
+      windowHash = (windowHash * base + text.charCodeAt(end)) % mod;
+    }
+  }
+
+  return -1;
+}
+```
+
+## Interview Notes
+
+- State that equal hashes still need exact string comparison because of collisions.
+- Keep the rolling-hash update formula clear: remove outgoing char, multiply, add incoming char.
+- If the interviewer prefers guaranteed worst-case bounds, contrast it with KMP.

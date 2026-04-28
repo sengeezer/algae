@@ -1,0 +1,155 @@
+---
+title: Kruskal's Algorithm
+slug: kruskal-mst
+category: Graphs
+summary: Sort edges by weight and add them greedily while Union-Find prevents cycles in the growing tree.
+description: Kruskal's algorithm is a core minimum-spanning-tree interview topic because it combines greedy ordering with disjoint-set connectivity checks.
+dataStructures:
+  - Graph
+  - Array
+techniques:
+  - Minimum Spanning Tree
+  - Greedy
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - kruskal
+  - minimum spanning tree by edges
+useCases:
+  - Connecting weighted nodes at minimum total cost
+  - Building network backbones without cycles
+  - Grouping points or cities with cheapest legal edges
+complexity:
+  time: O(E log E)
+  space: O(V)
+  notes: Sorting the edges dominates the runtime, while Union-Find keeps each cycle check nearly constant time.
+interviewSignals:
+  - The prompt asks for the cheapest way to connect all nodes.
+  - You need to avoid cycles while adding weighted edges greedily.
+relatedSlugs:
+  - union-find
+  - dijkstra
+  - topological-sort
+---
+
+## Why It Surfaces
+
+Kruskal's algorithm is the greedy MST solution that thinks in terms of edges first. It is a common follow-up whenever Union-Find appears, because the disjoint-set structure makes cycle detection cheap while the graph grows.
+
+## JavaScript
+
+```js
+function minimumSpanningTree(vertexCount, edges) {
+  const sortedEdges = [...edges].sort((left, right) => left[2] - right[2]);
+  const dsu = new UnionFind(vertexCount);
+  let totalWeight = 0;
+
+  for (const [from, to, weight] of sortedEdges) {
+    if (dsu.union(from, to)) {
+      totalWeight += weight;
+    }
+  }
+
+  return totalWeight;
+}
+
+class UnionFind {
+  constructor(size) {
+    this.parent = Array.from({ length: size }, (_, index) => index);
+    this.rank = new Array(size).fill(0);
+  }
+
+  find(node) {
+    if (this.parent[node] !== node) {
+      this.parent[node] = this.find(this.parent[node]);
+    }
+
+    return this.parent[node];
+  }
+
+  union(left, right) {
+    const rootLeft = this.find(left);
+    const rootRight = this.find(right);
+
+    if (rootLeft === rootRight) {
+      return false;
+    }
+
+    if (this.rank[rootLeft] < this.rank[rootRight]) {
+      this.parent[rootLeft] = rootRight;
+    } else if (this.rank[rootLeft] > this.rank[rootRight]) {
+      this.parent[rootRight] = rootLeft;
+    } else {
+      this.parent[rootRight] = rootLeft;
+      this.rank[rootLeft] += 1;
+    }
+
+    return true;
+  }
+}
+```
+
+## TypeScript
+
+```ts
+export function minimumSpanningTree(
+  vertexCount: number,
+  edges: Array<[number, number, number]>,
+): number {
+  const sortedEdges = [...edges].sort((left, right) => left[2] - right[2]);
+  const dsu = new UnionFind(vertexCount);
+  let totalWeight = 0;
+
+  for (const [from, to, weight] of sortedEdges) {
+    if (dsu.union(from, to)) {
+      totalWeight += weight;
+    }
+  }
+
+  return totalWeight;
+}
+
+class UnionFind {
+  private readonly parent: number[];
+  private readonly rank: number[];
+
+  constructor(size: number) {
+    this.parent = Array.from({ length: size }, (_, index) => index);
+    this.rank = new Array<number>(size).fill(0);
+  }
+
+  find(node: number): number {
+    if (this.parent[node] !== node) {
+      this.parent[node] = this.find(this.parent[node]);
+    }
+
+    return this.parent[node];
+  }
+
+  union(left: number, right: number): boolean {
+    const rootLeft = this.find(left);
+    const rootRight = this.find(right);
+
+    if (rootLeft === rootRight) {
+      return false;
+    }
+
+    if (this.rank[rootLeft] < this.rank[rootRight]) {
+      this.parent[rootLeft] = rootRight;
+    } else if (this.rank[rootLeft] > this.rank[rootRight]) {
+      this.parent[rootRight] = rootLeft;
+    } else {
+      this.parent[rootRight] = rootLeft;
+      this.rank[rootLeft] += 1;
+    }
+
+    return true;
+  }
+}
+```
+
+## Interview Notes
+
+- Say explicitly that sorting edges is why the runtime is O(E log E).
+- Mention Union-Find by name; that is usually part of what the interviewer wants to hear.
+- If the graph is disconnected, call out whether the problem expects an MST or a minimum spanning forest.
