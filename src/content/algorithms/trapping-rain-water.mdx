@@ -1,0 +1,121 @@
+---
+title: Trapping Rain Water
+slug: trapping-rain-water
+category: Array Processing
+summary: Use boundary maxima or moving walls to measure how much water each elevation bar can trap.
+description: Trapping Rain Water is the classic interview test for choosing the right invariant between prefix maxima, two pointers, and monotonic stacks.
+dataStructures:
+  - Array
+  - Stack
+techniques:
+  - Two Pointers
+  - Monotonic Stack
+  - Prefix Maxima
+difficulty: Hard
+interviewFrequency: High
+aliases:
+  - rainwater trapping
+  - water between bars
+useCases:
+  - Measuring bounded volume in an elevation map
+  - Comparing multiple valid O(n) strategies on the same problem
+  - Demonstrating a two-pointer invariant clearly
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The critical idea is that the smaller running wall decides the current trapped water.
+interviewSignals:
+  - Heights or bars form walls that can trap water between them.
+  - The interviewer asks for a linear-time or constant-space solution.
+relatedSlugs:
+  - two-pointers
+  - monotonic-stack
+  - sliding-window
+provenance:
+  - title: TheAlgorithms/JavaScript - Dynamic-Programming/TrappingRainWater.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Dynamic-Programming/TrappingRainWater.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem is popular because several good solutions exist, but only one or two match the follow-up constraints. The strongest interview move is to explain why the smaller boundary determines the water level at each step.
+
+## Worked Example
+
+For `height = [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]`, the answer is `6`. Each trapped unit sits below the shorter of the best left wall and best right wall seen for that position.
+
+<Callout title="Invariant" tone="note">
+  If `leftMax <= rightMax`, the left pointer can be resolved immediately because no future bar on the right can lower the left side's limiting wall.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function trap(height) {
+  let left = 0;
+  let right = height.length - 1;
+  let leftMax = 0;
+  let rightMax = 0;
+  let water = 0;
+
+  while (left < right) {
+    if (height[left] <= height[right]) {
+      leftMax = Math.max(leftMax, height[left]);
+      water += leftMax - height[left];
+      left += 1;
+    } else {
+      rightMax = Math.max(rightMax, height[right]);
+      water += rightMax - height[right];
+      right -= 1;
+    }
+  }
+
+  return water;
+}
+```
+
+```ts
+export function trap(height: number[]): number {
+  const stack: number[] = [];
+  let water = 0;
+
+  for (let index = 0; index < height.length; index += 1) {
+    while (stack.length > 0 && height[index] > height[stack[stack.length - 1]]) {
+      const bottom = stack.pop()!;
+
+      if (stack.length === 0) {
+        break;
+      }
+
+      const left = stack[stack.length - 1];
+      const width = index - left - 1;
+      const boundedHeight = Math.min(height[left], height[index]) - height[bottom];
+      water += width * boundedHeight;
+    }
+
+    stack.push(index);
+  }
+
+  return water;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare the two-pointer and monotonic-stack solutions.
+- Explain how you would solve the 2D version of the problem.
+- Derive the prefix-maxima solution before optimizing it to constant space.
+
+## Common Pitfalls
+
+- Moving the wrong pointer and breaking the invariant.
+- Forgetting that water depends on the smaller boundary, not the taller one.
+- Off-by-one errors when computing the width in the stack-based solution.

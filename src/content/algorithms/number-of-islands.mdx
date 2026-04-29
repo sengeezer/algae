@@ -1,0 +1,159 @@
+---
+title: Number of Islands
+slug: number-of-islands
+category: Graph Traversal
+summary: Count connected land components in a grid by visiting each cell once and marking every discovered region.
+description: Number of Islands is a staple grid-traversal problem that tests whether you can turn a matrix into repeated BFS or DFS over connected components.
+dataStructures:
+  - Matrix
+  - Array
+  - Queue
+techniques:
+  - Breadth-First Search
+  - Depth-First Search
+  - Connected Components
+difficulty: Medium
+interviewFrequency: Very High
+aliases:
+  - count islands
+  - grid components
+useCases:
+  - Counting regions in a binary map
+  - Cluster detection on a grid
+  - Translating matrix traversal into graph reasoning
+complexity:
+  time: O(rows * cols)
+  space: O(rows * cols) worst case
+  notes: The conceptual move is to count component starts, not individual land cells.
+interviewSignals:
+  - The input is a grid of land and water cells.
+  - The task asks for the number of disconnected regions.
+relatedSlugs:
+  - breadth-first-search
+  - depth-first-search
+  - union-find
+provenance:
+  - title: TheAlgorithms/JavaScript - Graphs/NumberOfIslands.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Graphs/NumberOfIslands.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem is the shortest path from graph theory to matrix interviews. Each land cell belongs to exactly one connected component, so the answer increases only when you find unvisited land and start a full traversal from there.
+
+## Worked Example
+
+If a grid contains one large blob of connected `1` cells and two isolated groups elsewhere, the answer is `3` no matter how many individual land cells each blob contains.
+
+<Callout title="Interview cue" tone="tip">
+  Say explicitly that you only increment the count when you discover new land, then immediately flood-fill that whole island so none of its cells can be counted twice.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function numIslands(grid) {
+  const rows = grid.length;
+  const cols = grid[0].length;
+  let islands = 0;
+
+  function dfs(row, col) {
+    if (
+      row < 0
+      || row >= rows
+      || col < 0
+      || col >= cols
+      || grid[row][col] !== "1"
+    ) {
+      return;
+    }
+
+    grid[row][col] = "0";
+    dfs(row + 1, col);
+    dfs(row - 1, col);
+    dfs(row, col + 1);
+    dfs(row, col - 1);
+  }
+
+  for (let row = 0; row < rows; row += 1) {
+    for (let col = 0; col < cols; col += 1) {
+      if (grid[row][col] === "1") {
+        islands += 1;
+        dfs(row, col);
+      }
+    }
+  }
+
+  return islands;
+}
+```
+
+```ts
+export function numIslands(grid: string[][]): number {
+  const rows = grid.length;
+  const cols = grid[0].length;
+  const directions = [
+    [1, 0],
+    [-1, 0],
+    [0, 1],
+    [0, -1],
+  ] as const;
+  let islands = 0;
+
+  for (let row = 0; row < rows; row += 1) {
+    for (let col = 0; col < cols; col += 1) {
+      if (grid[row][col] !== "1") {
+        continue;
+      }
+
+      islands += 1;
+      const queue: Array<[number, number]> = [[row, col]];
+      grid[row][col] = "0";
+
+      while (queue.length > 0) {
+        const [currentRow, currentCol] = queue.shift()!;
+
+        for (const [rowOffset, colOffset] of directions) {
+          const nextRow = currentRow + rowOffset;
+          const nextCol = currentCol + colOffset;
+
+          if (
+            nextRow < 0
+            || nextRow >= rows
+            || nextCol < 0
+            || nextCol >= cols
+            || grid[nextRow][nextCol] !== "1"
+          ) {
+            continue;
+          }
+
+          grid[nextRow][nextCol] = "0";
+          queue.push([nextRow, nextCol]);
+        }
+      }
+    }
+  }
+
+  return islands;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compute the size of the largest island instead of just the count.
+- Solve the same problem with union-find.
+- Handle diagonal adjacency as a rule change.
+
+## Common Pitfalls
+
+- Counting every land cell instead of every connected component.
+- Forgetting to mark cells as visited immediately.
+- Mutating the input grid when the interviewer expects it to stay unchanged.

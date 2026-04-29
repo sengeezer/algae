@@ -1,0 +1,117 @@
+---
+title: Prim's Algorithm
+slug: prim-mst
+category: Graphs
+summary: Grow a minimum spanning tree outward from one start node by always taking the cheapest outgoing edge.
+description: Prim's algorithm is the node-centric minimum-spanning-tree pattern that pairs greedy edge selection with a priority queue frontier.
+dataStructures:
+  - Graph
+  - Priority Queue
+techniques:
+  - Minimum Spanning Tree
+  - Greedy
+  - Priority Queue
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - prim
+  - minimum spanning tree by frontier
+useCases:
+  - Connecting weighted nodes at minimum total cost
+  - Growing a tree from a chosen start node
+  - Comparing frontier-based greedy choices with edge-sorted Kruskal
+complexity:
+  time: O(E log V)
+  space: O(V + E)
+  notes: The core interview distinction is that Prim expands one tree frontier, while Kruskal sorts all edges globally.
+interviewSignals:
+  - The prompt asks for a cheapest connected backbone in a weighted undirected graph.
+  - A priority queue over frontier edges is a natural fit for the current graph representation.
+relatedSlugs:
+  - kruskal-mst
+  - dijkstra
+  - priority-queue
+provenance:
+  - title: TheAlgorithms/JavaScript - Graphs/PrimMST.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Graphs/PrimMST.js
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Prim's algorithm is the MST solution that feels closest to Dijkstra. Instead of tracking shortest distances from the start, you track the cheapest edge that can add one more node to the growing spanning tree.
+
+## JavaScript
+
+```js
+function primMst(graph) {
+  const visited = new Set([0]);
+  const edges = [...graph[0].map(([to, weight]) => [weight, 0, to])];
+  let totalWeight = 0;
+
+  while (edges.length > 0 && visited.size < graph.length) {
+    edges.sort((left, right) => left[0] - right[0]);
+    const [weight, , to] = edges.shift();
+
+    if (visited.has(to)) {
+      continue;
+    }
+
+    visited.add(to);
+    totalWeight += weight;
+
+    for (const [next, nextWeight] of graph[to]) {
+      if (!visited.has(next)) {
+        edges.push([nextWeight, to, next]);
+      }
+    }
+  }
+
+  return visited.size === graph.length ? totalWeight : -1;
+}
+```
+
+## TypeScript
+
+```ts
+export function primMst(graph: Array<Array<[number, number]>>): number {
+  const best = new Array<number>(graph.length).fill(Number.POSITIVE_INFINITY);
+  const visited = new Array<boolean>(graph.length).fill(false);
+  best[0] = 0;
+  let totalWeight = 0;
+
+  for (let step = 0; step < graph.length; step += 1) {
+    let node = -1;
+
+    for (let candidate = 0; candidate < graph.length; candidate += 1) {
+      if (!visited[candidate] && (node === -1 || best[candidate] < best[node])) {
+        node = candidate;
+      }
+    }
+
+    if (node === -1 || !Number.isFinite(best[node])) {
+      return -1;
+    }
+
+    visited[node] = true;
+    totalWeight += best[node];
+
+    for (const [neighbor, weight] of graph[node]) {
+      if (!visited[neighbor] && weight < best[neighbor]) {
+        best[neighbor] = weight;
+      }
+    }
+  }
+
+  return totalWeight;
+}
+```
+
+## Interview Notes
+
+- Emphasize that the priority queue stores frontier candidates that connect the tree to one new node.
+- Compare it with Dijkstra only after clarifying that the optimization target is MST weight, not path distance.
+- Mention that a disconnected graph yields a spanning forest unless the prompt guarantees connectivity.

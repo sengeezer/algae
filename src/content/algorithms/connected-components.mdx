@@ -1,0 +1,114 @@
+---
+title: Connected Components
+slug: connected-components
+category: Graphs
+summary: Traverse each unvisited node once so every full DFS or BFS sweep identifies one whole component.
+description: Connected components is the graph traversal pattern behind island counting, clustering, and checking whether a graph is fully connected.
+dataStructures:
+  - Graph
+  - Array
+  - Queue
+techniques:
+  - Depth-First Search
+  - Breadth-First Search
+  - Connected Components
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - graph components
+  - connected subgraphs
+useCases:
+  - Counting disconnected groups in an undirected graph
+  - Listing which nodes belong to each cluster
+  - Checking whether every node can be reached from every other node
+complexity:
+  time: O(V + E)
+  space: O(V)
+  notes: The key move is to start a traversal only from unvisited nodes and let that traversal consume an entire component.
+interviewSignals:
+  - The prompt asks how many disconnected groups exist in a graph.
+  - You need to cluster nodes by reachability rather than find a single shortest path.
+relatedSlugs:
+  - number-of-islands
+  - depth-first-search
+  - union-find
+provenance:
+  - title: TheAlgorithms/JavaScript - Graphs/ConnectedComponents.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Graphs/ConnectedComponents.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the graph version of Number of Islands. Instead of starting from every node blindly, you only launch a traversal when you find a node that no earlier traversal has already absorbed.
+
+## JavaScript
+
+```js
+function connectedComponents(graph) {
+  const visited = new Set();
+  const components = [];
+
+  function dfs(node, component) {
+    visited.add(node);
+    component.push(node);
+
+    for (const neighbor of graph[node]) {
+      if (!visited.has(neighbor)) {
+        dfs(neighbor, component);
+      }
+    }
+  }
+
+  for (const node of Object.keys(graph)) {
+    if (visited.has(node)) {
+      continue;
+    }
+
+    const component = [];
+    dfs(node, component);
+    components.push(component);
+  }
+
+  return components;
+}
+```
+
+## TypeScript
+
+```ts
+export function countConnectedComponents(graph: number[][]): number {
+  const visited = new Array<boolean>(graph.length).fill(false);
+  let components = 0;
+
+  function dfs(node: number): void {
+    visited[node] = true;
+
+    for (const neighbor of graph[node]) {
+      if (!visited[neighbor]) {
+        dfs(neighbor);
+      }
+    }
+  }
+
+  for (let node = 0; node < graph.length; node += 1) {
+    if (visited[node]) {
+      continue;
+    }
+
+    components += 1;
+    dfs(node);
+  }
+
+  return components;
+}
+```
+
+## Interview Notes
+
+- Say explicitly that each DFS or BFS from an unvisited node discovers exactly one component.
+- Mention union-find as an alternative if edges are streamed incrementally.
+- Clarify whether the graph is undirected, because strong connectivity is a different problem on directed graphs.

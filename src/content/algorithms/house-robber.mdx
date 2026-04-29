@@ -1,0 +1,110 @@
+---
+title: House Robber
+slug: house-robber
+category: Dynamic Programming
+summary: Carry forward the best total so far when adjacent choices cannot both be taken.
+description: House Robber is the interview-friendly introduction to rolling-state dynamic programming with a local exclusion rule.
+dataStructures:
+  - Array
+techniques:
+  - Dynamic Programming
+  - Rolling State
+difficulty: Medium
+interviewFrequency: Very High
+aliases:
+  - max non adjacent sum
+  - robbery dp
+useCases:
+  - Maximizing value when neighboring picks conflict
+  - Scheduling rewards with a one-step cooldown
+  - Explaining how to compress DP state to constant space
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The main interview signal is not the story. It is the adjacent exclusion constraint.
+interviewSignals:
+  - You cannot choose two neighboring values.
+  - The question asks for the maximum sum under a simple local restriction.
+relatedSlugs:
+  - kadane-algorithm
+  - memoization-dp
+  - coin-change
+provenance:
+  - title: TheAlgorithms/JavaScript - Dynamic-Programming/Sliding-Window/HouseRobber.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Dynamic-Programming/Sliding-Window/HouseRobber.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+House Robber appears because it is simple enough to discuss quickly but rich enough to test dynamic-programming instincts. The state only needs two rolling values: the best answer if you skip the current house and the best answer if you take it.
+
+## Worked Example
+
+For `nums = [2, 7, 9, 3, 1]`, taking `2 + 9 + 1` yields `12`. The useful observation is that every decision only depends on the best totals from one and two positions back.
+
+<Callout title="Interview cue" tone="tip">
+  If the interviewer adds a circular street, split the problem into two linear runs: exclude the first house or exclude the last one.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function rob(nums) {
+  let previousTwo = 0;
+  let previousOne = 0;
+
+  for (const value of nums) {
+    const next = Math.max(previousOne, previousTwo + value);
+    previousTwo = previousOne;
+    previousOne = next;
+  }
+
+  return previousOne;
+}
+```
+
+```ts
+function robRange(nums: number[], left: number, right: number): number {
+  let previousTwo = 0;
+  let previousOne = 0;
+
+  for (let index = left; index <= right; index += 1) {
+    const next = Math.max(previousOne, previousTwo + nums[index]);
+    previousTwo = previousOne;
+    previousOne = next;
+  }
+
+  return previousOne;
+}
+
+export function robCircular(nums: number[]): number {
+  if (nums.length === 1) {
+    return nums[0];
+  }
+
+  return Math.max(
+    robRange(nums, 0, nums.length - 2),
+    robRange(nums, 1, nums.length - 1),
+  );
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Solve the circular-house variant.
+- Return the chosen indices, not just the value.
+- Compare this rolling-state DP with tabulating an explicit array.
+
+## Common Pitfalls
+
+- Treating it like Kadane's algorithm even though the adjacency rule changes the state.
+- Forgetting edge cases for arrays of length `0` or `1`.
+- Overbuilding a full `dp` array when constant space is enough.

@@ -1,0 +1,126 @@
+---
+title: Longest Common Subsequence
+slug: longest-common-subsequence
+category: Dynamic Programming
+summary: Compare two sequences with a 2D state so skipped characters still preserve relative order.
+description: Longest common subsequence is the standard sequence-alignment interview problem for reasoning about ordered overlap without requiring contiguity.
+dataStructures:
+  - Array
+  - String
+techniques:
+  - Dynamic Programming
+  - Sequence Alignment
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - lcs
+  - common subsequence
+useCases:
+  - Diff-style comparison between strings
+  - Similarity scoring where order matters
+  - Explaining prefix-based state transitions on two inputs
+complexity:
+  time: O(m * n)
+  space: O(m * n)
+  notes: The conceptual hurdle is separating subsequences from substrings.
+interviewSignals:
+  - The result must preserve order but does not need to stay contiguous.
+  - Two strings or sequences must be compared for shared structure.
+relatedSlugs:
+  - edit-distance
+  - longest-increasing-subsequence
+  - kmp-string-search
+provenance:
+  - title: TheAlgorithms/JavaScript - Dynamic-Programming/LongestCommonSubsequence.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Dynamic-Programming/LongestCommonSubsequence.js
+    kind: Implementation
+  - title: free-programming-books - Algorithm Design
+    href: https://archive.org/details/AlgorithmDesign1stEditionByJonKleinbergAndEvaTardos2005PDF
+    kind: Reference
+---
+
+## Why It Surfaces
+
+LCS appears when interviewers want a clean DP explanation on two inputs. The choice at each pair of positions is small: if the characters match, extend the diagonal answer; otherwise inherit the better answer from skipping one side.
+
+## Worked Example
+
+For `text1 = "abcde"` and `text2 = "ace"`, the answer is `3` because `ace` preserves order in both strings even though the characters are not adjacent in `text1`.
+
+<Callout title="Subsequence vs substring" tone="note">
+  A subsequence may skip characters. If the prompt requires contiguity, you are solving a different problem with a different recurrence.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function longestCommonSubsequence(text1, text2) {
+  const rows = text1.length + 1;
+  const cols = text2.length + 1;
+  const dp = Array.from({ length: rows }, () => new Array(cols).fill(0));
+
+  for (let row = 1; row < rows; row += 1) {
+    for (let col = 1; col < cols; col += 1) {
+      if (text1[row - 1] === text2[col - 1]) {
+        dp[row][col] = dp[row - 1][col - 1] + 1;
+      } else {
+        dp[row][col] = Math.max(dp[row - 1][col], dp[row][col - 1]);
+      }
+    }
+  }
+
+  return dp[text1.length][text2.length];
+}
+```
+
+```ts
+export function longestCommonSubsequence(text1: string, text2: string): string {
+  const rows = text1.length + 1;
+  const cols = text2.length + 1;
+  const dp = Array.from({ length: rows }, () => new Array<number>(cols).fill(0));
+
+  for (let row = 1; row < rows; row += 1) {
+    for (let col = 1; col < cols; col += 1) {
+      if (text1[row - 1] === text2[col - 1]) {
+        dp[row][col] = dp[row - 1][col - 1] + 1;
+      } else {
+        dp[row][col] = Math.max(dp[row - 1][col], dp[row][col - 1]);
+      }
+    }
+  }
+
+  const result: string[] = [];
+  let row = text1.length;
+  let col = text2.length;
+
+  while (row > 0 && col > 0) {
+    if (text1[row - 1] === text2[col - 1]) {
+      result.push(text1[row - 1]);
+      row -= 1;
+      col -= 1;
+    } else if (dp[row - 1][col] >= dp[row][col - 1]) {
+      row -= 1;
+    } else {
+      col -= 1;
+    }
+  }
+
+  return result.reverse().join("");
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return one actual subsequence, not just its length.
+- Reduce the space to one row when only the length is needed.
+- Compare the recurrence with edit distance.
+
+## Common Pitfalls
+
+- Solving longest common substring by mistake.
+- Forgetting the empty-prefix row and column.
+- Assuming a greedy character match is always safe.

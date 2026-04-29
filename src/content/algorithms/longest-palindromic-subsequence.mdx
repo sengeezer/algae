@@ -1,0 +1,96 @@
+---
+title: Longest Palindromic Subsequence
+slug: longest-palindromic-subsequence
+category: Dynamic Programming
+summary: Expand answers over substrings so matching ends can wrap a smaller palindromic subsequence inside.
+description: Longest palindromic subsequence is the interval-DP version of palindrome questions, where order matters but contiguity does not.
+dataStructures:
+  - String
+  - Array
+techniques:
+  - Dynamic Programming
+  - Interval DP
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - lps subsequence
+  - palindrome interval dp
+useCases:
+  - Finding the longest ordered palindrome hidden inside a string
+  - Comparing interval DP with longest common subsequence style reasoning
+  - Explaining why subsequence and substring variants need different states
+complexity:
+  time: O(n^2)
+  space: O(n^2)
+  notes: The main interview trap is confusing palindromic subsequences with palindromic substrings.
+interviewSignals:
+  - The answer must read the same forward and backward but may skip characters.
+  - The interviewer wants an interval DP on substrings rather than a center-expansion substring solution.
+relatedSlugs:
+  - longest-common-subsequence
+  - edit-distance
+  - memoization-dp
+provenance:
+  - title: TheAlgorithms/JavaScript - Dynamic-Programming/LongestPalindromicSubsequence.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Dynamic-Programming/LongestPalindromicSubsequence.js
+    kind: Implementation
+  - title: free-programming-books - Algorithm Design
+    href: https://archive.org/details/AlgorithmDesign1stEditionByJonKleinbergAndEvaTardos2005PDF
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem tests whether you can define a DP over intervals instead of prefixes. For any substring, either the two ends match and contribute `2`, or one end must be excluded.
+
+## JavaScript
+
+```js
+function longestPalindromicSubsequence(text) {
+  const size = text.length;
+  const dp = Array.from({ length: size }, () => new Array(size).fill(0));
+
+  for (let index = size - 1; index >= 0; index -= 1) {
+    dp[index][index] = 1;
+
+    for (let end = index + 1; end < size; end += 1) {
+      if (text[index] === text[end]) {
+        dp[index][end] = dp[index + 1][end - 1] + 2;
+      } else {
+        dp[index][end] = Math.max(dp[index + 1][end], dp[index][end - 1]);
+      }
+    }
+  }
+
+  return dp[0][size - 1];
+}
+```
+
+## TypeScript
+
+```ts
+export function longestPalindromicSubsequence(text: string): number {
+  const size = text.length;
+  const dp = Array.from({ length: size }, () => new Array<number>(size).fill(0));
+
+  for (let index = size - 1; index >= 0; index -= 1) {
+    dp[index][index] = 1;
+
+    for (let end = index + 1; end < size; end += 1) {
+      if (text[index] === text[end]) {
+        dp[index][end] = end - index === 1 ? 2 : dp[index + 1][end - 1] + 2;
+      } else {
+        dp[index][end] = Math.max(dp[index + 1][end], dp[index][end - 1]);
+      }
+    }
+  }
+
+  return dp[0][size - 1];
+}
+```
+
+## Interview Notes
+
+- Define the state as the best answer inside `text[left..right]`.
+- Call out the difference between this subsequence problem and longest palindromic substring.
+- If asked for reconstruction, backtrack from the table edges inward.

@@ -11,6 +11,7 @@
     "git rev-parse": true,
     "git ls-remote": true,
     "npx vercel": true,
-    "npx playwright": true
+    "npx playwright": true,
+    "git remote": true
   }
 }

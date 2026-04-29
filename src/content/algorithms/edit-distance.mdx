@@ -1,0 +1,135 @@
+---
+title: Edit Distance
+slug: edit-distance
+category: Dynamic Programming
+summary: Compare two strings with a grid of subproblems so insertions, deletions, and replacements all become local transitions.
+description: Edit distance is a classic string DP problem that tests whether you can model operations on prefixes instead of trying to mutate full strings directly.
+dataStructures:
+  - Array
+  - String
+techniques:
+  - Dynamic Programming
+  - String Matching
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - levenshtein distance
+  - string edit cost
+useCases:
+  - Spell checking and fuzzy string matching
+  - Diff-style similarity scoring
+  - Transforming one token stream into another
+complexity:
+  time: O(m * n)
+  space: O(m * n)
+  notes: Interviews care more about state definition and base cases than about memorizing the table shape.
+interviewSignals:
+  - You may insert, delete, or replace characters.
+  - The task asks for the minimum number of edits between two strings.
+relatedSlugs:
+  - longest-common-subsequence
+  - kmp-string-search
+  - rabin-karp
+provenance:
+  - title: TheAlgorithms/JavaScript - Dynamic-Programming/EditDistance.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Dynamic-Programming/EditDistance.js
+    kind: Implementation
+  - title: free-programming-books - Algorithm Design
+    href: https://archive.org/details/AlgorithmDesign1stEditionByJonKleinbergAndEvaTardos2005PDF
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Edit distance forces you to think in prefixes. Once you define `dp[row][col]` as the best answer for the first `row` characters of one word and the first `col` characters of the other, the problem becomes a small set of local choices.
+
+## Worked Example
+
+For `word1 = "horse"` and `word2 = "ros"`, one optimal path is replace `h` with `r`, delete `r`, and delete `e`, so the minimum edit distance is `3`.
+
+<Callout title="State choice" tone="note">
+  The most common mistake is indexing characters and operations correctly. Define the table in terms of prefix lengths first, then map those lengths back to character indices with `row - 1` and `col - 1`.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function minDistance(word1, word2) {
+  const rows = word1.length + 1;
+  const cols = word2.length + 1;
+  const dp = Array.from({ length: rows }, () => new Array(cols).fill(0));
+
+  for (let row = 0; row < rows; row += 1) {
+    dp[row][0] = row;
+  }
+
+  for (let col = 0; col < cols; col += 1) {
+    dp[0][col] = col;
+  }
+
+  for (let row = 1; row < rows; row += 1) {
+    for (let col = 1; col < cols; col += 1) {
+      if (word1[row - 1] === word2[col - 1]) {
+        dp[row][col] = dp[row - 1][col - 1];
+      } else {
+        dp[row][col] = 1 + Math.min(
+          dp[row - 1][col],
+          dp[row][col - 1],
+          dp[row - 1][col - 1],
+        );
+      }
+    }
+  }
+
+  return dp[word1.length][word2.length];
+}
+```
+
+```ts
+export function minDistance(word1: string, word2: string): number {
+  const previous = new Array<number>(word2.length + 1).fill(0);
+
+  for (let col = 0; col <= word2.length; col += 1) {
+    previous[col] = col;
+  }
+
+  for (let row = 1; row <= word1.length; row += 1) {
+    const current = new Array<number>(word2.length + 1).fill(0);
+    current[0] = row;
+
+    for (let col = 1; col <= word2.length; col += 1) {
+      if (word1[row - 1] === word2[col - 1]) {
+        current[col] = previous[col - 1];
+      } else {
+        current[col] = 1 + Math.min(
+          previous[col],
+          current[col - 1],
+          previous[col - 1],
+        );
+      }
+    }
+
+    for (let col = 0; col <= word2.length; col += 1) {
+      previous[col] = current[col];
+    }
+  }
+
+  return previous[word2.length];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Reconstruct one optimal edit sequence, not just the cost.
+- Restrict the allowed operations and explain how the recurrence changes.
+- Compare edit distance with longest common subsequence.
+
+## Common Pitfalls
+
+- Forgetting to initialize the first row and first column for empty-string base cases.
+- Mixing prefix lengths with character indices.
+- Recomputing recursive subproblems instead of tabulating or memoizing them.

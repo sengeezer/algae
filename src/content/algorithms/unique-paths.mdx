@@ -1,0 +1,104 @@
+---
+title: Unique Paths
+slug: unique-paths
+category: Dynamic Programming
+summary: Count monotonic routes through a grid by building each cell from the path counts above and to the left.
+description: Unique Paths is the grid-DP starter problem that checks whether you can define a simple recurrence and then compress a 2D table into a single row.
+dataStructures:
+  - Matrix
+  - Array
+techniques:
+  - Dynamic Programming
+  - Grid Traversal
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - grid path counting
+  - robot paths
+useCases:
+  - Counting right-and-down routes in a grid
+  - Preparing for obstacle-grid and weighted-grid follow-ups
+  - Comparing combinatorics with tabulated DP
+complexity:
+  time: O(rows * cols)
+  space: O(cols)
+  notes: The recurrence is simple, but the follow-ups often add blocked cells or ask for path reconstruction.
+interviewSignals:
+  - Movement is restricted to right and down.
+  - The question asks for a count of paths rather than the shortest or cheapest route.
+relatedSlugs:
+  - coin-change
+  - memoization-dp
+  - number-of-islands
+provenance:
+  - title: TheAlgorithms/JavaScript - Dynamic-Programming/UniquePaths.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Dynamic-Programming/UniquePaths.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Unique Paths is a clean interview problem for practicing state transitions on a grid. Every reachable cell inherits its count from the top and left because those are the only directions from which you can arrive.
+
+## Worked Example
+
+In a `3 x 7` grid, the robot can reach each cell by combining the path counts from its top neighbor and left neighbor. The final cell ends up with `28` unique paths.
+
+<Callout title="Compression trick" tone="tip">
+  Because each row only depends on the row being built and the row before it, a one-dimensional array is enough when you only need the count.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function uniquePaths(rows, cols) {
+  const dp = new Array(cols).fill(1);
+
+  for (let row = 1; row < rows; row += 1) {
+    for (let col = 1; col < cols; col += 1) {
+      dp[col] += dp[col - 1];
+    }
+  }
+
+  return dp[cols - 1];
+}
+```
+
+```ts
+export function uniquePathsWithObstacles(grid: number[][]): number {
+  const cols = grid[0].length;
+  const dp = new Array<number>(cols).fill(0);
+  dp[0] = grid[0][0] === 1 ? 0 : 1;
+
+  for (let row = 0; row < grid.length; row += 1) {
+    for (let col = 0; col < cols; col += 1) {
+      if (grid[row][col] === 1) {
+        dp[col] = 0;
+      } else if (col > 0) {
+        dp[col] += dp[col - 1];
+      }
+    }
+  }
+
+  return dp[cols - 1];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Add obstacles that block movement through certain cells.
+- Compare the DP solution with the combinatorics formula.
+- Return one valid path instead of just the count.
+
+## Common Pitfalls
+
+- Forgetting that the first row and first column have only one path before obstacles are introduced.
+- Confusing this counting problem with shortest-path graph traversal.
+- Overbuilding a full matrix when a single row is enough.

@@ -4,10 +4,18 @@ export type InterviewFrequency = "Very High" | "High" | "Medium";
 
 export type CodeLanguage = "JavaScript" | "TypeScript";
 
+export type ProvenanceKind = "Implementation" | "Reference";
+
 export interface ComplexityProfile {
   time: string;
   space: string;
   notes: string;
+}
+
+export interface AlgorithmProvenance {
+  title: string;
+  href: string;
+  kind: ProvenanceKind;
 }
 
 export interface AlgorithmEntry {
@@ -25,6 +33,7 @@ export interface AlgorithmEntry {
   complexity: ComplexityProfile;
   interviewSignals: string[];
   relatedSlugs: string[];
+  provenance: AlgorithmProvenance[];
   body: string;
 }
 

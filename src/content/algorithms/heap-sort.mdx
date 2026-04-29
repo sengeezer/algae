@@ -1,0 +1,138 @@
+---
+title: Heap Sort
+slug: heap-sort
+category: Sorting
+summary: Build a max heap, then repeatedly move the root to the end while shrinking the heap boundary.
+description: Heap sort is the in-place comparison sort that turns the heap property into predictable O(n log n) ordering.
+dataStructures:
+  - Array
+  - Heap
+techniques:
+  - Heap
+  - Sorting
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - heapify sort
+  - in-place heap sorting
+useCases:
+  - Sorting with guaranteed O(n log n) time
+  - Reusing heap intuition from priority queues in a full sort
+  - Comparing stable and unstable sorting tradeoffs
+complexity:
+  time: O(n log n)
+  space: O(1)
+  notes: Heap sort trades some practical constant factors for a firm worst-case runtime and in-place memory use.
+interviewSignals:
+  - The interviewer wants a comparison sort with guaranteed O(n log n) time.
+  - You already have heap or priority queue operations in the surrounding problem.
+relatedSlugs:
+  - priority-queue
+  - quick-sort
+  - merge-sort
+provenance:
+  - title: TheAlgorithms/JavaScript - Sorts/HeapSort.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Sorts/HeapSort.js
+    kind: Implementation
+  - title: "free-programming-books - Open Data Structures: An Introduction"
+    href: https://opendatastructures.org/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Heap sort is the sorting algorithm that asks you to explain the heap property clearly. Once the array is heapified, the largest value sits at the root, so each extraction places one final element at the end of the array.
+
+## JavaScript
+
+```js
+function heapSort(values) {
+  const nums = [...values];
+
+  function siftDown(size, index) {
+    let candidate = index;
+
+    while (true) {
+      const left = candidate * 2 + 1;
+      const right = candidate * 2 + 2;
+      let largest = candidate;
+
+      if (left < size && nums[left] > nums[largest]) {
+        largest = left;
+      }
+
+      if (right < size && nums[right] > nums[largest]) {
+        largest = right;
+      }
+
+      if (largest === candidate) {
+        return;
+      }
+
+      [nums[candidate], nums[largest]] = [nums[largest], nums[candidate]];
+      candidate = largest;
+    }
+  }
+
+  for (let index = Math.floor(nums.length / 2) - 1; index >= 0; index -= 1) {
+    siftDown(nums.length, index);
+  }
+
+  for (let end = nums.length - 1; end > 0; end -= 1) {
+    [nums[0], nums[end]] = [nums[end], nums[0]];
+    siftDown(end, 0);
+  }
+
+  return nums;
+}
+```
+
+## TypeScript
+
+```ts
+export function heapSort(values: number[]): number[] {
+  const nums = [...values];
+
+  function siftDown(size: number, index: number): void {
+    let candidate = index;
+
+    while (true) {
+      const left = candidate * 2 + 1;
+      const right = candidate * 2 + 2;
+      let largest = candidate;
+
+      if (left < size && nums[left] > nums[largest]) {
+        largest = left;
+      }
+
+      if (right < size && nums[right] > nums[largest]) {
+        largest = right;
+      }
+
+      if (largest === candidate) {
+        return;
+      }
+
+      [nums[candidate], nums[largest]] = [nums[largest], nums[candidate]];
+      candidate = largest;
+    }
+  }
+
+  for (let index = Math.floor(nums.length / 2) - 1; index >= 0; index -= 1) {
+    siftDown(nums.length, index);
+  }
+
+  for (let end = nums.length - 1; end > 0; end -= 1) {
+    [nums[0], nums[end]] = [nums[end], nums[0]];
+    siftDown(end, 0);
+  }
+
+  return nums;
+}
+```
+
+## Interview Notes
+
+- Separate the explanation into heap construction and repeated extraction.
+- Mention that heap sort is in-place but not stable.
+- If the interviewer asks why build-heap is O(n), focus on how most nodes are near the bottom and sift down only short distances.

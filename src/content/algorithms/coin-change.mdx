@@ -1,0 +1,103 @@
+---
+title: Coin Change
+slug: coin-change
+category: Dynamic Programming
+summary: Reuse denominations strategically to minimize coin count or count valid ways to hit a target total.
+description: Coin change is the canonical dynamic-programming interview problem for choosing a state definition, handling unreachable states, and explaining why loop order matters.
+dataStructures:
+  - Array
+techniques:
+  - Dynamic Programming
+  - Unbounded Knapsack
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - change making
+  - minimum coins
+useCases:
+  - Minimizing the number of coins for a target amount
+  - Counting ways to compose a total from reusable denominations
+  - Pricing and denomination planning questions
+complexity:
+  time: O(amount * coins)
+  space: O(amount)
+  notes: The important interview decision is whether the prompt asks for minimum coins, number of combinations, or ordered permutations.
+interviewSignals:
+  - Denominations can be reused any number of times.
+  - The question asks for a minimum count or the number of ways to form a total.
+relatedSlugs:
+  - knapsack-dp
+  - memoization-dp
+  - unique-paths
+provenance:
+  - title: TheAlgorithms/JavaScript - Dynamic-Programming/CoinChange.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Dynamic-Programming/CoinChange.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Coin change shows up when an interviewer wants more than brute-force recursion. The real test is whether you can define a one-dimensional state, choose the correct recurrence, and represent impossible states safely.
+
+## Worked Example
+
+For `coins = [1, 2, 5]` and `amount = 11`, the best answer is `3` because `5 + 5 + 1` beats every construction that uses more small coins.
+
+<Callout title="Interview cue" tone="tip">
+  Ask whether the task is asking for the fewest coins, the number of combinations, or the number of ordered sequences. The state can look similar while the transition order changes the answer.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function coinChange(coins, amount) {
+  const dp = new Array(amount + 1).fill(Infinity);
+  dp[0] = 0;
+
+  for (let current = 1; current <= amount; current += 1) {
+    for (const coin of coins) {
+      if (coin <= current) {
+        dp[current] = Math.min(dp[current], dp[current - coin] + 1);
+      }
+    }
+  }
+
+  return Number.isFinite(dp[amount]) ? dp[amount] : -1;
+}
+```
+
+```ts
+export function coinChange(coins: number[], amount: number): number {
+  const dp = new Array<number>(amount + 1).fill(Number.POSITIVE_INFINITY);
+  dp[0] = 0;
+
+  for (let current = 1; current <= amount; current += 1) {
+    for (const coin of coins) {
+      if (coin <= current) {
+        dp[current] = Math.min(dp[current], dp[current - coin] + 1);
+      }
+    }
+  }
+
+  return Number.isFinite(dp[amount]) ? dp[amount] : -1;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return one actual coin combination, not just the minimum count.
+- Count the number of combinations instead of minimizing the number of coins.
+- Explain why swapping the loop order changes combinations into permutations.
+
+## Common Pitfalls
+
+- Using `0` as the default for unreachable states and accidentally treating impossible totals as valid.
+- Forgetting that unlimited reuse makes this an unbounded-knapsack style transition.
+- Mixing the minimum-coins variant with the count-ways variant.

@@ -1,0 +1,155 @@
+---
+title: N-Queens
+slug: n-queens
+category: Backtracking
+summary: Place queens row by row while pruning columns and diagonals that are already under attack.
+description: N-Queens is the canonical backtracking problem for explaining constraint tracking, pruning, and search-tree branching.
+dataStructures:
+  - Array
+  - Set
+techniques:
+  - Backtracking
+  - Constraint Propagation
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - n queens puzzle
+  - queens backtracking
+useCases:
+  - Generating all valid board configurations
+  - Counting constrained placements efficiently
+  - Demonstrating pruning on a search tree
+complexity:
+  time: O(n!)
+  space: O(n)
+  notes: The win is pruning invalid partial boards early rather than generating full boards and checking them afterward.
+interviewSignals:
+  - You must place pieces under attack constraints.
+  - The prompt asks for all valid boards or the number of valid configurations.
+relatedSlugs:
+  - backtracking-search
+  - bitmask-dp
+  - minimax
+provenance:
+  - title: TheAlgorithms/JavaScript - Backtracking/NQueens.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Backtracking/NQueens.js
+    kind: Implementation
+  - title: free-programming-books - Algorithmic Thinking
+    href: https://labuladong.gitbook.io/algo-en
+    kind: Reference
+---
+
+## Why It Surfaces
+
+N-Queens is less about chess and more about search discipline. The interviewer wants to hear how you track forbidden columns and diagonals so every recursive step rules out large parts of the search space.
+
+## Worked Example
+
+For `n = 4`, there are two valid boards. The key observation is that once a queen is placed, the next row only needs to consider columns not already claimed by a column, main diagonal, or anti-diagonal.
+
+<Callout title="Pruning rule" tone="tip">
+  Put the state in sets or bitmasks. Recomputing whether a whole board is valid on every recursive call is the avoidable brute-force version.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function solveNQueens(n) {
+  const boards = [];
+  const columns = new Set();
+  const diagonals = new Set();
+  const antiDiagonals = new Set();
+  const placement = new Array(n).fill("");
+
+  function backtrack(row) {
+    if (row === n) {
+      boards.push([...placement]);
+      return;
+    }
+
+    for (let col = 0; col < n; col += 1) {
+      const diagonal = row - col;
+      const antiDiagonal = row + col;
+
+      if (
+        columns.has(col)
+        || diagonals.has(diagonal)
+        || antiDiagonals.has(antiDiagonal)
+      ) {
+        continue;
+      }
+
+      columns.add(col);
+      diagonals.add(diagonal);
+      antiDiagonals.add(antiDiagonal);
+      placement[row] = ".".repeat(col) + "Q" + ".".repeat(n - col - 1);
+
+      backtrack(row + 1);
+
+      columns.delete(col);
+      diagonals.delete(diagonal);
+      antiDiagonals.delete(antiDiagonal);
+    }
+  }
+
+  backtrack(0);
+  return boards;
+}
+```
+
+```ts
+export function totalNQueens(n: number): number {
+  const columns = new Set<number>();
+  const diagonals = new Set<number>();
+  const antiDiagonals = new Set<number>();
+
+  function backtrack(row: number): number {
+    if (row === n) {
+      return 1;
+    }
+
+    let count = 0;
+
+    for (let col = 0; col < n; col += 1) {
+      const diagonal = row - col;
+      const antiDiagonal = row + col;
+
+      if (
+        columns.has(col)
+        || diagonals.has(diagonal)
+        || antiDiagonals.has(antiDiagonal)
+      ) {
+        continue;
+      }
+
+      columns.add(col);
+      diagonals.add(diagonal);
+      antiDiagonals.add(antiDiagonal);
+      count += backtrack(row + 1);
+      columns.delete(col);
+      diagonals.delete(diagonal);
+      antiDiagonals.delete(antiDiagonal);
+    }
+
+    return count;
+  }
+
+  return backtrack(0);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Count the valid boards instead of generating them.
+- Replace sets with bitmasks for tighter state tracking.
+- Explain why row-by-row placement is enough.
+
+## Common Pitfalls
+
+- Checking the whole board every time instead of tracking attacks incrementally.
+- Forgetting that diagonals can be identified by `row - col` and `row + col`.
+- Mutating shared board state without undoing it on backtrack.

@@ -26,6 +26,7 @@ function parseAlgorithmFile(fileName: string): AlgorithmEntry {
     body: content.trim(),
     dataStructures: algorithm.dataStructures ?? [],
     interviewSignals: algorithm.interviewSignals ?? [],
+    provenance: algorithm.provenance ?? [],
     relatedSlugs: algorithm.relatedSlugs ?? [],
     techniques: algorithm.techniques ?? [],
     useCases: algorithm.useCases ?? [],

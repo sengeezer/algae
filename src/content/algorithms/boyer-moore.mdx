@@ -1,0 +1,127 @@
+---
+title: Boyer-Moore
+slug: boyer-moore
+category: Strings
+summary: Compare a pattern from right to left so mismatches can skip over large sections of the text.
+description: Boyer-Moore is the interview-ready string search algorithm for showing how preprocessing can turn many failed comparisons into aggressive jumps.
+dataStructures:
+  - String
+  - Array
+techniques:
+  - String Matching
+  - Skip Heuristics
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - bad character search
+  - right-to-left pattern matching
+useCases:
+  - Fast substring search in long texts
+  - Reusing a preprocessed pattern across many searches
+  - Explaining how mismatch heuristics reduce unnecessary comparisons
+complexity:
+  time: O(n / m) average, O(n * m) worst case in simplified forms
+  space: O(alphabet)
+  notes: In interviews, the important part is the bad-character skip intuition, not memorizing every industrial-strength optimization.
+interviewSignals:
+  - The prompt asks for repeated substring search where preprocessing the pattern is allowed.
+  - A simple left-to-right scan does too much redundant comparison work.
+relatedSlugs:
+  - kmp-string-search
+  - rabin-karp
+  - trie
+provenance:
+  - title: TheAlgorithms/JavaScript - String/BoyerMoore.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/String/BoyerMoore.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Boyer-Moore matters when the interviewer wants more than KMP or a rolling hash. It preprocesses the pattern so that a mismatch near the end of the window can skip ahead by more than one character.
+
+## JavaScript
+
+```js
+function buildLastOccurrence(pattern) {
+  const last = new Map();
+
+  for (let index = 0; index < pattern.length; index += 1) {
+    last.set(pattern[index], index);
+  }
+
+  return last;
+}
+
+function boyerMoore(text, pattern) {
+  if (pattern.length === 0) {
+    return 0;
+  }
+
+  const last = buildLastOccurrence(pattern);
+  let start = 0;
+
+  while (start <= text.length - pattern.length) {
+    let patternIndex = pattern.length - 1;
+
+    while (patternIndex >= 0 && text[start + patternIndex] === pattern[patternIndex]) {
+      patternIndex -= 1;
+    }
+
+    if (patternIndex < 0) {
+      return start;
+    }
+
+    const mismatch = text[start + patternIndex];
+    const skipIndex = last.get(mismatch) ?? -1;
+    start += Math.max(1, patternIndex - skipIndex);
+  }
+
+  return -1;
+}
+```
+
+## TypeScript
+
+```ts
+export function findSubstring(text: string, pattern: string): number {
+  if (pattern.length === 0) {
+    return 0;
+  }
+
+  const last = new Map<string, number>();
+
+  for (let index = 0; index < pattern.length; index += 1) {
+    last.set(pattern[index], index);
+  }
+
+  let start = 0;
+
+  while (start <= text.length - pattern.length) {
+    let patternIndex = pattern.length - 1;
+
+    while (patternIndex >= 0 && text[start + patternIndex] === pattern[patternIndex]) {
+      patternIndex -= 1;
+    }
+
+    if (patternIndex < 0) {
+      return start;
+    }
+
+    const mismatch = text[start + patternIndex];
+    const skipIndex = last.get(mismatch) ?? -1;
+    start += Math.max(1, patternIndex - skipIndex);
+  }
+
+  return -1;
+}
+```
+
+## Interview Notes
+
+- State that comparisons run from the end of the pattern toward the front.
+- Explain the bad-character rule before reaching for more advanced good-suffix optimizations.
+- Contrast it with KMP when the interviewer asks about preprocessing tradeoffs.

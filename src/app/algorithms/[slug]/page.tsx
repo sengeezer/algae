@@ -142,6 +142,32 @@ export default async function AlgorithmPage({ params }: AlgorithmPageProps) {
               </div>
             </section>
 
+            {algorithm.provenance.length > 0 ? (
+              <section className="glass-panel rounded-[28px] p-5 sm:p-6">
+                <p className="text-xs uppercase tracking-[0.3em] text-[var(--muted)]">
+                  Source Lineage
+                </p>
+                <div className="mt-4 space-y-3">
+                  {algorithm.provenance.map((source) => (
+                    <a
+                      key={`${source.kind}:${source.href}`}
+                      href={source.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="block rounded-[22px] bg-white/70 px-4 py-4 transition hover:-translate-y-0.5 hover:shadow-lg"
+                    >
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[var(--muted)]">
+                        {source.kind}
+                      </p>
+                      <p className="mt-2 text-sm leading-6 text-[var(--foreground)]">
+                        {source.title}
+                      </p>
+                    </a>
+                  ))}
+                </div>
+              </section>
+            ) : null}
+
             <StudyActions slug={algorithm.slug} />
           </div>
         </section>
