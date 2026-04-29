@@ -64,9 +64,20 @@ This third expansion slice lifts the catalog from 50 to 56 entries.
 - Longest Valid Parentheses
 - Binary Lifting
 
+## Batch 4 added
+
+This fourth expansion slice lifts the catalog from 56 to 62 entries.
+
+- Binary Search Tree
+- Climbing Stairs
+- Merge Two Sorted Linked Lists
+- Queue Using 2 Stacks
+- Sudoku Solver
+- Ternary Search
+
 ## Provenance metadata
 
-All expansion entries from batch 1 and batch 2 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 4 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -89,9 +100,9 @@ All expansion entries from batch 1 and batch 2 now carry explicit per-entry prov
 
 ## Next candidates from the same sources
 
-- Binary Search Tree
-- Climbing Stairs
-- Merge Two Sorted Linked Lists
-- Queue Using 2 Stacks
-- Sudoku Solver
-- Ternary Search
+- Add Two Numbers
+- Breadth-First Shortest Path
+- Circular Queue
+- Fibonacci Search
+- Generate Parentheses
+- Reverse Singly Linked List

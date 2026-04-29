@@ -1,0 +1,122 @@
+---
+title: Merge Two Sorted Linked Lists
+slug: merge-two-sorted-linked-lists
+category: Linked Lists
+summary: Walk two ordered lists with a tail pointer so the smaller current node is always appended next.
+description: Merging two sorted linked lists is the pointer-manipulation interview problem for dummy heads, stable merging, and reasoning about list ownership.
+dataStructures:
+  - Linked List
+techniques:
+  - Two Pointers
+  - List Merging
+difficulty: Easy
+interviewFrequency: High
+aliases:
+  - merge sorted lists
+  - linked list merge
+useCases:
+  - Combining two ordered linked sequences
+  - Building the merge step for linked-list merge sort
+  - Practicing dummy-head pointer manipulation
+complexity:
+  time: O(m + n)
+  space: O(1)
+  notes: The simplest clean solution usually uses a dummy head so the first insertion is not a special case.
+interviewSignals:
+  - Two linked lists are already sorted.
+  - The interviewer wants in-place node relinking instead of copying values into an array.
+relatedSlugs:
+  - merge-sort
+  - linked-list-cycle-detection
+  - two-pointers
+provenance:
+  - title: TheAlgorithms/JavaScript - Data-Structures/Linked-List/MergeTwoSortedLinkedLists.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Data-Structures/Linked-List/MergeTwoSortedLinkedLists.js
+    kind: Implementation
+  - title: free-programming-books - Linked List Problems
+    href: http://cslibrary.stanford.edu/105/LinkedListProblems.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This question tests whether you can do clean pointer work under sorted-order constraints. Each step has only one real choice: splice in the smaller front node and advance that list.
+
+## Worked Example
+
+If the lists start as `1 -> 3 -> 7` and `1 -> 2 -> 5`, the merged result begins `1 -> 1 -> 2 -> 3 -> 5 -> 7` without creating new data nodes.
+
+<Callout title="Implementation cue" tone="tip">
+  Use a dummy head and a `tail` pointer. That removes almost all first-node edge cases from the code.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function mergeLists(first, second) {
+  const dummy = { next: null };
+  let tail = dummy;
+  let left = first;
+  let right = second;
+
+  while (left !== null && right !== null) {
+    if (left.value <= right.value) {
+      tail.next = left;
+      left = left.next;
+    } else {
+      tail.next = right;
+      right = right.next;
+    }
+
+    tail = tail.next;
+  }
+
+  tail.next = left ?? right;
+  return dummy.next;
+}
+```
+
+```ts
+type Node = {
+  value: number;
+  next: Node | null;
+};
+
+export function mergeLists(first: Node | null, second: Node | null): Node | null {
+  const dummy: Node = { value: 0, next: null };
+  let tail = dummy;
+  let left = first;
+  let right = second;
+
+  while (left !== null && right !== null) {
+    if (left.value <= right.value) {
+      tail.next = left;
+      left = left.next;
+    } else {
+      tail.next = right;
+      right = right.next;
+    }
+
+    tail = tail.next;
+  }
+
+  tail.next = left ?? right;
+  return dummy.next;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Merge `k` sorted linked lists efficiently.
+- Explain how this becomes the merge step in linked-list merge sort.
+- Merge recursively instead of iteratively.
+
+## Common Pitfalls
+
+- Recreating nodes unnecessarily instead of relinking the existing ones.
+- Forgetting to attach the remainder once one list ends.
+- Mishandling the head of the merged list without a dummy node.

@@ -1,0 +1,148 @@
+---
+title: Binary Search Tree
+slug: binary-search-tree
+category: Trees
+summary: Keep smaller values on the left and larger values on the right so ordered lookups and updates follow one root-to-leaf path.
+description: Binary search trees appear in interviews for ordered inserts, predecessor or successor logic, and explaining when tree shape helps or hurts performance.
+dataStructures:
+  - Tree
+  - Binary Tree
+techniques:
+  - Binary Search Tree
+  - Tree Traversal
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - BST
+  - ordered binary tree
+useCases:
+  - Ordered insertion and lookup
+  - Finding predecessors and successors
+  - Range queries over dynamic ordered data
+complexity:
+  time: O(h)
+  space: O(h)
+  notes: The real interview discussion is often about how tree height changes the runtime and why an unbalanced BST can degrade to a linked list.
+interviewSignals:
+  - The prompt needs ordered insert, search, or delete operations on changing data.
+  - Inorder traversal should return values in sorted order.
+relatedSlugs:
+  - binary-search
+  - lowest-common-ancestor
+  - priority-queue
+provenance:
+  - title: TheAlgorithms/JavaScript - Data-Structures/Tree/BinarySearchTree.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Data-Structures/Tree/BinarySearchTree.js
+    kind: Implementation
+  - title: "free-programming-books - Open Data Structures: An Introduction"
+    href: https://opendatastructures.org/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+BST questions test whether you can use local ordering invariants to avoid scanning an entire structure. Once you trust the left subtree to contain only smaller values and the right subtree to contain only larger ones, search, insert, and delete all become path problems instead of full traversals.
+
+## Worked Example
+
+Inserting `6` into a BST rooted at `8` with left child `3` compares `6 < 8`, then `6 > 3`, so the insertion continues only into the right child of `3`.
+
+<Callout title="Shape matters" tone="note">
+  A BST is only as fast as its height. Interviewers often follow up by asking when balancing is needed or how a skewed tree changes the runtime.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class TreeNode {
+  constructor(value) {
+    this.value = value;
+    this.left = null;
+    this.right = null;
+  }
+}
+
+class BinarySearchTree {
+  constructor() {
+    this.root = null;
+  }
+
+  insert(value) {
+    const node = new TreeNode(value);
+
+    if (this.root === null) {
+      this.root = node;
+      return;
+    }
+
+    let current = this.root;
+
+    while (true) {
+      if (value < current.value) {
+        if (current.left === null) {
+          current.left = node;
+          return;
+        }
+
+        current = current.left;
+      } else {
+        if (current.right === null) {
+          current.right = node;
+          return;
+        }
+
+        current = current.right;
+      }
+    }
+  }
+
+  contains(value) {
+    let current = this.root;
+
+    while (current !== null) {
+      if (current.value === value) {
+        return true;
+      }
+
+      current = value < current.value ? current.left : current.right;
+    }
+
+    return false;
+  }
+}
+```
+
+```ts
+type TreeNode = {
+  value: number;
+  left: TreeNode | null;
+  right: TreeNode | null;
+};
+
+export function inorder(root: TreeNode | null, output: number[] = []): number[] {
+  if (root === null) {
+    return output;
+  }
+
+  inorder(root.left, output);
+  output.push(root.value);
+  inorder(root.right, output);
+  return output;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Delete a node with zero, one, or two children.
+- Return the kth smallest value with an inorder traversal.
+- Explain when you would upgrade to a self-balancing tree.
+
+## Common Pitfalls
+
+- Forgetting that duplicate-value policy must be explicit.
+- Assuming BST operations are always `O(log n)` even on skewed trees.
+- Mixing ordinary binary trees with BST-specific ordering logic.

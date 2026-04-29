@@ -1,0 +1,130 @@
+---
+title: Queue Using Two Stacks
+slug: queue-using-two-stacks
+category: Queues
+summary: Split incoming and outgoing work across two stacks so FIFO behavior emerges from LIFO primitives.
+description: Queue Using Two Stacks is the data-structure composition interview problem that tests whether you can prove amortized behavior, not just simulate operations mechanically.
+dataStructures:
+  - Queue
+  - Stack
+techniques:
+  - Stack Simulation
+  - Amortized Analysis
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - queue with stacks
+  - fifo from lifo
+useCases:
+  - Implementing a queue when only stack primitives are available
+  - Practicing amortized analysis on batched transfers
+  - Explaining how operation ordering can be inverted safely
+complexity:
+  time: O(1) amortized
+  space: O(n)
+  notes: The important interview point is that each element moves from the input stack to the output stack at most once.
+interviewSignals:
+  - The problem restricts you to stack operations but asks for queue semantics.
+  - The interviewer asks why the transfer step does not make every operation linear.
+relatedSlugs:
+  - binary-heap
+  - priority-queue
+  - merge-two-sorted-linked-lists
+provenance:
+  - title: TheAlgorithms/JavaScript - Data-Structures/Queue/QueueUsing2Stacks.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Data-Structures/Queue/QueueUsing2Stacks.js
+    kind: Implementation
+  - title: "free-programming-books - Open Data Structures: An Introduction"
+    href: https://opendatastructures.org/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This question is about more than simulating a queue. It tests whether you can separate insertion from removal work and then justify why the occasional bulk transfer still leads to amortized constant time.
+
+## Worked Example
+
+Push `1`, `2`, `3` onto the input stack. When the first dequeue happens and the output stack is empty, transfer all three so the output order becomes `1`, `2`, `3` from top to bottom.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class QueueUsingTwoStacks {
+  constructor() {
+    this.input = [];
+    this.output = [];
+  }
+
+  transfer() {
+    if (this.output.length > 0) {
+      return;
+    }
+
+    while (this.input.length > 0) {
+      this.output.push(this.input.pop());
+    }
+  }
+
+  enqueue(value) {
+    this.input.push(value);
+  }
+
+  dequeue() {
+    this.transfer();
+    return this.output.pop();
+  }
+
+  peek() {
+    this.transfer();
+    return this.output[this.output.length - 1];
+  }
+}
+```
+
+```ts
+export class QueueUsingTwoStacks<T> {
+  private readonly input: T[] = [];
+  private readonly output: T[] = [];
+
+  enqueue(value: T): void {
+    this.input.push(value);
+  }
+
+  dequeue(): T | undefined {
+    this.transfer();
+    return this.output.pop();
+  }
+
+  peek(): T | undefined {
+    this.transfer();
+    return this.output[this.output.length - 1];
+  }
+
+  private transfer(): void {
+    if (this.output.length > 0) {
+      return;
+    }
+
+    while (this.input.length > 0) {
+      this.output.push(this.input.pop() as T);
+    }
+  }
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Implement a stack using two queues.
+- Prove the amortized `O(1)` bound.
+- Add a size API without breaking the design.
+
+## Common Pitfalls
+
+- Moving items back and forth on every enqueue or dequeue instead of only when needed.
+- Claiming worst-case `O(1)` instead of amortized `O(1)`.
+- Forgetting that `peek` must also trigger a transfer when the output stack is empty.

@@ -1,0 +1,129 @@
+---
+title: Ternary Search
+slug: ternary-search
+category: Searching
+summary: Split the range into three parts so each step discards two-thirds of the remaining search space.
+description: Ternary search is the divide-and-conquer variant that appears as a conceptual cousin of binary search and as a follow-up for unimodal optimization problems.
+dataStructures:
+  - Array
+techniques:
+  - Ternary Search
+  - Divide and Conquer
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - three-way search
+  - trinary search
+useCases:
+  - Searching ordered arrays by thirds
+  - Comparing divide-and-conquer branching strategies
+  - Transitioning into unimodal-function optimization follow-ups
+complexity:
+  time: O(log n)
+  space: O(1)
+  notes: On ordinary sorted arrays, binary search is usually the better practical choice, so ternary search often matters more as a teaching or follow-up tool.
+interviewSignals:
+  - The interviewer asks for a three-way split or contrasts it with binary search.
+  - The problem later pivots to searching a unimodal function or range.
+relatedSlugs:
+  - binary-search
+  - exponential-search
+  - quickselect
+provenance:
+  - title: TheAlgorithms/JavaScript - Search/TernarySearch.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Search/TernarySearch.js
+    kind: Implementation
+  - title: free-programming-books - Algorithm Design
+    href: https://archive.org/details/AlgorithmDesign1stEditionByJonKleinbergAndEvaTardos2005PDF
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Ternary search is not as common as binary search on sorted arrays, but it surfaces when the interviewer wants to compare search strategies or transition into unimodal optimization. The key idea is the same: use ordered structure to discard most of the remaining space quickly.
+
+## Worked Example
+
+For a sorted array, choose `midLeft` and `midRight`. If the target is smaller than `midLeft`, discard the right two-thirds. If it is larger than `midRight`, discard the left two-thirds. Otherwise it must lie in the middle region.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function ternarySearch(nums, target) {
+  let left = 0;
+  let right = nums.length - 1;
+
+  while (left <= right) {
+    const third = Math.floor((right - left) / 3);
+    const midLeft = left + third;
+    const midRight = right - third;
+
+    if (nums[midLeft] === target) {
+      return midLeft;
+    }
+
+    if (nums[midRight] === target) {
+      return midRight;
+    }
+
+    if (target < nums[midLeft]) {
+      right = midLeft - 1;
+    } else if (target > nums[midRight]) {
+      left = midRight + 1;
+    } else {
+      left = midLeft + 1;
+      right = midRight - 1;
+    }
+  }
+
+  return -1;
+}
+```
+
+```ts
+export function ternarySearch(nums: number[], target: number): number {
+  let left = 0;
+  let right = nums.length - 1;
+
+  while (left <= right) {
+    const third = Math.floor((right - left) / 3);
+    const midLeft = left + third;
+    const midRight = right - third;
+
+    if (nums[midLeft] === target) {
+      return midLeft;
+    }
+
+    if (nums[midRight] === target) {
+      return midRight;
+    }
+
+    if (target < nums[midLeft]) {
+      right = midLeft - 1;
+    } else if (target > nums[midRight]) {
+      left = midRight + 1;
+    } else {
+      left = midLeft + 1;
+      right = midRight - 1;
+    }
+  }
+
+  return -1;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why binary search is usually preferred on sorted arrays.
+- Apply ternary search to a unimodal function instead of a sorted list.
+- Return the insertion region when the target is absent.
+
+## Common Pitfalls
+
+- Using ternary search where binary search is simpler and more practical.
+- Miscomputing the two midpoints and skipping candidate values.
+- Forgetting that unimodal optimization and sorted-array search are related but not identical settings.

@@ -1,0 +1,173 @@
+---
+title: Sudoku Solver
+slug: sudoku-solver
+category: Backtracking
+summary: Fill empty cells one by one while row, column, and box constraints prune illegal choices immediately.
+description: Sudoku Solver is the constraint-search interview problem that tests disciplined backtracking, incremental validity checks, and candidate pruning.
+dataStructures:
+  - Matrix
+  - Set
+techniques:
+  - Backtracking
+  - Constraint Propagation
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - sudoku backtracking
+  - puzzle solver
+useCases:
+  - Solving constraint-satisfaction puzzles
+  - Demonstrating choose-recurse-unchoose on a board state
+  - Practicing row, column, and subgrid bookkeeping
+complexity:
+  time: O(9^m)
+  space: O(m)
+  notes: The naive branching factor is large, so interviews focus on pruning and validity checks more than on the raw worst-case bound.
+interviewSignals:
+  - The prompt asks you to fill a grid under row, column, and subgrid constraints.
+  - The state must be mutated and restored carefully as the search backtracks.
+relatedSlugs:
+  - backtracking-search
+  - n-queens
+  - flood-fill
+provenance:
+  - title: TheAlgorithms/JavaScript - Dynamic-Programming/SudokuSolver.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Dynamic-Programming/SudokuSolver.js
+    kind: Implementation
+  - title: free-programming-books - Algorithmic Thinking
+    href: https://labuladong.gitbook.io/algo-en
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Sudoku Solver is the backtracking problem where local constraints are strong enough to prune aggressively. The interviewer usually wants to hear how you validate candidate digits incrementally instead of rescanning the whole board unnecessarily after each guess.
+
+## Worked Example
+
+When a blank cell can only legally take digits `3` or `8`, the search should try one, recurse, and undo that write immediately if the branch later fails.
+
+<Callout title="Backtracking hygiene" tone="warning">
+  Every tentative placement must be undone on the way back up. If the board state leaks across branches, the solver becomes impossible to reason about.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function solveSudoku(board) {
+  function isValid(row, col, value) {
+    for (let index = 0; index < 9; index += 1) {
+      if (board[row][index] === value || board[index][col] === value) {
+        return false;
+      }
+
+      const boxRow = Math.floor(row / 3) * 3 + Math.floor(index / 3);
+      const boxCol = Math.floor(col / 3) * 3 + (index % 3);
+
+      if (board[boxRow][boxCol] === value) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  function dfs() {
+    for (let row = 0; row < 9; row += 1) {
+      for (let col = 0; col < 9; col += 1) {
+        if (board[row][col] !== ".") {
+          continue;
+        }
+
+        for (let digit = 1; digit <= 9; digit += 1) {
+          const value = String(digit);
+
+          if (!isValid(row, col, value)) {
+            continue;
+          }
+
+          board[row][col] = value;
+
+          if (dfs()) {
+            return true;
+          }
+
+          board[row][col] = ".";
+        }
+
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  dfs();
+  return board;
+}
+```
+
+```ts
+export function solveSudoku(board: string[][]): boolean {
+  function isValid(row: number, col: number, value: string): boolean {
+    for (let index = 0; index < 9; index += 1) {
+      if (board[row][index] === value || board[index][col] === value) {
+        return false;
+      }
+
+      const boxRow = Math.floor(row / 3) * 3 + Math.floor(index / 3);
+      const boxCol = Math.floor(col / 3) * 3 + (index % 3);
+
+      if (board[boxRow][boxCol] === value) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  for (let row = 0; row < 9; row += 1) {
+    for (let col = 0; col < 9; col += 1) {
+      if (board[row][col] !== ".") {
+        continue;
+      }
+
+      for (let digit = 1; digit <= 9; digit += 1) {
+        const value = String(digit);
+
+        if (!isValid(row, col, value)) {
+          continue;
+        }
+
+        board[row][col] = value;
+
+        if (solveSudoku(board)) {
+          return true;
+        }
+
+        board[row][col] = ".";
+      }
+
+      return false;
+    }
+  }
+
+  return true;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Track row, column, and box candidates with sets or bitmasks.
+- Choose the next empty cell by fewest candidates first.
+- Return whether the puzzle has a unique solution.
+
+## Common Pitfalls
+
+- Rechecking the whole board more often than necessary.
+- Forgetting to undo a tentative digit on backtrack.
+- Mixing up the row and column math for the 3x3 subgrid.

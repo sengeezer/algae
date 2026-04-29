@@ -1,0 +1,103 @@
+---
+title: Climbing Stairs
+slug: climbing-stairs
+category: Dynamic Programming
+summary: Count ways to reach the top when each move can advance one or two steps.
+description: Climbing stairs is the interview starter problem for turning a small recursive pattern into constant-space dynamic programming.
+dataStructures:
+  - Array
+techniques:
+  - Dynamic Programming
+  - Fibonacci Pattern
+difficulty: Easy
+interviewFrequency: High
+aliases:
+  - stair climbing dp
+  - fibonacci steps
+useCases:
+  - Counting constrained paths in one dimension
+  - Introducing rolling-state dynamic programming
+  - Building intuition for house-robber and coin-change style recurrences
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The important move is recognizing that each step only depends on the previous two totals.
+interviewSignals:
+  - You can move one or two positions at a time.
+  - The prompt asks for the number of ways to reach a target height.
+relatedSlugs:
+  - house-robber
+  - coin-change
+  - unique-paths
+provenance:
+  - title: TheAlgorithms/JavaScript - Dynamic-Programming/ClimbingStairs.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Dynamic-Programming/ClimbingStairs.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Climbing Stairs is the friendly entry point into dynamic programming because the recurrence is easy to see but still exposes the full DP workflow: define the state, write the transition, and then compress the memory.
+
+## Worked Example
+
+To reach step `5`, the final move must have come from step `4` or step `3`, so the total number of ways is `ways[4] + ways[3]`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function climbStairs(steps) {
+  if (steps <= 2) {
+    return steps;
+  }
+
+  let previousTwo = 1;
+  let previousOne = 2;
+
+  for (let current = 3; current <= steps; current += 1) {
+    const next = previousOne + previousTwo;
+    previousTwo = previousOne;
+    previousOne = next;
+  }
+
+  return previousOne;
+}
+```
+
+```ts
+export function climbStairs(steps: number): number {
+  if (steps <= 2) {
+    return steps;
+  }
+
+  let previousTwo = 1;
+  let previousOne = 2;
+
+  for (let current = 3; current <= steps; current += 1) {
+    const next = previousOne + previousTwo;
+    previousTwo = previousOne;
+    previousOne = next;
+  }
+
+  return previousOne;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Allow jumps of one, two, or three steps.
+- Block some steps and explain how the recurrence changes.
+- Compare the rolling-state version with a full `dp` array.
+
+## Common Pitfalls
+
+- Writing exponential recursion and stopping before memoizing or tabulating it.
+- Forgetting the small base cases for `1` and `2` steps.
+- Missing the fact that the recurrence is Fibonacci-shaped, not factorial or combinatorial by brute force.
