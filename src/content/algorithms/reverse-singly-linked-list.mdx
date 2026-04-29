@@ -1,0 +1,102 @@
+---
+title: Reverse Singly Linked List
+slug: reverse-singly-linked-list
+category: Linked Lists
+summary: Rewire each `next` pointer as you walk forward so the list direction flips in one pass.
+description: Reverse Singly Linked List is the pointer-basics interview problem that tests careful in-place mutation and state preservation.
+dataStructures:
+  - Linked List
+techniques:
+  - Pointer Reversal
+  - Iteration
+difficulty: Easy
+interviewFrequency: Very High
+aliases:
+  - reverse list
+  - linked list reversal
+useCases:
+  - Reversing a list in place
+  - Preparing for palindrome or reorder-list follow-ups
+  - Teaching multi-pointer state updates safely
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The entire challenge is preserving the next node before overwriting the current link.
+interviewSignals:
+  - The prompt asks for in-place reversal of a singly linked list.
+  - Pointer mutation is allowed and expected.
+relatedSlugs:
+  - add-two-numbers
+  - merge-two-sorted-linked-lists
+  - linked-list-cycle-detection
+provenance:
+  - title: TheAlgorithms/JavaScript - Data-Structures/Linked-List/ReverseSinglyLinkedList.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Data-Structures/Linked-List/ReverseSinglyLinkedList.js
+    kind: Implementation
+  - title: free-programming-books - Linked List Problems
+    href: http://cslibrary.stanford.edu/105/LinkedListProblems.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the pointer-mutation baseline for linked lists. It looks simple, but it exposes whether you can update a structure in place without losing access to the remainder of the list.
+
+## Worked Example
+
+For `1 -> 2 -> 3 -> null`, once `1.next` is rewired to `null`, the only safe way forward is if you already saved the original `2` pointer before the rewrite.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function reverseList(head) {
+  let previous = null;
+  let current = head;
+
+  while (current !== null) {
+    const next = current.next;
+    current.next = previous;
+    previous = current;
+    current = next;
+  }
+
+  return previous;
+}
+```
+
+```ts
+type Node = {
+  value: number;
+  next: Node | null;
+};
+
+export function reverseList(head: Node | null): Node | null {
+  let previous: Node | null = null;
+  let current = head;
+
+  while (current !== null) {
+    const next: Node | null = current.next;
+    current.next = previous;
+    previous = current;
+    current = next;
+  }
+
+  return previous;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Reverse only a sublist between two positions.
+- Reverse the list recursively.
+- Explain how this helps in palindrome-linked-list problems.
+
+## Common Pitfalls
+
+- Overwriting `next` before saving it.
+- Returning the old head instead of the new one.
+- Allocating a second list when the prompt asks for in-place reversal.

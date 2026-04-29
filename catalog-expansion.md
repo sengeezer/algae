@@ -75,9 +75,31 @@ This fourth expansion slice lifts the catalog from 56 to 62 entries.
 - Sudoku Solver
 - Ternary Search
 
+## Batch 5 added
+
+This fifth expansion slice lifts the catalog from 62 to 68 entries.
+
+- Add Two Numbers
+- Breadth-First Shortest Path
+- Circular Queue
+- Fibonacci Search
+- Generate Parentheses
+- Reverse Singly Linked List
+
+## Batch 6 added
+
+This sixth expansion slice lifts the catalog from 68 to 74 entries.
+
+- Cycle Detection II
+- Generate Permutations
+- Interpolation Search
+- Jump Search
+- Min Priority Queue
+- Permutation in String
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 4 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 6 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -100,9 +122,9 @@ All expansion entries from batch 1 through batch 4 now carry explicit per-entry 
 
 ## Next candidates from the same sources
 
-- Add Two Numbers
-- Breadth-First Shortest Path
-- Circular Queue
-- Fibonacci Search
-- Generate Parentheses
-- Reverse Singly Linked List
+- Dijkstra Smallest Path
+- Fast Fibonacci Number
+- Key Priority Queue
+- Letter Combination
+- Max Consecutive Ones III
+- Rat in a Maze

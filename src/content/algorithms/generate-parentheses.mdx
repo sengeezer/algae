@@ -1,0 +1,119 @@
+---
+title: Generate Parentheses
+slug: generate-parentheses
+category: Backtracking
+summary: Build balanced strings by adding open and close parentheses only when the partial prefix stays valid.
+description: Generate Parentheses is the classic backtracking problem for enforcing prefix validity while enumerating every legal construction.
+dataStructures:
+  - String
+  - Array
+  - Recursion Stack
+techniques:
+  - Backtracking
+  - Constraint Propagation
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - balanced parentheses generation
+  - well-formed parentheses
+useCases:
+  - Generating all balanced strings of length `2n`
+  - Demonstrating backtracking with prefix constraints
+  - Showing why pruning invalid prefixes beats brute force
+complexity:
+  time: O(Cn)
+  space: O(n)
+  notes: The important interview point is pruning prefixes where closes would outnumber opens.
+interviewSignals:
+  - The prompt asks for all valid parentheses strings, not just a count or validity check.
+  - Partial prefixes can be rejected before they reach full length.
+relatedSlugs:
+  - backtracking-search
+  - longest-valid-parentheses
+  - n-queens
+provenance:
+  - title: TheAlgorithms/JavaScript - Backtracking/generateParentheses.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Backtracking/generateParentheses.js
+    kind: Implementation
+  - title: free-programming-books - Algorithmic Thinking
+    href: https://labuladong.gitbook.io/algo-en
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Generate Parentheses is a clean pruning problem. A brute-force solution would build every length-`2n` string and filter the bad ones later, but the interview version expects you to reject invalid prefixes immediately.
+
+## Worked Example
+
+For `n = 3`, a prefix like `())` is already invalid because it closes more groups than it has opened. The search should cut that branch right away instead of exploring it further.
+
+<Callout title="Prefix invariant" tone="warning">
+  The number of closing parentheses used can never exceed the number of opening parentheses used at any prefix.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function generateParentheses(pairs) {
+  const results = [];
+
+  function backtrack(path, openUsed, closeUsed) {
+    if (path.length === pairs * 2) {
+      results.push(path);
+      return;
+    }
+
+    if (openUsed < pairs) {
+      backtrack(path + "(", openUsed + 1, closeUsed);
+    }
+
+    if (closeUsed < openUsed) {
+      backtrack(path + ")", openUsed, closeUsed + 1);
+    }
+  }
+
+  backtrack("", 0, 0);
+  return results;
+}
+```
+
+```ts
+export function generateParentheses(pairs: number): string[] {
+  const results: string[] = [];
+
+  function backtrack(path: string, openUsed: number, closeUsed: number): void {
+    if (path.length === pairs * 2) {
+      results.push(path);
+      return;
+    }
+
+    if (openUsed < pairs) {
+      backtrack(path + "(", openUsed + 1, closeUsed);
+    }
+
+    if (closeUsed < openUsed) {
+      backtrack(path + ")", openUsed, closeUsed + 1);
+    }
+  }
+
+  backtrack("", 0, 0);
+  return results;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Count the valid strings without generating all of them.
+- Generate multiple bracket types instead of only parentheses.
+- Explain the Catalan-number growth of the result size.
+
+## Common Pitfalls
+
+- Closing more groups than have been opened.
+- Generating all `2^(2n)` strings and filtering afterward.
+- Forgetting that the recursion ends when the string length reaches `2n`, not when opens run out.

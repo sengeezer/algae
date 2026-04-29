@@ -1,0 +1,107 @@
+---
+title: Jump Search
+slug: jump-search
+category: Searching
+summary: Jump forward through a sorted array in fixed-size blocks, then do a short linear scan inside the final block.
+description: Jump search is the sorted-array technique that trades some directness for a simple block-and-scan strategy without recursive midpoint logic.
+dataStructures:
+  - Array
+techniques:
+  - Jump Search
+  - Block Search
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - block jump search
+  - sqrt search
+useCases:
+  - Searching sorted arrays with square-root-sized blocks
+  - Comparing alternative sorted-array search strategies
+  - Introducing two-phase search with a coarse pass and a local pass
+complexity:
+  time: O(sqrt(n))
+  space: O(1)
+  notes: The best block size is about `sqrt(n)`, balancing the number of jumps against the final linear scan.
+interviewSignals:
+  - The array is sorted and the interviewer asks for a block-based search.
+  - You want a simpler alternative to binary search for discussion or comparison.
+relatedSlugs:
+  - binary-search
+  - interpolation-search
+  - exponential-search
+provenance:
+  - title: TheAlgorithms/JavaScript - Search/JumpSearch.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Search/JumpSearch.js
+    kind: Implementation
+  - title: free-programming-books - Algorithm Design
+    href: https://archive.org/details/AlgorithmDesign1stEditionByJonKleinbergAndEvaTardos2005PDF
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Jump search is mostly a comparison tool for sorted arrays. It is easy to reason about: skip ahead in coarse blocks until the target could be inside one, then finish with a local linear scan.
+
+## Worked Example
+
+If `n = 25`, a block size around `5` is natural. Probe indices `4`, `9`, `14`, and so on until the array value crosses the target, then scan backward or within that block to find the exact match.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function jumpSearch(nums, target) {
+  const step = Math.floor(Math.sqrt(nums.length));
+  let left = 0;
+  let right = step;
+
+  while (left < nums.length && nums[Math.min(right, nums.length) - 1] < target) {
+    left = right;
+    right += step;
+  }
+
+  for (let index = left; index < Math.min(right, nums.length); index += 1) {
+    if (nums[index] === target) {
+      return index;
+    }
+  }
+
+  return -1;
+}
+```
+
+```ts
+export function jumpSearch(nums: number[], target: number): number {
+  const step = Math.floor(Math.sqrt(nums.length));
+  let left = 0;
+  let right = step;
+
+  while (left < nums.length && nums[Math.min(right, nums.length) - 1] < target) {
+    left = right;
+    right += step;
+  }
+
+  for (let index = left; index < Math.min(right, nums.length); index += 1) {
+    if (nums[index] === target) {
+      return index;
+    }
+  }
+
+  return -1;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why the best jump size is about `sqrt(n)`.
+- Compare this strategy with binary search.
+- Return the insertion region when the target is absent.
+
+## Common Pitfalls
+
+- Forgetting to clamp the right edge on the last block.
+- Jumping past the correct block and never scanning it.
+- Claiming logarithmic time instead of `O(sqrt(n))`.

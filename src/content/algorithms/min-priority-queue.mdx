@@ -1,0 +1,214 @@
+---
+title: Min Priority Queue
+slug: min-priority-queue
+category: Heap
+summary: Keep the smallest-priority item at the top so inserts, peeks, and extracts all work through heap order.
+description: Min priority queues are the interview data structure behind Dijkstra, best-first search, event scheduling, and repeated minimum extraction.
+dataStructures:
+  - Heap
+  - Array
+techniques:
+  - Priority Queue
+  - Heap
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - min heap priority queue
+  - extract-min queue
+useCases:
+  - Repeatedly pulling the current minimum item
+  - Dijkstra and other best-first graph traversals
+  - Event simulation or task scheduling by earliest priority
+complexity:
+  time: O(log n) insert and extract, O(1) peek
+  space: O(n)
+  notes: The interview question is usually whether you understand why the queue keeps only a partial order, not a full sort.
+interviewSignals:
+  - The prompt repeatedly needs the smallest outstanding candidate.
+  - Sorting the full candidate set up front would be wasteful because new items keep arriving.
+relatedSlugs:
+  - priority-queue
+  - binary-heap
+  - dijkstra
+provenance:
+  - title: TheAlgorithms/JavaScript - Data-Structures/Heap/MinPriorityQueue.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Data-Structures/Heap/MinPriorityQueue.js
+    kind: Implementation
+  - title: "free-programming-books - Open Data Structures: An Introduction"
+    href: https://opendatastructures.org/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the concrete version of the broader priority-queue pattern. Instead of just naming the abstraction, interviewers often want the min-oriented implementation that powers shortest-path and scheduling problems.
+
+## Worked Example
+
+If the queue stores priorities `5`, `2`, and `7`, then the next extraction must return `2`. After removal, the last item moves to the root and sifts down until heap order is restored.
+
+<Callout title="Heap invariant" tone="tip">
+  Only parent-child order matters. A min priority queue is not globally sorted, even though the smallest element is always at the root.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class MinPriorityQueue {
+  constructor() {
+    this.heap = [];
+  }
+
+  enqueue(value) {
+    this.heap.push(value);
+    this.siftUp(this.heap.length - 1);
+  }
+
+  dequeue() {
+    if (this.heap.length === 0) {
+      return undefined;
+    }
+
+    const minimum = this.heap[0];
+    const last = this.heap.pop();
+
+    if (this.heap.length > 0 && last !== undefined) {
+      this.heap[0] = last;
+      this.siftDown(0);
+    }
+
+    return minimum;
+  }
+
+  peek() {
+    return this.heap[0];
+  }
+
+  siftUp(index) {
+    let child = index;
+
+    while (child > 0) {
+      const parent = Math.floor((child - 1) / 2);
+
+      if (this.heap[parent] <= this.heap[child]) {
+        break;
+      }
+
+      [this.heap[parent], this.heap[child]] = [this.heap[child], this.heap[parent]];
+      child = parent;
+    }
+  }
+
+  siftDown(index) {
+    let parent = index;
+
+    while (true) {
+      let candidate = parent;
+      const left = parent * 2 + 1;
+      const right = parent * 2 + 2;
+
+      if (left < this.heap.length && this.heap[left] < this.heap[candidate]) {
+        candidate = left;
+      }
+
+      if (right < this.heap.length && this.heap[right] < this.heap[candidate]) {
+        candidate = right;
+      }
+
+      if (candidate === parent) {
+        return;
+      }
+
+      [this.heap[parent], this.heap[candidate]] = [this.heap[candidate], this.heap[parent]];
+      parent = candidate;
+    }
+  }
+}
+```
+
+```ts
+export class MinPriorityQueue<T extends number> {
+  private readonly heap: T[] = [];
+
+  enqueue(value: T): void {
+    this.heap.push(value);
+    this.siftUp(this.heap.length - 1);
+  }
+
+  dequeue(): T | undefined {
+    if (this.heap.length === 0) {
+      return undefined;
+    }
+
+    const minimum = this.heap[0];
+    const last = this.heap.pop();
+
+    if (this.heap.length > 0 && last !== undefined) {
+      this.heap[0] = last;
+      this.siftDown(0);
+    }
+
+    return minimum;
+  }
+
+  peek(): T | undefined {
+    return this.heap[0];
+  }
+
+  private siftUp(index: number): void {
+    let child = index;
+
+    while (child > 0) {
+      const parent = Math.floor((child - 1) / 2);
+
+      if (this.heap[parent] <= this.heap[child]) {
+        break;
+      }
+
+      [this.heap[parent], this.heap[child]] = [this.heap[child], this.heap[parent]];
+      child = parent;
+    }
+  }
+
+  private siftDown(index: number): void {
+    let parent = index;
+
+    while (true) {
+      let candidate = parent;
+      const left = parent * 2 + 1;
+      const right = parent * 2 + 2;
+
+      if (left < this.heap.length && this.heap[left] < this.heap[candidate]) {
+        candidate = left;
+      }
+
+      if (right < this.heap.length && this.heap[right] < this.heap[candidate]) {
+        candidate = right;
+      }
+
+      if (candidate === parent) {
+        return;
+      }
+
+      [this.heap[parent], this.heap[candidate]] = [this.heap[candidate], this.heap[parent]];
+      parent = candidate;
+    }
+  }
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Store `[priority, value]` pairs instead of raw numbers.
+- Add a decrease-key operation.
+- Compare the structure with a sorted array or balanced tree.
+
+## Common Pitfalls
+
+- Treating the internal array as fully sorted.
+- Forgetting to restore heap order after extraction.
+- Picking the wrong child during sift-down.

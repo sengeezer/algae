@@ -1,0 +1,135 @@
+---
+title: Interpolation Search
+slug: interpolation-search
+category: Searching
+summary: Estimate the probe position from the target value instead of always splitting the remaining sorted range in half.
+description: Interpolation search is the sorted-array variant for roughly uniform data distributions where value-based probing can jump closer to the target than ordinary binary search.
+dataStructures:
+  - Array
+techniques:
+  - Interpolation Search
+  - Divide and Conquer
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - value-based search
+  - adaptive probe search
+useCases:
+  - Searching uniformly distributed sorted values
+  - Comparing alternative sorted-array search strategies
+  - Reasoning about value-aware probe placement
+complexity:
+  time: O(log log n) average, O(n) worst case
+  space: O(1)
+  notes: It can outperform binary search on well-distributed data but degrade badly on skewed distributions.
+interviewSignals:
+  - The array is sorted and values are roughly uniformly distributed.
+  - The interviewer wants a probe based on the target value, not just interval length.
+relatedSlugs:
+  - binary-search
+  - exponential-search
+  - jump-search
+provenance:
+  - title: TheAlgorithms/JavaScript - Search/InterpolationSearch.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Search/InterpolationSearch.js
+    kind: Implementation
+  - title: free-programming-books - Algorithm Design
+    href: https://archive.org/details/AlgorithmDesign1stEditionByJonKleinbergAndEvaTardos2005PDF
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Interpolation search is a lower-frequency follow-up for sorted arrays. Instead of probing the midpoint, it predicts where the target should sit based on how far its value lies between the current endpoints.
+
+## Worked Example
+
+If the range is `[10, 20, 30, 40, 50]` and the target is `40`, the next probe should land closer to the right side than the middle because `40` is much closer to `50` than to `10`.
+
+<Callout title="When it helps" tone="note">
+  This strategy only pays off when the data distribution is fairly even. On skewed data, the estimate can be poor and the worst case becomes linear.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function interpolationSearch(nums, target) {
+  let left = 0;
+  let right = nums.length - 1;
+
+  while (
+    left <= right
+    && target >= nums[left]
+    && target <= nums[right]
+  ) {
+    if (nums[left] === nums[right]) {
+      return nums[left] === target ? left : -1;
+    }
+
+    const position = left + Math.floor(
+      ((target - nums[left]) * (right - left)) / (nums[right] - nums[left]),
+    );
+
+    if (nums[position] === target) {
+      return position;
+    }
+
+    if (nums[position] < target) {
+      left = position + 1;
+    } else {
+      right = position - 1;
+    }
+  }
+
+  return -1;
+}
+```
+
+```ts
+export function interpolationSearch(nums: number[], target: number): number {
+  let left = 0;
+  let right = nums.length - 1;
+
+  while (
+    left <= right
+    && target >= nums[left]
+    && target <= nums[right]
+  ) {
+    if (nums[left] === nums[right]) {
+      return nums[left] === target ? left : -1;
+    }
+
+    const position = left + Math.floor(
+      ((target - nums[left]) * (right - left)) / (nums[right] - nums[left]),
+    );
+
+    if (nums[position] === target) {
+      return position;
+    }
+
+    if (nums[position] < target) {
+      left = position + 1;
+    } else {
+      right = position - 1;
+    }
+  }
+
+  return -1;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare the average-case behavior with binary search.
+- Explain exactly why skewed distributions hurt it.
+- Return the insertion point when the target is absent.
+
+## Common Pitfalls
+
+- Dividing by zero when both endpoints hold the same value.
+- Using interpolation search on unsorted or badly skewed data.
+- Letting the estimated probe fall outside the current range.

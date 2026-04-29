@@ -1,0 +1,145 @@
+---
+title: Circular Queue
+slug: circular-queue
+category: Queues
+summary: Reuse a fixed-size array by wrapping head and tail indices around with modular arithmetic.
+description: Circular queues are the bounded-buffer interview structure for constant-time queue operations without shifting array contents.
+dataStructures:
+  - Queue
+  - Array
+techniques:
+  - Ring Buffer
+  - Modular Arithmetic
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - ring buffer
+  - bounded queue
+useCases:
+  - Fixed-capacity task buffers
+  - Queue implementations without array shifting
+  - Streaming pipelines with bounded memory
+complexity:
+  time: O(1)
+  space: O(capacity)
+  notes: The head and tail wrap around, so correctness depends on careful index arithmetic rather than moving data.
+interviewSignals:
+  - The queue has a fixed capacity.
+  - The prompt forbids shifting or resizing the underlying array on every dequeue.
+relatedSlugs:
+  - queue-using-two-stacks
+  - binary-heap
+  - priority-queue
+provenance:
+  - title: TheAlgorithms/JavaScript - Data-Structures/Queue/CircularQueue.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Data-Structures/Queue/CircularQueue.js
+    kind: Implementation
+  - title: "free-programming-books - Open Data Structures: An Introduction"
+    href: https://opendatastructures.org/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Circular queues appear when the interviewer wants constant-time queue operations with a fixed array budget. The structure works because indices wrap back to the front once they reach the end instead of forcing element shifts.
+
+## Worked Example
+
+If a capacity-4 queue has `head = 3` and `count = 2`, then the live elements occupy indices `3` and `0`. The next enqueue writes at `(head + count) % capacity`, which is `1`.
+
+<Callout title="State choice" tone="note">
+  Tracking `count` is the cleanest way to distinguish full from empty. Otherwise `head === tail` becomes ambiguous.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class CircularQueue {
+  constructor(capacity) {
+    this.values = new Array(capacity);
+    this.head = 0;
+    this.count = 0;
+  }
+
+  enqueue(value) {
+    if (this.count === this.values.length) {
+      return false;
+    }
+
+    const tail = (this.head + this.count) % this.values.length;
+    this.values[tail] = value;
+    this.count += 1;
+    return true;
+  }
+
+  dequeue() {
+    if (this.count === 0) {
+      return undefined;
+    }
+
+    const value = this.values[this.head];
+    this.head = (this.head + 1) % this.values.length;
+    this.count -= 1;
+    return value;
+  }
+
+  peek() {
+    return this.count === 0 ? undefined : this.values[this.head];
+  }
+}
+```
+
+```ts
+export class CircularQueue<T> {
+  private readonly values: Array<T | undefined>;
+  private head = 0;
+  private count = 0;
+
+  constructor(capacity: number) {
+    this.values = new Array<T | undefined>(capacity);
+  }
+
+  enqueue(value: T): boolean {
+    if (this.count === this.values.length) {
+      return false;
+    }
+
+    const tail = (this.head + this.count) % this.values.length;
+    this.values[tail] = value;
+    this.count += 1;
+    return true;
+  }
+
+  dequeue(): T | undefined {
+    if (this.count === 0) {
+      return undefined;
+    }
+
+    const value = this.values[this.head];
+    this.values[this.head] = undefined;
+    this.head = (this.head + 1) % this.values.length;
+    this.count -= 1;
+    return value;
+  }
+
+  peek(): T | undefined {
+    return this.count === 0 ? undefined : this.values[this.head];
+  }
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Add a `size` or `isFull` API.
+- Resize the queue dynamically while preserving order.
+- Compare this design with a linked-list queue.
+
+## Common Pitfalls
+
+- Confusing full and empty states when indices match.
+- Forgetting to wrap indices with modulo arithmetic.
+- Shifting the underlying array and losing the whole point of the structure.

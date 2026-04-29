@@ -1,0 +1,116 @@
+---
+title: Add Two Numbers
+slug: add-two-numbers
+category: Linked Lists
+summary: Walk two reversed digit lists together, add with carry, and build the sum one node at a time.
+description: Add Two Numbers is the linked-list arithmetic interview problem that tests dummy heads, carry propagation, and uneven-list handling.
+dataStructures:
+  - Linked List
+techniques:
+  - Two Pointers
+  - Carry Propagation
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - linked list addition
+  - sum lists
+useCases:
+  - Adding large integers stored in linked lists
+  - Practicing carry logic without converting to native numbers
+  - Reusing dummy-head list construction patterns
+complexity:
+  time: O(max(m, n))
+  space: O(max(m, n))
+  notes: The carry can outlive both lists, so the result may need one extra node at the end.
+interviewSignals:
+  - Digits are stored in linked lists instead of arrays or integers.
+  - The prompt forbids converting the whole input into a built-in numeric type.
+relatedSlugs:
+  - merge-two-sorted-linked-lists
+  - reverse-singly-linked-list
+  - linked-list-cycle-detection
+provenance:
+  - title: TheAlgorithms/JavaScript - Data-Structures/Linked-List/AddTwoNumbers.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Data-Structures/Linked-List/AddTwoNumbers.js
+    kind: Implementation
+  - title: free-programming-books - Linked List Problems
+    href: http://cslibrary.stanford.edu/105/LinkedListProblems.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem is less about arithmetic than about list discipline. The interviewer wants to see whether you can walk two lists of different lengths, preserve carry state, and assemble a fresh result list without special-casing the head every time.
+
+## Worked Example
+
+If the inputs represent `342` and `465` as `2 -> 4 -> 3` and `5 -> 6 -> 4`, the output becomes `7 -> 0 -> 8` because the sum is `807` in reverse-digit form.
+
+<Callout title="Carry rule" tone="tip">
+  Keep iterating while either list still has digits or the carry is non-zero. Stopping when both lists end is the classic off-by-one bug here.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function addTwoNumbers(first, second) {
+  const dummy = { value: 0, next: null };
+  let tail = dummy;
+  let left = first;
+  let right = second;
+  let carry = 0;
+
+  while (left !== null || right !== null || carry > 0) {
+    const total = (left?.value ?? 0) + (right?.value ?? 0) + carry;
+    carry = Math.floor(total / 10);
+    tail.next = { value: total % 10, next: null };
+    tail = tail.next;
+    left = left?.next ?? null;
+    right = right?.next ?? null;
+  }
+
+  return dummy.next;
+}
+```
+
+```ts
+type Node = {
+  value: number;
+  next: Node | null;
+};
+
+export function addTwoNumbers(first: Node | null, second: Node | null): Node | null {
+  const dummy: Node = { value: 0, next: null };
+  let tail = dummy;
+  let left = first;
+  let right = second;
+  let carry = 0;
+
+  while (left !== null || right !== null || carry > 0) {
+    const total = (left?.value ?? 0) + (right?.value ?? 0) + carry;
+    carry = Math.floor(total / 10);
+    tail.next = { value: total % 10, next: null };
+    tail = tail.next;
+    left = left?.next ?? null;
+    right = right?.next ?? null;
+  }
+
+  return dummy.next;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Handle the version where digits are stored in forward order.
+- Reuse one of the input lists instead of allocating all-new nodes.
+- Explain how the approach changes if the base is not 10.
+
+## Common Pitfalls
+
+- Forgetting the leftover carry node after both lists finish.
+- Treating the linked-list order as most-significant-digit first when it is reversed.
+- Mishandling lists of different lengths.

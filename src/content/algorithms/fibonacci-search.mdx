@@ -1,0 +1,135 @@
+---
+title: Fibonacci Search
+slug: fibonacci-search
+category: Searching
+summary: Probe a sorted array with shrinking Fibonacci offsets instead of always splitting it exactly in half.
+description: Fibonacci search is the sorted-array variant that narrows the search range using Fibonacci numbers and shows up as a lower-frequency alternative to binary search.
+dataStructures:
+  - Array
+techniques:
+  - Fibonacci Search
+  - Divide and Conquer
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - fib search
+  - fibonacci probe search
+useCases:
+  - Exploring sorted-array search variants
+  - Comparing alternate divide-and-conquer probe strategies
+  - Settings where addition-based offset updates are emphasized
+complexity:
+  time: O(log n)
+  space: O(1)
+  notes: The asymptotic bound matches binary search, so the real interview value is reasoning about the offsets and window updates.
+interviewSignals:
+  - The interviewer asks for a search strategy based on Fibonacci numbers.
+  - The task explicitly compares different sorted-array search variants.
+relatedSlugs:
+  - binary-search
+  - exponential-search
+  - ternary-search
+provenance:
+  - title: TheAlgorithms/JavaScript - Search/FibonacciSearch.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Search/FibonacciSearch.js
+    kind: Implementation
+  - title: free-programming-books - Algorithm Design
+    href: https://archive.org/details/AlgorithmDesign1stEditionByJonKleinbergAndEvaTardos2005PDF
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Fibonacci search is usually a follow-up rather than a first-choice tool. It surfaces when the interviewer wants to compare search schemes or see whether you can reason through a less familiar probe sequence on sorted data.
+
+## Worked Example
+
+For a sorted array of length `n`, find the smallest Fibonacci number at least `n`. Each comparison then discards a block whose size is another Fibonacci number, shrinking the remaining search window without recomputing exact midpoints.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function fibonacciSearch(nums, target) {
+  let fibMm2 = 0;
+  let fibMm1 = 1;
+  let fibM = fibMm1 + fibMm2;
+
+  while (fibM < nums.length) {
+    fibMm2 = fibMm1;
+    fibMm1 = fibM;
+    fibM = fibMm1 + fibMm2;
+  }
+
+  let offset = -1;
+
+  while (fibM > 1) {
+    const index = Math.min(offset + fibMm2, nums.length - 1);
+
+    if (nums[index] < target) {
+      fibM = fibMm1;
+      fibMm1 = fibMm2;
+      fibMm2 = fibM - fibMm1;
+      offset = index;
+    } else if (nums[index] > target) {
+      fibM = fibMm2;
+      fibMm1 -= fibMm2;
+      fibMm2 = fibM - fibMm1;
+    } else {
+      return index;
+    }
+  }
+
+  return fibMm1 === 1 && nums[offset + 1] === target ? offset + 1 : -1;
+}
+```
+
+```ts
+export function fibonacciSearch(nums: number[], target: number): number {
+  let fibMm2 = 0;
+  let fibMm1 = 1;
+  let fibM = fibMm1 + fibMm2;
+
+  while (fibM < nums.length) {
+    fibMm2 = fibMm1;
+    fibMm1 = fibM;
+    fibM = fibMm1 + fibMm2;
+  }
+
+  let offset = -1;
+
+  while (fibM > 1) {
+    const index = Math.min(offset + fibMm2, nums.length - 1);
+
+    if (nums[index] < target) {
+      fibM = fibMm1;
+      fibMm1 = fibMm2;
+      fibMm2 = fibM - fibMm1;
+      offset = index;
+    } else if (nums[index] > target) {
+      fibM = fibMm2;
+      fibMm1 -= fibMm2;
+      fibMm2 = fibM - fibMm1;
+    } else {
+      return index;
+    }
+  }
+
+  return fibMm1 === 1 && nums[offset + 1] === target ? offset + 1 : -1;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare the probe sequence with binary search.
+- Return the insertion point when the target is absent.
+- Explain why this is still logarithmic time.
+
+## Common Pitfalls
+
+- Updating the Fibonacci offsets in the wrong order.
+- Letting the probe index exceed the array boundary.
+- Reaching for Fibonacci search when ordinary binary search would be clearer.

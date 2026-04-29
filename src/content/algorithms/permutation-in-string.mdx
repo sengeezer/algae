@@ -1,0 +1,157 @@
+---
+title: Permutation in String
+slug: permutation-in-string
+category: Array Patterns
+summary: Slide a fixed-size window across the text while tracking whether its character counts match the target pattern.
+description: Permutation in String is the substring-interview problem that tests fixed-size sliding windows and incremental frequency matching.
+dataStructures:
+  - String
+  - Hash Map
+  - Array
+techniques:
+  - Sliding Window
+  - Frequency Counting
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - find permutation substring
+  - anagram in string
+useCases:
+  - Detecting whether a pattern appears as an anagram in a longer string
+  - Practicing fixed-size sliding-window bookkeeping
+  - Comparing frequency arrays with rolling updates
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: With a fixed alphabet, the frequency bookkeeping is constant space even though the window moves across the whole string.
+interviewSignals:
+  - The prompt asks whether some permutation of one string appears in another.
+  - The substring length is fixed, so the window size never changes.
+relatedSlugs:
+  - sliding-window
+  - generate-permutations
+  - kmp-string-search
+provenance:
+  - title: TheAlgorithms/JavaScript - Dynamic-Programming/Sliding-Window/PermutationinString.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Dynamic-Programming/Sliding-Window/PermutationinString.js
+    kind: Implementation
+  - title: free-programming-books - Algorithmic Thinking
+    href: https://labuladong.gitbook.io/algo-en
+    kind: Reference
+---
+
+## Why It Surfaces
+
+The brute-force instinct is to generate every permutation of the short string and search for each one, but that explodes immediately. The real solution treats the problem as a fixed-size anagram window whose character counts can be updated in constant time per step.
+
+## Worked Example
+
+For `pattern = "ab"` and `text = "eidbaooo"`, the window `"ba"` matches because it has the same character counts as `"ab"`, even though the letters appear in a different order.
+
+<Callout title="Window invariant" tone="warning">
+  The window size must always equal the pattern length. This is a fixed-size sliding-window problem, not a grow-and-shrink one.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function containsPermutation(pattern, text) {
+  if (pattern.length > text.length) {
+    return false;
+  }
+
+  const counts = new Array(26).fill(0);
+
+  for (let index = 0; index < pattern.length; index += 1) {
+    counts[pattern.charCodeAt(index) - 97] += 1;
+    counts[text.charCodeAt(index) - 97] -= 1;
+  }
+
+  let mismatches = counts.filter((value) => value !== 0).length;
+  if (mismatches === 0) {
+    return true;
+  }
+
+  for (let right = pattern.length; right < text.length; right += 1) {
+    const addIndex = text.charCodeAt(right) - 97;
+    const removeIndex = text.charCodeAt(right - pattern.length) - 97;
+
+    mismatches -= counts[addIndex] === 0 ? 0 : counts[addIndex] === -1 ? 1 : 0;
+    counts[addIndex] -= 1;
+    mismatches += counts[addIndex] === 0 ? 0 : counts[addIndex] === -1 ? 1 : 0;
+
+    mismatches -= counts[removeIndex] === 0 ? 0 : counts[removeIndex] === 1 ? 1 : 0;
+    counts[removeIndex] += 1;
+    mismatches += counts[removeIndex] === 0 ? 0 : counts[removeIndex] === 1 ? 1 : 0;
+
+    if (mismatches === 0) {
+      return true;
+    }
+  }
+
+  return false;
+}
+```
+
+```ts
+export function containsPermutation(pattern: string, text: string): boolean {
+  if (pattern.length > text.length) {
+    return false;
+  }
+
+  const counts = new Array<number>(26).fill(0);
+
+  for (let index = 0; index < pattern.length; index += 1) {
+    counts[pattern.charCodeAt(index) - 97] += 1;
+    counts[text.charCodeAt(index) - 97] -= 1;
+  }
+
+  let mismatches = counts.reduce((total, value) => total + (value === 0 ? 0 : 1), 0);
+  if (mismatches === 0) {
+    return true;
+  }
+
+  for (let right = pattern.length; right < text.length; right += 1) {
+    const addIndex = text.charCodeAt(right) - 97;
+    const removeIndex = text.charCodeAt(right - pattern.length) - 97;
+
+    if (counts[addIndex] === 0) {
+      mismatches += 1;
+    }
+    counts[addIndex] -= 1;
+    if (counts[addIndex] === 0) {
+      mismatches -= 1;
+    }
+
+    if (counts[removeIndex] === 0) {
+      mismatches += 1;
+    }
+    counts[removeIndex] += 1;
+    if (counts[removeIndex] === 0) {
+      mismatches -= 1;
+    }
+
+    if (mismatches === 0) {
+      return true;
+    }
+  }
+
+  return false;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the starting index of the first matching window.
+- Support arbitrary Unicode characters instead of lowercase English letters.
+- Compare this fixed-size window with a variable-size substring problem.
+
+## Common Pitfalls
+
+- Generating permutations instead of counting characters in a window.
+- Letting the window size drift away from the pattern length.
+- Recomputing the full frequency map on every shift.

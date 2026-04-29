@@ -1,0 +1,127 @@
+---
+title: Generate Permutations
+slug: generate-permutations
+category: Backtracking
+summary: Build orderings by choosing each unused element in turn, recursing, and undoing the choice immediately.
+description: Generate Permutations is the classic backtracking problem for exploring all orderings while managing used-state cleanly.
+dataStructures:
+  - Array
+  - Set
+  - Recursion Stack
+techniques:
+  - Backtracking
+  - Depth-First Search
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - permutation generation
+  - all orderings
+useCases:
+  - Enumerating all orderings of a small set
+  - Demonstrating choose-recurse-unchoose on position-based state
+  - Practicing used-element tracking without duplicates
+complexity:
+  time: O(n * n!)
+  space: O(n)
+  notes: The dominant interview question is how you track which elements are already used in the current partial permutation.
+interviewSignals:
+  - The prompt asks for all orderings, not combinations or subsets.
+  - Element position matters, so every step chooses from all still-unused values.
+relatedSlugs:
+  - backtracking-search
+  - generate-parentheses
+  - n-queens
+provenance:
+  - title: TheAlgorithms/JavaScript - Backtracking/GeneratePermutations.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Backtracking/GeneratePermutations.js
+    kind: Implementation
+  - title: free-programming-books - Algorithmic Thinking
+    href: https://labuladong.gitbook.io/algo-en
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Permutations are the cleanest example of full search with state restoration. Unlike subset questions, every slot in the output must be filled, so the recursion is really about which unused value should occupy the next position.
+
+## Worked Example
+
+For `[1, 2, 3]`, the first choice can be `1`, `2`, or `3`. Once `2` is chosen first, the second position only considers `1` and `3`, and so on until the path reaches length `3`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function permutations(nums) {
+  const results = [];
+  const path = [];
+  const used = new Array(nums.length).fill(false);
+
+  function backtrack() {
+    if (path.length === nums.length) {
+      results.push([...path]);
+      return;
+    }
+
+    for (let index = 0; index < nums.length; index += 1) {
+      if (used[index]) {
+        continue;
+      }
+
+      used[index] = true;
+      path.push(nums[index]);
+      backtrack();
+      path.pop();
+      used[index] = false;
+    }
+  }
+
+  backtrack();
+  return results;
+}
+```
+
+```ts
+export function permutations(nums: number[]): number[][] {
+  const results: number[][] = [];
+  const path: number[] = [];
+  const used = new Array<boolean>(nums.length).fill(false);
+
+  function backtrack(): void {
+    if (path.length === nums.length) {
+      results.push([...path]);
+      return;
+    }
+
+    for (let index = 0; index < nums.length; index += 1) {
+      if (used[index]) {
+        continue;
+      }
+
+      used[index] = true;
+      path.push(nums[index]);
+      backtrack();
+      path.pop();
+      used[index] = false;
+    }
+  }
+
+  backtrack();
+  return results;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Avoid duplicate permutations when the input contains repeated values.
+- Generate the permutations lazily instead of materializing them all.
+- Compare permutations with combinations and subsets.
+
+## Common Pitfalls
+
+- Forgetting to mark elements unused again on backtrack.
+- Solving combinations instead of order-sensitive permutations.
+- Copying the path too late and mutating the saved answer.

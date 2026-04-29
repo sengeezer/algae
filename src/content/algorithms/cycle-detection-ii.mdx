@@ -1,0 +1,124 @@
+---
+title: Cycle Detection II
+slug: cycle-detection-ii
+category: Linked Lists
+summary: Use fast and slow pointers to detect a loop, then reset one pointer to locate the cycle entry node.
+description: Cycle Detection II is the linked-list follow-up that turns Floyd's meeting-point insight into the exact node where the cycle begins.
+dataStructures:
+  - Linked List
+techniques:
+  - Two Pointers
+  - Floyd's Algorithm
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - linked list cycle start
+  - cycle entry detection
+useCases:
+  - Finding the node where a linked-list cycle begins
+  - Recovering repeated-state entry points
+  - Extending basic tortoise-and-hare cycle detection
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The key interview move is proving why one pointer reset to the head meets the other at the cycle start.
+interviewSignals:
+  - The interviewer asks for the node where the loop begins, not just whether a loop exists.
+  - A hash set would work, but constant extra space is expected.
+relatedSlugs:
+  - linked-list-cycle-detection
+  - two-pointers
+  - reverse-singly-linked-list
+provenance:
+  - title: TheAlgorithms/JavaScript - Data-Structures/Linked-List/CycleDetectionII.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Data-Structures/Linked-List/CycleDetectionII.js
+    kind: Implementation
+  - title: free-programming-books - Linked List Problems
+    href: http://cslibrary.stanford.edu/105/LinkedListProblems.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Once you can detect a cycle, interviewers often ask for the harder half: locating the exact entry node. The solution still uses fast and slow pointers, but the second phase depends on a neat distance argument rather than any new data structure.
+
+## Worked Example
+
+If fast and slow pointers meet inside the cycle, move one pointer back to the head and then advance both one step at a time. Their next meeting point is the node where the cycle begins.
+
+<Callout title="Key proof idea" tone="note">
+  If the non-cyclic prefix has length `L` and the cycle length is `C`, then after the first meeting the slow pointer is offset from the entry by exactly the same distance the head pointer still needs to travel.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function detectCycleStart(head) {
+  let slow = head;
+  let fast = head;
+
+  while (fast !== null && fast.next !== null) {
+    slow = slow.next;
+    fast = fast.next.next;
+
+    if (slow === fast) {
+      let entry = head;
+
+      while (entry !== slow) {
+        entry = entry.next;
+        slow = slow.next;
+      }
+
+      return entry;
+    }
+  }
+
+  return null;
+}
+```
+
+```ts
+type Node = {
+  value: number;
+  next: Node | null;
+};
+
+export function detectCycleStart(head: Node | null): Node | null {
+  let slow = head;
+  let fast = head;
+
+  while (fast !== null && fast.next !== null) {
+    slow = slow?.next ?? null;
+    fast = fast.next.next;
+
+    if (slow !== null && slow === fast) {
+      let entry = head;
+
+      while (entry !== slow) {
+        entry = entry?.next ?? null;
+        slow = slow.next;
+      }
+
+      return entry;
+    }
+  }
+
+  return null;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Prove why the second meeting occurs at the cycle entry.
+- Compare this approach with a hash-set solution.
+- Return the cycle length as well.
+
+## Common Pitfalls
+
+- Stopping after the first fast-slow meeting and returning the wrong node.
+- Forgetting the null checks on `fast` and `fast.next`.
+- Confusing the cycle entry with the first meeting point.

@@ -1,0 +1,145 @@
+---
+title: Breadth-First Shortest Path
+slug: breadth-first-shortest-path
+category: Graphs
+summary: Use BFS with distance or parent tracking so the first time a node is reached gives its shortest unweighted path.
+description: Breadth-First Shortest Path is the unweighted-graph interview pattern for moving beyond plain traversal into explicit distance or path reconstruction.
+dataStructures:
+  - Graph
+  - Queue
+  - Hash Map
+techniques:
+  - Breadth-First Search
+  - Shortest Path
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - unweighted shortest path
+  - bfs shortest path
+useCases:
+  - Minimum hops in an unweighted graph
+  - Reconstructing the shortest path between two nodes
+  - Level-based search in state-space problems
+complexity:
+  time: O(V + E)
+  space: O(V)
+  notes: The shortest-path guarantee only holds because every edge has equal weight.
+interviewSignals:
+  - The prompt asks for the fewest edges or moves in an unweighted graph.
+  - Dijkstra feels like overkill because all transitions cost the same.
+relatedSlugs:
+  - breadth-first-search
+  - dijkstra
+  - connected-components
+provenance:
+  - title: TheAlgorithms/JavaScript - Graphs/BreadthFirstShortestPath.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Graphs/BreadthFirstShortestPath.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Once interviewers see you know ordinary BFS, they often push one step further: not just visiting nodes level by level, but recovering the minimum number of hops or the actual path. The key move is to record either distance or parent information at enqueue time.
+
+## Worked Example
+
+If `A` connects to `B` and `C`, and only `B` reaches `D`, then BFS discovers `D` through `A -> B -> D` before any longer alternative. That first discovery locks in the shortest unweighted route.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function shortestPath(graph, start, target) {
+  const queue = [start];
+  const visited = new Set([start]);
+  const parent = new Map([[start, null]]);
+
+  while (queue.length > 0) {
+    const node = queue.shift();
+
+    if (node === target) {
+      break;
+    }
+
+    for (const neighbor of graph.get(node) ?? []) {
+      if (visited.has(neighbor)) {
+        continue;
+      }
+
+      visited.add(neighbor);
+      parent.set(neighbor, node);
+      queue.push(neighbor);
+    }
+  }
+
+  if (!parent.has(target)) {
+    return [];
+  }
+
+  const path = [];
+  for (let node = target; node !== null; node = parent.get(node) ?? null) {
+    path.push(node);
+  }
+
+  return path.reverse();
+}
+```
+
+```ts
+export function shortestPath(
+  graph: Map<string, string[]>,
+  start: string,
+  target: string,
+): string[] {
+  const queue: string[] = [start];
+  const visited = new Set<string>([start]);
+  const parent = new Map<string, string | null>([[start, null]]);
+
+  while (queue.length > 0) {
+    const node = queue.shift()!;
+
+    if (node === target) {
+      break;
+    }
+
+    for (const neighbor of graph.get(node) ?? []) {
+      if (visited.has(neighbor)) {
+        continue;
+      }
+
+      visited.add(neighbor);
+      parent.set(neighbor, node);
+      queue.push(neighbor);
+    }
+  }
+
+  if (!parent.has(target)) {
+    return [];
+  }
+
+  const path: string[] = [];
+  for (let node: string | null = target; node !== null; node = parent.get(node) ?? null) {
+    path.push(node);
+  }
+
+  return path.reverse();
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return only the distance instead of the full path.
+- Adapt the same idea to a grid with blocked cells.
+- Explain exactly why weighted edges break this guarantee.
+
+## Common Pitfalls
+
+- Marking nodes visited too late and enqueueing duplicates.
+- Forgetting to store parents before pushing a neighbor.
+- Using BFS shortest path on weighted graphs.
