@@ -1,0 +1,230 @@
+---
+title: LFU Cache
+slug: lfu-cache
+category: Design
+summary: Evict the least frequently used item while breaking ties by recency inside each frequency bucket.
+description: LFU cache is the harder follow-up to LRU cache because it must track both usage counts and recency without losing constant-time operations.
+dataStructures:
+  - Hash Map
+  - Set
+techniques:
+  - Cache Design
+  - Frequency Buckets
+  - Data Structure Composition
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - least frequently used cache
+  - frequency cache
+useCases:
+  - Fixed-capacity cache eviction by frequency
+  - Systems that prefer frequently reused items over merely recent ones
+  - Design follow-ups after an LRU cache solution
+complexity:
+  time: O(1) average
+  space: O(capacity)
+  notes: A single linked list is no longer enough because you must update both recency and frequency on every successful access.
+interviewSignals:
+  - The prompt asks you to evict the least frequently used item with LRU tie-breaking.
+  - The interviewer explicitly uses LFU as a harder extension of LRU.
+relatedSlugs:
+  - lru-cache
+  - priority-queue
+  - memoization-dp
+provenance:
+  - title: TheAlgorithms/JavaScript - Cache/LFUCache.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Cache/LFUCache.js
+    kind: Implementation
+  - title: "free-programming-books - Open Data Structures: An Introduction"
+    href: https://opendatastructures.org/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+LFU cache is the interview design problem that forces you beyond a simple recency list. Each `get` or `put` must move the key into a higher-frequency bucket, and eviction must come from the lowest non-empty bucket with recency as the tie-breaker.
+
+## Worked Example
+
+If key `2` has been read three times and key `5` only once, then key `5` should be evicted first even if it was inserted more recently. If two keys share the same frequency, the older one inside that bucket loses.
+
+<Callout title="Design constraint" tone="warning">
+  If your eviction step scans every key to find the lowest frequency, the solution misses the expected time bound. You need direct access to the current minimum frequency bucket.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class LFUCache {
+  constructor(capacity) {
+    this.capacity = capacity;
+    this.minFrequency = 0;
+    this.values = new Map();
+    this.counts = new Map();
+    this.buckets = new Map();
+  }
+
+  touch(key) {
+    const frequency = this.counts.get(key);
+    const bucket = this.buckets.get(frequency);
+    bucket.delete(key);
+
+    if (bucket.size === 0) {
+      this.buckets.delete(frequency);
+      if (this.minFrequency === frequency) {
+        this.minFrequency += 1;
+      }
+    }
+
+    const nextFrequency = frequency + 1;
+    this.counts.set(key, nextFrequency);
+
+    if (!this.buckets.has(nextFrequency)) {
+      this.buckets.set(nextFrequency, new Set());
+    }
+
+    this.buckets.get(nextFrequency).add(key);
+  }
+
+  get(key) {
+    if (!this.values.has(key)) {
+      return -1;
+    }
+
+    this.touch(key);
+    return this.values.get(key);
+  }
+
+  put(key, value) {
+    if (this.capacity === 0) {
+      return;
+    }
+
+    if (this.values.has(key)) {
+      this.values.set(key, value);
+      this.touch(key);
+      return;
+    }
+
+    if (this.values.size === this.capacity) {
+      const bucket = this.buckets.get(this.minFrequency);
+      const evictedKey = bucket.values().next().value;
+      bucket.delete(evictedKey);
+
+      if (bucket.size === 0) {
+        this.buckets.delete(this.minFrequency);
+      }
+
+      this.values.delete(evictedKey);
+      this.counts.delete(evictedKey);
+    }
+
+    this.values.set(key, value);
+    this.counts.set(key, 1);
+
+    if (!this.buckets.has(1)) {
+      this.buckets.set(1, new Set());
+    }
+
+    this.buckets.get(1).add(key);
+    this.minFrequency = 1;
+  }
+}
+```
+
+```ts
+export class LFUCache {
+  private readonly capacity: number;
+  private minFrequency = 0;
+  private readonly values = new Map<number, number>();
+  private readonly counts = new Map<number, number>();
+  private readonly buckets = new Map<number, Set<number>>();
+
+  constructor(capacity: number) {
+    this.capacity = capacity;
+  }
+
+  get(key: number): number {
+    if (!this.values.has(key)) {
+      return -1;
+    }
+
+    this.touch(key);
+    return this.values.get(key)!;
+  }
+
+  put(key: number, value: number): void {
+    if (this.capacity === 0) {
+      return;
+    }
+
+    if (this.values.has(key)) {
+      this.values.set(key, value);
+      this.touch(key);
+      return;
+    }
+
+    if (this.values.size === this.capacity) {
+      const bucket = this.buckets.get(this.minFrequency);
+      const evicted = bucket?.values().next().value;
+
+      if (evicted !== undefined) {
+        bucket!.delete(evicted);
+        if (bucket!.size === 0) {
+          this.buckets.delete(this.minFrequency);
+        }
+        this.values.delete(evicted);
+        this.counts.delete(evicted);
+      }
+    }
+
+    this.values.set(key, value);
+    this.counts.set(key, 1);
+
+    if (!this.buckets.has(1)) {
+      this.buckets.set(1, new Set<number>());
+    }
+
+    this.buckets.get(1)!.add(key);
+    this.minFrequency = 1;
+  }
+
+  private touch(key: number): void {
+    const frequency = this.counts.get(key)!;
+    const bucket = this.buckets.get(frequency)!;
+    bucket.delete(key);
+
+    if (bucket.size === 0) {
+      this.buckets.delete(frequency);
+      if (this.minFrequency === frequency) {
+        this.minFrequency += 1;
+      }
+    }
+
+    const nextFrequency = frequency + 1;
+    this.counts.set(key, nextFrequency);
+
+    if (!this.buckets.has(nextFrequency)) {
+      this.buckets.set(nextFrequency, new Set<number>());
+    }
+
+    this.buckets.get(nextFrequency)!.add(key);
+  }
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain how the design changes if ties should be broken arbitrarily instead of by recency.
+- Compare LFU and LRU under skewed access patterns.
+- Support deleting keys explicitly.
+
+## Common Pitfalls
+
+- Scanning all frequencies during eviction.
+- Forgetting to update `minFrequency` when the old bucket becomes empty.
+- Treating `put` on an existing key as a write only instead of a frequency-changing access.

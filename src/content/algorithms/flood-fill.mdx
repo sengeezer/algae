@@ -1,0 +1,154 @@
+---
+title: Flood Fill
+slug: flood-fill
+category: Graph Traversal
+summary: Recolor or relabel a connected region by traversing only neighboring cells with the original value.
+description: Flood fill is the interview-friendly matrix traversal problem that turns a paint-bucket operation into DFS or BFS over a connected component.
+dataStructures:
+  - Matrix
+  - Queue
+  - Recursion Stack
+techniques:
+  - Depth-First Search
+  - Breadth-First Search
+  - Graph Traversal
+difficulty: Easy
+interviewFrequency: High
+aliases:
+  - paint bucket
+  - region fill
+useCases:
+  - Recoloring an image region
+  - Marking connected cells with a new label
+  - Exploring board-game areas with the same terrain type
+complexity:
+  time: O(rows * cols)
+  space: O(rows * cols) worst case
+  notes: The traversal must compare against the original color, not the new one, or it can leak into the wrong region.
+interviewSignals:
+  - The input is a grid and the task asks you to recolor or relabel a connected region.
+  - Neighboring cells are only valid if they share the same original value.
+relatedSlugs:
+  - number-of-islands
+  - depth-first-search
+  - breadth-first-search
+provenance:
+  - title: TheAlgorithms/JavaScript - Recursive/FloodFill.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Recursive/FloodFill.js
+    kind: Implementation
+  - title: free-programming-books - Algorithmic Thinking
+    href: https://labuladong.gitbook.io/algo-en
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Flood fill is a compact way to test grid traversal fundamentals. The region only grows through neighbors that match the original color, so the problem is really just a connected-component traversal with one extra rewrite step.
+
+## Worked Example
+
+Starting from `(1, 1)` in a region of `1`s, every adjacent `1` reachable through up, down, left, or right should change to the new color, while diagonally touching or different-valued cells should remain untouched.
+
+<Callout title="Guard clause" tone="tip">
+  If the new color already matches the starting color, return immediately. Otherwise the traversal can revisit cells forever or do pointless work.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function floodFill(image, startRow, startCol, nextColor) {
+  const rows = image.length;
+  const cols = image[0].length;
+  const original = image[startRow][startCol];
+
+  if (original === nextColor) {
+    return image;
+  }
+
+  function dfs(row, col) {
+    if (
+      row < 0
+      || row >= rows
+      || col < 0
+      || col >= cols
+      || image[row][col] !== original
+    ) {
+      return;
+    }
+
+    image[row][col] = nextColor;
+    dfs(row + 1, col);
+    dfs(row - 1, col);
+    dfs(row, col + 1);
+    dfs(row, col - 1);
+  }
+
+  dfs(startRow, startCol);
+  return image;
+}
+```
+
+```ts
+export function floodFill(
+  image: number[][],
+  startRow: number,
+  startCol: number,
+  nextColor: number,
+): number[][] {
+  const original = image[startRow][startCol];
+
+  if (original === nextColor) {
+    return image;
+  }
+
+  const rows = image.length;
+  const cols = image[0].length;
+  const queue: Array<[number, number]> = [[startRow, startCol]];
+  image[startRow][startCol] = nextColor;
+
+  while (queue.length > 0) {
+    const [row, col] = queue.shift()!;
+
+    for (const [rowOffset, colOffset] of [
+      [1, 0],
+      [-1, 0],
+      [0, 1],
+      [0, -1],
+    ] as const) {
+      const nextRow = row + rowOffset;
+      const nextCol = col + colOffset;
+
+      if (
+        nextRow < 0
+        || nextRow >= rows
+        || nextCol < 0
+        || nextCol >= cols
+        || image[nextRow][nextCol] !== original
+      ) {
+        continue;
+      }
+
+      image[nextRow][nextCol] = nextColor;
+      queue.push([nextRow, nextCol]);
+    }
+  }
+
+  return image;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Allow diagonal connectivity and explain what changes.
+- Return the size of the filled region.
+- Avoid mutating the original grid.
+
+## Common Pitfalls
+
+- Comparing neighbors against the new color instead of the original one.
+- Forgetting the early return when the replacement color is unchanged.
+- Marking cells too late and enqueueing them multiple times.

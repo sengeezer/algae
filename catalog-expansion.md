@@ -53,6 +53,17 @@ This second expansion slice lifts the catalog from 45 to 50 entries.
 - Longest Palindromic Subsequence
 - Prim MST
 
+## Batch 3 added
+
+This third expansion slice lifts the catalog from 50 to 56 entries.
+
+- Binary Heap
+- Exponential Search
+- Flood Fill
+- LFU Cache
+- Longest Valid Parentheses
+- Binary Lifting
+
 ## Provenance metadata
 
 All expansion entries from batch 1 and batch 2 now carry explicit per-entry provenance metadata:
@@ -78,9 +89,9 @@ All expansion entries from batch 1 and batch 2 now carry explicit per-entry prov
 
 ## Next candidates from the same sources
 
-- Binary Heap
-- Exponential Search
-- Flood Fill
-- LFU Cache
-- Longest Valid Parentheses
-- Binary Lifting
+- Binary Search Tree
+- Climbing Stairs
+- Merge Two Sorted Linked Lists
+- Queue Using 2 Stacks
+- Sudoku Solver
+- Ternary Search

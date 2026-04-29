@@ -1,0 +1,139 @@
+---
+title: Exponential Search
+slug: exponential-search
+category: Searching
+summary: Double the search bound until the target range is bracketed, then finish with binary search.
+description: Exponential search is the sorted-array technique for unknown or effectively unbounded ranges where you first discover a candidate window and only then binary-search inside it.
+dataStructures:
+  - Array
+techniques:
+  - Exponential Search
+  - Binary Search
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - doubling search
+  - galloping search
+useCases:
+  - Searching a sorted array when the bound is unknown
+  - Finding values likely to appear near the front of a sorted structure
+  - Bracketing a monotonic answer range quickly before binary search
+complexity:
+  time: O(log p)
+  space: O(1)
+  notes: The runtime depends on how far away the target position `p` is, not on scanning the whole array.
+interviewSignals:
+  - The data is sorted, but the effective boundary is unknown or expensive to probe linearly.
+  - The interviewer wants you to find a candidate range before using binary search.
+relatedSlugs:
+  - binary-search
+  - quickselect
+  - merge-sort
+provenance:
+  - title: TheAlgorithms/JavaScript - Search/ExponentialSearch.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Search/ExponentialSearch.js
+    kind: Implementation
+  - title: free-programming-books - Algorithm Design
+    href: https://archive.org/details/AlgorithmDesign1stEditionByJonKleinbergAndEvaTardos2005PDF
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Exponential search appears when a normal binary search cannot start because you do not yet know a safe right boundary. By doubling the bound, you quickly bracket the target and then reuse the simpler binary-search logic inside that window.
+
+## Worked Example
+
+If the target is at index `13`, the bounds evolve like `1`, `2`, `4`, `8`, `16`. Once `16` is large enough, the answer must lie in the window `[8, 16]`, which is small enough for ordinary binary search.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function exponentialSearch(nums, target) {
+  if (nums.length === 0) {
+    return -1;
+  }
+
+  if (nums[0] === target) {
+    return 0;
+  }
+
+  let bound = 1;
+
+  while (bound < nums.length && nums[bound] < target) {
+    bound *= 2;
+  }
+
+  let left = Math.floor(bound / 2);
+  let right = Math.min(bound, nums.length - 1);
+
+  while (left <= right) {
+    const mid = left + Math.floor((right - left) / 2);
+
+    if (nums[mid] === target) {
+      return mid;
+    }
+
+    if (nums[mid] < target) {
+      left = mid + 1;
+    } else {
+      right = mid - 1;
+    }
+  }
+
+  return -1;
+}
+```
+
+```ts
+export function exponentialSearch(nums: number[], target: number): number {
+  if (nums.length === 0) {
+    return -1;
+  }
+
+  if (nums[0] === target) {
+    return 0;
+  }
+
+  let bound = 1;
+
+  while (bound < nums.length && nums[bound] < target) {
+    bound *= 2;
+  }
+
+  let left = Math.floor(bound / 2);
+  let right = Math.min(bound, nums.length - 1);
+
+  while (left <= right) {
+    const mid = left + Math.floor((right - left) / 2);
+
+    if (nums[mid] === target) {
+      return mid;
+    }
+
+    if (nums[mid] < target) {
+      left = mid + 1;
+    } else {
+      right = mid - 1;
+    }
+  }
+
+  return -1;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Adapt the same idea when the array length is hidden behind an API.
+- Explain when exponential search beats a linear scan for early targets.
+- Return the insertion point when the target is absent.
+
+## Common Pitfalls
+
+- Forgetting to clamp the right boundary to the array length.
+- Letting the doubling loop overrun when the target is smaller than the current bound.
+- Rewriting binary search incorrectly after finding the candidate window.

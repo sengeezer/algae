@@ -1,0 +1,227 @@
+---
+title: Binary Heap
+slug: binary-heap
+category: Heap
+summary: Store priorities in a complete binary tree mapped onto an array so inserts and extracts only move along one path.
+description: Binary heaps are the interview foundation beneath priority queues, heap sort, and many top-k or scheduling problems.
+dataStructures:
+  - Heap
+  - Array
+techniques:
+  - Heap
+  - Data Structure Design
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - min heap
+  - max heap
+  - array heap
+useCases:
+  - Implementing a priority queue
+  - Repeatedly extracting the smallest or largest element
+  - Building heap sort or top-k pipelines
+complexity:
+  time: O(log n) insert and remove, O(1) peek, O(n) heapify
+  space: O(n)
+  notes: Interviewers care about parent-child index math and why heap order is weaker than full sorting.
+interviewSignals:
+  - You need repeated min or max extraction without fully sorting the input.
+  - A priority queue is the natural structure, but the interviewer wants the underlying implementation.
+relatedSlugs:
+  - priority-queue
+  - heap-sort
+  - quickselect
+provenance:
+  - title: TheAlgorithms/JavaScript - Data-Structures/Heap/BinaryHeap.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Data-Structures/Heap/BinaryHeap.js
+    kind: Implementation
+  - title: "free-programming-books - Open Data Structures: An Introduction"
+    href: https://opendatastructures.org/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Binary heaps show up whenever the problem needs the next highest-priority item over and over again. They preserve just enough order to keep the best candidate at the root without paying the cost of maintaining a fully sorted array.
+
+<Callout title="Index rule" tone="note">
+  In a zero-based heap array, the children of `index` live at `2 * index + 1` and `2 * index + 2`. That arithmetic is often what the interviewer is really testing.
+</Callout>
+
+## Worked Example
+
+In a min heap holding `[2, 5, 4, 9, 7, 8]`, removing the root first swaps in the last element, then sifts it downward until the heap property is restored.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class MinHeap {
+  constructor(values = []) {
+    this.heap = [...values];
+
+    for (let index = Math.floor(this.heap.length / 2) - 1; index >= 0; index -= 1) {
+      this.siftDown(index);
+    }
+  }
+
+  siftUp(index) {
+    let child = index;
+
+    while (child > 0) {
+      const parent = Math.floor((child - 1) / 2);
+
+      if (this.heap[parent] <= this.heap[child]) {
+        break;
+      }
+
+      [this.heap[parent], this.heap[child]] = [this.heap[child], this.heap[parent]];
+      child = parent;
+    }
+  }
+
+  siftDown(index) {
+    let parent = index;
+
+    while (true) {
+      let candidate = parent;
+      const left = parent * 2 + 1;
+      const right = parent * 2 + 2;
+
+      if (left < this.heap.length && this.heap[left] < this.heap[candidate]) {
+        candidate = left;
+      }
+
+      if (right < this.heap.length && this.heap[right] < this.heap[candidate]) {
+        candidate = right;
+      }
+
+      if (candidate === parent) {
+        return;
+      }
+
+      [this.heap[parent], this.heap[candidate]] = [this.heap[candidate], this.heap[parent]];
+      parent = candidate;
+    }
+  }
+
+  push(value) {
+    this.heap.push(value);
+    this.siftUp(this.heap.length - 1);
+  }
+
+  pop() {
+    if (this.heap.length === 0) {
+      return undefined;
+    }
+
+    const top = this.heap[0];
+    const last = this.heap.pop();
+
+    if (this.heap.length > 0 && last !== undefined) {
+      this.heap[0] = last;
+      this.siftDown(0);
+    }
+
+    return top;
+  }
+
+  peek() {
+    return this.heap[0];
+  }
+}
+```
+
+```ts
+export class MinHeap {
+  private readonly heap: number[] = [];
+
+  constructor(values: number[] = []) {
+    this.heap = [...values];
+
+    for (let index = Math.floor(this.heap.length / 2) - 1; index >= 0; index -= 1) {
+      this.siftDown(index);
+    }
+  }
+
+  peek(): number | undefined {
+    return this.heap[0];
+  }
+
+  push(value: number): void {
+    this.heap.push(value);
+    this.siftUp(this.heap.length - 1);
+  }
+
+  pop(): number | undefined {
+    if (this.heap.length === 0) {
+      return undefined;
+    }
+
+    const top = this.heap[0];
+    const last = this.heap.pop();
+
+    if (this.heap.length > 0 && last !== undefined) {
+      this.heap[0] = last;
+      this.siftDown(0);
+    }
+
+    return top;
+  }
+
+  private siftUp(index: number): void {
+    let child = index;
+
+    while (child > 0) {
+      const parent = Math.floor((child - 1) / 2);
+
+      if (this.heap[parent] <= this.heap[child]) {
+        break;
+      }
+
+      [this.heap[parent], this.heap[child]] = [this.heap[child], this.heap[parent]];
+      child = parent;
+    }
+  }
+
+  private siftDown(index: number): void {
+    let parent = index;
+
+    while (true) {
+      let candidate = parent;
+      const left = parent * 2 + 1;
+      const right = parent * 2 + 2;
+
+      if (left < this.heap.length && this.heap[left] < this.heap[candidate]) {
+        candidate = left;
+      }
+
+      if (right < this.heap.length && this.heap[right] < this.heap[candidate]) {
+        candidate = right;
+      }
+
+      if (candidate === parent) {
+        return;
+      }
+
+      [this.heap[parent], this.heap[candidate]] = [this.heap[candidate], this.heap[parent]];
+      parent = candidate;
+    }
+  }
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why heapify runs in `O(n)` instead of `O(n log n)`.
+- Convert the min heap into a max heap.
+- Show how the same structure becomes a priority queue API.
+
+## Common Pitfalls
+
+- Mixing up parent and child index formulas.
+- Forgetting to restore the heap after swapping the root with the last element.
+- Assuming the array is globally sorted just because it is heap-ordered.

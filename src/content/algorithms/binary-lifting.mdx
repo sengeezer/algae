@@ -1,0 +1,141 @@
+---
+title: Binary Lifting
+slug: binary-lifting
+category: Trees
+summary: Precompute jump pointers at powers of two so ancestor and LCA queries can skip upward logarithmically.
+description: Binary lifting is the tree-preprocessing technique for repeated ancestor queries where paying `O(n log n)` up front turns later queries into fast jump-table lookups.
+dataStructures:
+  - Tree
+  - Array
+techniques:
+  - Binary Lifting
+  - Tree Preprocessing
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - jump pointers
+  - sparse ancestor table
+useCases:
+  - Repeated kth-ancestor queries
+  - Lowest common ancestor after preprocessing
+  - Large static trees with many online queries
+complexity:
+  time: O(n log n) preprocess, O(log n) query
+  space: O(n log n)
+  notes: The preprocessing cost only pays off when the tree is static and the query count is large.
+interviewSignals:
+  - The prompt asks many ancestor or LCA queries on the same tree.
+  - Recomputing ancestors with DFS for every query feels too expensive.
+relatedSlugs:
+  - lowest-common-ancestor
+  - depth-first-search
+  - tree-diameter
+provenance:
+  - title: TheAlgorithms/JavaScript - Graphs/BinaryLifting.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Graphs/BinaryLifting.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Binary lifting shows up when the interviewer upgrades an ordinary tree question into a repeated-query setting. Once you store each node's `2^k`-th ancestor, moving upward by any distance becomes a matter of following the set bits of that distance.
+
+<Callout title="When to use it" tone="note">
+  If the problem asks for one LCA answer, the recursive LCA solution is usually enough. Binary lifting matters when the same tree will be queried many times.
+</Callout>
+
+## Worked Example
+
+If node `13` needs its `11`-th ancestor, decompose `11` into `8 + 2 + 1`. Jump by `2^3`, then `2^1`, then `2^0` instead of climbing one parent at a time.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class BinaryLifting {
+  constructor(parent) {
+    this.size = parent.length;
+    this.maxPower = Math.ceil(Math.log2(Math.max(1, this.size))) + 1;
+    this.up = Array.from({ length: this.size }, () => new Array(this.maxPower).fill(-1));
+
+    for (let node = 0; node < this.size; node += 1) {
+      this.up[node][0] = parent[node];
+    }
+
+    for (let jump = 1; jump < this.maxPower; jump += 1) {
+      for (let node = 0; node < this.size; node += 1) {
+        const middle = this.up[node][jump - 1];
+        this.up[node][jump] = middle === -1 ? -1 : this.up[middle][jump - 1];
+      }
+    }
+  }
+
+  kthAncestor(node, distance) {
+    let current = node;
+    let remaining = distance;
+    let bit = 0;
+
+    while (current !== -1 && remaining > 0) {
+      if (remaining & 1) {
+        current = this.up[current][bit];
+      }
+
+      remaining >>= 1;
+      bit += 1;
+    }
+
+    return current;
+  }
+}
+```
+
+```ts
+export function kthAncestor(parent: number[], node: number, distance: number): number {
+  const maxPower = Math.ceil(Math.log2(Math.max(1, parent.length))) + 1;
+  const up = Array.from({ length: parent.length }, () => new Array<number>(maxPower).fill(-1));
+
+  for (let current = 0; current < parent.length; current += 1) {
+    up[current][0] = parent[current];
+  }
+
+  for (let jump = 1; jump < maxPower; jump += 1) {
+    for (let current = 0; current < parent.length; current += 1) {
+      const middle = up[current][jump - 1];
+      up[current][jump] = middle === -1 ? -1 : up[middle][jump - 1];
+    }
+  }
+
+  let current = node;
+  let remaining = distance;
+  let bit = 0;
+
+  while (current !== -1 && remaining > 0) {
+    if (remaining & 1) {
+      current = up[current][bit];
+    }
+
+    remaining >>= 1;
+    bit += 1;
+  }
+
+  return current;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Extend the same table to answer LCA queries.
+- Explain the preprocessing and memory tradeoff.
+- Handle forests instead of a single rooted tree.
+
+## Common Pitfalls
+
+- Building too few jump columns for the maximum tree height.
+- Forgetting to handle `-1` ancestors safely during table construction.
+- Using binary lifting when there is only one query and no preprocessing payoff.

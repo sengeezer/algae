@@ -1,0 +1,119 @@
+---
+title: Longest Valid Parentheses
+slug: longest-valid-parentheses
+category: Dynamic Programming
+summary: Track the longest balanced parentheses span ending at each position or preserve the last unmatched boundary on a stack.
+description: Longest Valid Parentheses is the balanced-string interview problem that tests whether you can recover valid substring boundaries after mismatches.
+dataStructures:
+  - String
+  - Stack
+  - Array
+techniques:
+  - Dynamic Programming
+  - Stack
+  - Boundary Tracking
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - longest balanced parentheses
+  - valid parentheses span
+useCases:
+  - Finding the longest well-formed parentheses substring
+  - Recovering valid ranges in parser-like token streams
+  - Comparing stack and DP views of the same boundary problem
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: The hard part is preserving the last invalid boundary so valid runs can restart correctly after mismatches.
+interviewSignals:
+  - The input is a parentheses string and the prompt asks for the longest valid span, not just whether the string is valid.
+  - You need more than a simple counter because nested and broken segments can interleave.
+relatedSlugs:
+  - monotonic-stack
+  - memoization-dp
+  - backtracking-search
+provenance:
+  - title: TheAlgorithms/JavaScript - Dynamic-Programming/LongestValidParentheses.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Dynamic-Programming/LongestValidParentheses.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem is popular because counting open and close parentheses is not enough. You need to remember where the current valid region can legally start after every mismatch, which makes boundary state more important than the characters themselves.
+
+## Worked Example
+
+For `s = ")()())"`, the longest valid substring has length `4` because `()()` stays balanced while the leading and trailing mismatches reset the legal starting boundary.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function longestValidParentheses(text) {
+  const stack = [-1];
+  let best = 0;
+
+  for (let index = 0; index < text.length; index += 1) {
+    if (text[index] === "(") {
+      stack.push(index);
+      continue;
+    }
+
+    stack.pop();
+
+    if (stack.length === 0) {
+      stack.push(index);
+    } else {
+      best = Math.max(best, index - stack[stack.length - 1]);
+    }
+  }
+
+  return best;
+}
+```
+
+```ts
+export function longestValidParentheses(text: string): number {
+  const dp = new Array<number>(text.length).fill(0);
+  let best = 0;
+
+  for (let index = 1; index < text.length; index += 1) {
+    if (text[index] !== ")") {
+      continue;
+    }
+
+    if (text[index - 1] === "(") {
+      dp[index] = 2 + (index >= 2 ? dp[index - 2] : 0);
+    } else {
+      const previousStart = index - dp[index - 1] - 1;
+
+      if (previousStart >= 0 && text[previousStart] === "(") {
+        dp[index] = dp[index - 1] + 2 + (previousStart > 0 ? dp[previousStart - 1] : 0);
+      }
+    }
+
+    best = Math.max(best, dp[index]);
+  }
+
+  return best;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the substring bounds instead of only the length.
+- Compare the stack solution with the DP solution.
+- Solve the same problem with two linear scans and counters.
+
+## Common Pitfalls
+
+- Dropping the boundary index that marks the last unmatched `)`.
+- Forgetting to connect a newly closed pair with the valid run immediately before it.
+- Solving only the simple validity check instead of the longest-span version.
