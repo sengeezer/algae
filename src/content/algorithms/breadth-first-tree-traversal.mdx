@@ -1,0 +1,124 @@
+---
+title: Breadth First Tree Traversal
+slug: breadth-first-tree-traversal
+category: Trees
+summary: Visit tree nodes level by level with a queue so parents are processed before their children.
+description: Breadth First Tree Traversal is the level-order traversal pattern for binary trees and rooted trees.
+dataStructures:
+  - Tree
+  - Queue
+techniques:
+  - Breadth-First Search
+  - Level Order Traversal
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - level order traversal
+  - bfs on tree
+useCases:
+  - Reading a tree one level at a time
+  - Serializing trees by layers
+  - Supporting follow-ups like right-side view or level averages
+complexity:
+  time: O(n)
+  space: O(w)
+  notes: The auxiliary space is proportional to the widest level of the tree, not the full node count in balanced cases.
+interviewSignals:
+  - The prompt asks for values level by level.
+  - Parent nodes must be processed before any deeper nodes.
+relatedSlugs:
+  - breadth-first-search
+  - tree-diameter
+  - binary-search-tree
+provenance:
+  - title: TheAlgorithms/JavaScript - Trees/BreadthFirstTreeTraversal.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Trees/BreadthFirstTreeTraversal.js
+    kind: Implementation
+  - title: free-programming-books - Algorithmic Thinking
+    href: https://labuladong.gitbook.io/algo-en
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Breadth-first tree traversal is the standard answer when the question says level order, nearest ancestor layer, or one layer at a time. The queue makes the traversal order explicit and easy to reason about.
+
+## Worked Example
+
+For a tree rooted at `1` with children `2` and `3`, the traversal begins `[1]`, then `[2, 3]`, then the children of `2` and `3`. The queue preserves exactly that frontier order.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function breadthFirstTreeTraversal(root) {
+  if (!root) {
+    return [];
+  }
+
+  const queue = [root];
+  const values = [];
+
+  for (let index = 0; index < queue.length; index += 1) {
+    const node = queue[index];
+    values.push(node.value);
+
+    if (node.left) {
+      queue.push(node.left);
+    }
+
+    if (node.right) {
+      queue.push(node.right);
+    }
+  }
+
+  return values;
+}
+```
+
+```ts
+type TreeNode = {
+  value: number;
+  left: TreeNode | null;
+  right: TreeNode | null;
+};
+
+export function breadthFirstTreeTraversal(root: TreeNode | null): number[] {
+  if (!root) {
+    return [];
+  }
+
+  const queue: TreeNode[] = [root];
+  const values: number[] = [];
+
+  for (let index = 0; index < queue.length; index += 1) {
+    const node = queue[index];
+    values.push(node.value);
+
+    if (node.left) {
+      queue.push(node.left);
+    }
+
+    if (node.right) {
+      queue.push(node.right);
+    }
+  }
+
+  return values;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return values grouped by level instead of one flat list.
+- Compute the right-side view or level averages using the same queue.
+- Compare this with recursive depth-first tree traversals.
+
+## Common Pitfalls
+
+- Using a stack and accidentally switching to depth-first order.
+- Forgetting to guard the empty-tree case.
+- Mutating the queue incorrectly while iterating a level-based solution.

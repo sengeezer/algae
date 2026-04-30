@@ -1,0 +1,103 @@
+---
+title: Fibonacci Number
+slug: fibonacci-number
+category: Dynamic Programming
+summary: Build the sequence iteratively so each value reuses the previous two totals instead of recomputing the whole recursion tree.
+description: Fibonacci Number is the foundational sequence-DP problem for turning an exponential recurrence into a simple linear-time loop.
+dataStructures:
+  - Array
+techniques:
+  - Dynamic Programming
+  - Iterative DP
+difficulty: Easy
+interviewFrequency: High
+aliases:
+  - fibonacci sequence
+  - linear fibonacci
+useCases:
+  - Introducing memoization and bottom-up tabulation
+  - Practicing rolling-state optimization on a simple recurrence
+  - Serving as the baseline before fast-doubling or matrix methods
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The DP compression is immediate because each state depends only on the previous two values.
+interviewSignals:
+  - The next state depends only on the previous two states.
+  - Naive recursion is correct but repeats the same subproblems heavily.
+relatedSlugs:
+  - fast-fibonacci-number
+  - tribonacci-number
+  - climbing-stairs
+provenance:
+  - title: TheAlgorithms/JavaScript - Dynamic-Programming/FibonacciNumber.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Dynamic-Programming/FibonacciNumber.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Fibonacci is the standard entry point for dynamic programming because the recurrence is tiny but the naive recursive tree grows exponentially. It is the cleanest way to show why overlapping subproblems matter.
+
+## Worked Example
+
+With `F(0) = 0` and `F(1) = 1`, every later value is the sum of the previous two. Instead of recomputing `F(3)` again and again while solving `F(5)`, carry the last two totals forward in one loop.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function fibonacciNumber(index) {
+  if (index === 0) {
+    return 0;
+  }
+
+  let previous = 0;
+  let current = 1;
+
+  for (let step = 1; step < index; step += 1) {
+    const next = previous + current;
+    previous = current;
+    current = next;
+  }
+
+  return current;
+}
+```
+
+```ts
+export function fibonacciNumber(index: number): number {
+  if (index === 0) {
+    return 0;
+  }
+
+  let previous = 0;
+  let current = 1;
+
+  for (let step = 1; step < index; step += 1) {
+    const next = previous + current;
+    previous = current;
+    current = next;
+  }
+
+  return current;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare memoization, tabulation, fast doubling, and matrix exponentiation.
+- Return the answer modulo a large prime.
+- Explain how the same recurrence shows up in climbing-stairs style prompts.
+
+## Common Pitfalls
+
+- Reverting to exponential recursion after identifying the DP pattern.
+- Mishandling the small base cases around zero and one.
+- Storing the full table when only two prior values are needed.

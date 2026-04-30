@@ -1,0 +1,132 @@
+---
+title: Sieve of Eratosthenes
+slug: sieve-of-eratosthenes
+category: Mathematics
+summary: Mark composite numbers in bulk so every prime up to a limit can be listed in near-linear time.
+description: Sieve of Eratosthenes is the standard prime-generation algorithm for preprocessing all primes up to n efficiently.
+dataStructures:
+  - Array
+techniques:
+  - Prime Sieve
+  - Preprocessing
+  - Number Theory
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - prime sieve
+  - generate primes up to n
+useCases:
+  - Listing all primes up to a limit
+  - Precomputing primality for repeated queries
+  - Supporting factorization or divisor-count follow-ups
+complexity:
+  time: O(n log log n)
+  space: O(n)
+  notes: The work stays low because each composite is crossed off starting from the square of each prime.
+interviewSignals:
+  - The prompt asks for all primes up to a bound rather than testing one number.
+  - Multiple primality queries against the same limit would benefit from preprocessing.
+relatedSlugs:
+  - binary-exponentiation
+  - binomial-coefficient
+  - fibonacci-number
+provenance:
+  - title: TheAlgorithms/JavaScript - Dynamic-Programming/SieveOfEratosthenes.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Dynamic-Programming/SieveOfEratosthenes.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Sieve of Eratosthenes appears when the interviewer cares about prime preprocessing instead of one-off primality tests. If the question asks for every prime up to `n`, repeated trial division is the wrong tool.
+
+## Worked Example
+
+To list primes up to `30`, start by marking every number as potentially prime. Cross off multiples of `2`, then multiples of `3`, then multiples of `5`, starting each sweep at the prime's square because smaller multiples were already handled.
+
+<Callout title="Start point" tone="tip">
+  Begin crossing off multiples at `p^2`. Any smaller composite multiple of `p` already has a smaller prime factor and was removed earlier.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function sieveOfEratosthenes(limit) {
+  if (limit <= 1) {
+    return [];
+  }
+
+  const isPrime = new Array(limit + 1).fill(true);
+  isPrime[0] = false;
+  isPrime[1] = false;
+
+  for (let value = 2; value * value <= limit; value += 1) {
+    if (!isPrime[value]) {
+      continue;
+    }
+
+    for (let multiple = value * value; multiple <= limit; multiple += value) {
+      isPrime[multiple] = false;
+    }
+  }
+
+  const primes = [];
+  for (let value = 2; value <= limit; value += 1) {
+    if (isPrime[value]) {
+      primes.push(value);
+    }
+  }
+
+  return primes;
+}
+```
+
+```ts
+export function sieveOfEratosthenes(limit: number): number[] {
+  if (limit <= 1) {
+    return [];
+  }
+
+  const isPrime = new Array<boolean>(limit + 1).fill(true);
+  isPrime[0] = false;
+  isPrime[1] = false;
+
+  for (let value = 2; value * value <= limit; value += 1) {
+    if (!isPrime[value]) {
+      continue;
+    }
+
+    for (let multiple = value * value; multiple <= limit; multiple += value) {
+      isPrime[multiple] = false;
+    }
+  }
+
+  const primes: number[] = [];
+  for (let value = 2; value <= limit; value += 1) {
+    if (isPrime[value]) {
+      primes.push(value);
+    }
+  }
+
+  return primes;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Answer primality queries in O(1) after preprocessing.
+- Compare the classic sieve with a linear sieve.
+- Store the smallest prime factor for each number as an additional table.
+
+## Common Pitfalls
+
+- Starting each marking pass at `2 * p` instead of `p * p`.
+- Forgetting that `0` and `1` are not prime.
+- Using the sieve when the prompt only asks about one very large number.

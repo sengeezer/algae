@@ -1,0 +1,129 @@
+---
+title: Max Product of Three
+slug: max-product-of-three
+category: Array Processing
+summary: Track the largest and smallest values together so negative numbers cannot hide the best triplet product.
+description: Max Product of Three is the array-selection interview problem where the answer may come from either the three largest values or one large positive value paired with two large-magnitude negatives.
+dataStructures:
+  - Array
+techniques:
+  - Array Scan
+  - Greedy Selection
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - highest product of three
+  - maximum triplet product
+useCases:
+  - Finding the best multiplicative triplet in signed arrays
+  - Demonstrating why negative numbers change greedy logic
+  - Reducing a sorting-based approach to one linear scan
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The only candidates that matter are the top three maxima and the bottom two minima.
+interviewSignals:
+  - The prompt asks for the best product, not the actual triplet count.
+  - Negative values mean the best answer may include very small numbers.
+relatedSlugs:
+  - quickselect
+  - kadane-algorithm
+  - max-non-adjacent-sum
+provenance:
+  - title: TheAlgorithms/JavaScript - Dynamic-Programming/MaxProductOfThree.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Dynamic-Programming/MaxProductOfThree.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Max Product of Three looks like a sorting problem at first, but the real interview trick is sign handling. Two negative values can outweigh the obvious top-three-largest strategy.
+
+## Worked Example
+
+For `[-10, -10, 2, 5, 6]`, the best product is not `6 * 5 * 2 = 60`. It is `6 * -10 * -10 = 600`, which is why the two smallest values matter just as much as the three largest values.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function maxProductOfThree(values) {
+  let max1 = Number.NEGATIVE_INFINITY;
+  let max2 = Number.NEGATIVE_INFINITY;
+  let max3 = Number.NEGATIVE_INFINITY;
+  let min1 = Number.POSITIVE_INFINITY;
+  let min2 = Number.POSITIVE_INFINITY;
+
+  for (const value of values) {
+    if (value > max1) {
+      max3 = max2;
+      max2 = max1;
+      max1 = value;
+    } else if (value > max2) {
+      max3 = max2;
+      max2 = value;
+    } else if (value > max3) {
+      max3 = value;
+    }
+
+    if (value < min1) {
+      min2 = min1;
+      min1 = value;
+    } else if (value < min2) {
+      min2 = value;
+    }
+  }
+
+  return Math.max(max1 * max2 * max3, max1 * min1 * min2);
+}
+```
+
+```ts
+export function maxProductOfThree(values: number[]): number {
+  let max1 = Number.NEGATIVE_INFINITY;
+  let max2 = Number.NEGATIVE_INFINITY;
+  let max3 = Number.NEGATIVE_INFINITY;
+  let min1 = Number.POSITIVE_INFINITY;
+  let min2 = Number.POSITIVE_INFINITY;
+
+  for (const value of values) {
+    if (value > max1) {
+      max3 = max2;
+      max2 = max1;
+      max1 = value;
+    } else if (value > max2) {
+      max3 = max2;
+      max2 = value;
+    } else if (value > max3) {
+      max3 = value;
+    }
+
+    if (value < min1) {
+      min2 = min1;
+      min1 = value;
+    } else if (value < min2) {
+      min2 = value;
+    }
+  }
+
+  return Math.max(max1 * max2 * max3, max1 * min1 * min2);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the actual triplet as well as the product.
+- Compare the one-pass scan with a sorting solution.
+- Generalize the idea to the maximum product of k numbers.
+
+## Common Pitfalls
+
+- Looking only at the three largest values.
+- Forgetting that two negative values can create the best positive product.
+- Sorting the whole array when only five tracked values are needed.

@@ -141,9 +141,20 @@ This tenth expansion slice lifts the catalog from 92 to 98 entries.
 - Max Non Adjacent Sum
 - Rod Cutting
 
+## Batch 11 added
+
+This eleventh expansion slice lifts the catalog from 98 to 104 entries.
+
+- Fibonacci Number
+- Sieve of Eratosthenes
+- Max Product of Three
+- Breadth First Tree Traversal
+- Tower of Hanoi
+- Matrix Multiplication
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 10 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 11 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -166,9 +177,9 @@ All expansion entries from batch 1 through batch 10 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- Fibonacci Number
-- Sieve of Eratosthenes
-- Levenshtein Distance
-- Max Product of Three
-- Breadth First Tree Traversal
-- Tower of Hanoi
+- Find Month Calendar
+- Linear Sieve
+- Euler's Totient
+- Binary Equivalent
+- Partition
+- Permutation and Combination

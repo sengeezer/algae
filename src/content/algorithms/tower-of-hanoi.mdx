@@ -1,0 +1,104 @@
+---
+title: Tower of Hanoi
+slug: tower-of-hanoi
+category: Recursion
+summary: Move the stack by recursively relocating the top n-1 disks around the largest disk.
+description: Tower of Hanoi is the classic recursion puzzle where each step decomposes the problem into two smaller subproblems around one forced move.
+dataStructures:
+  - Array
+  - Recursion Stack
+techniques:
+  - Recursion
+  - Divide and Conquer
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - hanoi puzzle
+  - disk moving recursion
+useCases:
+  - Demonstrating recursive decomposition and base cases
+  - Generating a sequence of constrained moves
+  - Explaining exponential recurrence growth
+complexity:
+  time: O(2^n)
+  space: O(n)
+  notes: The recursion is forced by the constraint that a larger disk can never sit on a smaller one.
+interviewSignals:
+  - Only one disk may move at a time.
+  - The problem naturally splits into moving n-1 disks away, moving the largest disk, then moving n-1 disks back.
+relatedSlugs:
+  - backtracking-search
+  - generate-permutations
+  - fibonacci-number
+provenance:
+  - title: TheAlgorithms/JavaScript - Recursive/TowerOfHanoi.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Recursive/TowerOfHanoi.js
+    kind: Implementation
+  - title: free-programming-books - Algorithmic Thinking
+    href: https://labuladong.gitbook.io/algo-en
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Tower of Hanoi is a pure recursion exercise. There is no greedy shortcut; the only way forward is to define the smaller subproblem correctly and trust the recursive structure.
+
+## Worked Example
+
+To move `3` disks from peg `A` to peg `C`, first move `2` disks from `A` to `B`, then move the largest disk from `A` to `C`, then move the `2` disks from `B` to `C`.
+
+<Callout title="Forced structure" tone="note">
+  The middle move is never optional. Once the top n-1 disks are out of the way, the largest disk has exactly one legal move.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function towerOfHanoi(disks, fromPeg, toPeg, auxPeg, moves = []) {
+  if (disks === 1) {
+    moves.push(`Move disk 1 from rod ${fromPeg} to rod ${toPeg}`);
+    return moves;
+  }
+
+  towerOfHanoi(disks - 1, fromPeg, auxPeg, toPeg, moves);
+  moves.push(`Move disk ${disks} from rod ${fromPeg} to rod ${toPeg}`);
+  towerOfHanoi(disks - 1, auxPeg, toPeg, fromPeg, moves);
+  return moves;
+}
+```
+
+```ts
+export function towerOfHanoi(
+  disks: number,
+  fromPeg: string,
+  toPeg: string,
+  auxPeg: string,
+  moves: string[] = [],
+): string[] {
+  if (disks === 1) {
+    moves.push(`Move disk 1 from rod ${fromPeg} to rod ${toPeg}`);
+    return moves;
+  }
+
+  towerOfHanoi(disks - 1, fromPeg, auxPeg, toPeg, moves);
+  moves.push(`Move disk ${disks} from rod ${fromPeg} to rod ${toPeg}`);
+  towerOfHanoi(disks - 1, auxPeg, toPeg, fromPeg, moves);
+  return moves;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return only the number of moves instead of the full move list.
+- Explain why the minimum move count is `2^n - 1`.
+- Compare this deterministic recursion with branching backtracking problems.
+
+## Common Pitfalls
+
+- Swapping the auxiliary and destination pegs in the recursive calls.
+- Forgetting the single-disk base case.
+- Treating the recursion as optional rather than structurally forced by the rules.
