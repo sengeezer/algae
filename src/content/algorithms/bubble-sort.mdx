@@ -1,0 +1,115 @@
+---
+title: Bubble Sort
+slug: bubble-sort
+category: Sorting
+summary: Repeatedly compare adjacent elements and swap out-of-order pairs until the array stops changing.
+description: Bubble sort is the classic adjacent-swap sorting algorithm that exposes the cost of repeated local repairs.
+dataStructures:
+  - Array
+techniques:
+  - Sorting
+  - Adjacent Swapping
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - adjacent swap sort
+  - exchange sort
+useCases:
+  - Teaching the basics of iterative sorting passes
+  - Demonstrating early-exit optimization on nearly sorted input
+  - Comparing simple quadratic sorts against faster alternatives
+complexity:
+  time: O(n^2) average and worst case, O(n) best case with an early-exit flag
+  space: O(1)
+  notes: Bubble sort is almost never the right production choice, but it is useful for explaining how local swaps gradually move large elements toward the end.
+interviewSignals:
+  - The prompt emphasizes repeated adjacent comparisons or asks for the simplest in-place sort.
+  - Nearly sorted input makes an early-exit flag worth mentioning.
+relatedSlugs:
+  - comb-sort
+  - selection-sort
+  - shell-sort
+provenance:
+  - title: TheAlgorithms/JavaScript - Sorts/BubbleSort.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Sorts/BubbleSort.js
+    kind: Implementation
+  - title: "free-programming-books - Open Data Structures: An Introduction"
+    href: https://opendatastructures.org/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Bubble sort shows up mostly as a teaching or warm-up question. The value is not the algorithm itself, but recognizing how an early-exit flag changes the best case from quadratic to linear on nearly sorted input.
+
+## Worked Example
+
+For `[5, 1, 4, 2]`, the first pass swaps `5` rightward until it reaches the end. Each additional pass fixes one more suffix position until no swaps happen and the algorithm can stop.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function bubbleSort(values) {
+  if (!Array.isArray(values)) {
+    throw new TypeError('Values must be an array of numbers');
+  }
+
+  const items = [...values];
+
+  for (let end = items.length - 1; end > 0; end -= 1) {
+    let swapped = false;
+
+    for (let index = 0; index < end; index += 1) {
+      if (items[index] > items[index + 1]) {
+        [items[index], items[index + 1]] = [items[index + 1], items[index]];
+        swapped = true;
+      }
+    }
+
+    if (!swapped) {
+      break;
+    }
+  }
+
+  return items;
+}
+```
+
+```ts
+export function bubbleSort(values: number[]): number[] {
+  const items = [...values];
+
+  for (let end = items.length - 1; end > 0; end -= 1) {
+    let swapped = false;
+
+    for (let index = 0; index < end; index += 1) {
+      if (items[index] > items[index + 1]) {
+        [items[index], items[index + 1]] = [items[index + 1], items[index]];
+        swapped = true;
+      }
+    }
+
+    if (!swapped) {
+      break;
+    }
+  }
+
+  return items;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why the early-exit flag gives a linear best case.
+- Compare bubble sort with insertion sort on nearly sorted arrays.
+- Sort in descending order with the same pattern.
+
+## Common Pitfalls
+
+- Forgetting that the unsorted boundary shrinks after each pass.
+- Mutating the original input when the caller expects a copied result.
+- Overselling bubble sort as competitive with better quadratic sorts.

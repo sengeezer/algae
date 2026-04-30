@@ -284,9 +284,20 @@ This twenty-third expansion slice lifts the catalog from 170 to 176 entries.
 - Radix Sort
 - Tim Sort
 
+## Batch 24 added
+
+This twenty-fourth expansion slice lifts the catalog from 176 to 182 entries.
+
+- Bubble Sort
+- Bucket Sort
+- Comb Sort
+- Cycle Sort
+- Selection Sort
+- Shell Sort
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 23 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 24 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -295,9 +306,9 @@ All expansion entries from batch 1 through batch 23 now carry explicit per-entry
 ## Why this batch
 
 - It fills obvious interview-core gaps from TheAlgorithms/JavaScript without duplicating material already present in Algae.
-- It keeps the clean additions from the original next queue, skips semantically overlapping variants that Algae already covers, and uses adjacent missing algorithms from the same upstream sources to complete the batch.
-- It broadens the current catalog across direct palindrome checks, lowercase conversion, linear-time shuffling, integer distribution sorting, and hybrid stable sorting instead of repeating already-covered substring and edit-distance variants.
-- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially standard sorting, array randomization, and core string-processing topics.
+- It rounds out the missing introductory sort family from TheAlgorithms/JavaScript after the previous batch added the more specialized distribution and hybrid sort entries.
+- It broadens the current catalog across adjacent-swap optimization, bucketed distribution, gap-based exchange, minimal-write cycle placement, in-place minimum selection, and gapped insertion passes instead of repeating the comparison sorts already present.
+- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially foundational sorting tradeoffs and implementation patterns.
 
 ## Supporting study references from the algorithms list
 
@@ -310,9 +321,9 @@ All expansion entries from batch 1 through batch 23 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- Bubble Sort
-- Bucket Sort
-- Comb Sort
-- Cycle Sort
-- Selection Sort
-- Shell Sort
+- Affine Cipher
+- Caesar Cipher
+- Hill Cipher
+- Rail Fence Cipher
+- Vigenere Cipher
+- Tower Of Hanoi

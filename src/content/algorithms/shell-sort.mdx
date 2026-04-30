@@ -1,0 +1,128 @@
+---
+title: Shell Sort
+slug: shell-sort
+category: Sorting
+summary: Run insertion-sort style passes over elements separated by a shrinking gap until the gap reaches one.
+description: Shell sort is the gap-based in-place sort that accelerates insertion-style ordering by moving values long distances early.
+dataStructures:
+  - Array
+techniques:
+  - Sorting
+  - Insertion Sort
+  - Gap Sequence
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - gapped insertion sort
+  - Shellsort
+useCases:
+  - Improving insertion sort on medium-sized arrays
+  - Studying how gap sequences affect performance
+  - Comparing practical in-place sorting heuristics
+complexity:
+  time: depends on the gap sequence; often around O(n^1.5) in practice, O(n^2) worst case for common simple sequences
+  space: O(1)
+  notes: Shell sort is mostly about the gap sequence. Different sequences lead to different practical and theoretical behavior.
+interviewSignals:
+  - The prompt asks for a gap-based improvement over insertion sort.
+  - Long-distance moves should happen before the final local cleanup pass.
+relatedSlugs:
+  - insertion-sort
+  - comb-sort
+  - tim-sort
+provenance:
+  - title: TheAlgorithms/JavaScript - Sorts/ShellSort.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Sorts/ShellSort.js
+    kind: Implementation
+  - title: "free-programming-books - Open Data Structures: An Introduction"
+    href: https://opendatastructures.org/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Shell sort is a practical example of improving insertion sort without abandoning its core mechanic. By sorting elements that are far apart first, the final gap-1 insertion pass has much less work left to do.
+
+## Worked Example
+
+With the array `[23, 12, 1, 8, 34, 54, 2, 3]`, a large initial gap lets small values like `1` and `2` move toward the front early. Later passes with smaller gaps clean up the remaining local inversions.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function shellSort(values) {
+  if (!Array.isArray(values)) {
+    throw new TypeError('Values must be an array of numbers');
+  }
+
+  const items = [...values];
+  let gap = 1;
+
+  while (gap < items.length / 3) {
+    gap = gap * 3 + 1;
+  }
+
+  while (gap >= 1) {
+    for (let index = gap; index < items.length; index += 1) {
+      const value = items[index];
+      let position = index;
+
+      while (position >= gap && items[position - gap] > value) {
+        items[position] = items[position - gap];
+        position -= gap;
+      }
+
+      items[position] = value;
+    }
+
+    gap = Math.floor((gap - 1) / 3);
+  }
+
+  return items;
+}
+```
+
+```ts
+export function shellSort(values: number[]): number[] {
+  const items = [...values];
+  let gap = 1;
+
+  while (gap < items.length / 3) {
+    gap = gap * 3 + 1;
+  }
+
+  while (gap >= 1) {
+    for (let index = gap; index < items.length; index += 1) {
+      const value = items[index];
+      let position = index;
+
+      while (position >= gap && items[position - gap] > value) {
+        items[position] = items[position - gap];
+        position -= gap;
+      }
+
+      items[position] = value;
+    }
+
+    gap = Math.floor((gap - 1) / 3);
+  }
+
+  return items;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Try a different gap sequence and discuss how it affects runtime.
+- Explain why the final gap-1 pass is just insertion sort.
+- Compare shell sort with tim sort on partially ordered input.
+
+## Common Pitfalls
+
+- Dropping straight into gap 1 and losing the algorithm's benefit.
+- Updating the gap incorrectly and getting stuck in an infinite loop.
+- Talking about a single fixed complexity without qualifying the gap sequence.

@@ -1,0 +1,116 @@
+---
+title: Comb Sort
+slug: comb-sort
+category: Sorting
+summary: Improve bubble sort by comparing elements farther apart first and shrinking the gap until it reaches one.
+description: Comb sort is the gap-based exchange sort that removes small values from the end of the array faster than plain bubble sort.
+dataStructures:
+  - Array
+techniques:
+  - Sorting
+  - Gap Shrinking
+  - Adjacent Swapping
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - gap bubble sort
+  - shrink-gap sort
+useCases:
+  - Teaching how a simple gap heuristic speeds up local-swap sorts
+  - Reducing the turtle problem in bubble sort
+  - Comparing heuristic improvements against asymptotic improvements
+complexity:
+  time: O(n^2) average and worst case
+  space: O(1)
+  notes: Comb sort usually beats bubble sort in practice because the early large gaps move small out-of-place values much farther per pass.
+interviewSignals:
+  - The prompt starts from bubble sort and asks for a small practical improvement.
+  - Long-distance inversions are the main source of wasted work.
+relatedSlugs:
+  - bubble-sort
+  - shell-sort
+  - selection-sort
+provenance:
+  - title: TheAlgorithms/JavaScript - Sorts/CombSort.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Sorts/CombSort.js
+    kind: Implementation
+  - title: "free-programming-books - Open Data Structures: An Introduction"
+    href: https://opendatastructures.org/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Comb sort is a useful bridge between bubble sort and more serious gap-based approaches. The main idea is that bubble sort handles large values near the front well, but tiny values near the end move too slowly unless you allow wider comparisons first.
+
+## Worked Example
+
+If a `1` sits near the end of an otherwise larger array, bubble sort moves it left by one position per swap. Comb sort starts with a larger gap, so that same value can jump much farther toward its final position in the first few passes.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function combSort(values) {
+  if (!Array.isArray(values)) {
+    throw new TypeError('Values must be an array of numbers');
+  }
+
+  const items = [...values];
+  const shrink = 1.3;
+  let gap = items.length;
+  let swapped = true;
+
+  while (gap > 1 || swapped) {
+    gap = Math.max(1, Math.floor(gap / shrink));
+    swapped = false;
+
+    for (let index = 0; index + gap < items.length; index += 1) {
+      if (items[index] > items[index + gap]) {
+        [items[index], items[index + gap]] = [items[index + gap], items[index]];
+        swapped = true;
+      }
+    }
+  }
+
+  return items;
+}
+```
+
+```ts
+export function combSort(values: number[]): number[] {
+  const items = [...values];
+  const shrink = 1.3;
+  let gap = items.length;
+  let swapped = true;
+
+  while (gap > 1 || swapped) {
+    gap = Math.max(1, Math.floor(gap / shrink));
+    swapped = false;
+
+    for (let index = 0; index + gap < items.length; index += 1) {
+      if (items[index] > items[index + gap]) {
+        [items[index], items[index + gap]] = [items[index + gap], items[index]];
+        swapped = true;
+      }
+    }
+  }
+
+  return items;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why the final gap-1 phase resembles bubble sort.
+- Compare comb sort with shell sort's gap-based insertion passes.
+- Experiment with different shrink factors and discuss tradeoffs.
+
+## Common Pitfalls
+
+- Letting the gap reach zero instead of clamping it to one.
+- Forgetting that the algorithm still needs a swapped flag once the gap is one.
+- Treating the gap heuristic as a change in asymptotic complexity rather than a practical speedup.

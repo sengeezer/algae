@@ -1,0 +1,113 @@
+---
+title: Selection Sort
+slug: selection-sort
+category: Sorting
+summary: Repeatedly find the smallest remaining value and swap it into the next sorted position.
+description: Selection sort is the in-place minimum-selection algorithm that grows a sorted prefix one slot at a time.
+dataStructures:
+  - Array
+techniques:
+  - Sorting
+  - Selection
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - minimum selection sort
+  - in-place selection sort
+useCases:
+  - Teaching how sorted and unsorted regions evolve during a sort
+  - Comparing write counts across simple quadratic sorts
+  - Building intuition for repeated minimum extraction
+complexity:
+  time: O(n^2)
+  space: O(1)
+  notes: Selection sort always performs the same number of comparisons regardless of input order, which makes it easy to analyze but rarely efficient.
+interviewSignals:
+  - The prompt emphasizes repeatedly choosing the minimum remaining element.
+  - A sorted prefix and unsorted suffix are the natural mental model.
+relatedSlugs:
+  - bubble-sort
+  - cycle-sort
+  - heap-sort
+provenance:
+  - title: TheAlgorithms/JavaScript - Sorts/SelectionSort.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Sorts/SelectionSort.js
+    kind: Implementation
+  - title: "free-programming-books - Open Data Structures: An Introduction"
+    href: https://opendatastructures.org/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Selection sort is the simplest example of repeatedly picking the next final element. The interview value is usually in clearly separating the sorted prefix from the unsorted suffix and explaining why the minimum selection is correct.
+
+## Worked Example
+
+For `[64, 25, 12, 22, 11]`, the first pass finds `11` and swaps it into position `0`. The second pass scans the remaining suffix for `12`, and the process repeats until the prefix spans the full array.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function selectionSort(values) {
+  if (!Array.isArray(values)) {
+    throw new TypeError('Values must be an array of numbers');
+  }
+
+  const items = [...values];
+
+  for (let start = 0; start < items.length - 1; start += 1) {
+    let minIndex = start;
+
+    for (let index = start + 1; index < items.length; index += 1) {
+      if (items[index] < items[minIndex]) {
+        minIndex = index;
+      }
+    }
+
+    if (minIndex !== start) {
+      [items[start], items[minIndex]] = [items[minIndex], items[start]];
+    }
+  }
+
+  return items;
+}
+```
+
+```ts
+export function selectionSort(values: number[]): number[] {
+  const items = [...values];
+
+  for (let start = 0; start < items.length - 1; start += 1) {
+    let minIndex = start;
+
+    for (let index = start + 1; index < items.length; index += 1) {
+      if (items[index] < items[minIndex]) {
+        minIndex = index;
+      }
+    }
+
+    if (minIndex !== start) {
+      [items[start], items[minIndex]] = [items[minIndex], items[start]];
+    }
+  }
+
+  return items;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Count how many writes selection sort performs compared with bubble sort.
+- Sort in descending order by selecting the maximum each pass.
+- Compare repeated minimum extraction with heap sort.
+
+## Common Pitfalls
+
+- Re-swapping even when the minimum is already in place.
+- Confusing the minimum value with its index during the scan.
+- Claiming the best case improves asymptotically when it does not.

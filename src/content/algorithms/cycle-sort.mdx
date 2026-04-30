@@ -1,0 +1,160 @@
+---
+title: Cycle Sort
+slug: cycle-sort
+category: Sorting
+summary: Place each value directly into its final position by rotating the permutation cycles induced by the sorted order.
+description: Cycle sort is the minimal-write in-place sorting algorithm that decomposes the array into cycles and rotates each cycle into place.
+dataStructures:
+  - Array
+techniques:
+  - Sorting
+  - Cycle Decomposition
+  - In-Place Swapping
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - minimal write sort
+  - permutation cycle sort
+useCases:
+  - Minimizing writes on media with expensive write operations
+  - Studying the connection between sorting and permutation cycles
+  - Comparing exotic in-place sorts with mainstream approaches
+complexity:
+  time: O(n^2)
+  space: O(1)
+  notes: Cycle sort is theoretically interesting because it minimizes writes, but that advantage rarely outweighs its complexity in ordinary software.
+interviewSignals:
+  - The prompt emphasizes reducing writes rather than just comparisons.
+  - Position counting can reveal the final destination of the current value.
+relatedSlugs:
+  - selection-sort
+  - bucket-sort
+  - heap-sort
+provenance:
+  - title: TheAlgorithms/JavaScript - Sorts/CycleSort.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Sorts/CycleSort.js
+    kind: Implementation
+  - title: "free-programming-books - Open Data Structures: An Introduction"
+    href: https://opendatastructures.org/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Cycle sort is interesting because it optimizes a different cost than most interview sorts. Instead of minimizing comparisons or maximizing stability, it tries to write each element as few times as possible by sending it directly into its final cycle position.
+
+## Worked Example
+
+Suppose the first value belongs three positions to the right in the fully sorted array. Move it there, pick up the displaced value, and continue rotating until the cycle closes back at the starting index.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function cycleSort(values) {
+  if (!Array.isArray(values)) {
+    throw new TypeError('Values must be an array of numbers');
+  }
+
+  const items = [...values];
+
+  for (let cycleStart = 0; cycleStart < items.length - 1; cycleStart += 1) {
+    let item = items[cycleStart];
+    let position = cycleStart;
+
+    for (let index = cycleStart + 1; index < items.length; index += 1) {
+      if (items[index] < item) {
+        position += 1;
+      }
+    }
+
+    if (position === cycleStart) {
+      continue;
+    }
+
+    while (item === items[position]) {
+      position += 1;
+    }
+
+    [items[position], item] = [item, items[position]];
+
+    while (position !== cycleStart) {
+      position = cycleStart;
+
+      for (let index = cycleStart + 1; index < items.length; index += 1) {
+        if (items[index] < item) {
+          position += 1;
+        }
+      }
+
+      while (item === items[position]) {
+        position += 1;
+      }
+
+      [items[position], item] = [item, items[position]];
+    }
+  }
+
+  return items;
+}
+```
+
+```ts
+export function cycleSort(values: number[]): number[] {
+  const items = [...values];
+
+  for (let cycleStart = 0; cycleStart < items.length - 1; cycleStart += 1) {
+    let item = items[cycleStart];
+    let position = cycleStart;
+
+    for (let index = cycleStart + 1; index < items.length; index += 1) {
+      if (items[index] < item) {
+        position += 1;
+      }
+    }
+
+    if (position === cycleStart) {
+      continue;
+    }
+
+    while (item === items[position]) {
+      position += 1;
+    }
+
+    [items[position], item] = [item, items[position]];
+
+    while (position !== cycleStart) {
+      position = cycleStart;
+
+      for (let index = cycleStart + 1; index < items.length; index += 1) {
+        if (items[index] < item) {
+          position += 1;
+        }
+      }
+
+      while (item === items[position]) {
+        position += 1;
+      }
+
+      [items[position], item] = [item, items[position]];
+    }
+  }
+
+  return items;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Count the number of writes and compare it with selection sort.
+- Explain how duplicate values complicate cycle placement.
+- Discuss whether minimizing writes matters on modern hardware.
+
+## Common Pitfalls
+
+- Forgetting to skip over duplicates already occupying the target position.
+- Confusing the displaced carried value with the array value at the current index.
+- Using cycle sort when readability matters more than write minimization.

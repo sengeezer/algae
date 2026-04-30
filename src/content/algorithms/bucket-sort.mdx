@@ -1,0 +1,147 @@
+---
+title: Bucket Sort
+slug: bucket-sort
+category: Sorting
+summary: Distribute values into buckets by range, sort each bucket, and concatenate the buckets in order.
+description: Bucket sort is the range-partitioning sort that trades distribution work for simpler sorting inside each bucket.
+dataStructures:
+  - Array
+  - Buckets
+techniques:
+  - Sorting
+  - Bucketing
+  - Distribution Sort
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - bin sort
+  - range bucket sort
+useCases:
+  - Sorting uniformly distributed numeric data
+  - Teaching how partition quality affects performance
+  - Comparing distribution sorts with comparison sorts
+complexity:
+  time: O(n + k) average, O(n log n) or worse with poor bucket balance
+  space: O(n + k)
+  notes: The usual interview discussion is about when the input distribution makes bucket sort attractive and when skewed buckets ruin the benefit.
+interviewSignals:
+  - The values are numeric and spread across a known range.
+  - The prompt allows distribution into groups before local sorting.
+relatedSlugs:
+  - radix-sort
+  - counting-sort
+  - quick-sort
+provenance:
+  - title: TheAlgorithms/JavaScript - Sorts/BucketSort.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Sorts/BucketSort.js
+    kind: Implementation
+  - title: "free-programming-books - Open Data Structures: An Introduction"
+    href: https://opendatastructures.org/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Bucket sort matters when the key range and distribution give you useful structure. The core judgment is choosing a bucket size that spreads values well enough that the per-bucket sorts stay cheap.
+
+## Worked Example
+
+For `[29, 25, 3, 49, 9, 37, 21, 43]` with bucket size `10`, values fall into buckets `[0-9]`, `[10-19]`, `[20-29]`, and so on. Sort each bucket locally, then join them in bucket order.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function bucketSort(values, bucketSize = 10) {
+  if (!Array.isArray(values)) {
+    throw new TypeError('Values must be an array of numbers');
+  }
+
+  if (values.length === 0) {
+    return [];
+  }
+
+  let min = values[0];
+  let max = values[0];
+
+  for (const value of values) {
+    if (value < min) {
+      min = value;
+    }
+
+    if (value > max) {
+      max = value;
+    }
+  }
+
+  const bucketCount = Math.floor((max - min) / bucketSize) + 1;
+  const buckets = Array.from({ length: bucketCount }, () => []);
+
+  for (const value of values) {
+    const bucketIndex = Math.floor((value - min) / bucketSize);
+    buckets[bucketIndex].push(value);
+  }
+
+  const result = [];
+
+  for (const bucket of buckets) {
+    bucket.sort((left, right) => left - right);
+    result.push(...bucket);
+  }
+
+  return result;
+}
+```
+
+```ts
+export function bucketSort(values: number[], bucketSize = 10): number[] {
+  if (values.length === 0) {
+    return [];
+  }
+
+  let min = values[0];
+  let max = values[0];
+
+  for (const value of values) {
+    if (value < min) {
+      min = value;
+    }
+
+    if (value > max) {
+      max = value;
+    }
+  }
+
+  const bucketCount = Math.floor((max - min) / bucketSize) + 1;
+  const buckets: number[][] = Array.from({ length: bucketCount }, () => []);
+
+  for (const value of values) {
+    const bucketIndex = Math.floor((value - min) / bucketSize);
+    buckets[bucketIndex].push(value);
+  }
+
+  const result: number[] = [];
+
+  for (const bucket of buckets) {
+    bucket.sort((left, right) => left - right);
+    result.push(...bucket);
+  }
+
+  return result;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Choose a bucket size adaptively from the input range.
+- Replace the built-in bucket sort step with insertion sort for short buckets.
+- Compare bucket sort with counting sort and radix sort.
+
+## Common Pitfalls
+
+- Ignoring how heavily skewed input can collapse many values into one bucket.
+- Forgetting to offset bucket indices by the minimum value.
+- Claiming linear time without qualifying the bucket-balance assumption.
