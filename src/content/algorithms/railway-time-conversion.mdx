@@ -1,0 +1,119 @@
+---
+title: Railway Time Conversion
+slug: railway-time-conversion
+category: Conversions
+summary: Convert a 12-hour clock string with an AM or PM suffix into zero-padded 24-hour time.
+description: Railway Time Conversion is the fixed-format time parser that normalizes standard clock strings into 24-hour output.
+dataStructures:
+  - String
+  - Array
+techniques:
+  - Pattern Matching
+  - String Parsing
+  - Conditional Normalization
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - 24-hour time conversion
+  - military time conversion
+useCases:
+  - Normalizing imported timestamps before storage
+  - Solving interview prompts about noon and midnight edge cases
+  - Building scheduling helpers with lexicographically sortable time strings
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The algorithm parses a fixed-width time string and performs a constant amount of arithmetic.
+interviewSignals:
+  - The prompt gives inputs like `07:05:45PM`.
+  - The expected solution handles `12 AM` and `12 PM` correctly instead of just adding twelve hours.
+relatedSlugs:
+  - date-to-day
+  - get-month-days
+  - title-case-conversion
+provenance:
+  - title: TheAlgorithms/JavaScript - Conversions/RailwayTimeConversion.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Conversions/RailwayTimeConversion.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem is small, but it tests whether you can be exact with string formats and edge cases. Midnight and noon are the usual failure points.
+
+## Worked Example
+
+`07:05:45PM` becomes `19:05:45`, while `12:00:00AM` becomes `00:00:00`. The minutes and seconds never change; only the hour and suffix drive the normalization.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+const TIME_PATTERN = /^(0[1-9]|1[0-2]):([0-5]\d):([0-5]\d)(AM|PM)$/;
+
+function railwayTimeConversion(input) {
+  if (typeof input !== 'string') {
+    throw new TypeError('Expected a time string');
+  }
+
+  const match = TIME_PATTERN.exec(input);
+  if (!match) {
+    throw new RangeError('Time must use hh:mm:ssAM or hh:mm:ssPM format');
+  }
+
+  let hour = Number(match[1]);
+  const minute = match[2];
+  const second = match[3];
+  const meridiem = match[4];
+
+  if (meridiem === 'AM') {
+    hour = hour === 12 ? 0 : hour;
+  } else {
+    hour = hour === 12 ? 12 : hour + 12;
+  }
+
+  return `${String(hour).padStart(2, '0')}:${minute}:${second}`;
+}
+```
+
+```ts
+const TIME_PATTERN = /^(0[1-9]|1[0-2]):([0-5]\d):([0-5]\d)(AM|PM)$/;
+
+export function railwayTimeConversion(input: string): string {
+  const match = TIME_PATTERN.exec(input);
+  if (!match) {
+    throw new RangeError('Time must use hh:mm:ssAM or hh:mm:ssPM format');
+  }
+
+  let hour = Number(match[1]);
+  const minute = match[2];
+  const second = match[3];
+  const meridiem = match[4];
+
+  if (meridiem === 'AM') {
+    hour = hour === 12 ? 0 : hour;
+  } else {
+    hour = hour === 12 ? 12 : hour + 12;
+  }
+
+  return `${String(hour).padStart(2, '0')}:${minute}:${second}`;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Accept inputs without seconds and normalize them to `hh:mm:00`.
+- Explain why 24-hour strings sort correctly as plain text.
+- Parse the result into a structured `{ hour, minute, second }` object.
+
+## Common Pitfalls
+
+- Turning `12:xx:xxAM` into `12:xx:xx` instead of `00:xx:xx`.
+- Adding twelve hours to `12:xx:xxPM`, which should stay `12`.
+- Accepting malformed strings like `7:5:45PM` when the prompt expects fixed-width input.

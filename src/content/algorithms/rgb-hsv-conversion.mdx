@@ -1,0 +1,215 @@
+---
+title: RGB HSV Conversion
+slug: rgb-hsv-conversion
+category: Conversions
+summary: Convert colors between RGB and HSV by normalizing channels and branching on hue sectors.
+description: RGB HSV Conversion is the bidirectional color-space transformation that moves between additive RGB channels and HSV components.
+dataStructures:
+  - Number
+  - Array
+techniques:
+  - Color Space Conversion
+  - Sector Decomposition
+  - Normalization
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - RGB to HSV
+  - HSV to RGB
+useCases:
+  - Building color pickers that expose hue and brightness controls
+  - Teaching how hue sectors map onto RGB channel dominance
+  - Writing round-trip conversion tests for graphics utilities
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: Both directions use constant-time arithmetic and a small fixed branch table.
+interviewSignals:
+  - The prompt asks for both RGB to HSV and HSV to RGB conversions.
+  - The expected solution normalizes channel values and branches on the hue sector instead of using lookup tables.
+relatedSlugs:
+  - hex-to-rgb
+  - rgb-hsl-conversion
+  - rgb-to-hex
+provenance:
+  - title: TheAlgorithms/JavaScript - Conversions/RgbHsvConversion.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Conversions/RgbHsvConversion.js
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+HSV conversion is a good interview exercise because the math is still manageable by hand, but the edge cases are easy to miss. You have to be precise about normalization, grayscale colors, and the six hue sectors.
+
+## Worked Example
+
+`rgbToHsv(24, 98, 118)` returns approximately `(193, 0.80, 0.46)`. Feeding those values into `hsvToRgb` returns the original RGB channels after rounding.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function validateRgbChannel(channel) {
+  if (!Number.isInteger(channel) || channel < 0 || channel > 255) {
+    throw new RangeError('RGB channels must be integers from 0 to 255');
+  }
+}
+
+function validateUnit(value, label) {
+  if (value < 0 || value > 1) {
+    throw new RangeError(`${label} must be between 0 and 1`);
+  }
+}
+
+function rgbToHsv(red, green, blue) {
+  validateRgbChannel(red);
+  validateRgbChannel(green);
+  validateRgbChannel(blue);
+
+  const r = red / 255;
+  const g = green / 255;
+  const b = blue / 255;
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const delta = max - min;
+
+  let hue = 0;
+  if (delta !== 0) {
+    if (max === r) {
+      hue = 60 * (((g - b) / delta + 6) % 6);
+    } else if (max === g) {
+      hue = 60 * ((b - r) / delta + 2);
+    } else {
+      hue = 60 * ((r - g) / delta + 4);
+    }
+  }
+
+  const saturation = max === 0 ? 0 : delta / max;
+  const value = max;
+  return [Number(hue.toFixed(3)), Number(saturation.toFixed(3)), Number(value.toFixed(3))];
+}
+
+function hsvToRgb(hue, saturation, value) {
+  if (hue < 0 || hue > 360) {
+    throw new RangeError('Hue must be between 0 and 360');
+  }
+
+  validateUnit(saturation, 'Saturation');
+  validateUnit(value, 'Value');
+
+  const normalizedHue = hue === 360 ? 0 : hue;
+  const chroma = value * saturation;
+  const section = normalizedHue / 60;
+  const x = chroma * (1 - Math.abs((section % 2) - 1));
+  const match = value - chroma;
+
+  let rgbPrime;
+  if (section < 1) {
+    rgbPrime = [chroma, x, 0];
+  } else if (section < 2) {
+    rgbPrime = [x, chroma, 0];
+  } else if (section < 3) {
+    rgbPrime = [0, chroma, x];
+  } else if (section < 4) {
+    rgbPrime = [0, x, chroma];
+  } else if (section < 5) {
+    rgbPrime = [x, 0, chroma];
+  } else {
+    rgbPrime = [chroma, 0, x];
+  }
+
+  return rgbPrime.map((channel) => Math.round((channel + match) * 255));
+}
+```
+
+```ts
+function validateRgbChannel(channel: number): void {
+  if (!Number.isInteger(channel) || channel < 0 || channel > 255) {
+    throw new RangeError('RGB channels must be integers from 0 to 255');
+  }
+}
+
+function validateUnit(value: number, label: string): void {
+  if (value < 0 || value > 1) {
+    throw new RangeError(`${label} must be between 0 and 1`);
+  }
+}
+
+export function rgbToHsv(red: number, green: number, blue: number): [number, number, number] {
+  validateRgbChannel(red);
+  validateRgbChannel(green);
+  validateRgbChannel(blue);
+
+  const r = red / 255;
+  const g = green / 255;
+  const b = blue / 255;
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const delta = max - min;
+
+  let hue = 0;
+  if (delta !== 0) {
+    if (max === r) {
+      hue = 60 * (((g - b) / delta + 6) % 6);
+    } else if (max === g) {
+      hue = 60 * ((b - r) / delta + 2);
+    } else {
+      hue = 60 * ((r - g) / delta + 4);
+    }
+  }
+
+  const saturation = max === 0 ? 0 : delta / max;
+  const value = max;
+  return [Number(hue.toFixed(3)), Number(saturation.toFixed(3)), Number(value.toFixed(3))];
+}
+
+export function hsvToRgb(hue: number, saturation: number, value: number): [number, number, number] {
+  if (hue < 0 || hue > 360) {
+    throw new RangeError('Hue must be between 0 and 360');
+  }
+
+  validateUnit(saturation, 'Saturation');
+  validateUnit(value, 'Value');
+
+  const normalizedHue = hue === 360 ? 0 : hue;
+  const chroma = value * saturation;
+  const section = normalizedHue / 60;
+  const x = chroma * (1 - Math.abs((section % 2) - 1));
+  const match = value - chroma;
+
+  let rgbPrime: [number, number, number];
+  if (section < 1) {
+    rgbPrime = [chroma, x, 0];
+  } else if (section < 2) {
+    rgbPrime = [x, chroma, 0];
+  } else if (section < 3) {
+    rgbPrime = [0, chroma, x];
+  } else if (section < 4) {
+    rgbPrime = [0, x, chroma];
+  } else if (section < 5) {
+    rgbPrime = [x, 0, chroma];
+  } else {
+    rgbPrime = [chroma, 0, x];
+  }
+
+  return rgbPrime.map((channel) => Math.round((channel + match) * 255)) as [number, number, number];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Add a round-trip helper that checks whether `rgb -> hsv -> rgb` stays within one integer channel value.
+- Compare why HSL can feel more intuitive for lightness adjustments while HSV is convenient for pickers.
+- Accept hex input by composing `hexToRgb` with `rgbToHsv`.
+
+## Common Pitfalls
+
+- Dividing by zero when the color is grayscale and `delta` is zero.
+- Forgetting that hue `360` wraps back to the same sector as `0`.
+- Returning floating-point RGB channels instead of rounding back to bytes.

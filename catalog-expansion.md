@@ -394,9 +394,20 @@ This thirty-third expansion slice lifts the catalog from 230 to 236 entries.
 - Oct To Decimal
 - Ounces To Kilograms
 
+## Batch 34 added
+
+This thirty-fourth expansion slice lifts the catalog from 236 to 242 entries.
+
+- Get Month Days
+- Railway Time Conversion
+- RGB HSL Conversion
+- RGB HSV Conversion
+- Title Case Conversion
+- Upper Case Conversion
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 33 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 34 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -405,21 +416,21 @@ All expansion entries from batch 1 through batch 33 now carry explicit per-entry
 ## Why this batch
 
 - It fills obvious interview-core gaps from TheAlgorithms/JavaScript without duplicating material already present in Algae.
-- It follows the next verified conversions queue directly, adding volume and mass unit conversions, a simple distance transform, octal parsing, and an ASCII-driven case-normalization routine.
-- It broadens the catalog across scalar unit normalization, numeric base parsing, and text transformation instead of staying inside the previous byte-and-calendar slice.
-- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially direct formula application, representation changes, and small utility routines that still reward precise input handling.
+- It closes out the remaining exact conversion entries from the current TheAlgorithms/JavaScript conversions surface and adds one adjacent timing helper to keep the slice at six items.
+- It broadens the catalog across time-format normalization, month-length lookup, color-space transforms, and ASCII-driven casing routines instead of repeating the previous scalar unit conversions.
+- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially constant-time formula application, representation changes, and small utilities that still reward precise validation.
 
 ## Supporting study references from the algorithms list
 
-- Algorithm Design
 - Algorithms, 4th Edition
 - Competitive Programmer's Handbook
 - Text Algorithms
 
 ## Next candidates from the same sources
 
-- Railway Time Conversion
-- RGB HSL Conversion
-- RGB HSV Conversion
-- Title Case Conversion
-- Upper Case Conversion
+- Interval Timer
+- Parse Date
+- Degree To Radian
+- Number Of Digits
+- Radian To Degree
+- Signum

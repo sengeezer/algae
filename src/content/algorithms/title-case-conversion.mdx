@@ -1,0 +1,137 @@
+---
+title: Title Case Conversion
+slug: title-case-conversion
+category: String Processing
+summary: Convert each whitespace-delimited word so its first ASCII letter is uppercase and the rest are lowercase.
+description: Title Case Conversion is the word-level casing routine that capitalizes word starts while normalizing the remaining ASCII letters.
+dataStructures:
+  - String
+  - Array
+techniques:
+  - Character Code Mapping
+  - State Tracking
+  - ASCII Normalization
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - title casing
+  - word capitalization
+useCases:
+  - Normalizing labels and headings
+  - Teaching how word-boundary state changes string logic
+  - Building simple formatters without locale-aware APIs
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: The algorithm scans the string once and updates a small amount of word-boundary state.
+interviewSignals:
+  - The prompt avoids built-in casing helpers.
+  - The expected solution explains where a word begins and how non-letter characters should pass through.
+relatedSlugs:
+  - lower-case-conversion
+  - reverse-words
+  - upper-case-conversion
+provenance:
+  - title: TheAlgorithms/JavaScript - Conversions/TitleCaseConversion.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Conversions/TitleCaseConversion.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Title casing turns a simple ASCII offset trick into a stateful string problem. The interesting part is deciding when a new word begins and making sure repeated whitespace survives unchanged.
+
+## Worked Example
+
+`aLgAe   cATALOG` becomes `Algae   Catalog`. The first letter of each space-delimited word is uppercased, and later ASCII letters in the same word are lowercased.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function toUpperAscii(char) {
+  const code = char.charCodeAt(0);
+  return code >= 97 && code <= 122 ? String.fromCharCode(code - 32) : char;
+}
+
+function toLowerAscii(char) {
+  const code = char.charCodeAt(0);
+  return code >= 65 && code <= 90 ? String.fromCharCode(code + 32) : char;
+}
+
+function titleCaseConversion(input) {
+  if (typeof input !== 'string') {
+    throw new TypeError('Expected a string input');
+  }
+
+  let atWordStart = true;
+
+  return input
+    .split('')
+    .map((char) => {
+      if (/\s/.test(char)) {
+        atWordStart = true;
+        return char;
+      }
+
+      if (atWordStart) {
+        atWordStart = false;
+        return toUpperAscii(char);
+      }
+
+      return toLowerAscii(char);
+    })
+    .join('');
+}
+```
+
+```ts
+function toUpperAscii(char: string): string {
+  const code = char.charCodeAt(0);
+  return code >= 97 && code <= 122 ? String.fromCharCode(code - 32) : char;
+}
+
+function toLowerAscii(char: string): string {
+  const code = char.charCodeAt(0);
+  return code >= 65 && code <= 90 ? String.fromCharCode(code + 32) : char;
+}
+
+export function titleCaseConversion(input: string): string {
+  let atWordStart = true;
+
+  return input
+    .split('')
+    .map((char) => {
+      if (/\s/.test(char)) {
+        atWordStart = true;
+        return char;
+      }
+
+      if (atWordStart) {
+        atWordStart = false;
+        return toUpperAscii(char);
+      }
+
+      return toLowerAscii(char);
+    })
+    .join('');
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Preserve small stop words like `a` and `of` in lowercase except at the start of the title.
+- Treat punctuation such as `-` or `'` as additional word boundaries if a product spec requires it.
+- Compare this manual approach with locale-aware casing APIs.
+
+## Common Pitfalls
+
+- Collapsing repeated spaces when splitting on whole words.
+- Uppercasing the first letter of a word but forgetting to lowercase the rest.
+- Assuming ASCII character offsets are correct for every language.

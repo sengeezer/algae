@@ -1,0 +1,147 @@
+---
+title: RGB HSL Conversion
+slug: rgb-hsl-conversion
+category: Conversions
+summary: Convert RGB channel values into hue, saturation, and lightness components.
+description: RGB HSL Conversion is the color-space transformation that maps additive RGB channels into an HSL representation.
+dataStructures:
+  - Number
+  - Array
+techniques:
+  - Color Space Conversion
+  - Normalization
+  - Max Min Tracking
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - RGB to HSL
+  - color space conversion
+useCases:
+  - Generating HSL controls in design tooling
+  - Comparing color representations for UI systems
+  - Teaching branch-heavy normalization logic on bounded numeric inputs
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The conversion performs a fixed amount of arithmetic on exactly three channels.
+interviewSignals:
+  - The prompt asks for hue, saturation, and lightness from integer RGB input.
+  - The expected solution normalizes channels to `0..1` and handles grayscale colors as a special case.
+relatedSlugs:
+  - hex-to-rgb
+  - rgb-hsv-conversion
+  - rgb-to-hex
+provenance:
+  - title: TheAlgorithms/JavaScript - Conversions/RgbHslConversion.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Conversions/RgbHslConversion.js
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+RGB-to-HSL conversion is a compact way to test numerical normalization and case analysis. The algorithm is constant-time, but the branch conditions have to be exact to produce stable hue and saturation values.
+
+## Worked Example
+
+`(24, 98, 118)` becomes approximately `(193, 66, 28)`. After normalizing the RGB channels to fractions of `255`, the algorithm derives lightness from the min and max channels and then computes hue from the dominant channel.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function validateChannel(channel) {
+  if (!Number.isInteger(channel) || channel < 0 || channel > 255) {
+    throw new RangeError('RGB channels must be integers from 0 to 255');
+  }
+}
+
+function rgbHslConversion(red, green, blue) {
+  validateChannel(red);
+  validateChannel(green);
+  validateChannel(blue);
+
+  const r = red / 255;
+  const g = green / 255;
+  const b = blue / 255;
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const lightness = (max + min) / 2;
+
+  if (max === min) {
+    return [0, 0, Math.round(lightness * 100)];
+  }
+
+  const delta = max - min;
+  const saturation =
+    lightness <= 0.5 ? delta / (max + min) : delta / (2 - max - min);
+
+  let hue;
+  if (max === r) {
+    hue = ((g - b) / delta + (g < b ? 6 : 0)) * 60;
+  } else if (max === g) {
+    hue = ((b - r) / delta + 2) * 60;
+  } else {
+    hue = ((r - g) / delta + 4) * 60;
+  }
+
+  return [Math.round(hue), Math.round(saturation * 100), Math.round(lightness * 100)];
+}
+```
+
+```ts
+function validateChannel(channel: number): void {
+  if (!Number.isInteger(channel) || channel < 0 || channel > 255) {
+    throw new RangeError('RGB channels must be integers from 0 to 255');
+  }
+}
+
+export function rgbHslConversion(red: number, green: number, blue: number): [number, number, number] {
+  validateChannel(red);
+  validateChannel(green);
+  validateChannel(blue);
+
+  const r = red / 255;
+  const g = green / 255;
+  const b = blue / 255;
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const lightness = (max + min) / 2;
+
+  if (max === min) {
+    return [0, 0, Math.round(lightness * 100)];
+  }
+
+  const delta = max - min;
+  const saturation =
+    lightness <= 0.5 ? delta / (max + min) : delta / (2 - max - min);
+
+  let hue: number;
+  if (max === r) {
+    hue = ((g - b) / delta + (g < b ? 6 : 0)) * 60;
+  } else if (max === g) {
+    hue = ((b - r) / delta + 2) * 60;
+  } else {
+    hue = ((r - g) / delta + 4) * 60;
+  }
+
+  return [Math.round(hue), Math.round(saturation * 100), Math.round(lightness * 100)];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Convert HSL back to RGB and discuss round-trip precision loss.
+- Return floating-point saturation and lightness instead of rounded percentages.
+- Compare why HSL and HSV represent brightness differently.
+
+## Common Pitfalls
+
+- Forgetting that grayscale colors have zero saturation and an arbitrary hue.
+- Using the wrong saturation formula when lightness is above `0.5`.
+- Skipping integer validation and silently accepting out-of-range channels.

@@ -1,0 +1,101 @@
+---
+title: Upper Case Conversion
+slug: upper-case-conversion
+category: String Processing
+summary: Convert lowercase ASCII letters in a string to uppercase by shifting their character codes.
+description: Upper Case Conversion is the character-mapping routine that normalizes ASCII lowercase letters into uppercase form.
+dataStructures:
+  - String
+  - Array
+techniques:
+  - Character Code Mapping
+  - ASCII Normalization
+  - String Transformation
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - uppercase normalization
+  - ASCII uppercasing
+useCases:
+  - Normalizing identifiers, commands, and labels
+  - Teaching how ASCII upper and lower ranges align
+  - Building basic text utilities without built-in casing APIs
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: The transformation visits each character once and only changes lowercase ASCII letters.
+interviewSignals:
+  - The prompt explicitly avoids built-in uppercase helpers.
+  - The expected solution explains why lowercase letters are exactly `32` code points above uppercase ones in ASCII.
+relatedSlugs:
+  - lower-case-conversion
+  - title-case-conversion
+  - upper
+provenance:
+  - title: TheAlgorithms/JavaScript - Conversions/UpperCaseConversion.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Conversions/UpperCaseConversion.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Uppercasing is the mirror image of lowercasing, so it is a clean way to test whether someone actually understands ASCII offsets instead of memorizing one direction. It is also a useful building block for normalization pipelines.
+
+## Worked Example
+
+`AlGae 123` becomes `ALGAE 123`. Only ASCII lowercase letters change; digits, spaces, and punctuation are copied through untouched.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function upperCaseConversion(input) {
+  if (typeof input !== 'string') {
+    throw new TypeError('Expected a string input');
+  }
+
+  return input
+    .split('')
+    .map((char) => {
+      const code = char.charCodeAt(0);
+      if (code >= 97 && code <= 122) {
+        return String.fromCharCode(code - 32);
+      }
+      return char;
+    })
+    .join('');
+}
+```
+
+```ts
+export function upperCaseConversion(input: string): string {
+  return input
+    .split('')
+    .map((char) => {
+      const code = char.charCodeAt(0);
+      if (code >= 97 && code <= 122) {
+        return String.fromCharCode(code - 32);
+      }
+      return char;
+    })
+    .join('');
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why this logic does not solve full Unicode uppercasing.
+- Compare this manual mapping with the older `upper` helper already in the catalog.
+- Add an option that uppercases only alphabetic characters before a delimiter.
+
+## Common Pitfalls
+
+- Applying the ASCII offset to characters outside the lowercase range.
+- Forgetting that locale-aware casing has edge cases not captured here.
+- Returning early after the first lowercase match instead of transforming the full string.
