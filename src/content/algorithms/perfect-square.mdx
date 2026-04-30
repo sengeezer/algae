@@ -1,0 +1,77 @@
+---
+title: Perfect Square
+slug: perfect-square
+category: Mathematics
+summary: Check whether a number is a perfect square by taking its square root and confirming the rounded root squares back to the original value.
+description: Perfect Square is the quick integer-root validation problem that tests whether you can combine a root computation with a careful exactness check.
+dataStructures:
+  - Number
+techniques:
+  - Square Root
+  - Numerical Check
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - is square number
+  - perfect square test
+useCases:
+  - Validating grid dimensions or square areas
+  - Short-circuiting divisor and root-based reasoning
+  - Pairing with integer square root questions
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: Rounding the square root before squaring back helps guard against small floating-point noise for ordinary JavaScript numbers.
+interviewSignals:
+  - The prompt asks whether an integer can be written as `k * k`.
+  - A follow-up involves square roots, divisors, or geometric square checks.
+relatedSlugs:
+  - square-root
+  - square-root-logarithmic
+  - binary-search
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/PerfectSquare.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/PerfectSquare.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Perfect-square checks usually show up as a small subroutine inside a larger problem. The main interview question is whether you can make the root test robust enough to avoid easy floating-point mistakes.
+
+## Worked Example
+
+`49` is a perfect square because `Math.sqrt(49)` gives `7`, and `7 * 7 = 49`. `50` is not, because the closest integer root is `7`, and `7 * 7 = 49`, not `50`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function perfectSquare(value) {
+  return Number.isFinite(value) && value >= 0 && Math.round(Math.sqrt(value)) ** 2 === value;
+}
+```
+
+```ts
+export function perfectSquare(value: number): boolean {
+  return Number.isFinite(value) && value >= 0 && Math.round(Math.sqrt(value)) ** 2 === value;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Replace the built-in root with a binary-search integer square root.
+- Explain why rounding is safer than truncating near floating-point boundaries.
+- Extend the check to perfect cubes or other perfect powers.
+
+## Common Pitfalls
+
+- Forgetting that negative values are not perfect squares over the real numbers.
+- Squaring a truncated root and misclassifying values because of floating-point noise.
+- Assuming the approach remains exact for arbitrarily large integers outside the safe numeric range.

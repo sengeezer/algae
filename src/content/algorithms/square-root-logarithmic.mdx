@@ -1,0 +1,123 @@
+---
+title: Square Root Logarithmic
+slug: square-root-logarithmic
+category: Mathematics
+summary: Find the floor square root of a non-negative integer with binary search instead of a linear scan.
+description: Square Root Logarithmic is the integer-root interview problem where the goal is the largest integer whose square does not exceed the input.
+dataStructures:
+  - Number
+techniques:
+  - Binary Search
+  - Numerical Search
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - integer square root
+  - floor sqrt
+useCases:
+  - Returning the integer root in logarithmic time
+  - Supporting perfect-square checks without floating-point dependence
+  - Demonstrating binary search on the answer rather than on explicit data
+complexity:
+  time: O(log n)
+  space: O(1)
+  notes: The running answer stores the best square root seen so far while the search interval shrinks around the true floor value.
+interviewSignals:
+  - The prompt asks for `floor(sqrt(n))` or a root rounded down to an integer.
+  - A brute-force incrementing loop is too slow for the expected input size.
+relatedSlugs:
+  - square-root
+  - perfect-square
+  - binary-search
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/SquareRootLogarithmic.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/SquareRootLogarithmic.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem is a clean example of binary search on the answer space. The real task is not computing a floating-point root, but preserving the last valid integer while shrinking the interval.
+
+## Worked Example
+
+For `27`, search between `0` and `27`. Midpoints such as `13`, `6`, and `3` quickly narrow the range until the best valid square root is `5`, because `5 * 5 <= 27` but `6 * 6 > 27`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function squareRootLogarithmic(value) {
+  if (!Number.isInteger(value) || value < 0) {
+    throw new RangeError('Value must be a non-negative integer');
+  }
+
+  if (value < 2) {
+    return value;
+  }
+
+  let left = 1;
+  let right = value;
+  let answer = 0;
+
+  while (left <= right) {
+    const middle = Math.floor((left + right) / 2);
+
+    if (middle <= value / middle) {
+      answer = middle;
+      left = middle + 1;
+    } else {
+      right = middle - 1;
+    }
+  }
+
+  return answer;
+}
+```
+
+```ts
+export function squareRootLogarithmic(value: number): number {
+  if (!Number.isInteger(value) || value < 0) {
+    throw new RangeError('Value must be a non-negative integer');
+  }
+
+  if (value < 2) {
+    return value;
+  }
+
+  let left = 1;
+  let right = value;
+  let answer = 0;
+
+  while (left <= right) {
+    const middle = Math.floor((left + right) / 2);
+
+    if (middle <= value / middle) {
+      answer = middle;
+      left = middle + 1;
+    } else {
+      right = middle - 1;
+    }
+  }
+
+  return answer;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the exact floating-point root to a tolerance instead of the integer floor.
+- Explain why comparing `middle <= value / middle` is safer than multiplying for very large inputs.
+- Adapt the same answer-search idea to cube roots or other monotone predicates.
+
+## Common Pitfalls
+
+- Losing the best valid candidate when moving the left boundary upward.
+- Returning the first midpoint larger than the root instead of the floor root.
+- Forgetting the small base cases `0` and `1`.

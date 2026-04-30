@@ -1,0 +1,121 @@
+---
+title: Prime Check
+slug: prime-check
+category: Mathematics
+summary: Determine whether an integer is prime by rejecting small cases and then testing only odd divisors up to the square root.
+description: Prime Check is the standard primality interview helper that trims obvious non-primes early and avoids wasting work on even divisors.
+dataStructures:
+  - Number
+techniques:
+  - Trial Division
+  - Number Theory
+difficulty: Easy
+interviewFrequency: High
+aliases:
+  - primality test
+  - is prime
+useCases:
+  - Screening numbers before factorization or sieve work
+  - Supporting divisor-count and number-theory follow-ups
+  - Contrasting basic primality tests with precomputed sieves
+complexity:
+  time: O(sqrt(n))
+  space: O(1)
+  notes: After ruling out `2` and all even numbers, only odd divisors up to the square root can still prove compositeness.
+interviewSignals:
+  - The prompt asks whether an integer is prime rather than for its full factorization.
+  - The interviewer expects a direct test instead of enumerating every smaller number.
+relatedSlugs:
+  - prime-factors
+  - sieve-of-eratosthenes
+  - linear-sieve
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/PrimeCheck.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/PrimeCheck.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Prime checking is a frequent gateway problem in number theory. The interview version is mostly about understanding why divisors larger than the square root cannot introduce any new evidence.
+
+## Worked Example
+
+For `29`, test odd divisors `3` and `5`. Neither divides `29`, and `7 * 7` already exceeds `29`, so `29` is prime. For `21`, divisor `3` works immediately, so the search stops early.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function primeCheck(value) {
+  if (!Number.isInteger(value) || value < 0) {
+    throw new RangeError('Value must be a non-negative integer');
+  }
+
+  if (value < 2) {
+    return false;
+  }
+
+  if (value === 2) {
+    return true;
+  }
+
+  if (value % 2 === 0) {
+    return false;
+  }
+
+  for (let divisor = 3; divisor * divisor <= value; divisor += 2) {
+    if (value % divisor === 0) {
+      return false;
+    }
+  }
+
+  return true;
+}
+```
+
+```ts
+export function primeCheck(value: number): boolean {
+  if (!Number.isInteger(value) || value < 0) {
+    throw new RangeError('Value must be a non-negative integer');
+  }
+
+  if (value < 2) {
+    return false;
+  }
+
+  if (value === 2) {
+    return true;
+  }
+
+  if (value % 2 === 0) {
+    return false;
+  }
+
+  for (let divisor = 3; divisor * divisor <= value; divisor += 2) {
+    if (value % divisor === 0) {
+      return false;
+    }
+  }
+
+  return true;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the smallest divisor instead of only a boolean answer.
+- Compare one-off trial division with sieve preprocessing for many queries.
+- Explain why checking up to the square root is sufficient.
+
+## Common Pitfalls
+
+- Accidentally treating `0` or `1` as prime.
+- Scanning all the way to `n - 1` instead of stopping at the square root.
+- Rechecking even divisors after already handling them as a special case.

@@ -1,0 +1,97 @@
+---
+title: Factorial
+slug: factorial
+category: Mathematics
+summary: Multiply the integers from `1` through `n` to compute the factorial of a non-negative integer.
+description: Factorial is the standard combinatorics routine for counting arrangements, building formulas such as binomial coefficients, and practicing simple iterative multiplication.
+dataStructures:
+  - Number
+techniques:
+  - Iterative Multiplication
+  - Combinatorics
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - n factorial
+  - factorial function
+useCases:
+  - Counting permutations and arrangements
+  - Supporting combinatorics formulas such as `nCr` and `nPr`
+  - Contrasting iterative and recursive numeric routines
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: Factorials grow extremely quickly, so numeric overflow becomes the practical limit long before the loop cost matters.
+interviewSignals:
+  - The prompt asks for `n!` directly or needs a counting formula that depends on it.
+  - The input is a non-negative integer and repeated multiplication is acceptable.
+relatedSlugs:
+  - binomial-coefficient
+  - permutation-and-combination
+  - fibonacci-number
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/Factorial.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/Factorial.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Factorial is one of the first counting helpers interviewers reach for because it is simple on the surface but ties directly into permutations, combinations, and overflow awareness.
+
+## Worked Example
+
+For `5`, multiply `1 * 2 * 3 * 4 * 5` to get `120`. For `0`, the result is `1` by definition.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function factorial(value) {
+  if (!Number.isInteger(value) || value < 0) {
+    throw new RangeError('Value must be a non-negative integer');
+  }
+
+  let result = 1;
+
+  for (let factor = 2; factor <= value; factor += 1) {
+    result *= factor;
+  }
+
+  return result;
+}
+```
+
+```ts
+export function factorial(value: number): number {
+  if (!Number.isInteger(value) || value < 0) {
+    throw new RangeError('Value must be a non-negative integer');
+  }
+
+  let result = 1;
+
+  for (let factor = 2; factor <= value; factor += 1) {
+    result *= factor;
+  }
+
+  return result;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Rework the function with `bigint` once ordinary numbers overflow.
+- Count trailing zeroes in `n!` without computing the full factorial.
+- Compare iterative and recursive versions in terms of stack usage and clarity.
+
+## Common Pitfalls
+
+- Forgetting that `0! = 1`.
+- Accepting negative inputs even though factorial is defined here only for non-negative integers.
+- Ignoring how quickly the result outgrows safe numeric ranges.

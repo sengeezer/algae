@@ -1,0 +1,109 @@
+---
+title: Two Sum
+slug: two-sum
+category: Array Patterns
+summary: Find two indices whose values add to a target by storing seen values in a hash map and checking complements as you go.
+description: Two Sum is the canonical array-plus-hash-map interview question for reducing a brute-force pair search to one linear pass.
+dataStructures:
+  - Array
+  - Hash Map
+  - Number
+techniques:
+  - Hash Map
+  - Complement Lookup
+difficulty: Easy
+interviewFrequency: Very High
+aliases:
+  - pair sum
+  - target pair
+useCases:
+  - Returning one valid pair of indices in linear time
+  - Demonstrating complement-based hash lookups
+  - Contrasting hash-map and sorted-two-pointer solutions
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: Check for the complement before storing the current value so you do not reuse the same index unless a duplicate appears later in the array.
+interviewSignals:
+  - The prompt asks for two values or indices that add to a target.
+  - The interviewer wants a linear-time improvement over the obvious nested loops.
+relatedSlugs:
+  - two-pointers
+  - sliding-window
+  - prefix-sum
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/TwoSum.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/TwoSum.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Two Sum is a standard signal problem for hash-based thinking. The important shift is recognizing that once you know the target and one number, the missing value is determined immediately.
+
+## Worked Example
+
+For `nums = [2, 7, 11, 15]` and `target = 9`, start with `2` and remember its index. At `7`, the complement `2` has already been seen, so the answer is `[0, 1]`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function twoSum(nums, target) {
+  if (!Array.isArray(nums)) {
+    throw new TypeError('Nums must be an array');
+  }
+
+  const seen = new Map();
+
+  for (let index = 0; index < nums.length; index += 1) {
+    const value = nums[index];
+    const complement = target - value;
+
+    if (seen.has(complement)) {
+      return [seen.get(complement), index];
+    }
+
+    seen.set(value, index);
+  }
+
+  return [];
+}
+```
+
+```ts
+export function twoSum(nums: number[], target: number): number[] {
+  const seen = new Map<number, number>();
+
+  for (let index = 0; index < nums.length; index += 1) {
+    const value = nums[index];
+    const complement = target - value;
+
+    if (seen.has(complement)) {
+      return [seen.get(complement) as number, index];
+    }
+
+    seen.set(value, index);
+  }
+
+  return [];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the actual pair values instead of their indices.
+- Solve the sorted-array version with a two-pointer scan.
+- Extend the idea to Three Sum and explain why the complexity changes.
+
+## Common Pitfalls
+
+- Storing the current value before checking its complement and accidentally reusing the same index.
+- Forgetting that duplicate values can still form the answer.
+- Returning all pairs when the prompt asks for only one valid pair.

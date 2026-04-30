@@ -1,0 +1,101 @@
+---
+title: Sum Of Digits
+slug: sum-of-digits
+category: Mathematics
+summary: Add the decimal digits of an integer by repeatedly taking `% 10` and dividing by `10`.
+description: Sum Of Digits is the digit-decomposition routine used in divisibility tricks, checksum-style calculations, and recursive digit problems.
+dataStructures:
+  - Number
+techniques:
+  - Digit Decomposition
+  - Modulo Arithmetic
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - digit sum
+  - sum decimal digits
+useCases:
+  - Implementing divisibility and checksum-style helpers
+  - Building digit-DP intuition from simpler arithmetic loops
+  - Comparing arithmetic digit extraction with string conversion
+complexity:
+  time: O(d)
+  space: O(1)
+  notes: Each iteration removes one decimal digit from the remaining number, so the runtime scales with digit count rather than value magnitude directly.
+interviewSignals:
+  - The prompt explicitly asks for the sum of an integer's digits.
+  - A modulus-and-division loop is expected instead of string helpers.
+relatedSlugs:
+  - modular-arithmetic
+  - binary-equivalent
+  - factorial
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/SumOfDigits.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/SumOfDigits.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Sum-of-digits questions are small, but they test whether you can reason about decimal representation without leaning on string conversion by default.
+
+## Worked Example
+
+For `-255`, take the absolute value first. Then peel digits with `% 10`: `5 + 5 + 2 = 12`, so the digit sum is `12`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function sumOfDigits(value) {
+  if (!Number.isInteger(value)) {
+    throw new RangeError('Value must be an integer');
+  }
+
+  let remaining = Math.abs(value);
+  let total = 0;
+
+  while (remaining > 0) {
+    total += remaining % 10;
+    remaining = Math.floor(remaining / 10);
+  }
+
+  return total;
+}
+```
+
+```ts
+export function sumOfDigits(value: number): number {
+  if (!Number.isInteger(value)) {
+    throw new RangeError('Value must be an integer');
+  }
+
+  let remaining = Math.abs(value);
+  let total = 0;
+
+  while (remaining > 0) {
+    total += remaining % 10;
+    remaining = Math.floor(remaining / 10);
+  }
+
+  return total;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Implement the same routine recursively.
+- Generalize the logic to other bases besides decimal.
+- Reduce the repeated digit sum to a digital root.
+
+## Common Pitfalls
+
+- Forgetting to take the absolute value for negative inputs.
+- Mishandling `0`, whose digit sum should still be `0`.
+- Accepting fractional inputs even though decimal digits are defined here only for integers.
