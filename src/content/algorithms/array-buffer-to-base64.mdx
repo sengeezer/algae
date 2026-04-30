@@ -1,0 +1,120 @@
+---
+title: Array Buffer To Base64
+slug: array-buffer-to-base64
+category: Conversions
+summary: Encode raw bytes into Base64 text by packing three-byte groups into four six-bit characters.
+description: Array Buffer To Base64 is the binary-to-text encoding routine that transforms byte buffers into portable ASCII-safe Base64 strings.
+dataStructures:
+  - ArrayBuffer
+  - Uint8Array
+  - String
+techniques:
+  - Base64 Encoding
+  - Bit Packing
+  - Padding
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - buffer to base64
+  - binary to base64
+useCases:
+  - Embedding binary payloads inside JSON or text-based protocols
+  - Serializing files or byte arrays for transport over text channels
+  - Teaching how six-bit alphabets encode arbitrary byte streams
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: The encoder reads bytes once and emits four output characters for every three bytes, plus optional `=` padding.
+interviewSignals:
+  - The prompt asks how to represent binary bytes safely as text.
+  - The intended solution groups bytes into 24-bit chunks and maps them through the Base64 alphabet.
+relatedSlugs:
+  - base64-to-array-buffer
+  - arbitrary-base
+  - binary-to-hex
+provenance:
+  - title: TheAlgorithms/JavaScript - Conversions/ArrayBufferToBase64.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Conversions/ArrayBufferToBase64.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Base64 encoding is a practical bridge between binary and text systems. It matters whenever raw bytes need to move through channels that only reliably support printable characters, such as JSON payloads, HTML attributes, or form fields.
+
+## Worked Example
+
+The byte sequence for `Hello` becomes `SGVsbG8=`. The encoder packs bytes into 24-bit chunks, splits them into four six-bit indexes, and pads the final chunk when the byte count is not divisible by three.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+const BASE64_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+
+function arrayBufferToBase64(buffer) {
+  if (!(buffer instanceof ArrayBuffer)) {
+    throw new TypeError('Expected an ArrayBuffer input');
+  }
+
+  const bytes = new Uint8Array(buffer);
+  let encoded = '';
+
+  for (let index = 0; index < bytes.length; index += 3) {
+    const remaining = bytes.length - index;
+    const byte1 = bytes[index];
+    const byte2 = remaining > 1 ? bytes[index + 1] : 0;
+    const byte3 = remaining > 2 ? bytes[index + 2] : 0;
+    const chunk = (byte1 << 16) | (byte2 << 8) | byte3;
+
+    encoded += BASE64_ALPHABET[(chunk >> 18) & 63];
+    encoded += BASE64_ALPHABET[(chunk >> 12) & 63];
+    encoded += remaining > 1 ? BASE64_ALPHABET[(chunk >> 6) & 63] : '=';
+    encoded += remaining > 2 ? BASE64_ALPHABET[chunk & 63] : '=';
+  }
+
+  return encoded;
+}
+```
+
+```ts
+const BASE64_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+
+export function arrayBufferToBase64(buffer: ArrayBuffer): string {
+  const bytes = new Uint8Array(buffer);
+  let encoded = '';
+
+  for (let index = 0; index < bytes.length; index += 3) {
+    const remaining = bytes.length - index;
+    const byte1 = bytes[index];
+    const byte2 = remaining > 1 ? bytes[index + 1] : 0;
+    const byte3 = remaining > 2 ? bytes[index + 2] : 0;
+    const chunk = (byte1 << 16) | (byte2 << 8) | byte3;
+
+    encoded += BASE64_ALPHABET[(chunk >> 18) & 63];
+    encoded += BASE64_ALPHABET[(chunk >> 12) & 63];
+    encoded += remaining > 1 ? BASE64_ALPHABET[(chunk >> 6) & 63] : '=';
+    encoded += remaining > 2 ? BASE64_ALPHABET[chunk & 63] : '=';
+  }
+
+  return encoded;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why Base64 emits four characters for every three bytes.
+- Compare Base64 with hexadecimal for size overhead and readability.
+- Adapt the encoder to the URL-safe Base64 alphabet.
+
+## Common Pitfalls
+
+- Mishandling the final one-byte or two-byte chunk.
+- Forgetting that Base64 padding is part of the textual format.
+- Treating an ArrayBuffer like a normal array without creating a typed view first.

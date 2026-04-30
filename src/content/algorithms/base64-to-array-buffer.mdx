@@ -1,0 +1,142 @@
+---
+title: Base64 To Array Buffer
+slug: base64-to-array-buffer
+category: Conversions
+summary: Decode Base64 text back into raw bytes by turning four characters into up to three output bytes.
+description: Base64 To Array Buffer is the text-to-binary decoding routine that reconstructs an ArrayBuffer from Base64-encoded data.
+dataStructures:
+  - String
+  - ArrayBuffer
+  - Uint8Array
+techniques:
+  - Base64 Decoding
+  - Bit Unpacking
+  - Padding Handling
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - base64 decode
+  - base64 to buffer
+useCases:
+  - Restoring binary payloads from APIs that return Base64 strings
+  - Decoding file or image data transported through text-only channels
+  - Teaching how encoded characters collapse back into bytes
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: The decoder processes four Base64 characters at a time and writes up to three bytes per chunk.
+interviewSignals:
+  - The prompt asks to recover raw bytes from Base64 text.
+  - The intended solution validates padding and decodes 24-bit chunks from the Base64 alphabet.
+relatedSlugs:
+  - array-buffer-to-base64
+  - arbitrary-base
+  - binary-to-hex
+provenance:
+  - title: TheAlgorithms/JavaScript - Conversions/Base64ToArrayBuffer.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Conversions/Base64ToArrayBuffer.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Base64 decoding is the natural inverse of Base64 encoding. It appears whenever a binary asset crosses a text boundary and then has to be restored into a typed byte buffer on the receiving side.
+
+## Worked Example
+
+`SGVsbG8=` decodes to the bytes for `Hello`. Every four encoded characters describe a 24-bit chunk, and trailing `=` characters indicate how many bytes were missing from the last group.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+const BASE64_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+const BASE64_LOOKUP = Object.fromEntries([...BASE64_ALPHABET].map((char, index) => [char, index]));
+
+function base64ToArrayBuffer(base64) {
+  if (typeof base64 !== 'string' || base64.length % 4 !== 0 || !/^[A-Za-z0-9+/]*={0,2}$/.test(base64)) {
+    throw new TypeError('Expected a valid Base64 string');
+  }
+
+  if (base64.length === 0) {
+    return new ArrayBuffer(0);
+  }
+
+  const padding = base64.endsWith('==') ? 2 : base64.endsWith('=') ? 1 : 0;
+  const output = new Uint8Array((base64.length / 4) * 3 - padding);
+  let outIndex = 0;
+
+  for (let index = 0; index < base64.length; index += 4) {
+    const char1 = BASE64_LOOKUP[base64[index]];
+    const char2 = BASE64_LOOKUP[base64[index + 1]];
+    const char3 = base64[index + 2] === '=' ? 0 : BASE64_LOOKUP[base64[index + 2]];
+    const char4 = base64[index + 3] === '=' ? 0 : BASE64_LOOKUP[base64[index + 3]];
+    const chunk = (char1 << 18) | (char2 << 12) | (char3 << 6) | char4;
+
+    output[outIndex++] = (chunk >> 16) & 255;
+    if (base64[index + 2] !== '=') {
+      output[outIndex++] = (chunk >> 8) & 255;
+    }
+    if (base64[index + 3] !== '=') {
+      output[outIndex++] = chunk & 255;
+    }
+  }
+
+  return output.buffer;
+}
+```
+
+```ts
+const BASE64_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+const BASE64_LOOKUP = Object.fromEntries([...BASE64_ALPHABET].map((char, index) => [char, index])) as Record<string, number>;
+
+export function base64ToArrayBuffer(base64: string): ArrayBuffer {
+  if (base64.length % 4 !== 0 || !/^[A-Za-z0-9+/]*={0,2}$/.test(base64)) {
+    throw new TypeError('Expected a valid Base64 string');
+  }
+
+  if (base64.length === 0) {
+    return new ArrayBuffer(0);
+  }
+
+  const padding = base64.endsWith('==') ? 2 : base64.endsWith('=') ? 1 : 0;
+  const output = new Uint8Array((base64.length / 4) * 3 - padding);
+  let outIndex = 0;
+
+  for (let index = 0; index < base64.length; index += 4) {
+    const char1 = BASE64_LOOKUP[base64[index]];
+    const char2 = BASE64_LOOKUP[base64[index + 1]];
+    const char3 = base64[index + 2] === '=' ? 0 : BASE64_LOOKUP[base64[index + 2]];
+    const char4 = base64[index + 3] === '=' ? 0 : BASE64_LOOKUP[base64[index + 3]];
+    const chunk = (char1 << 18) | (char2 << 12) | (char3 << 6) | char4;
+
+    output[outIndex++] = (chunk >> 16) & 255;
+    if (base64[index + 2] !== '=') {
+      output[outIndex++] = (chunk >> 8) & 255;
+    }
+    if (base64[index + 3] !== '=') {
+      output[outIndex++] = chunk & 255;
+    }
+  }
+
+  return output.buffer;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain how padding affects the decoded output length.
+- Add support for the URL-safe Base64 alphabet.
+- Return a `Uint8Array` directly when that is the more useful API surface.
+
+## Common Pitfalls
+
+- Accepting malformed Base64 strings with invalid characters or bad padding.
+- Writing past the output buffer when the final chunk is padded.
+- Forgetting that a valid Base64 string length must be divisible by four.

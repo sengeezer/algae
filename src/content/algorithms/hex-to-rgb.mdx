@@ -1,0 +1,101 @@
+---
+title: Hex To RGB
+slug: hex-to-rgb
+category: Conversions
+summary: Decode a six-digit hexadecimal color code into its red, green, and blue channel values.
+description: Hex To RGB is the color-decoding routine that splits a hex color string into three byte-sized channel numbers.
+dataStructures:
+  - String
+  - Object
+techniques:
+  - Base Conversion
+  - String Slicing
+  - Color Decoding
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - hex color to RGB
+  - color parsing
+useCases:
+  - Reading CSS color strings into numeric channels
+  - Converting design tokens into editable component values
+  - Teaching how hexadecimal pairs map into byte-sized color channels
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The routine always parses exactly three two-character hex pairs.
+interviewSignals:
+  - The prompt asks to break a color like `#FF6347` into numeric RGB channels.
+  - The expected solution validates the hex shape and parses three two-digit slices.
+relatedSlugs:
+  - rgb-to-hex
+  - decimal-to-hex
+  - hex-to-decimal
+provenance:
+  - title: TheAlgorithms/JavaScript - Conversions/HexToRGB.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Conversions/HexToRGB.js
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Hex-to-RGB is the inverse of RGB-to-hex and shows how compact hex color codes are really just three byte values written in base 16. It is a very common format bridge in UI and graphics work.
+
+## Worked Example
+
+`#FF6347` splits into `FF`, `63`, and `47`, which decode to `{ r: 255, g: 99, b: 71 }`. The work is just validation plus three base-16 parses.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function hexToRgb(hexString) {
+  if (typeof hexString !== 'string') {
+    throw new TypeError('Expected a string input');
+  }
+
+  const normalized = hexString.startsWith('#') ? hexString.slice(1) : hexString;
+  if (!/^[0-9A-Fa-f]{6}$/.test(normalized)) {
+    throw new RangeError('Expected a 6-digit hexadecimal color');
+  }
+
+  return {
+    r: Number.parseInt(normalized.slice(0, 2), 16),
+    g: Number.parseInt(normalized.slice(2, 4), 16),
+    b: Number.parseInt(normalized.slice(4, 6), 16),
+  };
+}
+```
+
+```ts
+export function hexToRgb(hexString: string): { r: number; g: number; b: number } {
+  const normalized = hexString.startsWith('#') ? hexString.slice(1) : hexString;
+  if (!/^[0-9A-Fa-f]{6}$/.test(normalized)) {
+    throw new RangeError('Expected a 6-digit hexadecimal color');
+  }
+
+  return {
+    r: Number.parseInt(normalized.slice(0, 2), 16),
+    g: Number.parseInt(normalized.slice(2, 4), 16),
+    b: Number.parseInt(normalized.slice(4, 6), 16),
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Add support for shorthand forms like `#FFF`.
+- Explain why each color channel is one byte.
+- Normalize the output for downstream APIs that want percentages or floats from `0` to `1`.
+
+## Common Pitfalls
+
+- Forgetting to handle an optional leading `#`.
+- Accepting malformed lengths like `#FFFF` or non-hex characters.
+- Mixing up the channel order when slicing the string.

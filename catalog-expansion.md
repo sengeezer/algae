@@ -372,9 +372,20 @@ This thirty-first expansion slice lifts the catalog from 218 to 224 entries.
 - RGB To Hex
 - Roman To Decimal
 
+## Batch 32 added
+
+This thirty-second expansion slice lifts the catalog from 224 to 230 entries.
+
+- Array Buffer To Base64
+- Base64 To Array Buffer
+- Date Day Difference
+- Date To Day
+- Hex To RGB
+- Temperature Conversion
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 31 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 32 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -383,9 +394,9 @@ All expansion entries from batch 1 through batch 31 now carry explicit per-entry
 ## Why this batch
 
 - It fills obvious interview-core gaps from TheAlgorithms/JavaScript without duplicating material already present in Algae.
-- It follows the next verified conversions queue directly, adding octal and Roman numeral encoding, the inverse Roman parser, hexadecimal-to-binary regrouping, practical unit conversion, and RGB color serialization.
-- It broadens the catalog across numeral systems, lookup-table transforms, physical-unit normalization, and string formatting instead of staying inside the previous decimal-binary-hex slice.
-- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially representation transforms, symbol mapping, and the applied side of numeric conversion.
+- It follows the next verified conversions queue directly, adding binary-to-text encoding, binary restoration from text, day-of-week and day-difference calendar arithmetic, hexadecimal color decoding, and temperature normalization across measurement scales.
+- It broadens the catalog across byte packing, calendar formulas, lookup-table parsing, and multi-unit normalization instead of staying inside the previous numeral-format slice.
+- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially representation transforms, table-driven parsing, and practical conversion routines with real application surfaces.
 
 ## Supporting study references from the algorithms list
 
@@ -396,9 +407,9 @@ All expansion entries from batch 1 through batch 31 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- Array Buffer To Base64
-- Base64 To Array Buffer
-- Date Day Difference
-- Date To Day
-- Hex To RGB
-- Temperature Conversion
+- Liters To Imperial Gallons
+- Liters To US Gallons
+- Lower Case Conversion
+- Meter To Feet Conversion
+- Oct To Decimal
+- Ounces To Kilograms

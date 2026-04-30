@@ -1,0 +1,160 @@
+---
+title: Date Day Difference
+slug: date-day-difference
+category: Conversions
+summary: Compute the number of calendar days between two dates by converting each date into a serial day count.
+description: Date Day Difference is the calendar-arithmetic routine that measures the absolute day gap between two valid dates.
+dataStructures:
+  - String
+  - Object
+  - Number
+techniques:
+  - Calendar Arithmetic
+  - Serial Day Count
+  - Leap Year Handling
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - date difference in days
+  - calendar day gap
+useCases:
+  - Measuring elapsed calendar days between two events
+  - Building scheduling and reporting utilities
+  - Teaching how leap years affect day-count formulas
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: After both dates are parsed, each date maps to a serial day number with a fixed-size formula.
+interviewSignals:
+  - The prompt asks for a day count difference rather than a millisecond difference.
+  - The intended solution uses a calendar formula or canonical day number instead of iterating date by date.
+relatedSlugs:
+  - date-to-day
+  - length-conversion
+  - temperature-conversion
+provenance:
+  - title: TheAlgorithms/JavaScript - Conversions/DateDayDifference.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Conversions/DateDayDifference.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Date-day difference problems look simple until leap years and month lengths get involved. Converting each date into a serial day count turns the problem into ordinary integer subtraction.
+
+## Worked Example
+
+The source example `17/08/2002` and `10/10/2020` differ by `6630` days. The algorithm does not iterate through calendars day by day; it maps each date into its total number of elapsed days and subtracts.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function isLeapYear(year) {
+  return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+}
+
+function parseDateString(input) {
+  const match = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(input);
+  if (!match) {
+    throw new TypeError('Dates must use dd/mm/yyyy format');
+  }
+
+  const day = Number(match[1]);
+  const month = Number(match[2]);
+  const year = Number(match[3]);
+  const candidate = new Date(year, month - 1, day);
+
+  if (candidate.getFullYear() !== year || candidate.getMonth() !== month - 1 || candidate.getDate() !== day) {
+    throw new RangeError('Invalid calendar date');
+  }
+
+  return { day, month, year };
+}
+
+function serialDayNumber(day, month, year) {
+  return (
+    365 * (year - 1) +
+    Math.floor((year - 1) / 4) -
+    Math.floor((year - 1) / 100) +
+    Math.floor((year - 1) / 400) +
+    day +
+    Math.floor((367 * month - 362) / 12) +
+    (month <= 2 ? 0 : isLeapYear(year) ? -1 : -2)
+  );
+}
+
+function dateDayDifference(firstDate, secondDate) {
+  const left = parseDateString(firstDate);
+  const right = parseDateString(secondDate);
+
+  return Math.abs(
+    serialDayNumber(right.day, right.month, right.year) -
+      serialDayNumber(left.day, left.month, left.year)
+  );
+}
+```
+
+```ts
+function isLeapYear(year: number): boolean {
+  return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+}
+
+function parseDateString(input: string): { day: number; month: number; year: number } {
+  const match = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(input);
+  if (!match) {
+    throw new TypeError('Dates must use dd/mm/yyyy format');
+  }
+
+  const day = Number(match[1]);
+  const month = Number(match[2]);
+  const year = Number(match[3]);
+  const candidate = new Date(year, month - 1, day);
+
+  if (candidate.getFullYear() !== year || candidate.getMonth() !== month - 1 || candidate.getDate() !== day) {
+    throw new RangeError('Invalid calendar date');
+  }
+
+  return { day, month, year };
+}
+
+function serialDayNumber(day: number, month: number, year: number): number {
+  return (
+    365 * (year - 1) +
+    Math.floor((year - 1) / 4) -
+    Math.floor((year - 1) / 100) +
+    Math.floor((year - 1) / 400) +
+    day +
+    Math.floor((367 * month - 362) / 12) +
+    (month <= 2 ? 0 : isLeapYear(year) ? -1 : -2)
+  );
+}
+
+export function dateDayDifference(firstDate: string, secondDate: string): number {
+  const left = parseDateString(firstDate);
+  const right = parseDateString(secondDate);
+
+  return Math.abs(
+    serialDayNumber(right.day, right.month, right.year) -
+      serialDayNumber(left.day, left.month, left.year)
+  );
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why leap years change the day-number formula after February.
+- Return a signed difference instead of an absolute difference.
+- Compare this formula with using UTC dates from the standard library.
+
+## Common Pitfalls
+
+- Accepting invalid dates like `31/02/2024`.
+- Mixing local time zone math with calendar-day math.
+- Forgetting the leap-year adjustment after February.

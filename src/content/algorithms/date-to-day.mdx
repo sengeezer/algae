@@ -1,0 +1,160 @@
+---
+title: Date To Day
+slug: date-to-day
+category: Conversions
+summary: Determine the weekday name for a date string using calendar arithmetic rather than a built-in date formatter.
+description: Date To Day is the weekday-calculation routine that maps a valid date into its day-of-week label with Zeller-style arithmetic.
+dataStructures:
+  - String
+  - Object
+  - Array
+techniques:
+  - Zeller's Congruence
+  - Calendar Arithmetic
+  - Date Parsing
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - weekday lookup
+  - day of week from date
+useCases:
+  - Computing weekday names from plain date strings
+  - Practicing modular arithmetic on calendar formulas
+  - Explaining how weekday calculators work under the hood
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: Once the date is parsed, the weekday formula uses a fixed number of arithmetic operations.
+interviewSignals:
+  - The prompt asks for the weekday without relying entirely on the language runtime.
+  - The expected solution uses a known calendar congruence and careful month/year adjustments.
+relatedSlugs:
+  - date-day-difference
+  - roman-to-decimal
+  - temperature-conversion
+provenance:
+  - title: TheAlgorithms/JavaScript - Conversions/DateToDay.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Conversions/DateToDay.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Date-to-day conversion is one of the classic calendar arithmetic exercises. It is useful because it turns a human-readable date into a weekday label without iterating through months or relying entirely on a runtime helper.
+
+## Worked Example
+
+`18/12/2020` maps to `Friday`. The formula shifts January and February into the previous year and then applies modular arithmetic to recover the weekday index.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+const WEEKDAYS = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+
+function parseDateString(input) {
+  const match = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(input);
+  if (!match) {
+    throw new TypeError('Dates must use dd/mm/yyyy format');
+  }
+
+  const day = Number(match[1]);
+  const month = Number(match[2]);
+  const year = Number(match[3]);
+  const candidate = new Date(year, month - 1, day);
+
+  if (candidate.getFullYear() !== year || candidate.getMonth() !== month - 1 || candidate.getDate() !== day) {
+    throw new RangeError('Invalid calendar date');
+  }
+
+  return { day, month, year };
+}
+
+function dateToDay(input) {
+  const parsed = parseDateString(input);
+  let year = parsed.year;
+  let month = parsed.month;
+
+  if (month < 3) {
+    year -= 1;
+    month += 12;
+  }
+
+  const yearDigits = year % 100;
+  const century = Math.floor(year / 100);
+  const weekday =
+    (parsed.day +
+      Math.floor((month + 1) * 2.6) +
+      yearDigits +
+      Math.floor(yearDigits / 4) +
+      Math.floor(century / 4) +
+      5 * century) %
+    7;
+
+  return WEEKDAYS[weekday];
+}
+```
+
+```ts
+const WEEKDAYS = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] as const;
+
+function parseDateString(input: string): { day: number; month: number; year: number } {
+  const match = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(input);
+  if (!match) {
+    throw new TypeError('Dates must use dd/mm/yyyy format');
+  }
+
+  const day = Number(match[1]);
+  const month = Number(match[2]);
+  const year = Number(match[3]);
+  const candidate = new Date(year, month - 1, day);
+
+  if (candidate.getFullYear() !== year || candidate.getMonth() !== month - 1 || candidate.getDate() !== day) {
+    throw new RangeError('Invalid calendar date');
+  }
+
+  return { day, month, year };
+}
+
+export function dateToDay(input: string): string {
+  const parsed = parseDateString(input);
+  let year = parsed.year;
+  let month = parsed.month;
+
+  if (month < 3) {
+    year -= 1;
+    month += 12;
+  }
+
+  const yearDigits = year % 100;
+  const century = Math.floor(year / 100);
+  const weekday =
+    (parsed.day +
+      Math.floor((month + 1) * 2.6) +
+      yearDigits +
+      Math.floor(yearDigits / 4) +
+      Math.floor(century / 4) +
+      5 * century) %
+    7;
+
+  return WEEKDAYS[weekday];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why January and February are treated as months `13` and `14` of the previous year.
+- Compare this arithmetic approach with using the built-in `Date` API.
+- Return the weekday index instead of the weekday name.
+
+## Common Pitfalls
+
+- Forgetting the month and year adjustment for January and February.
+- Producing a negative modulo result in languages with different remainder rules.
+- Accepting malformed or impossible dates without validation.

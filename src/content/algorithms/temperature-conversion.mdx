@@ -1,0 +1,130 @@
+---
+title: Temperature Conversion
+slug: temperature-conversion
+category: Conversions
+summary: Convert a temperature between measurement scales by normalizing through a canonical intermediate scale.
+description: Temperature Conversion is the multi-scale normalization routine that maps values across Celsius, Fahrenheit, Kelvin, Rankine, and Reaumur.
+dataStructures:
+  - Number
+  - Hash Map
+  - String
+techniques:
+  - Unit Conversion
+  - Normalization
+  - Formula Mapping
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - scale conversion
+  - temperature normalization
+useCases:
+  - Converting measurements between scientific and everyday temperature scales
+  - Avoiding an explosion of pairwise conversion functions
+  - Teaching how normalization through one canonical unit simplifies many transforms
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: A normalized conversion through Kelvin keeps the API simple while still covering many unit pairs.
+interviewSignals:
+  - The prompt gives a numeric value with source and target temperature units.
+  - The cleanest solution converts through a canonical scale instead of writing every pairwise formula directly.
+relatedSlugs:
+  - length-conversion
+  - date-to-day
+  - hex-to-rgb
+provenance:
+  - title: TheAlgorithms/JavaScript - Conversions/TemperatureConversion.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Conversions/TemperatureConversion.js
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Temperature conversion is a good example of how normalization beats pairwise duplication. The upstream source exposes many direct functions; locally, it is cleaner to convert into one canonical scale and back out.
+
+## Worked Example
+
+`25` degrees Celsius becomes `77` degrees Fahrenheit. In a normalized implementation, the value first becomes Kelvin and then converts from Kelvin to the requested target scale.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+const toKelvin = {
+  celsius: (value) => value + 273.15,
+  fahrenheit: (value) => ((value - 32) * 5) / 9 + 273.15,
+  kelvin: (value) => value,
+  rankine: (value) => (value * 5) / 9,
+  reaumur: (value) => value * 1.25 + 273.15,
+};
+
+const fromKelvin = {
+  celsius: (value) => value - 273.15,
+  fahrenheit: (value) => ((value - 273.15) * 9) / 5 + 32,
+  kelvin: (value) => value,
+  rankine: (value) => (value * 9) / 5,
+  reaumur: (value) => (value - 273.15) * 0.8,
+};
+
+function temperatureConversion(value, fromUnit, toUnit) {
+  if (!Number.isFinite(value)) {
+    throw new TypeError('Temperature must be a finite number');
+  }
+
+  if (!(fromUnit in toKelvin) || !(toUnit in fromKelvin)) {
+    throw new RangeError('Unsupported temperature unit');
+  }
+
+  const kelvin = toKelvin[fromUnit](value);
+  return fromKelvin[toUnit](kelvin);
+}
+```
+
+```ts
+const toKelvin: Record<string, (value: number) => number> = {
+  celsius: (value) => value + 273.15,
+  fahrenheit: (value) => ((value - 32) * 5) / 9 + 273.15,
+  kelvin: (value) => value,
+  rankine: (value) => (value * 5) / 9,
+  reaumur: (value) => value * 1.25 + 273.15,
+};
+
+const fromKelvin: Record<string, (value: number) => number> = {
+  celsius: (value) => value - 273.15,
+  fahrenheit: (value) => ((value - 273.15) * 9) / 5 + 32,
+  kelvin: (value) => value,
+  rankine: (value) => (value * 9) / 5,
+  reaumur: (value) => (value - 273.15) * 0.8,
+};
+
+export function temperatureConversion(value: number, fromUnit: string, toUnit: string): number {
+  if (!Number.isFinite(value)) {
+    throw new TypeError('Temperature must be a finite number');
+  }
+
+  if (!(fromUnit in toKelvin) || !(toUnit in fromKelvin)) {
+    throw new RangeError('Unsupported temperature unit');
+  }
+
+  const kelvin = toKelvin[fromUnit](value);
+  return fromKelvin[toUnit](kelvin);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why normalization through Kelvin avoids many pairwise conversion functions.
+- Add formatting or rounding rules for user-facing output.
+- Reject values below absolute zero when the source unit makes that invalid.
+
+## Common Pitfalls
+
+- Writing one function per pair of units and creating unnecessary duplication.
+- Forgetting that some scales have both multiplicative and additive offsets.
+- Rounding too early and losing precision across chained conversions.
