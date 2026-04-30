@@ -1,0 +1,111 @@
+---
+title: Decimal To Octal
+slug: decimal-to-octal
+category: Conversions
+summary: Convert a non-negative integer to octal by repeatedly dividing by eight and collecting remainders.
+description: Decimal To Octal is the repeated-division conversion routine that rebuilds a base-8 representation from a decimal integer.
+dataStructures:
+  - Number
+  - Array
+techniques:
+  - Base Conversion
+  - Repeated Division
+  - Remainder Collection
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - decimal to base-8
+  - integer to octal
+useCases:
+  - Teaching positional notation beyond binary and hexadecimal
+  - Formatting values for systems that still use octal notation
+  - Reinforcing the general repeated-division pattern for radix conversion
+complexity:
+  time: O(log8 n)
+  space: O(log8 n)
+  notes: Each iteration emits one octal digit and reduces the remaining quotient by a factor of eight.
+interviewSignals:
+  - The prompt asks for manual base conversion without built-in radix helpers.
+  - The expected explanation centers on collecting remainders in reverse order.
+relatedSlugs:
+  - decimal-to-binary
+  - decimal-to-hex
+  - arbitrary-base
+provenance:
+  - title: TheAlgorithms/JavaScript - Conversions/DecimalToOctal.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Conversions/DecimalToOctal.js
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Decimal-to-octal conversion is the same repeated-division story as binary or hexadecimal, but with base `8`. It is useful because it makes the general radix pattern feel reusable rather than tied to one familiar base.
+
+## Worked Example
+
+For `65`, repeated division by `8` gives remainders `1`, `0`, `1` as the quotient sequence goes `65 -> 8 -> 1 -> 0`. Reversing those remainders produces `101` in octal.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function decimalToOctal(value) {
+  if (!Number.isInteger(value) || value < 0) {
+    throw new RangeError('The input must be a non-negative integer');
+  }
+
+  if (value === 0) {
+    return '0';
+  }
+
+  const digits = [];
+  let current = value;
+
+  while (current > 0) {
+    digits.push(String(current % 8));
+    current = Math.floor(current / 8);
+  }
+
+  return digits.reverse().join('');
+}
+```
+
+```ts
+export function decimalToOctal(value: number): string {
+  if (!Number.isInteger(value) || value < 0) {
+    throw new RangeError('The input must be a non-negative integer');
+  }
+
+  if (value === 0) {
+    return '0';
+  }
+
+  const digits: string[] = [];
+  let current = value;
+
+  while (current > 0) {
+    digits.push(String(current % 8));
+    current = Math.floor(current / 8);
+  }
+
+  return digits.reverse().join('');
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why the remainder sequence must be reversed.
+- Generalize the routine to any base between `2` and `36`.
+- Compare octal grouping with binary regrouping in threes.
+
+## Common Pitfalls
+
+- Returning a numeric value and losing leading-zero formatting concerns.
+- Forgetting the special case for `0`.
+- Using floating-point or negative inputs without defining behavior.

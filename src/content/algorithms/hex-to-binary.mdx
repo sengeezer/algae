@@ -1,0 +1,133 @@
+---
+title: Hex To Binary
+slug: hex-to-binary
+category: Conversions
+summary: Convert a hexadecimal string to binary by mapping each hex digit to its four-bit representation.
+description: Hex To Binary is the nibble-expansion routine that transforms base-16 digits into base-2 groups with a fixed lookup table.
+dataStructures:
+  - String
+  - Hash Map
+techniques:
+  - Base Conversion
+  - Lookup Table
+  - Nibble Expansion
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - hexadecimal to binary
+  - nibble expansion
+useCases:
+  - Displaying compact hexadecimal values as explicit bit strings
+  - Teaching why each hex digit corresponds to four binary bits
+  - Building binary views for low-level debugging tools
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: Each input digit expands independently into exactly four output bits.
+interviewSignals:
+  - The prompt asks to convert hex without parsing the entire number numerically first.
+  - The expected explanation relies on a per-digit lookup table.
+relatedSlugs:
+  - binary-to-hex
+  - hex-to-decimal
+  - binary-to-decimal
+provenance:
+  - title: TheAlgorithms/JavaScript - Conversions/HexToBinary.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Conversions/HexToBinary.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Hex-to-binary is the inverse of binary-to-hex and uses the same alignment fact in reverse: one hex digit always maps to one nibble. That makes the algorithm a direct per-character transform instead of a whole-number conversion.
+
+## Worked Example
+
+`4D` maps to `0100` and `1101`, so the full binary output is `01001101`. There is no carry or division step because every symbol expands independently.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+const hexToBits = {
+  '0': '0000',
+  '1': '0001',
+  '2': '0010',
+  '3': '0011',
+  '4': '0100',
+  '5': '0101',
+  '6': '0110',
+  '7': '0111',
+  '8': '1000',
+  '9': '1001',
+  A: '1010',
+  B: '1011',
+  C: '1100',
+  D: '1101',
+  E: '1110',
+  F: '1111',
+};
+
+function hexToBinary(hexString) {
+  if (!/^[0-9A-F]+$/i.test(hexString)) {
+    throw new TypeError('Hex strings may only contain digits 0-9 and letters A-F');
+  }
+
+  return hexString
+    .toUpperCase()
+    .split('')
+    .map((digit) => hexToBits[digit])
+    .join('');
+}
+```
+
+```ts
+const hexToBits: Record<string, string> = {
+  '0': '0000',
+  '1': '0001',
+  '2': '0010',
+  '3': '0011',
+  '4': '0100',
+  '5': '0101',
+  '6': '0110',
+  '7': '0111',
+  '8': '1000',
+  '9': '1001',
+  A: '1010',
+  B: '1011',
+  C: '1100',
+  D: '1101',
+  E: '1110',
+  F: '1111',
+};
+
+export function hexToBinary(hexString: string): string {
+  if (!/^[0-9A-F]+$/i.test(hexString)) {
+    throw new TypeError('Hex strings may only contain digits 0-9 and letters A-F');
+  }
+
+  return hexString
+    .toUpperCase()
+    .split('')
+    .map((digit) => hexToBits[digit])
+    .join('');
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why hex digits and four-bit groups line up perfectly.
+- Trim leading zeros only when the surrounding format allows it.
+- Generalize the idea to octal-to-binary by regrouping in threes.
+
+## Common Pitfalls
+
+- Forgetting to normalize lowercase hex letters.
+- Accepting invalid characters outside the hex alphabet.
+- Stripping leading zeros when the caller expects fixed-width nibbles.

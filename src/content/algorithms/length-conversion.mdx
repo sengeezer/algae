@@ -1,0 +1,119 @@
+---
+title: Length Conversion
+slug: length-conversion
+category: Conversions
+summary: Convert a length between units by normalizing through a common base unit and scaling into the target unit.
+description: Length Conversion is the unit-normalization routine that maps one measurement system into another through a shared meter-based table.
+dataStructures:
+  - Hash Map
+  - Number
+techniques:
+  - Unit Conversion
+  - Normalization
+  - Table Lookup
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - distance conversion
+  - unit normalization
+useCases:
+  - Converting between metric and imperial distance units
+  - Building calculator features with a clean conversion table
+  - Teaching how normalization through a base unit simplifies many conversions
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: With a fixed conversion table, each lookup and scale operation is constant time.
+interviewSignals:
+  - The prompt gives source and target measurement units with a numeric value.
+  - The cleanest solution converts through one canonical unit rather than writing pairwise formulas.
+relatedSlugs:
+  - temperature-conversion
+  - arbitrary-base
+  - decimal-to-hex
+provenance:
+  - title: TheAlgorithms/JavaScript - Conversions/LengthConversion.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Conversions/LengthConversion.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Length conversion is the clearest example of normalization through a shared base unit. Instead of writing one formula for every pair of units, you convert into meters once and scale back out.
+
+## Worked Example
+
+To convert `3` miles to feet, first turn miles into meters, then divide by the meters-per-foot factor. The algorithm stays the same no matter which pair of units you choose.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+const metersPerUnit = {
+  mm: 0.001,
+  cm: 0.01,
+  m: 1,
+  km: 1000,
+  inch: 0.0254,
+  ft: 0.3048,
+  yd: 0.9144,
+  mi: 1609.34,
+};
+
+function lengthConversion(length, fromUnit, toUnit) {
+  if (typeof length !== 'number' || Number.isNaN(length)) {
+    throw new TypeError('Length must be a valid number');
+  }
+
+  if (!(fromUnit in metersPerUnit) || !(toUnit in metersPerUnit)) {
+    throw new RangeError('Invalid length units');
+  }
+
+  const lengthInMeters = length * metersPerUnit[fromUnit];
+  return lengthInMeters / metersPerUnit[toUnit];
+}
+```
+
+```ts
+const metersPerUnit: Record<string, number> = {
+  mm: 0.001,
+  cm: 0.01,
+  m: 1,
+  km: 1000,
+  inch: 0.0254,
+  ft: 0.3048,
+  yd: 0.9144,
+  mi: 1609.34,
+};
+
+export function lengthConversion(length: number, fromUnit: string, toUnit: string): number {
+  if (Number.isNaN(length)) {
+    throw new TypeError('Length must be a valid number');
+  }
+
+  if (!(fromUnit in metersPerUnit) || !(toUnit in metersPerUnit)) {
+    throw new RangeError('Invalid length units');
+  }
+
+  const lengthInMeters = length * metersPerUnit[fromUnit];
+  return lengthInMeters / metersPerUnit[toUnit];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why a base-unit table scales better than pairwise formulas.
+- Extend the dictionary to include nautical miles or micrometers.
+- Discuss rounding strategy for user-facing unit conversion UIs.
+
+## Common Pitfalls
+
+- Writing one-off formulas for every unit pair instead of normalizing once.
+- Failing to validate unsupported unit strings.
+- Mixing conversion factors that are not all defined relative to the same base unit.

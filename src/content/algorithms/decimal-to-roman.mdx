@@ -1,0 +1,140 @@
+---
+title: Decimal To Roman
+slug: decimal-to-roman
+category: Conversions
+summary: Convert an integer to Roman numerals by greedily consuming the largest available symbol values.
+description: Decimal To Roman is the symbol-mapping conversion routine that builds a Roman numeral with standard subtractive notation.
+dataStructures:
+  - Number
+  - Array
+  - String
+techniques:
+  - Greedy Algorithm
+  - Symbol Mapping
+  - Base-Free Encoding
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - integer to Roman numeral
+  - Roman numeral encoding
+useCases:
+  - Rendering classical numeral formats for dates and outlines
+  - Practicing greedy choice with a fixed symbol table
+  - Demonstrating non-positional numeral systems
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The Roman numeral symbol table is fixed in size, so the runtime is bounded for standard input ranges.
+interviewSignals:
+  - The prompt asks for Roman numeral output with subtractive forms like `IV` and `CM`.
+  - The expected solution iterates through a descending value table greedily.
+relatedSlugs:
+  - roman-to-decimal
+  - decimal-to-octal
+  - arbitrary-base
+provenance:
+  - title: TheAlgorithms/JavaScript - Conversions/DecimalToRoman.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Conversions/DecimalToRoman.js
+    kind: Implementation
+  - title: free-programming-books - Algorithm Design
+    href: https://archive.org/details/AlgorithmDesign1stEditionByJonKleinbergAndEvaTardos2005PDF
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Decimal-to-Roman conversion is a good counterexample to place-value systems. Instead of repeated division by a fixed base, the algorithm greedily subtracts from a descending table of symbol values.
+
+## Worked Example
+
+To encode `944`, take `900` as `CM`, then `40` as `XL`, then `4` as `IV`. The final numeral is `CMXLIV`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+const romanSymbols = [
+  ['M', 1000],
+  ['CM', 900],
+  ['D', 500],
+  ['CD', 400],
+  ['C', 100],
+  ['XC', 90],
+  ['L', 50],
+  ['XL', 40],
+  ['X', 10],
+  ['IX', 9],
+  ['V', 5],
+  ['IV', 4],
+  ['I', 1],
+];
+
+function decimalToRoman(value) {
+  if (!Number.isInteger(value) || value <= 0 || value >= 4000) {
+    throw new RangeError('Roman numeral conversion expects an integer from 1 to 3999');
+  }
+
+  let current = value;
+  let result = '';
+
+  for (const [symbol, amount] of romanSymbols) {
+    while (current >= amount) {
+      result += symbol;
+      current -= amount;
+    }
+  }
+
+  return result;
+}
+```
+
+```ts
+const romanSymbols: Array<[string, number]> = [
+  ['M', 1000],
+  ['CM', 900],
+  ['D', 500],
+  ['CD', 400],
+  ['C', 100],
+  ['XC', 90],
+  ['L', 50],
+  ['XL', 40],
+  ['X', 10],
+  ['IX', 9],
+  ['V', 5],
+  ['IV', 4],
+  ['I', 1],
+];
+
+export function decimalToRoman(value: number): string {
+  if (!Number.isInteger(value) || value <= 0 || value >= 4000) {
+    throw new RangeError('Roman numeral conversion expects an integer from 1 to 3999');
+  }
+
+  let current = value;
+  let result = '';
+
+  for (const [symbol, amount] of romanSymbols) {
+    while (current >= amount) {
+      result += symbol;
+      current -= amount;
+    }
+  }
+
+  return result;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why the greedy choice is always safe for the standard Roman table.
+- Support larger values by defining an extension to the symbol set.
+- Compare Roman numerals with positional systems like decimal or hexadecimal.
+
+## Common Pitfalls
+
+- Forgetting subtractive pairs like `IV`, `IX`, `XL`, and `CM`.
+- Accepting zero or negative values even though standard Roman numerals do not represent them.
+- Treating the problem like a fixed-base conversion when the numeral system is not positional.

@@ -1,0 +1,135 @@
+---
+title: Roman To Decimal
+slug: roman-to-decimal
+category: Conversions
+summary: Convert a Roman numeral to decimal by scanning from right to left and subtracting smaller symbols before larger ones.
+description: Roman To Decimal is the reverse Roman numeral parser that decodes subtractive notation into an integer value.
+dataStructures:
+  - String
+  - Hash Map
+techniques:
+  - Reverse Scan
+  - Symbol Mapping
+  - Subtractive Parsing
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - Roman numeral parsing
+  - Roman to integer
+useCases:
+  - Decoding Roman numerals in user interfaces or documents
+  - Practicing reverse scans with context-dependent subtraction
+  - Pairing with Roman numeral encoding for round-trip tests
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: A right-to-left scan keeps track of the largest symbol seen so far and decides whether to add or subtract each value.
+interviewSignals:
+  - The prompt includes subtractive forms like `IV`, `IX`, or `CM`.
+  - The expected solution compares the current symbol with the largest symbol already seen to its right.
+relatedSlugs:
+  - decimal-to-roman
+  - hex-to-decimal
+  - binary-to-decimal
+provenance:
+  - title: TheAlgorithms/JavaScript - Conversions/RomanToDecimal.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Conversions/RomanToDecimal.js
+    kind: Implementation
+  - title: free-programming-books - Algorithm Design
+    href: https://archive.org/details/AlgorithmDesign1stEditionByJonKleinbergAndEvaTardos2005PDF
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Roman-to-decimal conversion is the inverse of Roman encoding, but parsing is slightly trickier because smaller symbols sometimes subtract instead of add. A reverse scan makes that rule easy to apply.
+
+## Worked Example
+
+For `MCMXCIV`, reading from right to left means `V` adds `5`, `I` subtracts `1`, `C` adds `100`, `X` subtracts `10`, and so on until the total becomes `1994`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+const romanValues = {
+  I: 1,
+  V: 5,
+  X: 10,
+  L: 50,
+  C: 100,
+  D: 500,
+  M: 1000,
+};
+
+function romanToDecimal(roman) {
+  if (!/^[IVXLCDM]+$/i.test(roman)) {
+    throw new TypeError('Roman numerals may only contain I, V, X, L, C, D, and M');
+  }
+
+  let total = 0;
+  let largestSeen = 0;
+
+  for (let index = roman.length - 1; index >= 0; index -= 1) {
+    const value = romanValues[roman[index].toUpperCase()];
+
+    if (value < largestSeen) {
+      total -= value;
+    } else {
+      total += value;
+      largestSeen = value;
+    }
+  }
+
+  return total;
+}
+```
+
+```ts
+const romanValues: Record<string, number> = {
+  I: 1,
+  V: 5,
+  X: 10,
+  L: 50,
+  C: 100,
+  D: 500,
+  M: 1000,
+};
+
+export function romanToDecimal(roman: string): number {
+  if (!/^[IVXLCDM]+$/i.test(roman)) {
+    throw new TypeError('Roman numerals may only contain I, V, X, L, C, D, and M');
+  }
+
+  let total = 0;
+  let largestSeen = 0;
+
+  for (let index = roman.length - 1; index >= 0; index -= 1) {
+    const value = romanValues[roman[index].toUpperCase()];
+
+    if (value < largestSeen) {
+      total -= value;
+    } else {
+      total += value;
+      largestSeen = value;
+    }
+  }
+
+  return total;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why scanning from right to left simplifies subtractive notation.
+- Add stricter validation for malformed numerals like `IC`.
+- Pair the parser with Roman encoding in a round-trip test.
+
+## Common Pitfalls
+
+- Treating every symbol as additive and missing subtractive forms.
+- Ignoring lowercase input normalization.
+- Accepting invalid Roman strings without defining what the parser should do.

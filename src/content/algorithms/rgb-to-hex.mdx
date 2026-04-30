@@ -1,0 +1,95 @@
+---
+title: RGB To Hex
+slug: rgb-to-hex
+category: Conversions
+summary: Convert three RGB channel values into a six-digit hexadecimal color code.
+description: RGB To Hex is the color-serialization routine that maps red, green, and blue channel values into two-digit hexadecimal pairs.
+dataStructures:
+  - Number
+  - String
+techniques:
+  - Base Conversion
+  - Zero Padding
+  - Color Encoding
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - RGB color serialization
+  - color to hex
+useCases:
+  - Generating CSS color strings from numeric channels
+  - Teaching how byte values map into hexadecimal pairs
+  - Building graphics or design tooling helpers
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The work is constant because the function always converts exactly three bounded channel values.
+interviewSignals:
+  - The prompt asks to format numeric RGB channels as a CSS-style hex string.
+  - The expected solution pads each two-digit hex pair explicitly.
+relatedSlugs:
+  - hex-to-rgb
+  - decimal-to-hex
+  - binary-to-hex
+provenance:
+  - title: TheAlgorithms/JavaScript - Conversions/RGBToHex.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Conversions/RGBToHex.js
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+RGB-to-hex conversion is a practical example of base conversion that many developers actually use. Each channel is just one byte, so the algorithm converts three decimal values into three padded hexadecimal pairs.
+
+## Worked Example
+
+`(255, 99, 71)` becomes `(FF, 63, 47)`, so the final CSS color string is `#FF6347`. The important detail is padding single-digit hex outputs to two characters.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function channelToHex(channel) {
+  if (!Number.isInteger(channel) || channel < 0 || channel > 255) {
+    throw new RangeError('RGB channels must be integers from 0 to 255');
+  }
+
+  return channel.toString(16).toUpperCase().padStart(2, '0');
+}
+
+function rgbToHex(red, green, blue) {
+  return `#${channelToHex(red)}${channelToHex(green)}${channelToHex(blue)}`;
+}
+```
+
+```ts
+function channelToHex(channel: number): string {
+  if (!Number.isInteger(channel) || channel < 0 || channel > 255) {
+    throw new RangeError('RGB channels must be integers from 0 to 255');
+  }
+
+  return channel.toString(16).toUpperCase().padStart(2, '0');
+}
+
+export function rgbToHex(red: number, green: number, blue: number): string {
+  return `#${channelToHex(red)}${channelToHex(green)}${channelToHex(blue)}`;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why each channel always maps to exactly two hex digits.
+- Add support for optional alpha channels like `#RRGGBBAA`.
+- Return lowercase output when integrating with a style guide that prefers it.
+
+## Common Pitfalls
+
+- Forgetting to pad one-digit hex outputs.
+- Accepting channel values outside the `0` to `255` range.
+- Mixing numeric conversion with percentage-based color formats without normalizing first.
