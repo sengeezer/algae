@@ -1,0 +1,103 @@
+---
+title: Log Two
+slug: log-two
+category: Bit Manipulation
+summary: Compute `floor(log2(n))` by shifting right until only the highest set bit remains.
+description: Log Two is the integer binary-log routine that measures the position of the highest set bit without using floating-point math.
+dataStructures:
+  - Bitmask
+  - Number
+techniques:
+  - Bit Manipulation
+  - Right Shift
+  - Bit Length
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - integer log base two
+  - floor log2
+useCases:
+  - Finding the index of the highest set bit
+  - Estimating bit length for capacity or table sizing
+  - Supporting binary lifting and power-of-two follow-ups
+complexity:
+  time: O(log n)
+  space: O(1)
+  notes: Each right shift removes one binary digit, so the loop count equals the zero-based position of the highest set bit.
+interviewSignals:
+  - The prompt asks for `floor(log2(n))` on positive integers.
+  - You only need the highest set bit position, not a floating-point logarithm.
+relatedSlugs:
+  - next-power-of-two
+  - binary-lifting
+  - binary-count-set-bits
+provenance:
+  - title: TheAlgorithms/JavaScript - Bit-Manipulation/LogTwo.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Bit-Manipulation/LogTwo.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Log Two is less about logarithms and more about reading binary structure. Interviewers use it when they want the highest set bit without leaning on floating-point helpers.
+
+## Worked Example
+
+For `20`, the binary form is `10100`. Shift right repeatedly: `20 -> 10 -> 5 -> 2 -> 1`. That takes four shifts, so `floor(log2(20)) = 4`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function logTwo(value) {
+  if (!Number.isInteger(value) || value < 1) {
+    throw new RangeError('Value must be a positive integer');
+  }
+
+  let result = 0;
+  let remaining = value;
+
+  while (remaining >> 1) {
+    remaining >>= 1;
+    result += 1;
+  }
+
+  return result;
+}
+```
+
+```ts
+export function logTwo(value: number): number {
+  if (!Number.isInteger(value) || value < 1) {
+    throw new RangeError('Value must be a positive integer');
+  }
+
+  let result = 0;
+  let remaining = value;
+
+  while (remaining >> 1) {
+    remaining >>= 1;
+    result += 1;
+  }
+
+  return result;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Replace the loop with `Math.clz32` and explain the tradeoff.
+- Adapt the idea for `bigint` inputs where 32-bit bitwise operators are insufficient.
+- Contrast `floor(log2(n))` with the exact floating-point `Math.log2(n)`.
+
+## Common Pitfalls
+
+- Passing `0` or negative values even though the integer binary logarithm is defined here only for positive inputs.
+- Forgetting that JavaScript bitwise operators truncate to 32-bit integers.
+- Mixing up the highest set-bit position with the number of set bits.

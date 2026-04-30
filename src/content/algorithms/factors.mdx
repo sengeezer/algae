@@ -1,0 +1,115 @@
+---
+title: Factors
+slug: factors
+category: Mathematics
+summary: List all positive divisors of an integer by checking factor pairs up to the square root.
+description: Factors is the divisor-enumeration routine for collecting every positive integer that divides a given value evenly.
+dataStructures:
+  - Array
+  - Number
+techniques:
+  - Divisor Enumeration
+  - Trial Division
+  - Number Theory
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - divisors of a number
+  - factor listing
+useCases:
+  - Enumerating all divisors for arithmetic questions
+  - Supporting divisor-count, gcd, and lcm follow-ups
+  - Contrasting full divisor listing with prime factorization
+complexity:
+  time: O(sqrt(n))
+  space: O(sqrt(n))
+  notes: Divisors arrive in pairs around the square root, so checking only up to `sqrt(n)` is enough.
+interviewSignals:
+  - The task asks for every divisor, not just primality or prime factors.
+  - The prompt rewards using factor pairs instead of scanning through all numbers up to `n`.
+relatedSlugs:
+  - prime-factors
+  - find-hcf
+  - find-lcm
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/Factors.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/Factors.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Factors is a basic number-theory helper that turns up in divisibility proofs, optimization shortcuts, and brute-force search pruning. The interview-friendly version uses divisor pairs instead of a full scan.
+
+## Worked Example
+
+For `36`, the divisor pairs are `(1, 36)`, `(2, 18)`, `(3, 12)`, `(4, 9)`, and `(6, 6)`. The full sorted factor list is `[1, 2, 3, 4, 6, 9, 12, 18, 36]`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function factors(value) {
+  if (!Number.isInteger(value) || value < 1) {
+    throw new RangeError('Value must be a positive integer');
+  }
+
+  const lowFactors = [];
+  const highFactors = [];
+
+  for (let divisor = 1; divisor * divisor <= value; divisor += 1) {
+    if (value % divisor === 0) {
+      lowFactors.push(divisor);
+
+      const pairedDivisor = value / divisor;
+      if (pairedDivisor !== divisor) {
+        highFactors.push(pairedDivisor);
+      }
+    }
+  }
+
+  return lowFactors.concat(highFactors.reverse());
+}
+```
+
+```ts
+export function factors(value: number): number[] {
+  if (!Number.isInteger(value) || value < 1) {
+    throw new RangeError('Value must be a positive integer');
+  }
+
+  const lowFactors: number[] = [];
+  const highFactors: number[] = [];
+
+  for (let divisor = 1; divisor * divisor <= value; divisor += 1) {
+    if (value % divisor === 0) {
+      lowFactors.push(divisor);
+
+      const pairedDivisor = value / divisor;
+      if (pairedDivisor !== divisor) {
+        highFactors.push(pairedDivisor);
+      }
+    }
+  }
+
+  return lowFactors.concat(highFactors.reverse());
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return only proper divisors by excluding the number itself.
+- Use prime factorization to count divisors without listing them.
+- Compare the `O(sqrt(n))` factor-pair method with the naive full scan.
+
+## Common Pitfalls
+
+- Double-counting the square root when the input is a perfect square.
+- Scanning all the way to `n` instead of stopping at the square root.
+- Confusing full factors with prime factors.

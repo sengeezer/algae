@@ -1,0 +1,100 @@
+---
+title: Unique Element In An Array
+slug: unique-element-in-an-array
+category: Bit Manipulation
+summary: Find the lone non-duplicated value by XOR-reducing an array where every other element appears exactly twice.
+description: Unique Element In An Array is the standard XOR-cancellation interview problem where paired values disappear and the singleton remains.
+dataStructures:
+  - Array
+  - Bitmask
+  - Number
+techniques:
+  - Bit Manipulation
+  - XOR Reduction
+  - Pair Cancellation
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - single number
+  - find singleton with xor
+useCases:
+  - Recovering one unpaired value from duplicated data
+  - Demonstrating why XOR is useful for constant-space cancellation
+  - Building intuition for more advanced bit-count variants
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: XOR is associative, commutative, and self-canceling, so duplicate pairs vanish regardless of order.
+interviewSignals:
+  - Every value appears exactly twice except one element.
+  - The interviewer hints that hashing is not required and constant extra space is possible.
+relatedSlugs:
+  - set-bit
+  - binary-count-set-bits
+  - hamming-distance
+provenance:
+  - title: TheAlgorithms/JavaScript - Bit-Manipulation/UniqueElementInAnArray.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Bit-Manipulation/UniqueElementInAnArray.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the cleanest demonstration of XOR cancellation in practice. The solution is short, but it only makes sense if you understand the algebraic properties behind it.
+
+## Worked Example
+
+For `[4, 1, 2, 1, 2]`, XOR from left to right: `4 ^ 1 ^ 2 ^ 1 ^ 2`. The two `1` values cancel to `0`, the two `2` values cancel to `0`, and the result left behind is `4`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function uniqueElementInAnArray(values) {
+  if (!Array.isArray(values) || values.length === 0) {
+    throw new RangeError('Values must be a non-empty array');
+  }
+
+  let unique = 0;
+
+  for (const value of values) {
+    unique ^= value;
+  }
+
+  return unique;
+}
+```
+
+```ts
+export function uniqueElementInAnArray(values: number[]): number {
+  if (values.length === 0) {
+    throw new RangeError('Values must be a non-empty array');
+  }
+
+  let unique = 0;
+
+  for (const value of values) {
+    unique ^= value;
+  }
+
+  return unique;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Adapt the solution when every other number appears three times instead of twice.
+- Explain why order does not matter in the XOR reduction.
+- Compare this constant-space solution with a frequency-map approach.
+
+## Common Pitfalls
+
+- Applying the XOR trick when the input does not satisfy the exact twice-except-one guarantee.
+- Reaching for a hash map even when the prompt emphasizes constant extra space.
+- Forgetting that JavaScript bitwise operators coerce values to 32-bit integers.

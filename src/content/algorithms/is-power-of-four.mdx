@@ -1,0 +1,79 @@
+---
+title: Is Power Of Four
+slug: is-power-of-four
+category: Bit Manipulation
+summary: Check whether a value is a power of four by combining the one-set-bit test with the `n % 3 === 1` property.
+description: Is Power Of Four is the standard extension of the power-of-two bit test when the interviewer wants the same constant-time reasoning with one extra arithmetic filter.
+dataStructures:
+  - Bitmask
+  - Number
+techniques:
+  - Bit Manipulation
+  - Bit Test
+  - Modular Check
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - power of four check
+  - 4^k test
+useCases:
+  - Distinguishing powers of four from other powers of two
+  - Extending one-hot bit reasoning with a compact arithmetic invariant
+  - Handling alignment or tree-branching questions with arity four
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: Every positive power of four is a power of two, and among those one-hot values only powers of four are congruent to `1 mod 3`.
+interviewSignals:
+  - The prompt asks whether a number equals `4^k` for some integer `k`.
+  - A follow-up starts from the power-of-two identity and asks for a stricter filter.
+relatedSlugs:
+  - is-power-of-two
+  - next-power-of-two
+  - binary-count-set-bits
+provenance:
+  - title: TheAlgorithms/JavaScript - Bit-Manipulation/IsPowerofFour.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Bit-Manipulation/IsPowerofFour.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This question checks whether you can reuse a familiar bit trick instead of restarting from scratch. The key step is noticing that not every power of two is a power of four.
+
+## Worked Example
+
+`16` is `10000` in binary, so it passes the one-set-bit check, and `16 % 3 === 1`, so it is a power of four. `8` also has one set bit, but `8 % 3 === 2`, so it is only a power of two.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function isPowerOfFour(value) {
+  return value > 0 && (value & (value - 1)) === 0 && value % 3 === 1;
+}
+```
+
+```ts
+export function isPowerOfFour(value: number): boolean {
+  return value > 0 && (value & (value - 1)) === 0 && value % 3 === 1;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Rework the solution with a bit mask such as `0x55555555` instead of the modulo test.
+- Explain why every power of four leaves remainder `1` when divided by `3`.
+- Compare this with repeated division by `4` for readability and cost.
+
+## Common Pitfalls
+
+- Forgetting that the power-of-two check alone accepts values like `2`, `8`, and `32`.
+- Omitting the positivity guard and accidentally accepting `0`.
+- Using bitwise operators without remembering JavaScript treats them as 32-bit integer operations.

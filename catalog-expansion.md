@@ -196,9 +196,20 @@ This fifteenth expansion slice lifts the catalog from 122 to 128 entries.
 - Find HCF
 - Find LCM
 
+## Batch 16 added
+
+This sixteenth expansion slice lifts the catalog from 128 to 134 entries.
+
+- Is Power Of Four
+- Log Two
+- Set Bit
+- Unique Element In An Array
+- Factors
+- Square Root
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 15 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 16 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -207,7 +218,7 @@ All expansion entries from batch 1 through batch 15 now carry explicit per-entry
 ## Why this batch
 
 - It fills obvious interview-core gaps from TheAlgorithms/JavaScript without duplicating material already present in Algae.
-- It broadens the current catalog across bit-sequence construction, power-of-two tests, geometric metrics, and foundational gcd/lcm arithmetic instead of overloading a single category.
+- It broadens the current catalog across bit-position arithmetic, XOR cancellation, divisor enumeration, and Newton-style root approximation instead of overloading a single category.
 - It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially standard DP, graph, and search/backtracking topics.
 
 ## Supporting study references from the algorithms list
@@ -221,9 +232,9 @@ All expansion entries from batch 1 through batch 15 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- Is Power Of Four
-- Log Two
-- Set Bit
-- Unique Element In An Array
-- Factors
-- Square Root
+- Factorial
+- Perfect Square
+- Prime Check
+- Square Root Logarithmic
+- Sum Of Digits
+- Two Sum

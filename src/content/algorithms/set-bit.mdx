@@ -1,0 +1,94 @@
+---
+title: Set Bit
+slug: set-bit
+category: Bit Manipulation
+summary: Turn on a zero-based bit position with `value | (1 << bitPosition)`.
+description: Set Bit is the basic bit-update routine for forcing a chosen bit to `1` without disturbing the rest of the mask.
+dataStructures:
+  - Bitmask
+  - Number
+techniques:
+  - Bit Manipulation
+  - Bit Update
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - turn on bit
+  - set kth bit
+useCases:
+  - Updating feature flags or state masks
+  - Marking membership in subset-based problems
+  - Practicing the difference between OR, AND, and XOR updates
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: OR with a mask that has one target bit set guarantees that bit becomes `1` while all other positions stay unchanged.
+interviewSignals:
+  - The prompt asks to set or mark the kth bit of an integer.
+  - The statement gives a bit position and expects a one-step bitwise update.
+relatedSlugs:
+  - binary-count-set-bits
+  - generate-subsets
+  - is-power-of-two
+provenance:
+  - title: TheAlgorithms/JavaScript - Bit-Manipulation/SetBit.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Bit-Manipulation/SetBit.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Set Bit is one of the smallest bit-manipulation building blocks, but it becomes important once masks represent subsets, permissions, or visited states.
+
+## Worked Example
+
+`10` is `1010` in binary. Setting bit position `2` uses `10 | (1 << 2)`, which becomes `1010 | 0100 = 1110`, or `14`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function setBit(value, bitPosition) {
+  if (!Number.isInteger(value) || !Number.isInteger(bitPosition)) {
+    throw new TypeError('Inputs must be integers');
+  }
+
+  if (bitPosition < 0 || bitPosition > 30) {
+    throw new RangeError('Bit position must be between 0 and 30');
+  }
+
+  return value | (1 << bitPosition);
+}
+```
+
+```ts
+export function setBit(value: number, bitPosition: number): number {
+  if (!Number.isInteger(value) || !Number.isInteger(bitPosition)) {
+    throw new TypeError('Inputs must be integers');
+  }
+
+  if (bitPosition < 0 || bitPosition > 30) {
+    throw new RangeError('Bit position must be between 0 and 30');
+  }
+
+  return value | (1 << bitPosition);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Write the matching clear-bit and toggle-bit operations.
+- Adjust the function if the prompt uses one-based bit positions instead of zero-based indexing.
+- Explain why OR sets a bit permanently while XOR toggles it.
+
+## Common Pitfalls
+
+- Mixing up zero-based and one-based bit positions.
+- Using XOR and unintentionally toggling an already-set bit back to zero.
+- Forgetting that JavaScript bitwise operators are limited to 32-bit signed integer behavior.

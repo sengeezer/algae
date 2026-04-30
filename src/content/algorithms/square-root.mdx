@@ -1,0 +1,122 @@
+---
+title: Square Root
+slug: square-root
+category: Mathematics
+summary: Approximate a square root by iteratively refining an estimate with Newton's method.
+description: Square Root is the classic numerical-method interview problem for computing `sqrt(n)` without calling a built-in helper.
+dataStructures:
+  - Number
+techniques:
+  - Newton's Method
+  - Numerical Approximation
+  - Iterative Refinement
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - newton square root
+  - iterative sqrt
+useCases:
+  - Computing square roots when a library helper is disallowed
+  - Practicing convergence reasoning in numerical algorithms
+  - Contrasting Newton iteration with binary-search-based roots
+complexity:
+  time: O(k)
+  space: O(1)
+  notes: With a reasonable starting estimate, Newton's method converges very quickly, and each iteration improves the approximation substantially.
+interviewSignals:
+  - The prompt asks for `sqrt(n)` without using `Math.sqrt`.
+  - The solution discussion focuses on approximation, convergence, or tolerance.
+relatedSlugs:
+  - euclidean-distance
+  - factors
+  - binary-search
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/SquareRoot.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/SquareRoot.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Square Root is one of the most common introductions to numerical methods in interviews. The main test is whether you can translate an update formula into a stable iterative routine.
+
+## Worked Example
+
+For `25`, start with estimate `1`. Newton's update moves the estimate through values like `13`, `7.46`, `5.41`, and then near `5`. Each step corrects the previous guess using both the current estimate and the target number.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function squareRoot(value, iterations = 6) {
+  if (!Number.isFinite(value)) {
+    throw new TypeError('Value must be finite');
+  }
+
+  if (!Number.isInteger(iterations) || iterations < 1) {
+    throw new RangeError('Iterations must be a positive integer');
+  }
+
+  if (value < 0) {
+    throw new RangeError('Value must be non-negative');
+  }
+
+  if (value === 0) {
+    return 0;
+  }
+
+  let estimate = 1;
+
+  for (let iteration = 0; iteration < iterations; iteration += 1) {
+    estimate -= (estimate * estimate - value) / (2 * estimate);
+  }
+
+  return estimate;
+}
+```
+
+```ts
+export function squareRoot(value: number, iterations = 6): number {
+  if (!Number.isFinite(value)) {
+    throw new TypeError('Value must be finite');
+  }
+
+  if (!Number.isInteger(iterations) || iterations < 1) {
+    throw new RangeError('Iterations must be a positive integer');
+  }
+
+  if (value < 0) {
+    throw new RangeError('Value must be non-negative');
+  }
+
+  if (value === 0) {
+    return 0;
+  }
+
+  let estimate = 1;
+
+  for (let iteration = 0; iteration < iterations; iteration += 1) {
+    estimate -= (estimate * estimate - value) / (2 * estimate);
+  }
+
+  return estimate;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Stop when the estimate changes by less than an epsilon instead of after a fixed iteration count.
+- Return the integer floor square root rather than a floating-point approximation.
+- Compare Newton's method with a binary-search-based root finder.
+
+## Common Pitfalls
+
+- Forgetting to reject negative inputs when working over real numbers.
+- Starting from zero and dividing by zero in the Newton update.
+- Expecting a finite number of iterations to produce exact answers for every non-square.
