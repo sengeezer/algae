@@ -1,0 +1,78 @@
+---
+title: Is Power Of Two
+slug: is-power-of-two
+category: Bit Manipulation
+summary: Check whether exactly one bit is set by combining positivity with the `n & (n - 1)` identity.
+description: Is Power Of Two is the canonical bit-test interview question for recognizing one-hot binary patterns in constant time.
+dataStructures:
+  - Bitmask
+  - Number
+techniques:
+  - Bit Manipulation
+  - Bit Test
+difficulty: Easy
+interviewFrequency: High
+aliases:
+  - power of two check
+  - one-hot bit test
+useCases:
+  - Validating sizes and capacities constrained to powers of two
+  - Reusing a standard bit identity in follow-up questions
+  - Contrasting structural bit properties with arithmetic loops
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: A positive power of two has exactly one set bit, so clearing the lowest set bit must produce zero.
+interviewSignals:
+  - The prompt asks whether a number equals `2^k` for some integer `k`.
+  - A bitwise solution is expected instead of repeated division.
+relatedSlugs:
+  - binary-count-set-bits
+  - next-power-of-two
+  - binary-equivalent
+provenance:
+  - title: TheAlgorithms/JavaScript - Bit-Manipulation/IsPowerOfTwo.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Bit-Manipulation/IsPowerOfTwo.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the shortest useful bit identity most interviewers expect you to know. It rewards understanding the binary shape of powers of two instead of brute-force arithmetic.
+
+## Worked Example
+
+`16` is `10000` in binary, so `16 & 15` becomes `10000 & 01111 = 0`. By contrast, `12` is `1100`, and `12 & 11` becomes `1100 & 1011 = 1000`, so it is not a power of two.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function isPowerOfTwo(value) {
+  return value > 0 && (value & (value - 1)) === 0;
+}
+```
+
+```ts
+export function isPowerOfTwo(value: number): boolean {
+  return value > 0 && (value & (value - 1)) === 0;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Extend the same reasoning to powers of four.
+- Explain why zero and negative values must be rejected first.
+- Compare the bitwise test with repeated division by two.
+
+## Common Pitfalls
+
+- Forgetting that `1` is typically treated as `2^0` and therefore valid.
+- Omitting the positivity check and accidentally accepting `0`.
+- Replacing a constant-time bit test with a slower arithmetic loop.

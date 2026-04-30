@@ -1,0 +1,116 @@
+---
+title: Find LCM
+slug: find-lcm
+category: Mathematics
+summary: Compute the least common multiple by combining the product formula with a gcd helper.
+description: Find LCM is the arithmetic routine for finding the smallest positive integer divisible by both inputs.
+dataStructures:
+  - Number
+techniques:
+  - Number Theory
+  - Euclidean Algorithm
+  - Product over GCD
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - least common multiple
+  - lcm
+useCases:
+  - Synchronizing repeating intervals
+  - Solving divisibility and scheduling problems
+  - Pairing with gcd in number-theory follow-ups
+complexity:
+  time: O(log(min(a, b)))
+  space: O(1)
+  notes: The efficient route is `lcm(a, b) = (a / gcd(a, b)) * b`, which avoids scanning multiples directly.
+interviewSignals:
+  - The prompt asks for the smallest number divisible by both inputs.
+  - A gcd helper is the intended bridge to the final formula.
+relatedSlugs:
+  - find-hcf
+  - co-prime-check
+  - extended-euclidean-gcd
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/FindLcm.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/FindLcm.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Find LCM is usually a gcd question in disguise. Once you know the product-over-gcd identity, the hard part is mostly input validation and avoiding unnecessary overflow or brute-force search.
+
+## Worked Example
+
+For `12` and `18`, the gcd is `6`, so the lcm is `(12 / 6) * 18 = 36`. That is the smallest positive number divisible by both inputs.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function gcd(a, b) {
+  let left = a;
+  let right = b;
+
+  while (right !== 0) {
+    [left, right] = [right, left % right];
+  }
+
+  return left;
+}
+
+function findLcm(left, right) {
+  if (!Number.isInteger(left) || !Number.isInteger(right)) {
+    throw new TypeError('Inputs must be whole numbers');
+  }
+
+  if (left < 1 || right < 1) {
+    throw new RangeError('Inputs must be positive');
+  }
+
+  return (left / gcd(left, right)) * right;
+}
+```
+
+```ts
+function gcd(a: number, b: number): number {
+  let left = a;
+  let right = b;
+
+  while (right !== 0) {
+    [left, right] = [right, left % right];
+  }
+
+  return left;
+}
+
+export function findLcm(left: number, right: number): number {
+  if (!Number.isInteger(left) || !Number.isInteger(right)) {
+    throw new TypeError('Inputs must be whole numbers');
+  }
+
+  if (left < 1 || right < 1) {
+    throw new RangeError('Inputs must be positive');
+  }
+
+  return (left / gcd(left, right)) * right;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Extend the lcm to an array of values.
+- Explain why dividing before multiplying is safer than `left * right / gcd`.
+- Use gcd and lcm identities together in scheduling or fraction problems.
+
+## Common Pitfalls
+
+- Searching upward through multiples instead of using gcd.
+- Multiplying before dividing and risking larger intermediate values.
+- Forgetting that lcm is defined over positive integers in the standard interview formulation.

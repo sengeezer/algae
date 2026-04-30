@@ -1,0 +1,107 @@
+---
+title: Gray Codes
+slug: gray-codes
+category: Bit Manipulation
+summary: Generate a sequence where adjacent codes differ by exactly one bit by reflecting and prefixing the existing list.
+description: Gray Codes is the bit-sequence construction that preserves single-bit transitions between consecutive values, which makes it useful for state encoding and interview bit-pattern reasoning.
+dataStructures:
+  - Array
+  - Bitmask
+techniques:
+  - Bit Manipulation
+  - Reflect and Prefix
+  - Sequence Construction
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - n-bit gray code
+  - reflected binary code
+useCases:
+  - Generating adjacency-friendly bit patterns
+  - Explaining why neighboring states can differ by one bit only
+  - Supporting subset-ordering and hardware-encoding discussions
+complexity:
+  time: O(2^n)
+  space: O(2^n)
+  notes: The reflected construction doubles the sequence at each step by mirroring the current list and adding the new highest bit.
+interviewSignals:
+  - The prompt requires neighboring codes to differ in exactly one bit.
+  - You need all `2^n` patterns, but not in ordinary binary counting order.
+relatedSlugs:
+  - generate-subsets
+  - binary-count-set-bits
+  - bitmask-dp
+provenance:
+  - title: TheAlgorithms/JavaScript - Bit-Manipulation/GrayCodes.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Bit-Manipulation/GrayCodes.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Gray codes show up when the order of the bit patterns matters as much as the patterns themselves. The construction is memorable because it reuses the old answer by reflecting it rather than recomputing each code independently.
+
+## Worked Example
+
+For `n = 2`, start from `[0, 1]`. Reflect that list to get `[1, 0]`, prefix the reflected values with the new highest bit to get `[3, 2]`, and append them for `[0, 1, 3, 2]`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function grayCodes(bitCount) {
+  if (bitCount <= 0) {
+    return [0];
+  }
+
+  const codes = [0, 1];
+
+  for (let bit = 1; bit < bitCount; bit += 1) {
+    const highestBit = 1 << bit;
+
+    for (let index = codes.length - 1; index >= 0; index -= 1) {
+      codes.push(highestBit | codes[index]);
+    }
+  }
+
+  return codes;
+}
+```
+
+```ts
+export function grayCodes(bitCount: number): number[] {
+  if (bitCount <= 0) {
+    return [0];
+  }
+
+  const codes: number[] = [0, 1];
+
+  for (let bit = 1; bit < bitCount; bit += 1) {
+    const highestBit = 1 << bit;
+
+    for (let index = codes.length - 1; index >= 0; index -= 1) {
+      codes.push(highestBit | codes[index]);
+    }
+  }
+
+  return codes;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Convert each decimal code into a fixed-width binary string.
+- Explain why reflection preserves the one-bit-difference property.
+- Generate Gray codes directly from the formula `i ^ (i >> 1)` and compare it with reflection.
+
+## Common Pitfalls
+
+- Appending the old sequence in forward order instead of reverse order.
+- Forgetting that `n <= 0` still has a valid base sequence `[0]`.
+- Returning ordinary binary counting order instead of Gray-code order.

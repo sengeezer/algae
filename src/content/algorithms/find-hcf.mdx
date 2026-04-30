@@ -1,0 +1,107 @@
+---
+title: Find HCF
+slug: find-hcf
+category: Mathematics
+summary: Compute the highest common factor of two positive integers with Euclid's remainder-based reduction.
+description: Find HCF is the classic gcd routine that keeps shrinking the larger number by remainders until the final divisor is revealed.
+dataStructures:
+  - Number
+techniques:
+  - Euclidean Algorithm
+  - Number Theory
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - greatest common divisor
+  - gcd
+useCases:
+  - Reducing fractions
+  - Supporting lcm, coprimality, and modular-arithmetic follow-ups
+  - Normalizing ratios and divisibility reasoning
+complexity:
+  time: O(log(min(a, b)))
+  space: O(1)
+  notes: Each remainder step strictly reduces the problem size, which is why Euclid's algorithm converges so quickly.
+interviewSignals:
+  - The prompt asks for the greatest divisor shared by two integers.
+  - A remainder-based reduction is expected instead of scanning all divisors.
+relatedSlugs:
+  - find-lcm
+  - co-prime-check
+  - extended-euclidean-gcd
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/FindHcf.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/FindHcf.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Find HCF is the most reusable arithmetic helper in the catalog. It often appears as the real subroutine hiding beneath lcm, coprimality, fraction reduction, and modular inverse questions.
+
+## Worked Example
+
+For `84` and `30`, compute `84 % 30 = 24`, then `30 % 24 = 6`, then `24 % 6 = 0`. The last non-zero divisor is `6`, so the HCF is `6`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function findHcf(left, right) {
+  if (!Number.isInteger(left) || !Number.isInteger(right)) {
+    throw new TypeError('Inputs must be whole numbers');
+  }
+
+  if (left < 1 || right < 1) {
+    throw new RangeError('Inputs must be positive');
+  }
+
+  let a = left;
+  let b = right;
+
+  while (b !== 0) {
+    [a, b] = [b, a % b];
+  }
+
+  return a;
+}
+```
+
+```ts
+export function findHcf(left: number, right: number): number {
+  if (!Number.isInteger(left) || !Number.isInteger(right)) {
+    throw new TypeError('Inputs must be whole numbers');
+  }
+
+  if (left < 1 || right < 1) {
+    throw new RangeError('Inputs must be positive');
+  }
+
+  let a = left;
+  let b = right;
+
+  while (b !== 0) {
+    [a, b] = [b, a % b];
+  }
+
+  return a;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Extend the routine to more than two numbers.
+- Explain how the same logic leads to the extended Euclidean algorithm.
+- Use the HCF to simplify fractions or detect coprime pairs.
+
+## Common Pitfalls
+
+- Scanning all divisors up to the smaller input instead of using remainders.
+- Forgetting to validate positive integer inputs.
+- Confusing HCF with LCM in follow-up formulas.

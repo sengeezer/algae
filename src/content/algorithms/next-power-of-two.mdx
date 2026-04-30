@@ -1,0 +1,110 @@
+---
+title: Next Power Of Two
+slug: next-power-of-two
+category: Bit Manipulation
+summary: Round an integer up to the next power of two by detecting the current power case and otherwise shifting until the leading bit is exceeded.
+description: Next Power Of Two is the sizing routine for finding the smallest power of two greater than or equal to a given positive integer.
+dataStructures:
+  - Bitmask
+  - Number
+techniques:
+  - Bit Manipulation
+  - Bit Length
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - round up to power of two
+  - next one-hot size
+useCases:
+  - Choosing hash-table or buffer capacities
+  - Normalizing values to binary-aligned sizes
+  - Pairing with power-of-two checks in systems-style prompts
+complexity:
+  time: O(log n)
+  space: O(1)
+  notes: If the input is already a power of two, the correct answer is the input itself rather than the next larger power.
+interviewSignals:
+  - The prompt asks for the smallest power of two that is at least `n`.
+  - Capacity rounding or alignment language appears in the statement.
+relatedSlugs:
+  - is-power-of-two
+  - binary-count-set-bits
+  - modular-arithmetic
+provenance:
+  - title: TheAlgorithms/JavaScript - Bit-Manipulation/NextPowerOfTwo.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Bit-Manipulation/NextPowerOfTwo.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This question is usually about sizing rather than pure bit theory. The key distinction is whether the prompt wants the next larger power or the next power that is at least the input.
+
+## Worked Example
+
+For `19`, keep doubling until the running power exceeds the highest set bit of `19`, producing `32`. For `16`, the answer stays `16` because it is already a power of two.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function nextPowerOfTwo(value) {
+  if (value <= 1) {
+    return 1;
+  }
+
+  if ((value & (value - 1)) === 0) {
+    return value;
+  }
+
+  let result = 1;
+  let remaining = value;
+
+  while (remaining > 0) {
+    result <<= 1;
+    remaining >>= 1;
+  }
+
+  return result;
+}
+```
+
+```ts
+export function nextPowerOfTwo(value: number): number {
+  if (value <= 1) {
+    return 1;
+  }
+
+  if ((value & (value - 1)) === 0) {
+    return value;
+  }
+
+  let result = 1;
+  let remaining = value;
+
+  while (remaining > 0) {
+    result <<= 1;
+    remaining >>= 1;
+  }
+
+  return result;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Implement the same routine with bit spreading instead of a loop.
+- Explain how this behaves for `0`, `1`, and negative inputs.
+- Pair the routine with a power-of-two validator and simplify the branch logic.
+
+## Common Pitfalls
+
+- Returning the next larger power even when the input is already a power of two.
+- Ignoring small base cases around `0` and `1`.
+- Forgetting that JavaScript bit shifts operate on 32-bit integers.

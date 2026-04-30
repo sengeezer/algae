@@ -1,0 +1,101 @@
+---
+title: Euclidean Distance
+slug: euclidean-distance
+category: Mathematics
+summary: Compute geometric distance by summing squared coordinate differences and taking the square root.
+description: Euclidean Distance is the standard metric for measuring straight-line distance between two equal-length vectors or points in Euclidean space.
+dataStructures:
+  - Array
+  - Number
+techniques:
+  - Geometry
+  - Vector Math
+  - Distance Metric
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - straight-line distance
+  - vector distance
+useCases:
+  - Measuring point distance in 2D or higher dimensions
+  - Supporting clustering or nearest-neighbor intuition
+  - Contrasting geometric distance with edit or Hamming distance
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The vectors must have the same dimension, because the formula compares coordinates pairwise.
+interviewSignals:
+  - The prompt uses points, vectors, or coordinates in Euclidean space.
+  - Distance is geometric rather than graph-based or string-based.
+relatedSlugs:
+  - hamming-distance
+  - dice-coefficient
+  - find-lcm
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/EuclideanDistance.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/EuclideanDistance.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the default distance metric most people know, but it still tests whether you can translate the math formula into a careful loop over coordinates.
+
+## Worked Example
+
+For points `[1, 2]` and `[4, 6]`, subtract coordinate-wise to get differences `3` and `4`, square them to get `9` and `16`, sum to `25`, and take the square root to get `5`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function euclideanDistance(left, right) {
+  if (left.length !== right.length) {
+    throw new Error('Vectors must have the same length');
+  }
+
+  let sumOfSquares = 0;
+
+  for (let index = 0; index < left.length; index += 1) {
+    const difference = left[index] - right[index];
+    sumOfSquares += difference * difference;
+  }
+
+  return Math.sqrt(sumOfSquares);
+}
+```
+
+```ts
+export function euclideanDistance(left: number[], right: number[]): number {
+  if (left.length !== right.length) {
+    throw new Error('Vectors must have the same length');
+  }
+
+  let sumOfSquares = 0;
+
+  for (let index = 0; index < left.length; index += 1) {
+    const difference = left[index] - right[index];
+    sumOfSquares += difference * difference;
+  }
+
+  return Math.sqrt(sumOfSquares);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return squared distance when the square root is unnecessary for comparisons.
+- Generalize the routine to Manhattan or Chebyshev distance.
+- Explain why vectors of different lengths should be rejected.
+
+## Common Pitfalls
+
+- Forgetting to validate equal dimensions.
+- Summing absolute differences instead of squared differences.
+- Taking the square root before accumulating all coordinate contributions.

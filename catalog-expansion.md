@@ -185,9 +185,20 @@ This fourteenth expansion slice lifts the catalog from 116 to 122 entries.
 - Dice Coefficient
 - Zeller's Congruence Algorithm
 
+## Batch 15 added
+
+This fifteenth expansion slice lifts the catalog from 122 to 128 entries.
+
+- Gray Codes
+- Is Power Of Two
+- Next Power Of Two
+- Euclidean Distance
+- Find HCF
+- Find LCM
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 14 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 15 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -196,7 +207,7 @@ All expansion entries from batch 1 through batch 14 now carry explicit per-entry
 ## Why this batch
 
 - It fills obvious interview-core gaps from TheAlgorithms/JavaScript without duplicating material already present in Algae.
-- It broadens the current catalog across bit manipulation, gcd-driven number theory, string similarity, and constant-time date arithmetic instead of overloading a single category.
+- It broadens the current catalog across bit-sequence construction, power-of-two tests, geometric metrics, and foundational gcd/lcm arithmetic instead of overloading a single category.
 - It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially standard DP, graph, and search/backtracking topics.
 
 ## Supporting study references from the algorithms list
@@ -210,9 +221,9 @@ All expansion entries from batch 1 through batch 14 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- Gray Codes
-- Is Power Of Two
-- Next Power Of Two
-- Euclidean Distance
-- Find HCF
-- Find LCM
+- Is Power Of Four
+- Log Two
+- Set Bit
+- Unique Element In An Array
+- Factors
+- Square Root
