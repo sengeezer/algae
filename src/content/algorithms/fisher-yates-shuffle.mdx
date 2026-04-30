@@ -1,0 +1,98 @@
+---
+title: Fisher-Yates Shuffle
+slug: fisher-yates-shuffle
+category: Array Patterns
+summary: Shuffle an array uniformly by walking backward and swapping each position with a random earlier index.
+description: Fisher-Yates shuffle is the standard unbiased random permutation algorithm for arrays.
+dataStructures:
+  - Array
+techniques:
+  - Randomization
+  - In-Place Swapping
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - Knuth shuffle
+  - unbiased array shuffle
+useCases:
+  - Randomizing quiz or playlist order fairly
+  - Generating a random permutation in linear time
+  - Explaining why `sort(() => Math.random() - 0.5)` is biased
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The algorithm is only unbiased if each step chooses uniformly from the still-unshuffled prefix.
+interviewSignals:
+  - The prompt asks for a uniform random ordering of the array.
+  - A naive random-comparator sort would be too slow and statistically incorrect.
+relatedSlugs:
+  - create-permutations
+  - generate-guid
+  - quickselect
+provenance:
+  - title: TheAlgorithms/JavaScript - Sorts/FisherYatesShuffle.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Sorts/FisherYatesShuffle.js
+    kind: Implementation
+  - title: free-programming-books - Algorithm Design
+    href: https://archive.org/details/AlgorithmDesign1stEditionByJonKleinbergAndEvaTardos2005PDF
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Fisher-Yates is the shuffle interview problem because it tests both algorithmic efficiency and probability reasoning. The key argument is that every remaining element must have an equal chance to land in the current position.
+
+## Worked Example
+
+For `[A, B, C, D]`, first choose a random index from `0..3` for the last slot, then a random index from `0..2` for the next slot, and so on. Each pass fixes one final position without disturbing the suffix that is already done.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function fisherYatesShuffle(values, rng = Math.random) {
+  if (!Array.isArray(values)) {
+    throw new TypeError('Values must be an array');
+  }
+
+  const items = [...values];
+
+  for (let index = items.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(rng() * (index + 1));
+    [items[index], items[swapIndex]] = [items[swapIndex], items[index]];
+  }
+
+  return items;
+}
+```
+
+```ts
+export function fisherYatesShuffle<T>(
+  values: T[],
+  rng: () => number = Math.random,
+): T[] {
+  const items = [...values];
+
+  for (let index = items.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(rng() * (index + 1));
+    [items[index], items[swapIndex]] = [items[swapIndex], items[index]];
+  }
+
+  return items;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Prove that each permutation is equally likely.
+- Shuffle in place instead of returning a copied array.
+- Sample only `k` random elements without fully shuffling the input.
+
+## Common Pitfalls
+
+- Picking the swap index from the full array every time instead of the shrinking prefix.
+- Using a random comparator sort, which is both biased and slower.
+- Off-by-one errors when choosing the inclusive upper bound for the random index.

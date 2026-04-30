@@ -273,9 +273,20 @@ This twenty-second expansion slice lifts the catalog from 164 to 170 entries.
 - Upper
 - Validate Email
 
+## Batch 23 added
+
+This twenty-third expansion slice lifts the catalog from 170 to 176 entries.
+
+- Counting Sort
+- Fisher-Yates Shuffle
+- Is Palindrome
+- Lower
+- Radix Sort
+- Tim Sort
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 22 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 23 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -284,8 +295,9 @@ All expansion entries from batch 1 through batch 22 now carry explicit per-entry
 ## Why this batch
 
 - It fills obvious interview-core gaps from TheAlgorithms/JavaScript without duplicating material already present in Algae.
-- It broadens the current catalog across normalized palindrome checks, string interleaving, permutation generation, recursive equivalence tests, case conversion, and regex-backed validation instead of overloading a single category.
-- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially standard DP, graph, and search/backtracking topics.
+- It keeps the clean additions from the original next queue, skips semantically overlapping variants that Algae already covers, and uses adjacent missing algorithms from the same upstream sources to complete the batch.
+- It broadens the current catalog across direct palindrome checks, lowercase conversion, linear-time shuffling, integer distribution sorting, and hybrid stable sorting instead of repeating already-covered substring and edit-distance variants.
+- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially standard sorting, array randomization, and core string-processing topics.
 
 ## Supporting study references from the algorithms list
 
@@ -298,9 +310,9 @@ All expansion entries from batch 1 through batch 22 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- Check Palindrome
-- Is Palindrome
-- Length Of Longest Substring Without Repetition
-- Levenshtein Distance
-- Lower
-- Permutate String
+- Bubble Sort
+- Bucket Sort
+- Comb Sort
+- Cycle Sort
+- Selection Sort
+- Shell Sort

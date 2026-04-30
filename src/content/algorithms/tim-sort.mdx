@@ -1,0 +1,212 @@
+---
+title: Tim Sort
+slug: tim-sort
+category: Sorting
+summary: Sort small runs with insertion sort, then merge those runs into progressively larger sorted blocks.
+description: Tim sort is the hybrid stable sorting algorithm that combines insertion sort and merge sort to exploit partially ordered real-world input.
+dataStructures:
+  - Array
+techniques:
+  - Sorting
+  - Insertion Sort
+  - Merge Sort
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - timsort
+  - hybrid stable sort
+useCases:
+  - Understanding production sorting strategies beyond textbook sorts
+  - Exploiting naturally occurring sorted runs in input data
+  - Comparing engineering tradeoffs among stable sorts
+complexity:
+  time: O(n log n) worst case, O(n) best case on favorable runs
+  space: O(n)
+  notes: Full production TimSort includes run detection and stack invariants; interview versions are usually simplified hybrids built from insertion-sort runs and merge passes.
+interviewSignals:
+  - The prompt asks about a practical stable sort used in real runtimes.
+  - Existing local order in the input should be exploited rather than ignored.
+relatedSlugs:
+  - merge-sort
+  - quick-sort
+  - heap-sort
+provenance:
+  - title: TheAlgorithms/JavaScript - Sorts/TimSort.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Sorts/TimSort.js
+    kind: Implementation
+  - title: "free-programming-books - Open Data Structures: An Introduction"
+    href: https://opendatastructures.org/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Tim sort is more about engineering judgment than interview memorization. It surfaces when you need to explain why hybrid algorithms can outperform simpler textbook sorts on data that is already partly ordered.
+
+## Worked Example
+
+For `[5, 1, 4, 2, 8, 0, 2]`, a simplified TimSort first insertion-sorts small runs, then merges those sorted chunks pairwise until the whole array is covered. The gain comes from treating short nearly sorted spans cheaply before paying for merge passes.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function timSort(values, runSize = 32) {
+  if (!Array.isArray(values)) {
+    throw new TypeError('Values must be an array of numbers');
+  }
+
+  const array = [...values];
+  const n = array.length;
+
+  function insertionSortRange(left, right) {
+    for (let index = left + 1; index <= right; index += 1) {
+      const value = array[index];
+      let position = index - 1;
+
+      while (position >= left && array[position] > value) {
+        array[position + 1] = array[position];
+        position -= 1;
+      }
+
+      array[position + 1] = value;
+    }
+  }
+
+  function merge(left, mid, right) {
+    if (mid >= right) {
+      return;
+    }
+
+    const leftSlice = array.slice(left, mid + 1);
+    const rightSlice = array.slice(mid + 1, right + 1);
+    let leftIndex = 0;
+    let rightIndex = 0;
+    let writeIndex = left;
+
+    while (leftIndex < leftSlice.length && rightIndex < rightSlice.length) {
+      if (leftSlice[leftIndex] <= rightSlice[rightIndex]) {
+        array[writeIndex] = leftSlice[leftIndex];
+        leftIndex += 1;
+      } else {
+        array[writeIndex] = rightSlice[rightIndex];
+        rightIndex += 1;
+      }
+
+      writeIndex += 1;
+    }
+
+    while (leftIndex < leftSlice.length) {
+      array[writeIndex] = leftSlice[leftIndex];
+      leftIndex += 1;
+      writeIndex += 1;
+    }
+
+    while (rightIndex < rightSlice.length) {
+      array[writeIndex] = rightSlice[rightIndex];
+      rightIndex += 1;
+      writeIndex += 1;
+    }
+  }
+
+  for (let left = 0; left < n; left += runSize) {
+    insertionSortRange(left, Math.min(left + runSize - 1, n - 1));
+  }
+
+  for (let size = runSize; size < n; size *= 2) {
+    for (let left = 0; left < n; left += size * 2) {
+      const mid = Math.min(left + size - 1, n - 1);
+      const right = Math.min(left + size * 2 - 1, n - 1);
+      merge(left, mid, right);
+    }
+  }
+
+  return array;
+}
+```
+
+```ts
+export function timSort(values: number[], runSize = 32): number[] {
+  const array = [...values];
+  const n = array.length;
+
+  function insertionSortRange(left: number, right: number): void {
+    for (let index = left + 1; index <= right; index += 1) {
+      const value = array[index];
+      let position = index - 1;
+
+      while (position >= left && array[position] > value) {
+        array[position + 1] = array[position];
+        position -= 1;
+      }
+
+      array[position + 1] = value;
+    }
+  }
+
+  function merge(left: number, mid: number, right: number): void {
+    if (mid >= right) {
+      return;
+    }
+
+    const leftSlice = array.slice(left, mid + 1);
+    const rightSlice = array.slice(mid + 1, right + 1);
+    let leftIndex = 0;
+    let rightIndex = 0;
+    let writeIndex = left;
+
+    while (leftIndex < leftSlice.length && rightIndex < rightSlice.length) {
+      if (leftSlice[leftIndex] <= rightSlice[rightIndex]) {
+        array[writeIndex] = leftSlice[leftIndex];
+        leftIndex += 1;
+      } else {
+        array[writeIndex] = rightSlice[rightIndex];
+        rightIndex += 1;
+      }
+
+      writeIndex += 1;
+    }
+
+    while (leftIndex < leftSlice.length) {
+      array[writeIndex] = leftSlice[leftIndex];
+      leftIndex += 1;
+      writeIndex += 1;
+    }
+
+    while (rightIndex < rightSlice.length) {
+      array[writeIndex] = rightSlice[rightIndex];
+      rightIndex += 1;
+      writeIndex += 1;
+    }
+  }
+
+  for (let left = 0; left < n; left += runSize) {
+    insertionSortRange(left, Math.min(left + runSize - 1, n - 1));
+  }
+
+  for (let size = runSize; size < n; size *= 2) {
+    for (let left = 0; left < n; left += size * 2) {
+      const mid = Math.min(left + size - 1, n - 1);
+      const right = Math.min(left + size * 2 - 1, n - 1);
+      merge(left, mid, right);
+    }
+  }
+
+  return array;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why insertion sort is a good fit for short runs.
+- Compare this simplified version with production TimSort's run stack invariants.
+- Discuss when TimSort outperforms quick sort on partially ordered data.
+
+## Common Pitfalls
+
+- Treating TimSort as just merge sort plus a constant without mentioning run exploitation.
+- Forgetting the merge helper still needs auxiliary space.
+- Overselling the simplified interview version as the full production algorithm.

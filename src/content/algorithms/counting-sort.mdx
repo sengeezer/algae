@@ -1,0 +1,159 @@
+---
+title: Counting Sort
+slug: counting-sort
+category: Sorting
+summary: Count how often each integer value appears, convert counts into positions, and write the sorted output without pairwise comparisons.
+description: Counting sort is the bounded-key distribution sort that replaces comparisons with frequency accumulation and prefix-position placement.
+dataStructures:
+  - Array
+  - Frequency Array
+techniques:
+  - Sorting
+  - Frequency Counting
+  - Prefix Sums
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - frequency sort
+  - integer counting sort
+useCases:
+  - Sorting small-range integers efficiently
+  - Building stable digit passes for radix sort
+  - Trading key-range memory for linear-time ordering
+complexity:
+  time: O(n + k)
+  space: O(k)
+  notes: Here $k$ is the size of the value range, so the algorithm is only attractive when the keys are bounded and reasonably dense.
+interviewSignals:
+  - The values are integers from a small known range.
+  - The interviewer asks about linear-time sorting without comparisons.
+relatedSlugs:
+  - radix-sort
+  - heap-sort
+  - quick-sort
+provenance:
+  - title: TheAlgorithms/JavaScript - Sorts/CountingSort.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Sorts/CountingSort.js
+    kind: Implementation
+  - title: "free-programming-books - Open Data Structures: An Introduction"
+    href: https://opendatastructures.org/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Counting sort appears when the interviewer wants you to notice structure in the keys. Once the range is bounded, comparisons are wasteful, and the problem becomes one of counting and placement.
+
+## Worked Example
+
+For `[4, 2, 2, 8, 3, 3, 1]`, count how many times each value occurs, turn those counts into cumulative positions, and place each element into its final index from right to left to keep the sort stable.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function countingSort(values) {
+  if (!Array.isArray(values)) {
+    throw new TypeError('Values must be an array of integers');
+  }
+
+  if (values.length === 0) {
+    return [];
+  }
+
+  let min = values[0];
+  let max = values[0];
+
+  for (const value of values) {
+    if (!Number.isInteger(value)) {
+      throw new TypeError('Counting sort expects integers');
+    }
+
+    if (value < min) {
+      min = value;
+    }
+
+    if (value > max) {
+      max = value;
+    }
+  }
+
+  const counts = new Array(max - min + 1).fill(0);
+  for (const value of values) {
+    counts[value - min] += 1;
+  }
+
+  for (let index = 1; index < counts.length; index += 1) {
+    counts[index] += counts[index - 1];
+  }
+
+  const result = new Array(values.length);
+  for (let index = values.length - 1; index >= 0; index -= 1) {
+    const value = values[index];
+    const bucket = value - min;
+    counts[bucket] -= 1;
+    result[counts[bucket]] = value;
+  }
+
+  return result;
+}
+```
+
+```ts
+export function countingSort(values: number[]): number[] {
+  if (values.length === 0) {
+    return [];
+  }
+
+  let min = values[0];
+  let max = values[0];
+
+  for (const value of values) {
+    if (!Number.isInteger(value)) {
+      throw new TypeError('Counting sort expects integers');
+    }
+
+    if (value < min) {
+      min = value;
+    }
+
+    if (value > max) {
+      max = value;
+    }
+  }
+
+  const counts = new Array<number>(max - min + 1).fill(0);
+  for (const value of values) {
+    counts[value - min] += 1;
+  }
+
+  for (let index = 1; index < counts.length; index += 1) {
+    counts[index] += counts[index - 1];
+  }
+
+  const result = new Array<number>(values.length);
+  for (let index = values.length - 1; index >= 0; index -= 1) {
+    const value = values[index];
+    const bucket = value - min;
+    counts[bucket] -= 1;
+    result[counts[bucket]] = value;
+  }
+
+  return result;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why processing from right to left preserves stability.
+- Adapt the algorithm when the values can be negative.
+- Compare counting sort with quick sort when the range size grows large.
+
+## Common Pitfalls
+
+- Using counting sort when the key range is far larger than the input size.
+- Forgetting to offset by the minimum value when negative numbers are allowed.
+- Building counts correctly but losing stability during output placement.

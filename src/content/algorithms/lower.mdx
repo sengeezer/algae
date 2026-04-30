@@ -1,0 +1,85 @@
+---
+title: Lower
+slug: lower
+category: Strings
+summary: Convert a string to lowercase by mapping uppercase characters into their lowercase counterparts.
+description: Lower is the case-conversion utility for transforming every uppercase letter in a string into lowercase form while leaving other characters unchanged.
+dataStructures:
+  - String
+techniques:
+  - Character Transformation
+  - ASCII Mapping
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - lowercase conversion
+  - to lower case
+useCases:
+  - Normalizing input before case-insensitive comparison
+  - Practicing character-code transformations
+  - Contrasting manual conversion with built-in string APIs
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: Manual ASCII conversion works for basic Latin letters, but full production case mapping should prefer built-ins such as `toLowerCase()` for broader Unicode correctness.
+interviewSignals:
+  - The prompt asks to transform characters rather than classify them.
+  - The algorithm scans once and rewrites only matching uppercase letters.
+relatedSlugs:
+  - upper
+  - check-flat-case
+  - alpha-numeric-palindrome
+provenance:
+  - title: TheAlgorithms/JavaScript - String/Lower.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/String/Lower.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the symmetric companion to uppercase conversion. The interview value is usually in explaining what ASCII arithmetic buys you and where that hand-written approach stops being correct for full Unicode text.
+
+## Worked Example
+
+`"He_LLO"` becomes `"he_llo"`: uppercase letters shift into lowercase, while underscores and existing lowercase letters remain unchanged.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function lower(value) {
+  if (typeof value !== 'string') {
+    throw new TypeError('Value must be a string');
+  }
+
+  return value.replace(/[A-Z]/g, (char) =>
+    String.fromCharCode(char.charCodeAt(0) + 32),
+  );
+}
+```
+
+```ts
+export function lower(value: string): string {
+  return value.replace(/[A-Z]/g, (char) =>
+    String.fromCharCode(char.charCodeAt(0) + 32),
+  );
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare this manual ASCII approach with `value.toLowerCase()`.
+- Implement locale-aware lowercase conversion requirements.
+- Handle both uppercase and lowercase conversion behind one reusable helper.
+
+## Common Pitfalls
+
+- Assuming ASCII conversion is enough for every language.
+- Using the wrong code-point offset and corrupting characters.
+- Forgetting that non-letter characters should stay unchanged.

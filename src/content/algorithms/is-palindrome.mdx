@@ -1,0 +1,97 @@
+---
+title: Is Palindrome
+slug: is-palindrome
+category: Strings
+summary: Check whether a string or number reads the same forward and backward by comparing mirrored positions.
+description: Is Palindrome is the direct two-pointer symmetry check for exact palindrome inputs without punctuation or case normalization rules.
+dataStructures:
+  - String
+techniques:
+  - Two Pointers
+  - Symmetric Comparison
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - palindrome check
+  - exact palindrome test
+useCases:
+  - Validating whether a token is symmetric as written
+  - Handling numeric palindrome prompts by converting digits to text
+  - Practicing mirrored scans with early exit
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: If the input arrives as a number, converting it to a string is still linear in the number of digits.
+interviewSignals:
+  - The prompt asks for a boolean palindrome test on the exact input order.
+  - No permutation or punctuation-normalization step is required.
+relatedSlugs:
+  - alpha-numeric-palindrome
+  - reverse-string
+  - two-pointers
+provenance:
+  - title: TheAlgorithms/JavaScript - String/IsPalindrome.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/String/IsPalindrome.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the cleanest palindrome interview prompt because it separates exact symmetry from the normalized or rearranged variants. The important skill is recognizing that you only need to compare mirrored positions until the pointers cross.
+
+## Worked Example
+
+`12321` is a palindrome because the first and last digits match, then the next pair matches, and the middle digit does not need further comparison.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function isPalindrome(value) {
+  if (typeof value !== 'string' && typeof value !== 'number') {
+    throw new TypeError('Value must be a string or number');
+  }
+
+  const text = value.toString();
+
+  for (let left = 0, right = text.length - 1; left < right; left += 1, right -= 1) {
+    if (text[left] !== text[right]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+```
+
+```ts
+export function isPalindrome(value: string | number): boolean {
+  const text = value.toString();
+
+  for (let left = 0, right = text.length - 1; left < right; left += 1, right -= 1) {
+    if (text[left] !== text[right]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Solve the numeric-only version without converting the value into a string.
+- Ignore punctuation and case, turning the prompt into the normalized palindrome variant.
+- Check whether a linked list is a palindrome while minimizing extra memory.
+
+## Common Pitfalls
+
+- Solving the normalized version when the prompt wants exact character equality.
+- Reversing the whole string without mentioning the avoidable extra memory.
+- Forgetting that empty strings and one-character inputs are still palindromes.

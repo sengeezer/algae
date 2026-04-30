@@ -1,0 +1,131 @@
+---
+title: Radix Sort
+slug: radix-sort
+category: Sorting
+summary: Sort integers digit by digit with stable bucket passes from the least significant position to the most significant.
+description: Radix sort is the non-comparison integer sort that repeatedly distributes values by digit and rebuilds the array in stable order.
+dataStructures:
+  - Array
+  - Buckets
+techniques:
+  - Sorting
+  - Bucketing
+  - Digit Processing
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - digit sort
+  - LSD radix sort
+useCases:
+  - Sorting nonnegative integers with bounded digit width
+  - Building on counting-sort style stable passes
+  - Avoiding pairwise comparisons when the key representation is structured
+complexity:
+  time: O(d * (n + b))
+  space: O(n + b)
+  notes: Here $d$ is the number of digit positions and $b$ is the base. The approach is attractive only when those parameters stay controlled.
+interviewSignals:
+  - The prompt involves integers or fixed-width keys and hints at a non-comparison sort.
+  - Stability across digit passes matters.
+relatedSlugs:
+  - counting-sort
+  - quick-sort
+  - merge-sort
+provenance:
+  - title: TheAlgorithms/JavaScript - Sorts/RadixSort.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Sorts/RadixSort.js
+    kind: Implementation
+  - title: "free-programming-books - Open Data Structures: An Introduction"
+    href: https://opendatastructures.org/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Radix sort is the next step after counting sort once the keys have multiple digits. The interview challenge is usually not the buckets themselves, but recognizing that stable passes let earlier work survive later digit groupings.
+
+## Worked Example
+
+For `[170, 45, 75, 90, 802, 24, 2, 66]`, sort first by ones digit, then tens digit, then hundreds digit. Because each pass is stable, the final order is globally sorted once the most significant processed digit is complete.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function radixSort(values, base = 10) {
+  if (!Array.isArray(values)) {
+    throw new TypeError('Values must be an array of nonnegative integers');
+  }
+
+  if (values.some((value) => !Number.isInteger(value) || value < 0)) {
+    throw new TypeError('Radix sort expects nonnegative integers');
+  }
+
+  let output = [...values];
+  let max = 0;
+
+  for (const value of output) {
+    if (value > max) {
+      max = value;
+    }
+  }
+
+  for (let place = 1; Math.floor(max / place) > 0; place *= base) {
+    const buckets = Array.from({ length: base }, () => []);
+
+    for (const value of output) {
+      const digit = Math.floor(value / place) % base;
+      buckets[digit].push(value);
+    }
+
+    output = buckets.flat();
+  }
+
+  return output;
+}
+```
+
+```ts
+export function radixSort(values: number[], base = 10): number[] {
+  if (values.some((value) => !Number.isInteger(value) || value < 0)) {
+    throw new TypeError('Radix sort expects nonnegative integers');
+  }
+
+  let output = [...values];
+  let max = 0;
+
+  for (const value of output) {
+    if (value > max) {
+      max = value;
+    }
+  }
+
+  for (let place = 1; Math.floor(max / place) > 0; place *= base) {
+    const buckets: number[][] = Array.from({ length: base }, () => []);
+
+    for (const value of output) {
+      const digit = Math.floor(value / place) % base;
+      buckets[digit].push(value);
+    }
+
+    output = buckets.flat();
+  }
+
+  return output;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Replace per-digit buckets with a counting-sort pass.
+- Extend the approach to signed integers or fixed-width strings.
+- Explain why the digit passes must be stable.
+
+## Common Pitfalls
+
+- Applying radix sort directly to negative numbers without defining a policy.
+- Forgetting that unstable digit passes break the final order.
+- Overstating the benefit when the digit width or base is large.
