@@ -1,0 +1,143 @@
+---
+title: Run-Length Encoding
+slug: run-length-encoding
+category: Compression
+summary: Compress repeated runs of the same character into count-and-symbol pairs and expand them back later.
+description: Run-Length Encoding is the simple lossless compression scheme that replaces repeated adjacent characters with their run length and value.
+dataStructures:
+  - String
+  - Array
+techniques:
+  - Compression
+  - Run-Length Encoding
+  - String Scanning
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - RLE
+  - run-length compression
+useCases:
+  - Compacting strings with long repeated runs
+  - Teaching a simple reversible compression format
+  - Building intuition for lossless encoding and decoding passes
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: RLE only helps when the input has sizable repeated runs. It can even enlarge highly varied strings.
+interviewSignals:
+  - The prompt asks to turn `AAAAB` into `4A1B` or decode that format back.
+  - The intended solution scans runs of repeated characters rather than using a generic dictionary compressor.
+relatedSlugs:
+  - count-letters
+  - morse-code
+  - reverse-string
+provenance:
+  - title: TheAlgorithms/JavaScript - Compression/RLE.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Compression/RLE.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Run-length encoding is a good first compression algorithm because the rule is obvious and reversible. It forces you to reason carefully about consecutive runs, formatting choices, and whether the encoded representation is actually smaller.
+
+## Worked Example
+
+`AAAABBBCCDAA` becomes `4A3B2C1D2A`. Each maximal run turns into one count-and-symbol pair, and decoding expands each pair back into repeated characters.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function encodeRLE(text) {
+  if (text.length === 0) {
+    return '';
+  }
+
+  let encoded = '';
+  let count = 1;
+
+  for (let index = 1; index <= text.length; index += 1) {
+    if (text[index] === text[index - 1]) {
+      count += 1;
+    } else {
+      encoded += `${count}${text[index - 1]}`;
+      count = 1;
+    }
+  }
+
+  return encoded;
+}
+
+function decodeRLE(text) {
+  let decoded = '';
+  let count = '';
+
+  for (const char of text) {
+    if (char >= '0' && char <= '9') {
+      count += char;
+    } else {
+      decoded += char.repeat(Number(count));
+      count = '';
+    }
+  }
+
+  return decoded;
+}
+```
+
+```ts
+export function encodeRLE(text: string): string {
+  if (text.length === 0) {
+    return '';
+  }
+
+  let encoded = '';
+  let count = 1;
+
+  for (let index = 1; index <= text.length; index += 1) {
+    if (text[index] === text[index - 1]) {
+      count += 1;
+    } else {
+      encoded += `${count}${text[index - 1]}`;
+      count = 1;
+    }
+  }
+
+  return encoded;
+}
+
+export function decodeRLE(text: string): string {
+  let decoded = '';
+  let count = '';
+
+  for (const char of text) {
+    if (char >= '0' && char <= '9') {
+      count += char;
+    } else {
+      decoded += char.repeat(Number(count));
+      count = '';
+    }
+  }
+
+  return decoded;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain when RLE shrinks data and when it makes it larger.
+- Support inputs that may themselves contain digits safely.
+- Extend the routine to arrays of repeated values instead of strings.
+
+## Common Pitfalls
+
+- Forgetting to flush the final run at the end of the scan.
+- Assuming RLE always compresses the data.
+- Using a decoder format that becomes ambiguous when raw symbols can be digits.

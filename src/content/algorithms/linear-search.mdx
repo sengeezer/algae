@@ -1,0 +1,89 @@
+---
+title: Linear Search
+slug: linear-search
+category: Searching
+summary: Scan the collection from left to right until the target is found or the input ends.
+description: Linear Search is the baseline sequential lookup routine for unsorted or tiny collections where preprocessing is not worthwhile.
+dataStructures:
+  - Array
+techniques:
+  - Linear Search
+  - Sequential Scan
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - sequential search
+  - scan search
+useCases:
+  - Searching unsorted data without extra preprocessing
+  - Handling tiny collections where fancy indexing is unnecessary
+  - Serving as the baseline to compare optimized search structures
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: Linear search is often the right answer when the data is unsorted, very small, or touched only once.
+interviewSignals:
+  - The data is unsorted and no preprocessing budget is available.
+  - The interviewer wants the simplest correct lookup before discussing faster indexed alternatives.
+relatedSlugs:
+  - binary-search
+  - jump-search
+  - exponential-search
+provenance:
+  - title: TheAlgorithms/JavaScript - Search/LinearSearch.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Search/LinearSearch.js
+    kind: Implementation
+  - title: free-programming-books - Algorithm Design
+    href: https://archive.org/details/AlgorithmDesign1stEditionByJonKleinbergAndEvaTardos2005PDF
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Linear search is not glamorous, but it is the correct baseline for a lot of real inputs. If the collection is unsorted or you only need one pass, building a more complex index can cost more than just scanning once.
+
+## Worked Example
+
+Searching for `7` in `[4, 9, 1, 7, 3]` checks `4`, then `9`, then `1`, and finally finds `7` at index `3`. If the target never appears, the scan simply reaches the end and returns failure.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function linearSearch(values, target) {
+  for (let index = 0; index < values.length; index += 1) {
+    if (values[index] === target) {
+      return index;
+    }
+  }
+
+  return -1;
+}
+```
+
+```ts
+export function linearSearch<T>(values: T[], target: T): number {
+  for (let index = 0; index < values.length; index += 1) {
+    if (values[index] === target) {
+      return index;
+    }
+  }
+
+  return -1;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain when linear search is better than binary search in practice.
+- Return all matching indexes instead of only the first.
+- Adapt the scan for linked lists or streaming input.
+
+## Common Pitfalls
+
+- Sorting first even though the prompt only asks for one lookup.
+- Forgetting that binary search needs sorted input.
+- Returning a one-based position when the surrounding API expects zero-based indexes.

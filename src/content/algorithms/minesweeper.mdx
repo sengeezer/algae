@@ -1,0 +1,125 @@
+---
+title: Minesweeper
+slug: minesweeper
+category: Array Processing
+summary: Replace each cell in a mine board with the number of mines in its eight neighboring cells.
+description: Minesweeper is the neighbor-counting grid routine that builds the clue board from a boolean mine layout.
+dataStructures:
+  - Matrix
+  - Array
+techniques:
+  - Grid Traversal
+  - Neighbor Counting
+  - Boundary Checking
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - minesweeper clue generation
+  - adjacent mine counts
+useCases:
+  - Generating puzzle clue boards from mine placements
+  - Practicing eight-direction neighbor scans on a grid
+  - Teaching careful boundary handling in matrix problems
+complexity:
+  time: O(r * c)
+  space: O(r * c)
+  notes: Each cell checks at most eight neighbors, so the per-cell work stays constant.
+interviewSignals:
+  - The input is a boolean board and the output is a numeric board of adjacent counts.
+  - Diagonal cells count as neighbors, so the scan must cover all eight directions.
+relatedSlugs:
+  - number-of-islands
+  - breadth-first-search
+  - depth-first-search
+provenance:
+  - title: TheAlgorithms/JavaScript - Search/Minesweeper.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Search/Minesweeper.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Minesweeper clue generation is a compact grid problem that exposes the usual matrix pitfalls: off-by-one boundaries, diagonal adjacency, and the difference between reading from the input board and writing to the output board.
+
+## Worked Example
+
+If the center cell of a `3 x 3` board is surrounded by mines in three neighboring positions, its output value is `3`. Every cell independently counts up to eight surrounding coordinates.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function minesweeper(board) {
+  const rows = board.length;
+  const cols = rows === 0 ? 0 : board[0].length;
+  const result = Array.from({ length: rows }, () => Array(cols).fill(0));
+
+  for (let row = 0; row < rows; row += 1) {
+    for (let col = 0; col < cols; col += 1) {
+      let count = 0;
+
+      for (let nextRow = row - 1; nextRow <= row + 1; nextRow += 1) {
+        for (let nextCol = col - 1; nextCol <= col + 1; nextCol += 1) {
+          const isSameCell = nextRow === row && nextCol === col;
+          const inBounds = nextRow >= 0 && nextRow < rows && nextCol >= 0 && nextCol < cols;
+
+          if (!isSameCell && inBounds && board[nextRow][nextCol] === true) {
+            count += 1;
+          }
+        }
+      }
+
+      result[row][col] = count;
+    }
+  }
+
+  return result;
+}
+```
+
+```ts
+export function minesweeper(board: boolean[][]): number[][] {
+  const rows = board.length;
+  const cols = rows === 0 ? 0 : board[0].length;
+  const result = Array.from({ length: rows }, () => Array<number>(cols).fill(0));
+
+  for (let row = 0; row < rows; row += 1) {
+    for (let col = 0; col < cols; col += 1) {
+      let count = 0;
+
+      for (let nextRow = row - 1; nextRow <= row + 1; nextRow += 1) {
+        for (let nextCol = col - 1; nextCol <= col + 1; nextCol += 1) {
+          const isSameCell = nextRow === row && nextCol === col;
+          const inBounds = nextRow >= 0 && nextRow < rows && nextCol >= 0 && nextCol < cols;
+
+          if (!isSameCell && inBounds && board[nextRow][nextCol] === true) {
+            count += 1;
+          }
+        }
+      }
+
+      result[row][col] = count;
+    }
+  }
+
+  return result;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Modify the routine to reveal empty regions recursively after a click.
+- Explain why diagonal cells count in this problem but not in some flood-fill tasks.
+- Optimize the implementation for repeated board updates.
+
+## Common Pitfalls
+
+- Reading out-of-bounds neighbors at the board edges.
+- Counting the current cell as one of its own neighbors.
+- Mixing writes into the output grid with reads from the original board state.

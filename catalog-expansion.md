@@ -339,9 +339,20 @@ This twenty-eighth expansion slice lifts the catalog from 200 to 206 entries.
 - Simplified Wiggle Sort
 - Stooge Sort
 
+## Batch 29 added
+
+This twenty-ninth expansion slice lifts the catalog from 206 to 212 entries.
+
+- Density
+- Kosaraju's Algorithm
+- Linear Search
+- Minesweeper
+- Node Neighbors
+- Run-Length Encoding
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 28 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 29 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -350,23 +361,22 @@ All expansion entries from batch 1 through batch 28 now carry explicit per-entry
 ## Why this batch
 
 - It fills obvious interview-core gaps from TheAlgorithms/JavaScript without duplicating material already present in Algae.
-- It follows the remaining verified sort queue directly, covering natural comparator ordering, randomized generate-and-test failure modes, production-grade hybrid sorting, range-count placement, wiggle-style rearrangement, and one famously bad recursive sorter.
-- It broadens the catalog across comparator design, hybrid algorithm engineering, integer range mapping, median-guided layout, and deliberate counterexamples to efficient sorting instead of staying inside the previous specialized partitioning slice.
-- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially sorting tradeoffs, hybrid designs, and how constraints change what makes a sorting routine useful.
+- It follows the verified graph, search, and compression queue directly, adding a graph sparsity metric, SCC decomposition, baseline sequential search, neighbor counting on a grid, one-hop graph adjacency queries, and simple lossless run-length compression.
+- It broadens the catalog across graph analysis, traversal-adjacent primitives, matrix scanning, and compact string encoding instead of staying inside the previous all-sorting slice.
+- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially graph fundamentals, baseline search techniques, and compact text processing.
 
 ## Supporting study references from the algorithms list
 
 - Algorithm Design
-- Algorithmic Thinking
 - Algorithms, 4th Edition
 - Competitive Programmer's Handbook
-- Open Data Structures: An Introduction
+- Text Algorithms
 
 ## Next candidates from the same sources
 
-- Density
-- Kosaraju
-- Linear Search
-- Minesweeper
-- Node Neighbors
-- RLE
+- Arbitrary Base
+- Binary To Decimal
+- Binary To Hex
+- Decimal To Binary
+- Decimal To Hex
+- Hex To Decimal

@@ -1,0 +1,193 @@
+---
+title: Kosaraju's Algorithm
+slug: kosaraju
+category: Graphs
+summary: Find strongly connected components by recording DFS finishing order, reversing the graph, and exploring nodes again in that order.
+description: Kosaraju's Algorithm is the two-pass DFS technique for grouping directed graph nodes into strongly connected components.
+dataStructures:
+  - Graph
+  - Stack
+  - Hash Map
+  - Set
+techniques:
+  - Strongly Connected Components
+  - Depth-First Search
+  - Graph Transpose
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - kosaraju-sharir
+  - two-pass SCC
+useCases:
+  - Collapsing directed graphs into SCC supernodes
+  - Detecting mutual reachability groups in dependency graphs
+  - Preparing higher-level DAG analyses after SCC contraction
+complexity:
+  time: O(V + E)
+  space: O(V + E)
+  notes: The algorithm works because the finishing order from the first DFS exposes a safe order for exploring the reversed graph.
+interviewSignals:
+  - The graph is directed and the task asks for strongly connected components rather than plain reachability.
+  - The intended solution uses two DFS passes and a reversed graph.
+relatedSlugs:
+  - connected-components
+  - topological-sort
+  - depth-first-search
+provenance:
+  - title: TheAlgorithms/JavaScript - Graphs/Kosaraju.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Graphs/Kosaraju.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Kosaraju is the SCC algorithm that makes finishing order feel concrete. The first DFS does not return the components directly; it builds the order that makes the second DFS on the reversed graph reveal one SCC at a time.
+
+## Worked Example
+
+If `1 -> 2 -> 3 -> 1` forms one cycle and `4 -> 5 -> 6 -> 4` forms another, the first DFS records a finishing stack across the whole graph. Processing nodes from that stack on the reversed graph returns `[1, 2, 3]` and `[4, 5, 6]` as separate SCCs.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function kosaraju(edges) {
+  const nodes = new Set();
+  const graph = new Map();
+  const reversed = new Map();
+
+  for (const [from, to] of edges) {
+    nodes.add(from);
+    nodes.add(to);
+    if (!graph.has(from)) graph.set(from, []);
+    if (!graph.has(to)) graph.set(to, []);
+    if (!reversed.has(from)) reversed.set(from, []);
+    if (!reversed.has(to)) reversed.set(to, []);
+    graph.get(from).push(to);
+    reversed.get(to).push(from);
+  }
+
+  const visited = new Set();
+  const order = [];
+
+  function dfsOrder(node) {
+    visited.add(node);
+    for (const neighbor of graph.get(node) ?? []) {
+      if (!visited.has(neighbor)) {
+        dfsOrder(neighbor);
+      }
+    }
+    order.push(node);
+  }
+
+  for (const node of nodes) {
+    if (!visited.has(node)) {
+      dfsOrder(node);
+    }
+  }
+
+  visited.clear();
+  const components = [];
+
+  function dfsCollect(node, component) {
+    visited.add(node);
+    component.push(node);
+    for (const neighbor of reversed.get(node) ?? []) {
+      if (!visited.has(neighbor)) {
+        dfsCollect(neighbor, component);
+      }
+    }
+  }
+
+  while (order.length > 0) {
+    const node = order.pop();
+    if (!visited.has(node)) {
+      const component = [];
+      dfsCollect(node, component);
+      components.push(component);
+    }
+  }
+
+  return components;
+}
+```
+
+```ts
+export function kosaraju(edges: Array<[number, number]>): number[][] {
+  const nodes = new Set<number>();
+  const graph = new Map<number, number[]>();
+  const reversed = new Map<number, number[]>();
+
+  for (const [from, to] of edges) {
+    nodes.add(from);
+    nodes.add(to);
+    if (!graph.has(from)) graph.set(from, []);
+    if (!graph.has(to)) graph.set(to, []);
+    if (!reversed.has(from)) reversed.set(from, []);
+    if (!reversed.has(to)) reversed.set(to, []);
+    graph.get(from)!.push(to);
+    reversed.get(to)!.push(from);
+  }
+
+  const visited = new Set<number>();
+  const order: number[] = [];
+
+  function dfsOrder(node: number): void {
+    visited.add(node);
+    for (const neighbor of graph.get(node) ?? []) {
+      if (!visited.has(neighbor)) {
+        dfsOrder(neighbor);
+      }
+    }
+    order.push(node);
+  }
+
+  for (const node of nodes) {
+    if (!visited.has(node)) {
+      dfsOrder(node);
+    }
+  }
+
+  visited.clear();
+  const components: number[][] = [];
+
+  function dfsCollect(node: number, component: number[]): void {
+    visited.add(node);
+    component.push(node);
+    for (const neighbor of reversed.get(node) ?? []) {
+      if (!visited.has(neighbor)) {
+        dfsCollect(neighbor, component);
+      }
+    }
+  }
+
+  while (order.length > 0) {
+    const node = order.pop()!;
+    if (!visited.has(node)) {
+      const component: number[] = [];
+      dfsCollect(node, component);
+      components.push(component);
+    }
+  }
+
+  return components;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why the finishing order from the first DFS matters.
+- Compare Kosaraju with Tarjan for SCC discovery.
+- Contract the SCCs into a DAG and run topological logic afterward.
+
+## Common Pitfalls
+
+- Forgetting to reverse the graph before the second pass.
+- Running the second DFS in arbitrary order instead of reverse finishing order.
+- Treating SCCs as if the graph were undirected connected components.

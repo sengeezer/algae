@@ -1,0 +1,89 @@
+---
+title: Density
+slug: density
+category: Graphs
+summary: Measure how full a graph is by comparing its current edge count with the number of edges in a complete graph of the same size.
+description: Density is the graph-analysis formula that turns node and edge counts into a sparsity-versus-fullness ratio.
+dataStructures:
+  - Graph
+  - Number
+techniques:
+  - Graph Analysis
+  - Edge Counting
+  - Formula Evaluation
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - graph density
+  - network density
+useCases:
+  - Estimating how sparse or dense a graph is
+  - Comparing graph families without listing every missing edge
+  - Deciding whether matrix-style graph storage might be reasonable
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The formula is constant time once the node and edge counts are known. The only subtlety is choosing the correct denominator for directed versus undirected graphs.
+interviewSignals:
+  - The prompt asks how full a graph is relative to a complete graph.
+  - You already know the counts of nodes and edges and only need the normalized ratio.
+relatedSlugs:
+  - breadth-first-shortest-path
+  - connected-components
+  - prim-mst
+provenance:
+  - title: TheAlgorithms/JavaScript - Graphs/Density.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Graphs/Density.js
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Density is the fastest way to summarize whether a graph is mostly empty or close to complete. It matters because many graph choices, from storage layouts to expected traversal behavior, depend on how many edges exist relative to the maximum possible.
+
+## Worked Example
+
+An undirected graph with `5` nodes can have at most `10` edges. If it currently has `4`, the density is `4 / 10 = 0.4`, which means it uses 40% of the possible connections.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function density(numberOfNodes, numberOfEdges, isDirected = false) {
+  if (numberOfNodes < 2) {
+    return 0;
+  }
+
+  const multiplier = isDirected ? 1 : 2;
+  return (multiplier * numberOfEdges) / (numberOfNodes * (numberOfNodes - 1));
+}
+```
+
+```ts
+export function density(numberOfNodes: number, numberOfEdges: number, isDirected = false): number {
+  if (numberOfNodes < 2) {
+    return 0;
+  }
+
+  const multiplier = isDirected ? 1 : 2;
+  return (multiplier * numberOfEdges) / (numberOfNodes * (numberOfNodes - 1));
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why undirected graphs need the factor of `2` in the numerator.
+- Compare density for sparse road networks and dense social cliques.
+- Use density to justify choosing an adjacency list or adjacency matrix.
+
+## Common Pitfalls
+
+- Dividing by zero when the graph has fewer than two nodes.
+- Using the undirected denominator for a directed graph.
+- Treating multi-edges or self-loops as if the simple-graph formula still applies unchanged.

@@ -1,0 +1,100 @@
+---
+title: Node Neighbors
+slug: node-neighbors
+category: Graphs
+summary: Return the unique nodes directly connected to a given node by one edge.
+description: Node Neighbors is the adjacency-query primitive for listing a node's immediate graph neighborhood from an edge representation.
+dataStructures:
+  - Graph
+  - Set
+  - Array
+techniques:
+  - Adjacency Extraction
+  - Graph Traversal
+  - Set Deduplication
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - graph neighborhood query
+  - adjacent nodes lookup
+useCases:
+  - Answering one-hop connectivity questions
+  - Building adjacency lists from raw edge pairs
+  - Supporting BFS or DFS expansion steps
+complexity:
+  time: O(E)
+  space: O(deg(v))
+  notes: With a raw edge list, every query scans all edges. If many neighbor queries are needed, preprocess an adjacency map once.
+interviewSignals:
+  - The prompt asks for nodes one hop away rather than full reachability.
+  - The graph may be given as a flat list of edges instead of adjacency lists.
+relatedSlugs:
+  - breadth-first-search
+  - depth-first-search
+  - connected-components
+provenance:
+  - title: TheAlgorithms/JavaScript - Graphs/NodeNeighbors.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Graphs/NodeNeighbors.js
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Node-neighbor queries are the simplest graph primitive after adding edges. They matter because almost every graph traversal starts by asking the same local question: from this node, where can I go next?
+
+## Worked Example
+
+If the undirected edges are `(1, 2)`, `(2, 3)`, and `(1, 5)`, then the neighbors of `1` are `{2, 5}`. The answer only includes directly adjacent nodes, not multi-hop reachable nodes.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function nodeNeighbors(edges, node) {
+  const neighbors = new Set();
+
+  for (const [left, right] of edges) {
+    if (left === node) {
+      neighbors.add(right);
+    } else if (right === node) {
+      neighbors.add(left);
+    }
+  }
+
+  return [...neighbors];
+}
+```
+
+```ts
+export function nodeNeighbors(edges: Array<[number, number]>, node: number): number[] {
+  const neighbors = new Set<number>();
+
+  for (const [left, right] of edges) {
+    if (left === node) {
+      neighbors.add(right);
+    } else if (right === node) {
+      neighbors.add(left);
+    }
+  }
+
+  return [...neighbors];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Convert the edge list into an adjacency map for faster repeated queries.
+- Explain how the logic changes for a directed graph.
+- Return the neighbors in a stable sorted order.
+
+## Common Pitfalls
+
+- Returning nodes that are only reachable by multiple hops.
+- Forgetting to deduplicate neighbors when duplicate edges exist.
+- Treating a directed edge list like an undirected graph without checking the prompt.
