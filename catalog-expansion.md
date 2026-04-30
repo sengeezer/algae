@@ -416,9 +416,20 @@ This thirty-fifth expansion slice lifts the catalog from 242 to 248 entries.
 - Radian To Degree
 - Signum
 
+## Batch 36 added
+
+This thirty-sixth expansion slice lifts the catalog from 248 to 254 entries.
+
+- Abs
+- Average Mean
+- Average Median
+- Decimal Expansion
+- Decimal Isolate
+- Reverse Number
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 35 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 36 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -427,20 +438,21 @@ All expansion entries from batch 1 through batch 35 now carry explicit per-entry
 ## Why this batch
 
 - It fills obvious interview-core gaps from TheAlgorithms/JavaScript without duplicating material already present in Algae.
-- It follows the next verified timing-and-math queue directly, adding elapsed-time measurement, strict date parsing, angle conversion, digit counting, and sign extraction.
-- It broadens the catalog across runtime instrumentation, calendar validation, and scalar normalization instead of staying inside the previous color and casing slice.
-- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially constant-time formulas, defensive input handling, and small numerical helpers that still reveal edge-case discipline.
+- It follows the next verified math-helper queue directly, adding absolute-value normalization, statistical summaries, rational digit expansion, fractional isolation, and digit-wise reversal.
+- It broadens the catalog across aggregation, numeric normalization, and remainder-driven arithmetic instead of staying inside the previous timing and scalar-conversion slice.
+- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially basic mathematical building blocks, number representation, and small helpers that still reward precise validation.
 
 ## Supporting study references from the algorithms list
 
+- Algorithm Design
 - Algorithms, 4th Edition
 - Competitive Programmer's Handbook
 
 ## Next candidates from the same sources
 
-- Abs
-- Average Mean
-- Average Median
-- Decimal Expansion
-- Decimal Isolate
-- Reverse Number
+- Aliquot Sum
+- Area
+- Arithmetic Geometric Mean
+- Armstrong Number
+- Automorphic Number
+- Bisection Method

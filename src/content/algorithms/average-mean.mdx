@@ -1,0 +1,107 @@
+---
+title: Average Mean
+slug: average-mean
+category: Mathematics
+summary: Compute the arithmetic mean of a numeric array by summing its values and dividing by its length.
+description: Average Mean is the aggregate-summary routine that turns a list of numbers into its arithmetic average.
+dataStructures:
+  - Array
+  - Number
+techniques:
+  - Aggregation
+  - Array Traversal
+  - Input Validation
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - arithmetic mean
+  - average of array
+useCases:
+  - Summarizing measurements or scores
+  - Building statistics helpers for analytics code
+  - Teaching how aggregate formulas decompose into sum and count
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The algorithm scans the array once and keeps only a running total and count.
+interviewSignals:
+  - The prompt asks for the average of a collection rather than a single value transform.
+  - The expected solution validates that the input is a non-empty numeric array.
+relatedSlugs:
+  - average-median
+  - mean-square-error
+  - softmax
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/AverageMean.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/AverageMean.js
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Mean is simple, but it is a common way to check whether you can combine iteration, validation, and a formula without overcomplicating the solution. Empty arrays and non-numeric elements are the usual edge cases.
+
+## Worked Example
+
+For `[10, 40, 100, 20]`, the total is `170`, and `170 / 4 = 42.5`, so the arithmetic mean is `42.5`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function averageMean(values) {
+  if (!Array.isArray(values) || values.length === 0) {
+    throw new RangeError('Expected a non-empty array of numbers');
+  }
+
+  let total = 0;
+
+  for (const value of values) {
+    if (typeof value !== 'number' || Number.isNaN(value)) {
+      throw new TypeError('Array values must be numbers');
+    }
+
+    total += value;
+  }
+
+  return total / values.length;
+}
+```
+
+```ts
+export function averageMean(values: number[]): number {
+  if (values.length === 0) {
+    throw new RangeError('Expected a non-empty array of numbers');
+  }
+
+  let total = 0;
+
+  for (const value of values) {
+    if (Number.isNaN(value)) {
+      throw new TypeError('Array values must be numbers');
+    }
+
+    total += value;
+  }
+
+  return total / values.length;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Add a weighted-mean version that accepts values and weights.
+- Compare mean with median on outlier-heavy data.
+- Stream values one at a time instead of receiving a full array.
+
+## Common Pitfalls
+
+- Dividing by zero when the array is empty.
+- Forgetting to reject `NaN` values.
+- Accidentally using integer-style truncation in languages where division behavior differs.

@@ -1,0 +1,94 @@
+---
+title: Abs
+slug: abs
+category: Mathematics
+summary: Return the non-negative magnitude of a number by flipping the sign only when the value is below zero.
+description: Abs is the absolute-value helper that normalizes signed numeric input into its non-negative magnitude.
+dataStructures:
+  - Number
+techniques:
+  - Numeric Normalization
+  - Case Analysis
+  - Constant-Time Branching
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - absolute value
+  - numeric magnitude
+useCases:
+  - Normalizing distances and deltas before comparison
+  - Removing sign when only magnitude matters
+  - Building reusable helpers for number-theory and geometry routines
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The helper performs a constant number of checks regardless of input size.
+interviewSignals:
+  - The prompt asks for magnitude without regard to sign.
+  - The expected solution distinguishes numeric validation from the sign flip itself.
+relatedSlugs:
+  - signum
+  - co-prime-check
+  - euclidean-distance
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/Abs.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/Abs.js
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Absolute value is tiny, but it is one of the most reused normalization steps in algorithm work. Interviewers sometimes use it as a warm-up because it exposes whether you are explicit about inputs like `NaN` and signed zero.
+
+## Worked Example
+
+`abs(-10)` returns `10`, `abs(50)` returns `50`, and `abs(-0)` should normalize to `0`. The magnitude stays the same; only the sign handling changes.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function abs(value) {
+  if (typeof value !== 'number' || Number.isNaN(value)) {
+    throw new TypeError('Expected a numeric input');
+  }
+
+  if (value === 0) {
+    return 0;
+  }
+
+  return value < 0 ? -value : value;
+}
+```
+
+```ts
+export function abs(value: number): number {
+  if (Number.isNaN(value)) {
+    throw new TypeError('Expected a numeric input');
+  }
+
+  if (value === 0) {
+    return 0;
+  }
+
+  return value < 0 ? -value : value;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare this helper with `Math.abs` and discuss coercion rules.
+- Use `abs` inside a distance or error-metric routine.
+- Explain why `-0` is worth normalizing explicitly in JavaScript.
+
+## Common Pitfalls
+
+- Quietly coercing non-numeric inputs into numbers.
+- Returning `-0` instead of `0` for signed zero.
+- Mixing magnitude normalization with unrelated rounding behavior.

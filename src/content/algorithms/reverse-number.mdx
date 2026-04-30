@@ -1,0 +1,104 @@
+---
+title: Reverse Number
+slug: reverse-number
+category: Mathematics
+summary: Reverse the decimal digits of an integer by peeling off the last digit and rebuilding a new value.
+description: Reverse Number is the digit-decomposition routine that reconstructs an integer with its decimal digits in reverse order.
+dataStructures:
+  - Number
+techniques:
+  - Digit Decomposition
+  - Repeated Division
+  - Sign Normalization
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - integer reversal
+  - reverse decimal digits
+useCases:
+  - Building palindrome checks and digit puzzles
+  - Teaching how modulus and division reconstruct numbers
+  - Normalizing numeric transformations without converting to strings
+complexity:
+  time: O(d)
+  space: O(1)
+  notes: Each iteration removes one digit from the remaining magnitude, so the runtime scales with the digit count.
+interviewSignals:
+  - The prompt asks for numeric reversal rather than string reversal.
+  - The expected solution peels digits with `% 10` and shrinks the remaining value with division.
+relatedSlugs:
+  - number-of-digits
+  - sum-of-digits
+  - palindrome
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/ReverseNumber.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/ReverseNumber.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Reversing an integer is a standard digit-manipulation exercise. It looks simple, but it tests whether you can be precise about negative signs, trailing zeros, and the difference between numeric and string approaches.
+
+## Worked Example
+
+`reverseNumber(-1200)` returns `-21`. Leading zeros in the reversed representation disappear because the result is still a number, not a formatted string.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function reverseNumber(value) {
+  if (!Number.isInteger(value)) {
+    throw new RangeError('Value must be an integer');
+  }
+
+  const sign = value < 0 ? -1 : 1;
+  let remaining = Math.abs(value);
+  let reversed = 0;
+
+  while (remaining > 0) {
+    reversed = reversed * 10 + (remaining % 10);
+    remaining = Math.floor(remaining / 10);
+  }
+
+  return sign * reversed;
+}
+```
+
+```ts
+export function reverseNumber(value: number): number {
+  if (!Number.isInteger(value)) {
+    throw new RangeError('Value must be an integer');
+  }
+
+  const sign = value < 0 ? -1 : 1;
+  let remaining = Math.abs(value);
+  let reversed = 0;
+
+  while (remaining > 0) {
+    reversed = reversed * 10 + (remaining % 10);
+    remaining = Math.floor(remaining / 10);
+  }
+
+  return sign * reversed;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Detect overflow if the language has fixed-width integers.
+- Use the same digit loop to build an integer-palindrome check.
+- Compare this arithmetic approach with string reversal and discuss the tradeoffs.
+
+## Common Pitfalls
+
+- Ignoring negative inputs entirely.
+- Expecting reversed trailing zeros to remain visible in numeric output.
+- Accepting fractional inputs even though the routine is defined for integers.

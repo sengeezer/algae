@@ -1,0 +1,88 @@
+---
+title: Decimal Isolate
+slug: decimal-isolate
+category: Mathematics
+summary: Extract the fractional part of a finite number as a positive value between `0` and `1`.
+description: Decimal Isolate is the scalar helper that separates a number from the fractional magnitude that remains after truncation.
+dataStructures:
+  - Number
+techniques:
+  - Fractional Extraction
+  - Numeric Normalization
+  - Constant-Time Formula
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - fractional part
+  - decimal part extraction
+useCases:
+  - Splitting numeric input into integer and fractional components
+  - Normalizing inputs for formatting utilities
+  - Teaching the difference between truncation and rounding
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The helper uses a fixed amount of arithmetic regardless of the number's magnitude.
+interviewSignals:
+  - The prompt asks for the part of a number after the decimal point.
+  - The expected solution defines clearly how negative inputs should behave.
+relatedSlugs:
+  - decimal-expansion
+  - abs
+  - reverse-number
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/DecimalIsolate.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/DecimalIsolate.js
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Isolating the fractional part is small, but it forces you to define the behavior for negative numbers instead of relying on whatever the language's remainder operator happens to do.
+
+## Worked Example
+
+`decimalIsolate(-12.375)` returns `0.375`. The sign is removed because the goal here is the magnitude of the fractional part, not a signed remainder.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function decimalIsolate(value) {
+  if (typeof value !== 'number' || !Number.isFinite(value)) {
+    throw new TypeError('Expected a finite numeric input');
+  }
+
+  const magnitude = Math.abs(value);
+  return magnitude - Math.trunc(magnitude);
+}
+```
+
+```ts
+export function decimalIsolate(value: number): number {
+  if (!Number.isFinite(value)) {
+    throw new TypeError('Expected a finite numeric input');
+  }
+
+  const magnitude = Math.abs(value);
+  return magnitude - Math.trunc(magnitude);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return both integer and fractional parts as a tuple.
+- Preserve the sign if a product requirement wants signed fractional remainders.
+- Compare this approach with string-based parsing and explain why arithmetic is safer here.
+
+## Common Pitfalls
+
+- Letting negative numbers produce confusing signed fractions by accident.
+- Using rounding instead of truncation before subtraction.
+- Forgetting that floating-point representation can make some fractions approximate.

@@ -1,0 +1,140 @@
+---
+title: Decimal Expansion
+slug: decimal-expansion
+category: Mathematics
+summary: Expand a rational number into its integer part, fractional digits, and the start of any repeating cycle.
+description: Decimal Expansion is the remainder-tracking routine that represents a fraction as a base-2-to-10 digit expansion.
+dataStructures:
+  - Number
+  - Array
+  - Map
+techniques:
+  - Euclidean Division
+  - Cycle Detection
+  - Remainder Tracking
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - repeating decimal expansion
+  - rational digit expansion
+useCases:
+  - Explaining why rational numbers either terminate or repeat
+  - Building fraction-formatting helpers with recurring-cycle markers
+  - Teaching how hash maps detect repeated states in arithmetic processes
+complexity:
+  time: O(k)
+  space: O(k)
+  notes: The runtime and storage both scale with the number of produced fractional digits before termination or cycle detection.
+interviewSignals:
+  - The prompt asks you to expose recurring fractional structure, not just compute a floating-point approximation.
+  - The expected solution tracks seen remainders to detect the first repeated state.
+relatedSlugs:
+  - decimal-isolate
+  - arbitrary-base
+  - modular-arithmetic
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/DecimalExpansion.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/DecimalExpansion.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Decimal expansion is one of the cleanest demonstrations of cycle detection outside graph problems. Once a remainder repeats, the fractional digits must repeat too.
+
+## Worked Example
+
+For `1 / 6` in base `10`, the integer part is `0`, the fractional digits begin as `[1, 6]`, and the repeating cycle starts at index `1`, giving `0.1(6)`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function decimalExpansion(numerator, denominator, base = 10) {
+  if (!Number.isInteger(numerator) || !Number.isInteger(denominator) || denominator === 0) {
+    throw new RangeError('Numerator and denominator must be integers, and denominator cannot be zero');
+  }
+
+  if (!Number.isInteger(base) || base < 2 || base > 10) {
+    throw new RangeError('Base must be an integer from 2 to 10');
+  }
+
+  const sign = numerator * denominator < 0 ? -1 : 1;
+  const left = Math.abs(numerator);
+  const right = Math.abs(denominator);
+  const integerPart = Math.floor(left / right);
+  const digits = [];
+  const seenRemainders = new Map();
+  let remainder = left % right;
+
+  while (remainder !== 0 && !seenRemainders.has(remainder)) {
+    seenRemainders.set(remainder, digits.length);
+    remainder *= base;
+    digits.push(Math.floor(remainder / right));
+    remainder %= right;
+  }
+
+  return {
+    sign,
+    integerPart,
+    digits,
+    cycleStart: remainder === 0 ? undefined : seenRemainders.get(remainder),
+  };
+}
+```
+
+```ts
+export function decimalExpansion(
+  numerator: number,
+  denominator: number,
+  base = 10,
+): { sign: -1 | 1; integerPart: number; digits: number[]; cycleStart: number | undefined } {
+  if (!Number.isInteger(numerator) || !Number.isInteger(denominator) || denominator === 0) {
+    throw new RangeError('Numerator and denominator must be integers, and denominator cannot be zero');
+  }
+
+  if (!Number.isInteger(base) || base < 2 || base > 10) {
+    throw new RangeError('Base must be an integer from 2 to 10');
+  }
+
+  const sign: -1 | 1 = numerator * denominator < 0 ? -1 : 1;
+  const left = Math.abs(numerator);
+  const right = Math.abs(denominator);
+  const integerPart = Math.floor(left / right);
+  const digits: number[] = [];
+  const seenRemainders = new Map<number, number>();
+  let remainder = left % right;
+
+  while (remainder !== 0 && !seenRemainders.has(remainder)) {
+    seenRemainders.set(remainder, digits.length);
+    remainder *= base;
+    digits.push(Math.floor(remainder / right));
+    remainder %= right;
+  }
+
+  return {
+    sign,
+    integerPart,
+    digits,
+    cycleStart: remainder === 0 ? undefined : seenRemainders.get(remainder),
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Render the result as a human-readable string like `-3.14(2857)`.
+- Support bases above `10` by mapping digits to alphabetic symbols.
+- Explain why the cycle length is bounded by the number of possible nonzero remainders.
+
+## Common Pitfalls
+
+- Forgetting to guard against division by zero.
+- Trying to detect repetition from floating-point values instead of remainders.
+- Losing the sign when the integer part is `0`.

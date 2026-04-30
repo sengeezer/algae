@@ -1,0 +1,114 @@
+---
+title: Average Median
+slug: average-median
+category: Mathematics
+summary: Find the median of a numeric array by sorting a copy and selecting the middle value or pair.
+description: Average Median is the order-statistics helper that computes the center value of a numeric sample.
+dataStructures:
+  - Array
+  - Number
+techniques:
+  - Sorting
+  - Middle Index Selection
+  - Input Validation
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - median of array
+  - middle value statistic
+useCases:
+  - Summarizing data that may contain outliers
+  - Teaching the difference between sorted position and arithmetic average
+  - Building robust descriptive-statistics helpers
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: The simple implementation sorts a copied array, so the runtime is dominated by sorting and the copy preserves the caller's data.
+interviewSignals:
+  - The prompt asks for the center of a collection rather than its average.
+  - The expected solution handles both odd and even array lengths explicitly.
+relatedSlugs:
+  - average-mean
+  - find-min
+  - quickselect
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/AverageMedian.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/AverageMedian.js
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Median is a good interview prompt because the formula is simple, but the implementation forces you to think about ordering, copies versus mutation, and odd versus even lengths.
+
+## Worked Example
+
+For `[7, 1, 5, 3]`, sort to `[1, 3, 5, 7]`. The two middle values are `3` and `5`, so the median is `(3 + 5) / 2 = 4`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function averageMedian(values) {
+  if (!Array.isArray(values) || values.length === 0) {
+    throw new RangeError('Expected a non-empty array of numbers');
+  }
+
+  const sorted = [...values].sort((left, right) => {
+    if (typeof left !== 'number' || typeof right !== 'number' || Number.isNaN(left) || Number.isNaN(right)) {
+      throw new TypeError('Array values must be numbers');
+    }
+
+    return left - right;
+  });
+
+  const middle = Math.floor(sorted.length / 2);
+
+  if (sorted.length % 2 === 1) {
+    return sorted[middle];
+  }
+
+  return (sorted[middle - 1] + sorted[middle]) / 2;
+}
+```
+
+```ts
+export function averageMedian(values: number[]): number {
+  if (values.length === 0) {
+    throw new RangeError('Expected a non-empty array of numbers');
+  }
+
+  for (const value of values) {
+    if (Number.isNaN(value)) {
+      throw new TypeError('Array values must be numbers');
+    }
+  }
+
+  const sorted = [...values].sort((left, right) => left - right);
+  const middle = Math.floor(sorted.length / 2);
+
+  if (sorted.length % 2 === 1) {
+    return sorted[middle];
+  }
+
+  return (sorted[middle - 1] + sorted[middle]) / 2;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compute the median in expected linear time with quickselect.
+- Return lower and upper medians separately for even-length arrays.
+- Explain why median is more robust than mean when outliers are present.
+
+## Common Pitfalls
+
+- Sorting the input array in place when the caller expects it to stay unchanged.
+- Forgetting to average the two middle values for even-length arrays.
+- Using lexicographic sort instead of numeric sort in JavaScript.
