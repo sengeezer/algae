@@ -1,0 +1,101 @@
+---
+title: Lower Case Conversion
+slug: lower-case-conversion
+category: String Processing
+summary: Convert uppercase ASCII letters in a string to lowercase by shifting their character codes.
+description: Lower Case Conversion is the character-mapping routine that normalizes ASCII uppercase letters into lowercase form.
+dataStructures:
+  - String
+  - Array
+techniques:
+  - Character Code Mapping
+  - ASCII Normalization
+  - String Transformation
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - lowercase normalization
+  - ASCII lowercasing
+useCases:
+  - Normalizing identifiers and search inputs
+  - Teaching how ASCII letter ranges relate to each other
+  - Building simple string-processing helpers without built-in casing APIs
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: The transformation scans each character once and changes only uppercase ASCII letters.
+interviewSignals:
+  - The prompt explicitly avoids built-in lowercase helpers.
+  - The expected solution reasons about ASCII ranges or character-code offsets.
+relatedSlugs:
+  - title-case-conversion
+  - upper-case-conversion
+  - rgb-to-hex
+provenance:
+  - title: TheAlgorithms/JavaScript - Conversions/LowerCaseConversion.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Conversions/LowerCaseConversion.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Lowercasing looks trivial when a standard library exists, but it is still a useful character-code exercise. It turns abstract ASCII tables into a concrete rule: lowercase letters are `32` positions above uppercase letters.
+
+## Worked Example
+
+`AlGae 123` becomes `algae 123`. Only characters in the uppercase ASCII range change; everything else is copied through unchanged.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function lowerCaseConversion(input) {
+  if (typeof input !== 'string') {
+    throw new TypeError('Expected a string input');
+  }
+
+  return input
+    .split('')
+    .map((char) => {
+      const code = char.charCodeAt(0);
+      if (code >= 65 && code <= 90) {
+        return String.fromCharCode(code + 32);
+      }
+      return char;
+    })
+    .join('');
+}
+```
+
+```ts
+export function lowerCaseConversion(input: string): string {
+  return input
+    .split('')
+    .map((char) => {
+      const code = char.charCodeAt(0);
+      if (code >= 65 && code <= 90) {
+        return String.fromCharCode(code + 32);
+      }
+      return char;
+    })
+    .join('');
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why this ASCII-only approach does not fully solve Unicode lowercasing.
+- Implement the inverse uppercase transformation.
+- Compare manual character-code mapping with the built-in locale-aware APIs.
+
+## Common Pitfalls
+
+- Assuming the ASCII offset works for all languages and scripts.
+- Mutating non-letter characters that should pass through unchanged.
+- Forgetting to validate non-string input in a utility API.

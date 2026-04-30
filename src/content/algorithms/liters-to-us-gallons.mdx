@@ -1,0 +1,85 @@
+---
+title: Liters To US Gallons
+slug: liters-to-us-gallons
+category: Conversions
+summary: Convert a volume in liters into US gallons using the liters-per-gallon constant.
+description: Liters To US Gallons is the direct unit-conversion formula for mapping metric volume into the US gallon scale.
+dataStructures:
+  - Number
+techniques:
+  - Unit Conversion
+  - Constant Scaling
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - liters to gallons
+  - US gallon conversion
+useCases:
+  - Converting liquid measurements for US-facing dashboards and forms
+  - Comparing close-but-different unit definitions across measurement systems
+  - Building small helpers for calculators and serializers
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The calculation is a single division by the liters-per-US-gallon constant.
+interviewSignals:
+  - The prompt asks for a named unit conversion with fixed constants.
+  - The cleanest answer is a one-step formula with input validation.
+relatedSlugs:
+  - liters-to-imperial-gallons
+  - ounces-to-kilograms
+  - meter-to-feet-conversion
+provenance:
+  - title: TheAlgorithms/JavaScript - Conversions/LitersToUSGallons.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Conversions/LitersToUSGallons.js
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This helper looks almost identical to the imperial-gallon version, which is exactly why it matters. Near-identical conversions can still be wrong if the unit definition changes.
+
+## Worked Example
+
+`7.570823568` liters becomes `2` US gallons because one US gallon is `3.785411784` liters.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function litersToUsGallons(liters) {
+  if (!Number.isFinite(liters)) {
+    throw new TypeError('Liters must be a finite number');
+  }
+
+  return liters / 3.785411784;
+}
+```
+
+```ts
+export function litersToUsGallons(liters: number): number {
+  if (!Number.isFinite(liters)) {
+    throw new TypeError('Liters must be a finite number');
+  }
+
+  return liters / 3.785411784;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare the output against imperial gallons for the same input.
+- Centralize volume units into a single conversion dictionary.
+- Add display formatting for abbreviated unit labels.
+
+## Common Pitfalls
+
+- Reusing the imperial-gallon constant by mistake.
+- Returning rounded values too early for downstream calculations.
+- Treating unit conversion as locale formatting instead of arithmetic.

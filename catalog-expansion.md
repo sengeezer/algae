@@ -383,9 +383,20 @@ This thirty-second expansion slice lifts the catalog from 224 to 230 entries.
 - Hex To RGB
 - Temperature Conversion
 
+## Batch 33 added
+
+This thirty-third expansion slice lifts the catalog from 230 to 236 entries.
+
+- Liters To Imperial Gallons
+- Liters To US Gallons
+- Lower Case Conversion
+- Meter To Feet Conversion
+- Oct To Decimal
+- Ounces To Kilograms
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 32 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 33 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -394,9 +405,9 @@ All expansion entries from batch 1 through batch 32 now carry explicit per-entry
 ## Why this batch
 
 - It fills obvious interview-core gaps from TheAlgorithms/JavaScript without duplicating material already present in Algae.
-- It follows the next verified conversions queue directly, adding binary-to-text encoding, binary restoration from text, day-of-week and day-difference calendar arithmetic, hexadecimal color decoding, and temperature normalization across measurement scales.
-- It broadens the catalog across byte packing, calendar formulas, lookup-table parsing, and multi-unit normalization instead of staying inside the previous numeral-format slice.
-- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially representation transforms, table-driven parsing, and practical conversion routines with real application surfaces.
+- It follows the next verified conversions queue directly, adding volume and mass unit conversions, a simple distance transform, octal parsing, and an ASCII-driven case-normalization routine.
+- It broadens the catalog across scalar unit normalization, numeric base parsing, and text transformation instead of staying inside the previous byte-and-calendar slice.
+- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially direct formula application, representation changes, and small utility routines that still reward precise input handling.
 
 ## Supporting study references from the algorithms list
 
@@ -407,9 +418,8 @@ All expansion entries from batch 1 through batch 32 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- Liters To Imperial Gallons
-- Liters To US Gallons
-- Lower Case Conversion
-- Meter To Feet Conversion
-- Oct To Decimal
-- Ounces To Kilograms
+- Railway Time Conversion
+- RGB HSL Conversion
+- RGB HSV Conversion
+- Title Case Conversion
+- Upper Case Conversion

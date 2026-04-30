@@ -1,0 +1,101 @@
+---
+title: Meter To Feet Conversion
+slug: meter-to-feet-conversion
+category: Conversions
+summary: Convert meters to feet or feet to meters with one reciprocal unit factor.
+description: Meter To Feet Conversion is the distance-scaling routine that maps between metric and imperial length values.
+dataStructures:
+  - Number
+techniques:
+  - Unit Conversion
+  - Reciprocal Scaling
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - meters to feet
+  - feet to meters
+useCases:
+  - Converting distance measurements in forms and dashboards
+  - Demonstrating reciprocal conversion factors between two units
+  - Building reusable helper functions for UI calculators
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: Both directions are constant-time scale operations with the same underlying factor.
+interviewSignals:
+  - The prompt asks for a direct length conversion in one or both directions.
+  - The intended solution uses a fixed factor instead of a table or search.
+relatedSlugs:
+  - length-conversion
+  - liters-to-us-gallons
+  - ounces-to-kilograms
+provenance:
+  - title: TheAlgorithms/JavaScript - Conversions/MeterToFeetConversion.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Conversions/MeterToFeetConversion.js
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a compact example of reciprocal conversions. Once one factor is known, the reverse direction follows immediately, which makes it a good sanity-check exercise for measurement utilities.
+
+## Worked Example
+
+`3` meters becomes about `9.84252` feet, and `10` feet becomes `3.048` meters. The same factor `0.3048` connects both directions.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function feetToMeter(feet) {
+  if (!Number.isFinite(feet)) {
+    throw new TypeError('Feet must be a finite number');
+  }
+
+  return feet * 0.3048;
+}
+
+function meterToFeet(meter) {
+  if (!Number.isFinite(meter)) {
+    throw new TypeError('Meters must be a finite number');
+  }
+
+  return meter / 0.3048;
+}
+```
+
+```ts
+export function feetToMeter(feet: number): number {
+  if (!Number.isFinite(feet)) {
+    throw new TypeError('Feet must be a finite number');
+  }
+
+  return feet * 0.3048;
+}
+
+export function meterToFeet(meter: number): number {
+  if (!Number.isFinite(meter)) {
+    throw new TypeError('Meters must be a finite number');
+  }
+
+  return meter / 0.3048;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why the reverse conversion uses multiplication in one direction and division in the other.
+- Integrate the pair into a more general length conversion table.
+- Add rounding or formatting helpers for display.
+
+## Common Pitfalls
+
+- Mixing up the direction of the conversion factor.
+- Embedding rounded constants that drift across repeated conversions.
+- Returning strings too early when downstream code still needs numeric output.

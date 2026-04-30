@@ -1,0 +1,85 @@
+---
+title: Liters To Imperial Gallons
+slug: liters-to-imperial-gallons
+category: Conversions
+summary: Convert a volume in liters into imperial gallons with one fixed conversion factor.
+description: Liters To Imperial Gallons is the direct unit-conversion formula for mapping metric volume into the imperial gallon scale.
+dataStructures:
+  - Number
+techniques:
+  - Unit Conversion
+  - Constant Scaling
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - liters to UK gallons
+  - imperial gallon conversion
+useCases:
+  - Converting fuel or liquid measurements for UK-facing interfaces
+  - Demonstrating how unit conversion can collapse to one fixed ratio
+  - Building measurement helpers for calculators and forms
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The calculation is a single division by the liters-per-imperial-gallon constant.
+interviewSignals:
+  - The prompt asks for a specific unit conversion with no iteration or search.
+  - The intended solution is a direct scaling formula with basic input validation.
+relatedSlugs:
+  - liters-to-us-gallons
+  - ounces-to-kilograms
+  - meter-to-feet-conversion
+provenance:
+  - title: TheAlgorithms/JavaScript - Conversions/LitersToImperialGallons.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Conversions/LitersToImperialGallons.js
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the simplest kind of conversion problem: one quantity, one factor, one result. It is still worth cataloging because these small helpers show up constantly in product code and still need clear unit definitions.
+
+## Worked Example
+
+`9.09218` liters becomes `2` imperial gallons because one imperial gallon is `4.54609` liters.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function litersToImperialGallons(liters) {
+  if (!Number.isFinite(liters)) {
+    throw new TypeError('Liters must be a finite number');
+  }
+
+  return liters / 4.54609;
+}
+```
+
+```ts
+export function litersToImperialGallons(liters: number): number {
+  if (!Number.isFinite(liters)) {
+    throw new TypeError('Liters must be a finite number');
+  }
+
+  return liters / 4.54609;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain the difference between imperial and US gallons.
+- Add rounding rules for display in a user-facing UI.
+- Extend the helper into a generic volume conversion table.
+
+## Common Pitfalls
+
+- Confusing imperial gallons with US gallons.
+- Dropping unit labels and making the returned number ambiguous.
+- Skipping validation for non-numeric input in UI helpers.

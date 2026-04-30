@@ -1,0 +1,99 @@
+---
+title: Oct To Decimal
+slug: oct-to-decimal
+category: Conversions
+summary: Convert an octal value to decimal by folding digits through powers of eight.
+description: Oct To Decimal is the base-8 parsing routine that interprets an octal representation as a decimal integer.
+dataStructures:
+  - String
+  - Number
+techniques:
+  - Base Conversion
+  - Positional Notation
+  - Horner's Method
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - octal to decimal
+  - base-8 parsing
+useCases:
+  - Decoding octal values from text or legacy systems
+  - Teaching that positional parsing generalizes beyond binary and hex
+  - Comparing base-conversion logic across multiple radices
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: Each digit multiplies the accumulated result by eight before adding the next value.
+interviewSignals:
+  - The prompt gives a number or string made of digits `0` through `7`.
+  - The expected solution uses positional notation rather than a built-in radix parser.
+relatedSlugs:
+  - decimal-to-octal
+  - binary-to-decimal
+  - hex-to-decimal
+provenance:
+  - title: TheAlgorithms/JavaScript - Conversions/OctToDecimal.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Conversions/OctToDecimal.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Octal-to-decimal is the same positional parsing idea used for binary and hexadecimal, which makes it a good reinforcement problem. The only real change is the base value.
+
+## Worked Example
+
+`56` in octal becomes `46` in decimal because $5 \times 8 + 6 = 46$. For longer inputs, each new digit shifts the accumulated value by one place in base `8`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function octToDecimal(input) {
+  const octal = String(input);
+  if (!/^[0-7]+$/.test(octal)) {
+    throw new TypeError('Octal values may only contain digits 0 through 7');
+  }
+
+  let decimal = 0;
+  for (const digit of octal) {
+    decimal = decimal * 8 + Number(digit);
+  }
+
+  return decimal;
+}
+```
+
+```ts
+export function octToDecimal(input: string | number): number {
+  const octal = String(input);
+  if (!/^[0-7]+$/.test(octal)) {
+    throw new TypeError('Octal values may only contain digits 0 through 7');
+  }
+
+  let decimal = 0;
+  for (const digit of octal) {
+    decimal = decimal * 8 + Number(digit);
+  }
+
+  return decimal;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why Horner's method works for any base.
+- Support leading zeros without changing the numeric result.
+- Generalize the parser to bases between `2` and `36`.
+
+## Common Pitfalls
+
+- Accepting digits `8` or `9` in an octal parser.
+- Treating the input as base-10 just because it uses decimal glyphs.
+- Recomputing powers of eight instead of folding incrementally.

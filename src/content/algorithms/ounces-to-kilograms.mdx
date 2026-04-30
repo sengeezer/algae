@@ -1,0 +1,85 @@
+---
+title: Ounces To Kilograms
+slug: ounces-to-kilograms
+category: Conversions
+summary: Convert ounces into kilograms by scaling through the grams-per-ounce factor.
+description: Ounces To Kilograms is the mass-conversion formula that maps imperial ounce measurements into metric kilograms.
+dataStructures:
+  - Number
+techniques:
+  - Unit Conversion
+  - Constant Scaling
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - ounces to kg
+  - mass conversion
+useCases:
+  - Converting weight measurements across unit systems
+  - Building shipping, nutrition, or inventory calculators
+  - Demonstrating direct scaling formulas in metric normalization
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The formula is one multiplication followed by a metric normalization step.
+interviewSignals:
+  - The prompt asks for a fixed unit conversion with a known constant.
+  - The expected solution is a direct arithmetic transform with validation.
+relatedSlugs:
+  - liters-to-us-gallons
+  - meter-to-feet-conversion
+  - length-conversion
+provenance:
+  - title: TheAlgorithms/JavaScript - Conversions/OuncesToKilograms.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Conversions/OuncesToKilograms.js
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is another direct unit formula, but for mass instead of distance or volume. It is useful because it reinforces that many production conversions are tiny, exact helpers that still benefit from explicit units and validation.
+
+## Worked Example
+
+`35.27396` ounces is about `1` kilogram. The conversion scales ounces into grams and then normalizes grams into kilograms.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function ouncesToKilograms(ounces) {
+  if (!Number.isFinite(ounces)) {
+    throw new TypeError('Ounces must be a finite number');
+  }
+
+  return (ounces * 28.3498) / 1000;
+}
+```
+
+```ts
+export function ouncesToKilograms(ounces: number): number {
+  if (!Number.isFinite(ounces)) {
+    throw new TypeError('Ounces must be a finite number');
+  }
+
+  return (ounces * 28.3498) / 1000;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Extend the helper to support pounds and grams too.
+- Compare direct formulas with a generic mass conversion table.
+- Add display rounding for shipping or nutrition UIs.
+
+## Common Pitfalls
+
+- Mixing avoirdupois ounces with other ounce definitions.
+- Returning rounded strings when callers still expect numeric output.
+- Treating the factor as exact when the surrounding domain may specify a preferred precision.
