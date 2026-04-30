@@ -1,0 +1,89 @@
+---
+title: Format Phone Number
+slug: format-phone-number
+category: Strings
+summary: Format a 10-digit string into the standard North American pattern `(XXX) XXX-XXXX`.
+description: Format Phone Number is the fixed-template string utility for validating raw digits and rendering them as a familiar display format.
+dataStructures:
+  - String
+techniques:
+  - Template Substitution
+  - Input Validation
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - phone number formatter
+  - ten-digit display format
+useCases:
+  - Rendering user-entered digits in a readable form
+  - Practicing validation before templated output
+  - Learning when fixed patterns are enough and when full parsing is needed
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: This pattern assumes exactly 10 digits and a North American local format, so it is not a general international phone parser.
+interviewSignals:
+  - The prompt gives a fixed number of digits and a required output template.
+  - Validation and formatting are both part of the expected answer.
+relatedSlugs:
+  - generate-guid
+  - count-substrings
+  - reverse-words
+provenance:
+  - title: TheAlgorithms/JavaScript - String/FormatPhoneNumber.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/String/FormatPhoneNumber.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Phone-number formatting questions are really about safe, fixed-shape rendering. The interviewer wants to see whether you validate the raw input before inserting punctuation into a template.
+
+## Worked Example
+
+`"1234567890"` becomes `"(123) 456-7890"` by filling the template from left to right with the ten digits.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function formatPhoneNumber(value) {
+  if (typeof value !== 'string' || !/^\d{10}$/.test(value)) {
+    throw new TypeError('Value must be exactly 10 digits');
+  }
+
+  let index = 0;
+
+  return '(XXX) XXX-XXXX'.replace(/X/g, () => value[index++]);
+}
+```
+
+```ts
+export function formatPhoneNumber(value: string): string {
+  if (!/^\d{10}$/.test(value)) {
+    throw new TypeError('Value must be exactly 10 digits');
+  }
+
+  let index = 0;
+
+  return '(XXX) XXX-XXXX'.replace(/X/g, () => value[index++]);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Accept input containing spaces or punctuation and normalize it first.
+- Support optional country codes or extensions.
+- Format the digits using `slice` calls instead of a substitution template.
+
+## Common Pitfalls
+
+- Using loose numeric checks that accept scientific notation or whitespace.
+- Forgetting to reject inputs that are not exactly 10 digits long.
+- Treating this as a full international phone-number parser when it is just a fixed local formatter.

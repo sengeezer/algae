@@ -1,0 +1,132 @@
+---
+title: Max Character
+slug: max-character
+category: Strings
+summary: Return the character that appears most often in a string, optionally ignoring characters that match a filter pattern.
+description: Max Character is the frequency-analysis routine for finding the dominant character in a string by counting occurrences and tracking the running maximum.
+dataStructures:
+  - String
+  - Hash Map
+techniques:
+  - Frequency Counting
+  - Running Maximum
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - most frequent character
+  - dominant character
+useCases:
+  - Summarizing repeated characters in text
+  - Practicing histogram accumulation with an argmax pass
+  - Filtering out spaces or punctuation before frequency analysis
+complexity:
+  time: O(n)
+  space: O(k)
+  notes: The main contract question is how to break ties and whether ignored characters should be removed before or during counting.
+interviewSignals:
+  - The prompt asks which character occurs most often, not how many unique characters exist.
+  - A frequency map is the natural first step, followed by an argmax decision.
+relatedSlugs:
+  - count-letters
+  - first-unique-character
+  - check-anagram
+provenance:
+  - title: TheAlgorithms/JavaScript - String/MaxCharacter.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/String/MaxCharacter.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is one of the cleanest examples of the frequency-map pattern. It shows up often because the same shape also powers anagram checks, sliding-window counts, and character-mode style questions.
+
+## Worked Example
+
+For `"Hello World!"`, ignoring nonletters leaves `H`, `e`, `l`, `l`, `o`, `W`, `o`, `r`, `l`, `d`, so `"l"` is the max character with three occurrences.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function maxCharacter(value, ignorePattern) {
+  if (typeof value !== 'string') {
+    throw new TypeError('Value must be a string');
+  }
+
+  if (value.length === 0) {
+    throw new Error('Value must be nonempty');
+  }
+
+  const safeIgnorePattern = ignorePattern
+    ? new RegExp(ignorePattern.source, ignorePattern.flags.replace(/[gy]/g, ''))
+    : undefined;
+  const counts = new Map();
+  let bestChar = '';
+  let bestCount = 0;
+
+  for (const char of value) {
+    if (safeIgnorePattern?.test(char)) {
+      continue;
+    }
+
+    const nextCount = (counts.get(char) ?? 0) + 1;
+    counts.set(char, nextCount);
+
+    if (nextCount > bestCount) {
+      bestChar = char;
+      bestCount = nextCount;
+    }
+  }
+
+  return bestChar;
+}
+```
+
+```ts
+export function maxCharacter(value: string, ignorePattern?: RegExp): string {
+  if (value.length === 0) {
+    throw new Error('Value must be nonempty');
+  }
+
+  const safeIgnorePattern = ignorePattern
+    ? new RegExp(ignorePattern.source, ignorePattern.flags.replace(/[gy]/g, ''))
+    : undefined;
+  const counts = new Map<string, number>();
+  let bestChar = '';
+  let bestCount = 0;
+
+  for (const char of value) {
+    if (safeIgnorePattern?.test(char)) {
+      continue;
+    }
+
+    const nextCount = (counts.get(char) ?? 0) + 1;
+    counts.set(char, nextCount);
+
+    if (nextCount > bestCount) {
+      bestChar = char;
+      bestCount = nextCount;
+    }
+  }
+
+  return bestChar;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return both the character and its frequency.
+- Normalize case so `A` and `a` count together.
+- Break ties deterministically by earliest appearance or lexical order.
+
+## Common Pitfalls
+
+- Leaving tie-breaking rules implicit.
+- Reusing a global regex with `.test()` and getting stateful false negatives.
+- Forgetting to reject or define behavior for the empty string.

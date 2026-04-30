@@ -240,9 +240,20 @@ This nineteenth expansion slice lifts the catalog from 146 to 152 entries.
 - Check Word Occurrence
 - Count Letters
 
+## Batch 20 added
+
+This twentieth expansion slice lifts the catalog from 152 to 158 entries.
+
+- Check Exceeding
+- Check Flat Case
+- Count Substrings
+- Format Phone Number
+- Generate GUID
+- Max Character
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 19 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 20 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -251,7 +262,7 @@ All expansion entries from batch 1 through batch 19 now carry explicit per-entry
 ## Why this batch
 
 - It fills obvious interview-core gaps from TheAlgorithms/JavaScript without duplicating material already present in Algae.
-- It broadens the current catalog across identifier-style validation, token counting, and character-frequency accounting instead of overloading a single category.
+- It broadens the current catalog across odd letter-gap predicates, flat naming checks, substring counting, fixed-format output, GUID generation, and dominant-character detection instead of overloading a single category.
 - It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially standard DP, graph, and search/backtracking topics.
 
 ## Supporting study references from the algorithms list
@@ -265,9 +276,9 @@ All expansion entries from batch 1 through batch 19 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- Check Exceeding
-- Check Flat Case
-- Count Substrings
-- Format Phone Number
-- Generate GUID
-- Max Character
+- Check Rearrange Palindrome
+- Max Word
+- Pattern Matching
+- Percentage Of Letters
+- Reverse String
+- Validate Credit Card

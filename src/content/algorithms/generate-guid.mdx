@@ -1,0 +1,95 @@
+---
+title: Generate GUID
+slug: generate-guid
+category: Strings
+summary: Build a UUID-style version 4 GUID string by filling a hexadecimal template with randomized digits and fixed version bits.
+description: Generate GUID is the identifier-construction utility for creating a hyphenated UUID-like string with standard version and variant positions.
+dataStructures:
+  - String
+techniques:
+  - Template Replacement
+  - Randomized Construction
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - UUID v4 template generator
+  - GUID builder
+useCases:
+  - Generating local correlation identifiers
+  - Practicing hex formatting and bit masking
+  - Understanding the fixed fields inside UUID version 4 strings
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: A template-based generator is fine for study, but production code should prefer cryptographically secure randomness such as `crypto.randomUUID()` or `crypto.getRandomValues`.
+interviewSignals:
+  - The prompt asks for a UUID-like string with a fixed `4` version nibble.
+  - Random hex generation and template substitution matter more than data structures.
+relatedSlugs:
+  - format-phone-number
+  - check-kebab-case
+  - max-character
+provenance:
+  - title: TheAlgorithms/JavaScript - String/GenerateGUID.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/String/GenerateGUID.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This question is usually about understanding the structure of a UUID string, not about cryptography. The interesting part is how the template mixes random hex digits with fixed version and variant bits.
+
+## Worked Example
+
+A generated result might look like `"c1e8db4a-53c6-4a5f-9d02-0d3e701c3b6a"`. The third group starts with `4`, and the first digit of the fourth group stays in the UUID variant range `8` through `b`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function generateGuid() {
+  let timestamp = Date.now();
+
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (token) => {
+    const random = (timestamp + Math.random() * 16) % 16 | 0;
+    timestamp = Math.floor(timestamp / 16);
+
+    const value = token === 'x' ? random : (random & 0x3) | 0x8;
+
+    return value.toString(16);
+  });
+}
+```
+
+```ts
+export function generateGuid(): string {
+  let timestamp = Date.now();
+
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (token) => {
+    const random = (timestamp + Math.random() * 16) % 16 | 0;
+    timestamp = Math.floor(timestamp / 16);
+
+    const value = token === 'x' ? random : (random & 0x3) | 0x8;
+
+    return value.toString(16);
+  });
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Replace `Math.random()` with `crypto.getRandomValues()` or `crypto.randomUUID()`.
+- Explain why the variant nibble must stay in the `8` to `b` range.
+- Generate uppercase or brace-wrapped GUID strings for specific APIs.
+
+## Common Pitfalls
+
+- Treating `Math.random()` output as cryptographically secure.
+- Forgetting to pin the version nibble to `4`.
+- Using a loose mask that allows invalid UUID variant values.

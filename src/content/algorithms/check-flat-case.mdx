@@ -1,0 +1,81 @@
+---
+title: Check Flat Case
+slug: check-flat-case
+category: Strings
+summary: Validate that a string contains only lowercase letters with no separators, spaces, or uppercase characters.
+description: Check Flat Case is the naming-convention predicate for testing whether a string follows the run-together lowercase style sometimes called flatcase.
+dataStructures:
+  - String
+techniques:
+  - Regex Validation
+  - Naming Convention Check
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - flatcase validator
+  - lowercase run-on identifier check
+useCases:
+  - Classifying identifier naming styles
+  - Validating simplified slugs or flattened keys
+  - Practicing compact full-string regex predicates
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The main edge case is whether the empty string should count as valid flatcase; the source implementation allows it.
+interviewSignals:
+  - The prompt asks whether a string is lowercase with no separators.
+  - The task is classification only, not conversion between naming conventions.
+relatedSlugs:
+  - check-camel-case
+  - check-kebab-case
+  - check-snake-case
+provenance:
+  - title: TheAlgorithms/JavaScript - String/CheckFlatCase.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/String/CheckFlatCase.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Flatcase checks are a minimal version of naming-style validation. The problem is useful because it forces you to define the identifier contract precisely instead of informally saying it "looks lowercase enough."
+
+## Worked Example
+
+`"thisvariable"` passes because it is all lowercase letters with no separators. `"thisVariable"` fails because an uppercase letter appears in the middle.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function checkFlatCase(value) {
+  if (typeof value !== 'string') {
+    throw new TypeError('Value must be a string');
+  }
+
+  return /^[a-z]*$/.test(value);
+}
+```
+
+```ts
+export function checkFlatCase(value: string): boolean {
+  return /^[a-z]*$/.test(value);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Require at least one character instead of accepting the empty string.
+- Convert flatcase into title case using a dictionary of known word boundaries.
+- Classify a string across flatcase, camelCase, kebab-case, and snake_case.
+
+## Common Pitfalls
+
+- Accidentally accepting digits, spaces, or punctuation.
+- Forgetting to anchor the regex to the full string.
+- Leaving the empty-string rule undefined.

@@ -1,0 +1,120 @@
+---
+title: Check Exceeding
+slug: check-exceeding
+category: Strings
+summary: Check whether the absolute gaps between adjacent letters form a nondecreasing sequence from left to right.
+description: Check Exceeding is the string-pattern predicate for deciding whether a word's adjacent letter distances keep increasing or staying level as you scan across it.
+dataStructures:
+  - String
+  - Array
+techniques:
+  - Character Encoding Analysis
+  - Sequence Validation
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - exceeding word check
+  - increasing letter-gap test
+useCases:
+  - Solving toy string-pattern puzzles
+  - Practicing transformations from characters to numeric sequences
+  - Validating derived monotonic patterns over text
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The main contract question is whether to ignore punctuation, case, and repeated adjacent letters before comparing gaps.
+interviewSignals:
+  - The prompt talks about distances or gaps between adjacent letters.
+  - You need to derive a numeric sequence from a word and then test a monotonic condition.
+relatedSlugs:
+  - count-substrings
+  - max-character
+  - count-letters
+provenance:
+  - title: TheAlgorithms/JavaScript - String/CheckExceeding.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/String/CheckExceeding.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem is really about converting one representation into another. Once the string becomes a sequence of adjacent character gaps, the task reduces to checking whether that sequence is nondecreasing.
+
+## Worked Example
+
+For `"delete"`, normalize to uppercase `DELETE` and compute adjacent gaps: `[1, 7, 7, 15, 15]`. Because each gap is at least as large as the previous one, the word qualifies as exceeding.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function checkExceeding(value) {
+  if (typeof value !== 'string') {
+    throw new TypeError('Value must be a string');
+  }
+
+  const letters = value.toUpperCase().replace(/[^A-Z]/g, '');
+  let previousGap = -1;
+
+  for (let index = 0; index < letters.length - 1; index += 1) {
+    const gap = Math.abs(
+      letters.charCodeAt(index) - letters.charCodeAt(index + 1),
+    );
+
+    if (gap === 0) {
+      continue;
+    }
+
+    if (gap < previousGap) {
+      return false;
+    }
+
+    previousGap = gap;
+  }
+
+  return true;
+}
+```
+
+```ts
+export function checkExceeding(value: string): boolean {
+  const letters = value.toUpperCase().replace(/[^A-Z]/g, '');
+  let previousGap = -1;
+
+  for (let index = 0; index < letters.length - 1; index += 1) {
+    const gap = Math.abs(
+      letters.charCodeAt(index) - letters.charCodeAt(index + 1),
+    );
+
+    if (gap === 0) {
+      continue;
+    }
+
+    if (gap < previousGap) {
+      return false;
+    }
+
+    previousGap = gap;
+  }
+
+  return true;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Require the gaps to be strictly increasing instead of merely nondecreasing.
+- Return the computed gap sequence along with the boolean result.
+- Decide whether repeated letters should count as a zero gap or be skipped.
+
+## Common Pitfalls
+
+- Forgetting to normalize case before comparing ASCII or Unicode code points.
+- Comparing signed deltas instead of absolute distances.
+- Not clarifying how to handle punctuation or repeated letters.

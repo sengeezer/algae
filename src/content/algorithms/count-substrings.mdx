@@ -1,0 +1,105 @@
+---
+title: Count Substrings
+slug: count-substrings
+category: Strings
+summary: Count how many times a target substring appears in a string, including overlapping matches when required.
+description: Count Substrings is the repeated-search routine for scanning a string and counting every occurrence of a smaller target pattern.
+dataStructures:
+  - String
+techniques:
+  - Substring Search
+  - Iterative Scanning
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - substring occurrence count
+  - count pattern matches
+useCases:
+  - Counting repeated motifs in text
+  - Clarifying overlapping versus non-overlapping match rules
+  - Practicing repeated index-based string search
+complexity:
+  time: O(n * m)
+  space: O(1)
+  notes: The important contract questions are whether matches may overlap and what the function should return for an empty target string.
+interviewSignals:
+  - The prompt asks how many times a smaller string appears inside a larger one.
+  - The edge cases revolve around overlaps and empty patterns.
+relatedSlugs:
+  - rabin-karp
+  - kmp-string-search
+  - z-function
+provenance:
+  - title: TheAlgorithms/JavaScript - String/CountSubstrings.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/String/CountSubstrings.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is often a disguised spec-reading problem. The algorithm is simple, but the interviewer is usually testing whether you ask about overlapping matches and empty substrings before writing the loop.
+
+## Worked Example
+
+In `"banana"`, the substring `"ana"` appears twice if overlaps count: once starting at index `1` and again at index `3`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function countSubstrings(value, target) {
+  if (typeof value !== 'string' || typeof target !== 'string') {
+    throw new TypeError('Both arguments must be strings');
+  }
+
+  if (target.length === 0) {
+    return value.length + 1;
+  }
+
+  let count = 0;
+  let position = value.indexOf(target);
+
+  while (position !== -1) {
+    count += 1;
+    position = value.indexOf(target, position + 1);
+  }
+
+  return count;
+}
+```
+
+```ts
+export function countSubstrings(value: string, target: string): number {
+  if (target.length === 0) {
+    return value.length + 1;
+  }
+
+  let count = 0;
+  let position = value.indexOf(target);
+
+  while (position !== -1) {
+    count += 1;
+    position = value.indexOf(target, position + 1);
+  }
+
+  return count;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Count only non-overlapping matches.
+- Replace the repeated `indexOf` calls with KMP or Rabin-Karp for large-scale search.
+- Return the starting indices of each match instead of only the total count.
+
+## Common Pitfalls
+
+- Forgetting that overlapping matches may still count.
+- Not defining what should happen when the target is empty.
+- Advancing by the target length when the prompt expects overlaps to be counted.
