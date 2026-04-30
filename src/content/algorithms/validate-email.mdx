@@ -1,0 +1,85 @@
+---
+title: Validate Email
+slug: validate-email
+category: Strings
+summary: Validate whether a string matches a simplified email-address pattern with one `@` and a dotted domain.
+description: Validate Email is the regex-backed input check for deciding whether a candidate string resembles a basic email address format.
+dataStructures:
+  - String
+techniques:
+  - Regex Validation
+  - Input Validation
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - email format check
+  - basic email validator
+useCases:
+  - Early client-side screening of address format
+  - Practicing structured-pattern validation with regular expressions
+  - Discussing the limits of regex-only validation for real-world protocols
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: A lightweight regex can screen obvious mistakes, but full RFC-compliant email validation is much more complicated and usually not worth reimplementing in interviews.
+interviewSignals:
+  - The prompt asks whether an email address is valid at a basic format level.
+  - The simplest expected solution is a regex with a few explicit guards.
+relatedSlugs:
+  - validate-credit-card
+  - format-phone-number
+  - pattern-matching
+provenance:
+  - title: TheAlgorithms/JavaScript - String/ValidateEmail.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/String/ValidateEmail.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Email validation questions are really about scope control. The right answer is usually a pragmatic format screen, plus a clear explanation that regex alone does not prove an address can actually receive mail.
+
+## Worked Example
+
+`"algae.study@example.com"` passes a basic validation because it has a nonempty local part, a single `@`, and a domain containing a dot-separated suffix.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function validateEmail(value) {
+  if (typeof value !== 'string' || value.length === 0) {
+    throw new TypeError('Value must be a nonempty string');
+  }
+
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+```
+
+```ts
+export function validateEmail(value: string): boolean {
+  if (value.length === 0) {
+    throw new TypeError('Value must be a nonempty string');
+  }
+
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Normalize surrounding whitespace before validating.
+- Distinguish between format validity and deliverability.
+- Replace the simple regex with a stricter library-backed validator in production code.
+
+## Common Pitfalls
+
+- Claiming a regex proves an email address is real.
+- Forgetting to reject empty strings.
+- Overcomplicating the pattern when the prompt only needs a basic format check.

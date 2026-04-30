@@ -1,0 +1,112 @@
+---
+title: Create Permutations
+slug: create-permutations
+category: Strings
+summary: Generate every permutation of a string by choosing one character at a time and recursing on the remaining suffix.
+description: Create Permutations is the backtracking generator for enumerating all possible orderings of a string's characters.
+dataStructures:
+  - String
+  - Array
+techniques:
+  - Backtracking
+  - Recursion
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - generate string permutations
+  - all character arrangements
+useCases:
+  - Enumerating small search spaces exhaustively
+  - Practicing recursive decomposition on strings
+  - Understanding why factorial output dominates runtime
+complexity:
+  time: O(n * n!)
+  space: O(n * n!)
+  notes: The output itself contains $n!$ strings, so factorial growth is unavoidable even if the recursive overhead is optimized.
+interviewSignals:
+  - The prompt asks for every ordering, not just whether one exists.
+  - A choose-one-character-and-recurse strategy fits naturally.
+relatedSlugs:
+  - backtracking-search
+  - check-anagram
+  - scramble-strings
+provenance:
+  - title: TheAlgorithms/JavaScript - String/CreatePermutations.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/String/CreatePermutations.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a classic backtracking problem where the search tree is easy to visualize. It is useful because it makes the factorial cost of exhaustive generation explicit.
+
+## Worked Example
+
+For `"abc"`, pick each character as the first position and recurse on the remaining two characters. The result set is `['abc', 'acb', 'bac', 'bca', 'cab', 'cba']`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function createPermutations(value) {
+  if (typeof value !== 'string') {
+    throw new TypeError('Value must be a string');
+  }
+
+  if (value.length <= 1) {
+    return [value];
+  }
+
+  const permutations = [];
+
+  for (let index = 0; index < value.length; index += 1) {
+    const picked = value[index];
+    const rest = value.slice(0, index) + value.slice(index + 1);
+
+    for (const suffix of createPermutations(rest)) {
+      permutations.push(picked + suffix);
+    }
+  }
+
+  return permutations;
+}
+```
+
+```ts
+export function createPermutations(value: string): string[] {
+  if (value.length <= 1) {
+    return [value];
+  }
+
+  const permutations: string[] = [];
+
+  for (let index = 0; index < value.length; index += 1) {
+    const picked = value[index];
+    const rest = value.slice(0, index) + value.slice(index + 1);
+
+    for (const suffix of createPermutations(rest)) {
+      permutations.push(picked + suffix);
+    }
+  }
+
+  return permutations;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Deduplicate the output when the string contains repeated characters.
+- Generate permutations lazily instead of building them all at once.
+- Stop early once a permutation satisfies a predicate.
+
+## Common Pitfalls
+
+- Underestimating the factorial output size.
+- Forgetting the base case for empty or one-character strings.
+- Accidentally mutating shared state across recursive branches.

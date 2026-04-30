@@ -1,0 +1,169 @@
+---
+title: Scramble Strings
+slug: scramble-strings
+category: Strings
+summary: Determine whether one string can be transformed into another by recursively partitioning and swapping substrings.
+description: Scramble Strings is the recursive equivalence problem for deciding whether two strings represent the same binary split tree up to child swaps.
+dataStructures:
+  - String
+  - Hash Map
+techniques:
+  - Recursion
+  - Memoization
+  - Frequency Pruning
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - scramble string check
+  - recursive string equivalence
+useCases:
+  - Solving recursive string-partition problems
+  - Practicing memoization on overlapping subproblems
+  - Learning how frequency checks can prune expensive recursion
+complexity:
+  time: O(n^4)
+  space: O(n^3)
+  notes: Without memoization and frequency pruning, the naive recursive search branches explosively and becomes impractical very quickly.
+interviewSignals:
+  - The prompt defines strings recursively via partitions and optional swaps.
+  - Equality of character multiset is necessary but not sufficient.
+relatedSlugs:
+  - create-permutations
+  - check-rearrange-palindrome
+  - memoization-dp
+provenance:
+  - title: TheAlgorithms/JavaScript - String/ScrambleStrings.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/String/ScrambleStrings.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem forces you to combine recursion with aggressive pruning. The key insight is that you only recurse on split positions when the two substrings have matching character inventories.
+
+## Worked Example
+
+`"great"` and `"rgeat"` are scramble-equivalent because `"great"` can be split as `"gr" + "eat"`, and `"gr"` can be swapped internally to form `"rg"` while `"eat"` stays the same.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function scrambleStrings(left, right, memo = new Map()) {
+  if (left.length !== right.length) {
+    return false;
+  }
+
+  const key = `${left}|${right}`;
+  if (memo.has(key)) {
+    return memo.get(key);
+  }
+
+  if (left === right) {
+    memo.set(key, true);
+    return true;
+  }
+
+  const counts = new Map();
+  for (let index = 0; index < left.length; index += 1) {
+    counts.set(left[index], (counts.get(left[index]) ?? 0) + 1);
+    counts.set(right[index], (counts.get(right[index]) ?? 0) - 1);
+  }
+
+  for (const value of counts.values()) {
+    if (value !== 0) {
+      memo.set(key, false);
+      return false;
+    }
+  }
+
+  for (let split = 1; split < left.length; split += 1) {
+    const straight =
+      scrambleStrings(left.slice(0, split), right.slice(0, split), memo) &&
+      scrambleStrings(left.slice(split), right.slice(split), memo);
+
+    const swapped =
+      scrambleStrings(left.slice(0, split), right.slice(-split), memo) &&
+      scrambleStrings(left.slice(split), right.slice(0, -split), memo);
+
+    if (straight || swapped) {
+      memo.set(key, true);
+      return true;
+    }
+  }
+
+  memo.set(key, false);
+  return false;
+}
+```
+
+```ts
+export function scrambleStrings(
+  left: string,
+  right: string,
+  memo = new Map<string, boolean>(),
+): boolean {
+  if (left.length !== right.length) {
+    return false;
+  }
+
+  const key = `${left}|${right}`;
+  if (memo.has(key)) {
+    return memo.get(key)!;
+  }
+
+  if (left === right) {
+    memo.set(key, true);
+    return true;
+  }
+
+  const counts = new Map<string, number>();
+  for (let index = 0; index < left.length; index += 1) {
+    counts.set(left[index], (counts.get(left[index]) ?? 0) + 1);
+    counts.set(right[index], (counts.get(right[index]) ?? 0) - 1);
+  }
+
+  for (const value of counts.values()) {
+    if (value !== 0) {
+      memo.set(key, false);
+      return false;
+    }
+  }
+
+  for (let split = 1; split < left.length; split += 1) {
+    const straight =
+      scrambleStrings(left.slice(0, split), right.slice(0, split), memo) &&
+      scrambleStrings(left.slice(split), right.slice(split), memo);
+
+    const swapped =
+      scrambleStrings(left.slice(0, split), right.slice(-split), memo) &&
+      scrambleStrings(left.slice(split), right.slice(0, -split), memo);
+
+    if (straight || swapped) {
+      memo.set(key, true);
+      return true;
+    }
+  }
+
+  memo.set(key, false);
+  return false;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Convert the recursive solution into interval-based dynamic programming.
+- Return one valid split tree instead of only a boolean.
+- Explain how the frequency-pruning step avoids unnecessary recursion.
+
+## Common Pitfalls
+
+- Recursing without first checking whether the character counts can match.
+- Forgetting the swapped-subtree case.
+- Omitting memoization and re-solving the same substring pairs repeatedly.

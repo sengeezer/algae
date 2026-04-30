@@ -1,0 +1,109 @@
+---
+title: Alpha Numeric Palindrome
+slug: alpha-numeric-palindrome
+category: Strings
+summary: Check whether the alphanumeric characters of a string form a palindrome after removing punctuation and normalizing case.
+description: Alpha Numeric Palindrome is the normalized two-pointer palindrome check for strings that may contain spaces, symbols, and mixed case.
+dataStructures:
+  - String
+techniques:
+  - Two Pointers
+  - String Normalization
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - valid palindrome
+  - normalized palindrome check
+useCases:
+  - Validating phrases while ignoring punctuation
+  - Practicing normalization before comparison
+  - Building intuition for two-pointer string scans
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: You can normalize into a filtered string first or compare in place with two pointers that skip non-alphanumeric characters.
+interviewSignals:
+  - The prompt says punctuation and case should be ignored.
+  - The task is a boolean palindrome check over normalized characters.
+relatedSlugs:
+  - check-rearrange-palindrome
+  - reverse-string
+  - two-pointers
+provenance:
+  - title: TheAlgorithms/JavaScript - String/AlphaNumericPalindrome.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/String/AlphaNumericPalindrome.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a palindrome question with a normalization layer on top. The interviewer usually wants to see whether you separate the input-cleaning rule from the actual palindrome check.
+
+## Worked Example
+
+`"A man, a plan, a canal: Panama!"` becomes `"amanaplanacanalpanama"` after removing non-alphanumeric characters and lowercasing, so it reads the same forward and backward.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function alphaNumericPalindrome(value) {
+  if (typeof value !== 'string') {
+    throw new TypeError('Value must be a string');
+  }
+
+  const normalized = value.replace(/[^a-z0-9]+/gi, '').toLowerCase();
+
+  let left = 0;
+  let right = normalized.length - 1;
+
+  while (left < right) {
+    if (normalized[left] !== normalized[right]) {
+      return false;
+    }
+
+    left += 1;
+    right -= 1;
+  }
+
+  return true;
+}
+```
+
+```ts
+export function alphaNumericPalindrome(value: string): boolean {
+  const normalized = value.replace(/[^a-z0-9]+/gi, '').toLowerCase();
+
+  let left = 0;
+  let right = normalized.length - 1;
+
+  while (left < right) {
+    if (normalized[left] !== normalized[right]) {
+      return false;
+    }
+
+    left += 1;
+    right -= 1;
+  }
+
+  return true;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Solve it with two pointers directly on the original string without building a normalized copy.
+- Support full Unicode letters and digits instead of ASCII-only normalization.
+- Return the longest palindromic normalized substring instead of a boolean.
+
+## Common Pitfalls
+
+- Forgetting to ignore punctuation or spaces when the prompt requires it.
+- Comparing case-sensitively after normalization is expected.
+- Using reversal alone without clarifying the memory cost.

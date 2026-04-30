@@ -1,0 +1,107 @@
+---
+title: Alternative String Arrange
+slug: alternative-string-arrange
+category: Strings
+summary: Merge two strings by alternating characters from each input until both are exhausted.
+description: Alternative String Arrange is the character-interleaving routine for weaving two strings together in left-to-right order.
+dataStructures:
+  - String
+techniques:
+  - Interleaving
+  - Parallel Traversal
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - alternate merge strings
+  - weave two strings
+useCases:
+  - Combining two sequences in round-robin order
+  - Practicing parallel traversal of uneven inputs
+  - Building simple merge logic without sorting
+complexity:
+  time: O(n + m)
+  space: O(n + m)
+  notes: The only tricky part is appending the leftover characters from the longer string once the shorter one runs out.
+interviewSignals:
+  - The prompt asks for alternating characters from two strings.
+  - The output keeps the relative order from each original string.
+relatedSlugs:
+  - reverse-string
+  - max-word
+  - create-permutations
+provenance:
+  - title: TheAlgorithms/JavaScript - String/AlternativeStringArrange.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/String/AlternativeStringArrange.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a clean exercise in synchronized traversal. The interesting part is not the alternation itself, but handling uneven string lengths without dropping leftover characters.
+
+## Worked Example
+
+Interleaving `"abc"` and `"XYZ12"` produces `"aXbYcZ12"`: take one character from each string while both have remaining characters, then append the rest of the longer input.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function alternativeStringArrange(left, right) {
+  if (typeof left !== 'string' || typeof right !== 'string') {
+    throw new TypeError('Both arguments must be strings');
+  }
+
+  let result = '';
+  const length = Math.max(left.length, right.length);
+
+  for (let index = 0; index < length; index += 1) {
+    if (index < left.length) {
+      result += left[index];
+    }
+
+    if (index < right.length) {
+      result += right[index];
+    }
+  }
+
+  return result;
+}
+```
+
+```ts
+export function alternativeStringArrange(left: string, right: string): string {
+  let result = '';
+  const length = Math.max(left.length, right.length);
+
+  for (let index = 0; index < length; index += 1) {
+    if (index < left.length) {
+      result += left[index];
+    }
+
+    if (index < right.length) {
+      result += right[index];
+    }
+  }
+
+  return result;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Generalize to interleave $k$ strings round-robin.
+- Merge by groups of two or three characters at a time instead of one.
+- Build the result with an array buffer instead of repeated string concatenation.
+
+## Common Pitfalls
+
+- Stopping when the shorter string ends and dropping the remainder.
+- Reversing the relative order of characters within one input.
+- Returning sentinel strings instead of throwing or documenting invalid input behavior.

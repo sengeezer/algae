@@ -1,0 +1,85 @@
+---
+title: Upper
+slug: upper
+category: Strings
+summary: Convert a string to uppercase by mapping lowercase characters into their uppercase counterparts.
+description: Upper is the case-conversion utility for transforming every lowercase letter in a string into uppercase form while leaving other characters unchanged.
+dataStructures:
+  - String
+techniques:
+  - Character Transformation
+  - ASCII Mapping
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - uppercase conversion
+  - to upper case
+useCases:
+  - Normalizing identifiers or user input for case-insensitive comparison
+  - Practicing character-code transformations
+  - Contrasting manual conversion with built-in string APIs
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: Manual ASCII conversion works for basic Latin letters, but full production case mapping should prefer built-ins such as `toUpperCase()` for broader Unicode correctness.
+interviewSignals:
+  - The prompt asks to transform characters rather than validate them.
+  - The algorithm walks the string once and rewrites matching characters.
+relatedSlugs:
+  - check-flat-case
+  - alpha-numeric-palindrome
+  - lower
+provenance:
+  - title: TheAlgorithms/JavaScript - String/Upper.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/String/Upper.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a simple transformation problem that exposes how characters are encoded. The interview value is usually in explaining the gap between a hand-written ASCII solution and a robust Unicode-aware one.
+
+## Worked Example
+
+`"He_llo"` becomes `"HE_LLO"`: lowercase letters are mapped to uppercase, while underscores and existing uppercase letters stay unchanged.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function upper(value) {
+  if (typeof value !== 'string') {
+    throw new TypeError('Value must be a string');
+  }
+
+  return value.replace(/[a-z]/g, (char) =>
+    String.fromCharCode(char.charCodeAt(0) - 32),
+  );
+}
+```
+
+```ts
+export function upper(value: string): string {
+  return value.replace(/[a-z]/g, (char) =>
+    String.fromCharCode(char.charCodeAt(0) - 32),
+  );
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Implement the lowercase transformation symmetrically.
+- Compare the manual ASCII approach with `value.toUpperCase()`.
+- Handle locale-sensitive case mapping requirements.
+
+## Common Pitfalls
+
+- Assuming ASCII conversion is enough for all languages.
+- Mutating character codes incorrectly by using the wrong offset.
+- Forgetting that non-letter characters should remain unchanged.
