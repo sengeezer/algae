@@ -1,0 +1,101 @@
+---
+title: Hex To Decimal
+slug: hex-to-decimal
+category: Conversions
+summary: Convert a hexadecimal string to decimal by folding each digit through base 16 and its mapped numeric value.
+description: Hex To Decimal is the base-16 parsing routine that interprets a hexadecimal digit string as a decimal integer.
+dataStructures:
+  - String
+  - Number
+techniques:
+  - Base Conversion
+  - Horner's Method
+  - Digit Mapping
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - hexadecimal parsing
+  - base-16 to base-10
+useCases:
+  - Reading hex values from text protocols and debugging output
+  - Explaining how digit maps extend positional notation beyond base 10
+  - Serving as the inverse of decimal-to-hex conversion
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The algorithm reads one hex digit at a time, multiplies the accumulated value by sixteen, and adds the current digit value.
+interviewSignals:
+  - The input uses hex digits `0-9` and `A-F` instead of decimal digits only.
+  - The intended explanation revolves around mapping letters to values and folding through base 16.
+relatedSlugs:
+  - binary-to-hex
+  - decimal-to-hex
+  - binary-to-decimal
+provenance:
+  - title: TheAlgorithms/JavaScript - Conversions/HexToDecimal.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Conversions/HexToDecimal.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Hex-to-decimal conversion extends the same fold used in binary parsing, but adds a digit map for letters. It is a good reminder that positional notation is the same algorithm no matter how the digits are named.
+
+## Worked Example
+
+Reading `4D` left to right gives `((0 * 16 + 4) * 16 + 13) = 77`. The only extra step compared with decimal parsing is translating `D` to `13`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function hexToDecimal(hexString) {
+  if (!/^[0-9A-F]+$/i.test(hexString)) {
+    throw new TypeError('Hex strings may only contain digits 0-9 and letters A-F');
+  }
+
+  let value = 0;
+
+  for (const digit of hexString.toUpperCase()) {
+    const digitValue = Number.parseInt(digit, 16);
+    value = value * 16 + digitValue;
+  }
+
+  return value;
+}
+```
+
+```ts
+export function hexToDecimal(hexString: string): number {
+  if (!/^[0-9A-F]+$/i.test(hexString)) {
+    throw new TypeError('Hex strings may only contain digits 0-9 and letters A-F');
+  }
+
+  let value = 0;
+
+  for (const digit of hexString.toUpperCase()) {
+    const digitValue = Number.parseInt(digit, 16);
+    value = value * 16 + digitValue;
+  }
+
+  return value;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why the same Horner-style fold works for any base.
+- Adapt the parser to support a leading `0x` prefix.
+- Discuss when a `BigInt` version becomes necessary.
+
+## Common Pitfalls
+
+- Forgetting to normalize lowercase and uppercase letters consistently.
+- Accepting invalid letters outside the hex alphabet.
+- Recomputing powers of sixteen instead of folding incrementally.

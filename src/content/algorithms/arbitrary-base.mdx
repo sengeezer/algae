@@ -1,0 +1,166 @@
+---
+title: Arbitrary Base
+slug: arbitrary-base
+category: Conversions
+summary: Convert a string from one numeral alphabet to another by decoding it into a value and re-encoding it with the target alphabet.
+description: Arbitrary Base is the general positional-notation conversion routine that maps numbers across any two unique digit alphabets.
+dataStructures:
+  - String
+  - Array
+  - BigInt
+techniques:
+  - Base Conversion
+  - Positional Notation
+  - Repeated Division
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - custom radix conversion
+  - arbitrary radix conversion
+useCases:
+  - Translating identifiers between custom alphabets such as base62 or base36
+  - Building URL-safe encodings with a chosen symbol set
+  - Explaining how all base conversions reduce to decode then re-encode
+complexity:
+  time: O(n + d)
+  space: O(d)
+  notes: Decoding scans the source digits once and encoding emits one output digit per division step. The exact runtime also depends on the cost of BigInt arithmetic for very large values.
+interviewSignals:
+  - The prompt asks to convert between nonstandard digit alphabets rather than only decimal, binary, or hex.
+  - The intended solution validates digit sets and uses positional notation rather than a built-in parser.
+relatedSlugs:
+  - binary-to-decimal
+  - decimal-to-binary
+  - decimal-to-hex
+provenance:
+  - title: TheAlgorithms/JavaScript - Conversions/ArbitraryBase.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Conversions/ArbitraryBase.js
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Arbitrary base conversion is the general case behind all the familiar binary, decimal, and hexadecimal helpers. Once you can decode a digit string with one alphabet and rebuild it with another, every fixed-base converter becomes a small specialization of the same idea.
+
+## Worked Example
+
+To convert `1011` from binary to hexadecimal, first decode it as `11` in decimal, then re-encode that value with the hex alphabet to get `B`. The same routine works for custom alphabets like base36 or base62.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function assertUniqueCharacters(characters) {
+  if (characters.length !== new Set(characters).size) {
+    throw new TypeError('Duplicate characters in an alphabet are not allowed');
+  }
+}
+
+function convertArbitraryBase(input, sourceAlphabet, targetAlphabet) {
+  if ([input, sourceAlphabet, targetAlphabet].some((value) => typeof value !== 'string')) {
+    throw new TypeError('Only string arguments are allowed');
+  }
+
+  const sourceDigits = [...sourceAlphabet];
+  const targetDigits = [...targetAlphabet];
+
+  if (sourceDigits.length < 2 || targetDigits.length < 2) {
+    throw new RangeError('Each alphabet must contain at least two unique digits');
+  }
+
+  assertUniqueCharacters(sourceDigits);
+  assertUniqueCharacters(targetDigits);
+
+  let value = 0n;
+  const sourceBase = BigInt(sourceDigits.length);
+
+  for (const digit of input) {
+    const digitValue = sourceDigits.indexOf(digit);
+    if (digitValue === -1) {
+      throw new TypeError(`Not a valid character: ${digit}`);
+    }
+
+    value = value * sourceBase + BigInt(digitValue);
+  }
+
+  if (value === 0n) {
+    return targetDigits[0];
+  }
+
+  const targetBase = BigInt(targetDigits.length);
+  const output = [];
+
+  while (value > 0n) {
+    const remainder = value % targetBase;
+    output.push(targetDigits[Number(remainder)]);
+    value /= targetBase;
+  }
+
+  return output.reverse().join('');
+}
+```
+
+```ts
+function assertUniqueCharacters(characters: string[]): void {
+  if (characters.length !== new Set(characters).size) {
+    throw new TypeError('Duplicate characters in an alphabet are not allowed');
+  }
+}
+
+export function convertArbitraryBase(input: string, sourceAlphabet: string, targetAlphabet: string): string {
+  const sourceDigits = [...sourceAlphabet];
+  const targetDigits = [...targetAlphabet];
+
+  if (sourceDigits.length < 2 || targetDigits.length < 2) {
+    throw new RangeError('Each alphabet must contain at least two unique digits');
+  }
+
+  assertUniqueCharacters(sourceDigits);
+  assertUniqueCharacters(targetDigits);
+
+  let value = 0n;
+  const sourceBase = BigInt(sourceDigits.length);
+
+  for (const digit of input) {
+    const digitValue = sourceDigits.indexOf(digit);
+    if (digitValue === -1) {
+      throw new TypeError(`Not a valid character: ${digit}`);
+    }
+
+    value = value * sourceBase + BigInt(digitValue);
+  }
+
+  if (value === 0n) {
+    return targetDigits[0];
+  }
+
+  const targetBase = BigInt(targetDigits.length);
+  const output: string[] = [];
+
+  while (value > 0n) {
+    const remainder = value % targetBase;
+    output.push(targetDigits[Number(remainder)]);
+    value /= targetBase;
+  }
+
+  return output.reverse().join('');
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why the algorithm naturally splits into decode and encode phases.
+- Adapt the converter to support negative values with a leading sign.
+- Compare precision limits of `number` and `BigInt` for large input strings.
+
+## Common Pitfalls
+
+- Allowing duplicate characters in the source or target alphabet.
+- Forgetting that `0` should still produce one output digit.
+- Relying on built-in integer parsers that only support a few standard bases.

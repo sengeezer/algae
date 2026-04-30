@@ -1,0 +1,109 @@
+---
+title: Binary To Hex
+slug: binary-to-hex
+category: Conversions
+summary: Convert a binary string to hexadecimal by grouping bits into four-bit chunks from right to left.
+description: Binary To Hex is the nibble-grouping routine that maps base-2 digits into base-16 digits four bits at a time.
+dataStructures:
+  - String
+  - Array
+techniques:
+  - Base Conversion
+  - Bit Grouping
+  - Padding
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - binary to hexadecimal
+  - nibble conversion
+useCases:
+  - Displaying binary values in a more compact human-readable form
+  - Teaching why one hex digit corresponds to exactly four bits
+  - Preparing low-level values for debugging and serialization
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: The algorithm pads the leftmost group to four bits, then converts each nibble independently.
+interviewSignals:
+  - The prompt explicitly mentions grouping bits or converting binary to hex without using built-in parsers.
+  - The interviewer expects you to know the four-bit-to-one-hex-digit relationship.
+relatedSlugs:
+  - binary-to-decimal
+  - decimal-to-hex
+  - hex-to-decimal
+provenance:
+  - title: TheAlgorithms/JavaScript - Conversions/BinaryToHex.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Conversions/BinaryToHex.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Binary-to-hex conversion is the most practical base-conversion shortcut in systems work because the bases align perfectly. Instead of decoding the whole number, you can translate each nibble directly.
+
+## Worked Example
+
+`1001101` becomes `0100 1101` after left padding. Those nibbles map to `4` and `D`, so the final answer is `4D`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+const HEX_DIGITS = '0123456789ABCDEF';
+
+function binaryToHex(binaryString) {
+  if (!/^[01]+$/.test(binaryString)) {
+    throw new TypeError('Binary strings may only contain 0 and 1');
+  }
+
+  const paddedLength = Math.ceil(binaryString.length / 4) * 4;
+  const padded = binaryString.padStart(paddedLength, '0');
+  const output = [];
+
+  for (let index = 0; index < padded.length; index += 4) {
+    const chunk = padded.slice(index, index + 4);
+    output.push(HEX_DIGITS[Number.parseInt(chunk, 2)]);
+  }
+
+  return output.join('').replace(/^0+(?=[0-9A-F])/, '') || '0';
+}
+```
+
+```ts
+const HEX_DIGITS = '0123456789ABCDEF';
+
+export function binaryToHex(binaryString: string): string {
+  if (!/^[01]+$/.test(binaryString)) {
+    throw new TypeError('Binary strings may only contain 0 and 1');
+  }
+
+  const paddedLength = Math.ceil(binaryString.length / 4) * 4;
+  const padded = binaryString.padStart(paddedLength, '0');
+  const output: string[] = [];
+
+  for (let index = 0; index < padded.length; index += 4) {
+    const chunk = padded.slice(index, index + 4);
+    output.push(HEX_DIGITS[Number.parseInt(chunk, 2)]);
+  }
+
+  return output.join('').replace(/^0+(?=[0-9A-F])/, '') || '0';
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why hex aligns so well with binary compared with decimal.
+- Convert the routine into binary-to-octal by regrouping in threes.
+- Return lowercase hex digits when a downstream format requires them.
+
+## Common Pitfalls
+
+- Padding on the wrong side instead of the most significant side.
+- Forgetting to validate that the input only contains binary digits.
+- Returning an empty string when the input is all zeros.

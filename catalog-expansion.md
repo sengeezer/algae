@@ -350,9 +350,20 @@ This twenty-ninth expansion slice lifts the catalog from 206 to 212 entries.
 - Node Neighbors
 - Run-Length Encoding
 
+## Batch 30 added
+
+This thirtieth expansion slice lifts the catalog from 212 to 218 entries.
+
+- Arbitrary Base
+- Binary To Decimal
+- Binary To Hex
+- Decimal To Binary
+- Decimal To Hex
+- Hex To Decimal
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 29 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 30 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -361,9 +372,9 @@ All expansion entries from batch 1 through batch 29 now carry explicit per-entry
 ## Why this batch
 
 - It fills obvious interview-core gaps from TheAlgorithms/JavaScript without duplicating material already present in Algae.
-- It follows the verified graph, search, and compression queue directly, adding a graph sparsity metric, SCC decomposition, baseline sequential search, neighbor counting on a grid, one-hop graph adjacency queries, and simple lossless run-length compression.
-- It broadens the catalog across graph analysis, traversal-adjacent primitives, matrix scanning, and compact string encoding instead of staying inside the previous all-sorting slice.
-- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially graph fundamentals, baseline search techniques, and compact text processing.
+- It follows the verified conversions queue directly, adding arbitrary alphabet conversion, binary-decimal-hex translation, and the repeated-division patterns that underpin positional number systems.
+- It broadens the catalog across numeral systems, string-to-number parsing, bit grouping, and digit reconstruction instead of staying in the previous graph-and-search slice.
+- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially representation changes, radix reasoning, and the mechanics of positional notation.
 
 ## Supporting study references from the algorithms list
 
@@ -374,9 +385,9 @@ All expansion entries from batch 1 through batch 29 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- Arbitrary Base
-- Binary To Decimal
-- Binary To Hex
-- Decimal To Binary
-- Decimal To Hex
-- Hex To Decimal
+- Decimal To Octal
+- Decimal To Roman
+- Hex To Binary
+- Length Conversion
+- RGB To Hex
+- Roman To Decimal

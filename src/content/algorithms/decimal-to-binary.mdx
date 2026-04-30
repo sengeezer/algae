@@ -1,0 +1,111 @@
+---
+title: Decimal To Binary
+slug: decimal-to-binary
+category: Conversions
+summary: Convert a non-negative integer to binary by repeatedly dividing by two and collecting remainders.
+description: Decimal To Binary is the repeated-division algorithm that reconstructs a base-2 string from a base-10 integer.
+dataStructures:
+  - Number
+  - Array
+techniques:
+  - Base Conversion
+  - Repeated Division
+  - Remainder Collection
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - decimal to base-2
+  - integer to binary string
+useCases:
+  - Serializing integers into binary text
+  - Teaching how remainders rebuild digits from least significant to most significant
+  - Serving as the inverse of binary string parsing
+complexity:
+  time: O(log n)
+  space: O(log n)
+  notes: Each loop iteration emits one binary digit and reduces the remaining value by a factor of two.
+interviewSignals:
+  - The prompt asks for manual binary conversion rather than a built-in like `toString(2)`.
+  - The expected explanation centers on remainders and reverse digit order.
+relatedSlugs:
+  - arbitrary-base
+  - binary-to-decimal
+  - decimal-to-hex
+provenance:
+  - title: TheAlgorithms/JavaScript - Conversions/DecimalToBinary.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Conversions/DecimalToBinary.js
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Decimal-to-binary conversion is the mirror image of binary parsing. Instead of accumulating place values, you repeatedly peel off the least significant bit with `% 2` and build the answer in reverse.
+
+## Worked Example
+
+For `13`, the remainders are `1`, `0`, `1`, `1` as the quotient sequence goes `13 -> 6 -> 3 -> 1 -> 0`. Reversing those remainders gives `1101`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function decimalToBinary(value) {
+  if (!Number.isInteger(value) || value < 0) {
+    throw new RangeError('The input must be a non-negative integer');
+  }
+
+  if (value === 0) {
+    return '0';
+  }
+
+  const bits = [];
+  let current = value;
+
+  while (current > 0) {
+    bits.push(String(current % 2));
+    current = Math.floor(current / 2);
+  }
+
+  return bits.reverse().join('');
+}
+```
+
+```ts
+export function decimalToBinary(value: number): string {
+  if (!Number.isInteger(value) || value < 0) {
+    throw new RangeError('The input must be a non-negative integer');
+  }
+
+  if (value === 0) {
+    return '0';
+  }
+
+  const bits: string[] = [];
+  let current = value;
+
+  while (current > 0) {
+    bits.push(String(current % 2));
+    current = Math.floor(current / 2);
+  }
+
+  return bits.reverse().join('');
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why the remainder sequence arrives in reverse order.
+- Support negative integers with two's-complement formatting rules.
+- Generalize the routine to any base greater than one.
+
+## Common Pitfalls
+
+- Returning an empty string for the input `0`.
+- Using bitwise operators on values that may exceed 32-bit integer limits.
+- Forgetting to reject non-integer or negative input.

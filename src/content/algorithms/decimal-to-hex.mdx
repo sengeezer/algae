@@ -1,0 +1,115 @@
+---
+title: Decimal To Hex
+slug: decimal-to-hex
+category: Conversions
+summary: Convert a non-negative integer to hexadecimal by repeatedly dividing by sixteen and mapping remainders to digits.
+description: Decimal To Hex is the repeated-division conversion routine that reconstructs a base-16 representation from a decimal integer.
+dataStructures:
+  - Number
+  - Array
+techniques:
+  - Base Conversion
+  - Repeated Division
+  - Digit Mapping
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - decimal to hexadecimal
+  - integer to hex string
+useCases:
+  - Displaying numbers in a compact base-16 format
+  - Building address and color helpers that emit hex digits
+  - Comparing decimal division logic with other radix conversions
+complexity:
+  time: O(log16 n)
+  space: O(log16 n)
+  notes: The loop emits one hex digit per division, so it grows with the number of hexadecimal digits in the result.
+interviewSignals:
+  - The prompt asks you to convert without calling built-in radix formatting helpers.
+  - The interviewer expects explicit mapping of values 10 through 15 to `A` through `F`.
+relatedSlugs:
+  - arbitrary-base
+  - binary-to-hex
+  - hex-to-decimal
+provenance:
+  - title: TheAlgorithms/JavaScript - Conversions/DecimalToHex.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Conversions/DecimalToHex.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Decimal-to-hex conversion is the natural follow-up once repeated division in base 2 makes sense. The only new idea is the digit map for remainders 10 through 15.
+
+## Worked Example
+
+For `77`, repeated division by `16` gives remainder `13` then remainder `4`. Mapping `13` to `D` and reversing the collected digits yields `4D`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+const HEX_DIGITS = '0123456789ABCDEF';
+
+function decimalToHex(value) {
+  if (!Number.isInteger(value) || value < 0) {
+    throw new RangeError('The input must be a non-negative integer');
+  }
+
+  if (value === 0) {
+    return '0';
+  }
+
+  const digits = [];
+  let current = value;
+
+  while (current > 0) {
+    digits.push(HEX_DIGITS[current % 16]);
+    current = Math.floor(current / 16);
+  }
+
+  return digits.reverse().join('');
+}
+```
+
+```ts
+const HEX_DIGITS = '0123456789ABCDEF';
+
+export function decimalToHex(value: number): string {
+  if (!Number.isInteger(value) || value < 0) {
+    throw new RangeError('The input must be a non-negative integer');
+  }
+
+  if (value === 0) {
+    return '0';
+  }
+
+  const digits: string[] = [];
+  let current = value;
+
+  while (current > 0) {
+    digits.push(HEX_DIGITS[current % 16]);
+    current = Math.floor(current / 16);
+  }
+
+  return digits.reverse().join('');
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why the least significant digit appears first during division.
+- Compare a manual digit map with a generalized arbitrary-base alphabet.
+- Emit lowercase hex or fixed-width padded output for downstream protocols.
+
+## Common Pitfalls
+
+- Forgetting the special case for zero.
+- Mishandling remainders above `9`.
+- Using floating-point input where repeated division assumes integers.

@@ -1,0 +1,99 @@
+---
+title: Binary To Decimal
+slug: binary-to-decimal
+category: Conversions
+summary: Convert a binary string to base 10 by folding the digits through powers of two.
+description: Binary To Decimal is the positional-notation parsing routine that evaluates a base-2 string as a decimal number.
+dataStructures:
+  - String
+  - Number
+techniques:
+  - Base Conversion
+  - Horner's Method
+  - Positional Notation
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - binary parsing
+  - base-2 to base-10
+useCases:
+  - Interpreting binary literals received as strings
+  - Teaching positional notation with the simplest non-decimal base
+  - Building blocks for arbitrary-base conversion helpers
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: Each incoming bit shifts the accumulated value left by one position and optionally adds one.
+interviewSignals:
+  - The input is a string of `0` and `1` characters instead of a numeric literal.
+  - The intended solution should explain how binary place values combine into one decimal result.
+relatedSlugs:
+  - arbitrary-base
+  - decimal-to-binary
+  - binary-to-hex
+provenance:
+  - title: TheAlgorithms/JavaScript - Conversions/BinaryToDecimal.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Conversions/BinaryToDecimal.js
+    kind: Implementation
+  - title: free-programming-books - Algorithm Design
+    href: https://archive.org/details/AlgorithmDesign1stEditionByJonKleinbergAndEvaTardos2005PDF
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Binary-to-decimal conversion is the cleanest first example of positional notation. Every step says the same thing: shift the current value one place to the left in base 2, then add the next bit.
+
+## Worked Example
+
+Reading `1011` left to right gives `(((0 * 2 + 1) * 2 + 0) * 2 + 1) * 2 + 1 = 11`. That fold is Horner's method specialized for base 2.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function binaryToDecimal(binaryString) {
+  if (!/^[01]+$/.test(binaryString)) {
+    throw new TypeError('Binary strings may only contain 0 and 1');
+  }
+
+  let value = 0;
+
+  for (const digit of binaryString) {
+    value = value * 2 + Number(digit);
+  }
+
+  return value;
+}
+```
+
+```ts
+export function binaryToDecimal(binaryString: string): number {
+  if (!/^[01]+$/.test(binaryString)) {
+    throw new TypeError('Binary strings may only contain 0 and 1');
+  }
+
+  let value = 0;
+
+  for (const digit of binaryString) {
+    value = value * 2 + Number(digit);
+  }
+
+  return value;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why Horner's method avoids explicit exponentiation.
+- Extend the parser to handle optional leading zeros.
+- Discuss when you would switch from `number` to `BigInt`.
+
+## Common Pitfalls
+
+- Accepting invalid digits like `2` or whitespace.
+- Recomputing powers of two unnecessarily for every position.
+- Forgetting that the input is a string, not a base-10 number containing only zeros and ones.
