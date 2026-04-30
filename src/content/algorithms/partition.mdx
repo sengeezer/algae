@@ -1,0 +1,138 @@
+---
+title: Partition
+slug: partition
+category: Dynamic Programming
+summary: Determine whether an array can be split into two equal-sum subsets by exploring take-or-skip states toward half of the total sum.
+description: Partition is the equal-subset-sum decision problem, a classic bridge between recursive search and subset-sum dynamic programming.
+dataStructures:
+  - Array
+  - Table
+techniques:
+  - Dynamic Programming
+  - Memoization
+  - Recursion
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - equal subset partition
+  - partition problem
+useCases:
+  - Deciding whether values can be split into two balanced groups
+  - Reframing equal partition as subset sum to `total / 2`
+  - Practicing boolean DP instead of counting or maximizing
+complexity:
+  time: O(n * target)
+  space: O(n * target)
+  notes: Once the total sum is even, the problem reduces to whether any subset reaches half of that sum.
+interviewSignals:
+  - The prompt asks for two subsets with equal total sum.
+  - The answer is boolean feasibility, not the number of valid partitions.
+relatedSlugs:
+  - number-of-subsets-equal-to-given-sum
+  - knapsack-dp
+  - sum-of-subset
+provenance:
+  - title: TheAlgorithms/JavaScript - Recursive/Partition.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Recursive/Partition.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Partition is the boolean version of subset-sum reasoning. The interviewer expects you to notice that equal partition is only possible when the total is even, and then reduce the rest of the work to hitting `sum / 2`.
+
+## Worked Example
+
+For `[1, 5, 11, 5]`, the total is `22`, so the target becomes `11`. Since one subset can be `[11]` and the other `[1, 5, 5]`, the answer is true.
+
+<Callout title="First filter" tone="warning">
+  If the total sum is odd, the answer is immediately false. Skipping that check wastes work on a state space that can never succeed.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function canPartition(values) {
+  const total = values.reduce((sum, value) => sum + value, 0);
+  if (total % 2 !== 0) {
+    return false;
+  }
+
+  const target = total / 2;
+  const memo = new Map();
+
+  function dfs(index, remaining) {
+    if (remaining === 0) {
+      return true;
+    }
+
+    if (index === values.length || remaining < 0) {
+      return false;
+    }
+
+    const key = `${index}:${remaining}`;
+    if (memo.has(key)) {
+      return memo.get(key);
+    }
+
+    const answer = dfs(index + 1, remaining - values[index]) || dfs(index + 1, remaining);
+    memo.set(key, answer);
+    return answer;
+  }
+
+  return dfs(0, target);
+}
+```
+
+```ts
+export function canPartition(values: number[]): boolean {
+  const total = values.reduce((sum, value) => sum + value, 0);
+  if (total % 2 !== 0) {
+    return false;
+  }
+
+  const target = total / 2;
+  const memo = new Map<string, boolean>();
+
+  function dfs(index: number, remaining: number): boolean {
+    if (remaining === 0) {
+      return true;
+    }
+
+    if (index === values.length || remaining < 0) {
+      return false;
+    }
+
+    const key = `${index}:${remaining}`;
+    const cached = memo.get(key);
+    if (cached !== undefined) {
+      return cached;
+    }
+
+    const answer = dfs(index + 1, remaining - values[index]) || dfs(index + 1, remaining);
+    memo.set(key, answer);
+    return answer;
+  }
+
+  return dfs(0, target);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return one valid partition instead of only a boolean.
+- Compress the DP to one row for an iterative solution.
+- Compare this feasibility version with counting subset-sum variants.
+
+## Common Pitfalls
+
+- Forgetting the odd-total early exit.
+- Recomputing the same take-or-skip states without memoization.
+- Confusing equal partition with counting how many such subsets exist.

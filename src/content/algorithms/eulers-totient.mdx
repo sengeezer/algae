@@ -1,0 +1,116 @@
+---
+title: "Euler's Totient"
+slug: eulers-totient
+category: Mathematics
+summary: Count numbers coprime to n by factoring n and applying the multiplicative totient formula over its distinct prime divisors.
+description: Euler's Totient is the classic number-theory function for counting integers in `[1, n]` that share no common factor with `n` beyond `1`.
+dataStructures:
+  - Number
+techniques:
+  - Number Theory
+  - Prime Factorization
+  - Multiplicative Formula
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - phi function
+  - euler totient
+useCases:
+  - Counting coprime integers in a range prefix
+  - Supporting modular arithmetic and Euler-theorem follow-ups
+  - Practicing factor-driven formulas on arithmetic functions
+complexity:
+  time: O(sqrt(n))
+  space: O(1)
+  notes: Only distinct prime divisors matter in the formula `phi(n) = n * product(1 - 1/p)`.
+interviewSignals:
+  - The prompt asks how many numbers up to `n` are coprime with `n`.
+  - A factorization-based formula is much faster than checking gcd against every candidate.
+relatedSlugs:
+  - linear-sieve
+  - sieve-of-eratosthenes
+  - binary-exponentiation
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/EulersTotient.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/EulersTotient.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Euler's Totient appears when brute-force gcd checks are too expensive and the interviewer wants you to exploit prime structure. The main insight is that each distinct prime factor removes a fixed fraction of the remaining candidates.
+
+## Worked Example
+
+For `n = 12`, the distinct prime factors are `2` and `3`. Starting from `12`, apply the totient formula: `12 * (1 - 1/2) * (1 - 1/3) = 4`, so the numbers coprime to `12` in `[1, 12]` are `1, 5, 7, 11`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function eulersTotient(value) {
+  let remaining = value;
+  let result = value;
+
+  for (let factor = 2; factor * factor <= remaining; factor += 1) {
+    if (remaining % factor !== 0) {
+      continue;
+    }
+
+    while (remaining % factor === 0) {
+      remaining = Math.floor(remaining / factor);
+    }
+
+    result -= Math.floor(result / factor);
+  }
+
+  if (remaining > 1) {
+    result -= Math.floor(result / remaining);
+  }
+
+  return result;
+}
+```
+
+```ts
+export function eulersTotient(value: number): number {
+  let remaining = value;
+  let result = value;
+
+  for (let factor = 2; factor * factor <= remaining; factor += 1) {
+    if (remaining % factor !== 0) {
+      continue;
+    }
+
+    while (remaining % factor === 0) {
+      remaining = Math.floor(remaining / factor);
+    }
+
+    result -= Math.floor(result / factor);
+  }
+
+  if (remaining > 1) {
+    result -= Math.floor(result / remaining);
+  }
+
+  return result;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compute totients for every value up to `n` with sieve-style preprocessing.
+- Relate the function to Euler's theorem in modular arithmetic.
+- Explain why repeated powers of the same prime do not create new formula terms.
+
+## Common Pitfalls
+
+- Applying the formula for every occurrence of a prime factor instead of once per distinct prime.
+- Forgetting the final leftover prime factor after the loop.
+- Using gcd checks across the whole range and missing the arithmetic shortcut.

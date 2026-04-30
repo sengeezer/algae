@@ -1,0 +1,151 @@
+---
+title: Find Month Calendar
+slug: find-month-calendar
+category: Mathematics
+summary: Derive the first weekday and month length, then lay the dates into week-sized rows to render a calendar grid.
+description: Find Month Calendar is the date-arithmetic problem where leap years, month lengths, and weekday offsets combine into a formatted month view.
+dataStructures:
+  - Array
+  - String
+techniques:
+  - Date Arithmetic
+  - Simulation
+  - Formatting
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - month calendar generation
+  - render calendar grid
+useCases:
+  - Building a textual calendar for a given month and year
+  - Practicing date offset calculations with leap-year handling
+  - Converting numeric day offsets into human-readable weekly rows
+complexity:
+  time: O(days + years traversed)
+  space: O(days)
+  notes: The core work is finding the weekday offset for the first of the month and then formatting the dates into week-sized buckets.
+interviewSignals:
+  - The prompt asks for a calendar layout instead of a single date computation.
+  - Leap years and month-length edge cases matter to the final output.
+relatedSlugs:
+  - sieve-of-eratosthenes
+  - eulers-totient
+  - binary-equivalent
+provenance:
+  - title: TheAlgorithms/JavaScript - Dynamic-Programming/FindMonthCalendar.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Dynamic-Programming/FindMonthCalendar.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Find Month Calendar is a good date-arithmetic exercise because every small rule matters. Leap years, month lengths, and the weekday offset of the first day all need to line up before the final grid can be printed correctly.
+
+## Worked Example
+
+To render `1/2021`, first compute the weekday for January 1st, then prepend blank cells before day `1`, then stream the remaining dates into rows of seven slots until the month is exhausted.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function findMonthCalendar(month, year) {
+  const monthLengths = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  const weekdayLabels = ['M', 'T', 'W', 'Th', 'F', 'S', 'Su'];
+
+  function isLeapYear(value) {
+    return (value % 400 === 0) || (value % 4 === 0 && value % 100 !== 0);
+  }
+
+  function daysInMonth(targetMonth, targetYear) {
+    if (targetMonth === 2 && isLeapYear(targetYear)) {
+      return 29;
+    }
+
+    return monthLengths[targetMonth - 1];
+  }
+
+  let dayOffset = 0;
+  for (let currentYear = 1900; currentYear < year; currentYear += 1) {
+    dayOffset += isLeapYear(currentYear) ? 366 : 365;
+  }
+
+  for (let currentMonth = 1; currentMonth < month; currentMonth += 1) {
+    dayOffset += daysInMonth(currentMonth, year);
+  }
+
+  const startIndex = dayOffset % 7;
+  const cells = new Array(startIndex).fill('   ');
+
+  for (let day = 1; day <= daysInMonth(month, year); day += 1) {
+    cells.push(String(day).padEnd(3, ' '));
+  }
+
+  const rows = [weekdayLabels.join(' ')];
+  for (let index = 0; index < cells.length; index += 7) {
+    rows.push(cells.slice(index, index + 7).join(' ').trimEnd());
+  }
+
+  return rows;
+}
+```
+
+```ts
+export function findMonthCalendar(month: number, year: number): string[] {
+  const monthLengths = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  const weekdayLabels = ['M', 'T', 'W', 'Th', 'F', 'S', 'Su'];
+
+  function isLeapYear(value: number): boolean {
+    return (value % 400 === 0) || (value % 4 === 0 && value % 100 !== 0);
+  }
+
+  function daysInMonth(targetMonth: number, targetYear: number): number {
+    if (targetMonth === 2 && isLeapYear(targetYear)) {
+      return 29;
+    }
+
+    return monthLengths[targetMonth - 1];
+  }
+
+  let dayOffset = 0;
+  for (let currentYear = 1900; currentYear < year; currentYear += 1) {
+    dayOffset += isLeapYear(currentYear) ? 366 : 365;
+  }
+
+  for (let currentMonth = 1; currentMonth < month; currentMonth += 1) {
+    dayOffset += daysInMonth(currentMonth, year);
+  }
+
+  const startIndex = dayOffset % 7;
+  const cells: string[] = new Array(startIndex).fill('   ');
+
+  for (let day = 1; day <= daysInMonth(month, year); day += 1) {
+    cells.push(String(day).padEnd(3, ' '));
+  }
+
+  const rows = [weekdayLabels.join(' ')];
+  for (let index = 0; index < cells.length; index += 7) {
+    rows.push(cells.slice(index, index + 7).join(' ').trimEnd());
+  }
+
+  return rows;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Support different week starts or localized weekday labels.
+- Compute the weekday with Zeller's congruence instead of an epoch walk.
+- Return a matrix structure instead of preformatted strings.
+
+## Common Pitfalls
+
+- Mishandling leap years in February.
+- Using the wrong weekday basis for the chosen epoch.
+- Forgetting to prepend empty cells before day `1`.

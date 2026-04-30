@@ -152,9 +152,20 @@ This eleventh expansion slice lifts the catalog from 98 to 104 entries.
 - Tower of Hanoi
 - Matrix Multiplication
 
+## Batch 12 added
+
+This twelfth expansion slice lifts the catalog from 104 to 110 entries.
+
+- Find Month Calendar
+- Linear Sieve
+- Euler's Totient
+- Binary Equivalent
+- Partition
+- Permutation and Combination
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 11 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 12 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -177,9 +188,9 @@ All expansion entries from batch 1 through batch 11 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- Find Month Calendar
-- Linear Sieve
-- Euler's Totient
-- Binary Equivalent
-- Partition
-- Permutation and Combination
+- All Combinations of Size K
+- Lucas Series
+- Modular Arithmetic
+- Prime Factors
+- Subsequence Recursive
+- Hamming Distance

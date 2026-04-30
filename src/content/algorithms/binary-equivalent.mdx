@@ -1,0 +1,86 @@
+---
+title: Binary Equivalent
+slug: binary-equivalent
+category: Recursion
+summary: Convert a positive integer to binary by recursively dividing by two and collecting remainders on the unwind.
+description: Binary Equivalent is the basic recursion problem for base conversion, where each call strips off the least significant bit and the final string is assembled in reverse order.
+dataStructures:
+  - String
+  - Recursion Stack
+techniques:
+  - Recursion
+  - Base Conversion
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - decimal to binary recursion
+  - recursive binary conversion
+useCases:
+  - Demonstrating recursive decomposition on integer division
+  - Teaching base conversion with quotient and remainder
+  - Comparing recursive and iterative representations of the same process
+complexity:
+  time: O(log n)
+  space: O(log n)
+  notes: Each recursive call removes one binary digit by dividing the number by two.
+interviewSignals:
+  - The prompt asks for the binary representation of a non-negative integer.
+  - Quotient and remainder naturally describe the next recursive state.
+relatedSlugs:
+  - binary-exponentiation
+  - fibonacci-number
+  - tower-of-hanoi
+provenance:
+  - title: TheAlgorithms/JavaScript - Recursive/BinaryEquivalent.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Recursive/BinaryEquivalent.js
+    kind: Implementation
+  - title: free-programming-books - Algorithmic Thinking
+    href: https://labuladong.gitbook.io/algo-en
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Binary Equivalent is a lightweight recursion exercise that makes the call stack visible. Each call shrinks the input with integer division, and the actual digit order emerges during the unwind when remainders are appended.
+
+## Worked Example
+
+For `13`, recurse on `6`, then `3`, then `1`. On the way back up, append the remainders `1`, `0`, and `1` to produce `1101`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function binaryEquivalent(value) {
+  if (value === 0 || value === 1) {
+    return String(value);
+  }
+
+  return binaryEquivalent(Math.floor(value / 2)) + String(value % 2);
+}
+```
+
+```ts
+export function binaryEquivalent(value: number): string {
+  if (value === 0 || value === 1) {
+    return String(value);
+  }
+
+  return binaryEquivalent(Math.floor(value / 2)) + String(value % 2);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Rewrite the same conversion iteratively.
+- Extend the approach to arbitrary bases, not just binary.
+- Explain why the digits appear in the correct order during unwinding.
+
+## Common Pitfalls
+
+- Returning digits in reverse order by appending before the recursive call.
+- Forgetting the small base cases for `0` and `1`.
+- Treating string assembly as numeric addition.

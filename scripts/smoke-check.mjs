@@ -97,19 +97,29 @@ try {
   await clearFiltersButton.click();
   await page.waitForURL(baseUrl);
 
+  const fullCatalogCount = await page.locator(catalogCardSelector).count();
+
   const techniqueFilter = page.getByLabel("Technique");
   await techniqueFilter.selectOption("Memoization");
   await page.waitForURL(/\?technique=Memoization/);
   await page.getByRole("heading", { name: "Memoization DP" }).waitFor();
 
-  await expectCount(
-    page.locator(catalogCardSelector),
-    1,
-    failures,
-    "technique filter narrows the catalog to one result",
-  );
+  const filteredCatalogCards = page.locator(catalogCardSelector);
+  const filteredCount = await filteredCatalogCards.count();
+  if (filteredCount > 0 && filteredCount < fullCatalogCount) {
+    console.log("PASS technique filter narrows the catalog");
+  } else {
+    recordFailure(
+      failures,
+      `expected technique filter to reduce catalog from ${fullCatalogCount} to a smaller non-zero set, got ${filteredCount}`,
+    );
+  }
 
-  await page.getByRole("link", { name: "Open reference" }).click();
+  await page
+    .locator(catalogCardSelector)
+    .filter({ hasText: "Memoization DP" })
+    .getByRole("link", { name: "Open reference" })
+    .click();
   await page.waitForURL(new RegExp(`${baseUrl}/algorithms/memoization-dp$`));
 
   const detailHeading = (await page.locator("h1").textContent())?.trim() ?? "";

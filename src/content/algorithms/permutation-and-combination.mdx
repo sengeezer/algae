@@ -1,0 +1,101 @@
+---
+title: Permutation and Combination
+slug: permutation-and-combination
+category: Mathematics
+summary: Use factorial-based counting formulas to compute ordered selections and unordered selections from the same pool.
+description: Permutation and Combination is the counting-formula reference that contrasts `P(n, r)` with `C(n, r)` and connects factorial identities to interview counting prompts.
+dataStructures:
+  - Number
+techniques:
+  - Combinatorics
+  - Factorial Formula
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - permutations and combinations formulas
+  - nPr and nCr
+useCases:
+  - Distinguishing ordered arrangements from unordered selections
+  - Reusing factorial identities in counting problems
+  - Bridging direct formulas with binomial-coefficient style reasoning
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: "The conceptual hinge is order: permutations count distinct orderings, while combinations collapse those orderings into a single choice set."
+interviewSignals:
+  - The prompt asks how many arrangements or selections are possible.
+  - The main question is whether order changes the answer.
+relatedSlugs:
+  - binomial-coefficient
+  - pascal-triangle
+  - generate-permutations
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/PermutationAndCombination.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/PermutationAndCombination.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Permutation and Combination is the fast way to test whether someone understands the effect of order. Many interview counting questions are really asking you to choose between `nPr` and `nCr` before any calculation starts.
+
+## Worked Example
+
+Choosing 2 officers from 5 candidates is a combination problem if the roles are identical, so the answer is `C(5, 2) = 10`. If the roles are president and vice president, order matters, so the answer becomes `P(5, 2) = 20`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function factorial(value) {
+  if (value <= 1) {
+    return 1;
+  }
+
+  return value * factorial(value - 1);
+}
+
+function permutationCount(n, r) {
+  return factorial(n) / factorial(n - r);
+}
+
+function combinationCount(n, r) {
+  return factorial(n) / (factorial(r) * factorial(n - r));
+}
+```
+
+```ts
+function factorial(value: number): number {
+  if (value <= 1) {
+    return 1;
+  }
+
+  return value * factorial(value - 1);
+}
+
+export function permutationCount(n: number, r: number): number {
+  return factorial(n) / factorial(n - r);
+}
+
+export function combinationCount(n: number, r: number): number {
+  return factorial(n) / (factorial(r) * factorial(n - r));
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare the formula approach with generating the actual arrangements.
+- Explain why combinations divide permutations by `r!`.
+- Replace factorial recursion with a multiplicative formula to reduce overflow risk.
+
+## Common Pitfalls
+
+- Using combinations when order matters, or permutations when it does not.
+- Ignoring invalid inputs such as `r > n`.
+- Treating this formula sheet as a substitute for understanding the underlying counting model.
