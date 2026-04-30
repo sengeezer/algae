@@ -1,0 +1,97 @@
+---
+title: Alpha Numerical Sort
+slug: alpha-numerical-sort
+category: Sorting
+summary: Sort mixed strings in natural human order so numeric substrings compare by numeric value instead of raw character order.
+description: Alpha Numerical Sort is the natural-order string sorting comparator that places values like file2 before file10.
+dataStructures:
+  - Array
+  - String
+techniques:
+  - Sorting
+  - Comparator Design
+  - Natural Ordering
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - natural sort
+  - human-friendly string sort
+useCases:
+  - Ordering filenames or version-like labels naturally
+  - Building user-facing list sorting that handles embedded digits well
+  - Comparing lexicographic and semantic comparator behavior
+complexity:
+  time: O(n log n * k)
+  space: Depends on the host sorting implementation
+  notes: The comparator is the main idea. Each string comparison may inspect multiple character runs, so total cost depends on average string length and engine sort behavior.
+interviewSignals:
+  - Plain lexicographic sorting puts item10 before item2, but the prompt wants the human-friendly order.
+  - The data is string-based and numeric fragments should compare as whole numbers.
+relatedSlugs:
+  - tim-sort
+  - merge-sort
+  - quick-sort
+provenance:
+  - title: TheAlgorithms/JavaScript - Sorts/AlphaNumericalSort.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Sorts/AlphaNumericalSort.js
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Alpha numerical sort matters whenever user-facing order should match how people read labels rather than how machines compare raw characters. The classic failure case is that plain lexicographic sorting places `z11` before `z2`.
+
+## Worked Example
+
+Sorting `['file1', 'file10', 'file2']` lexicographically yields `['file1', 'file10', 'file2']`, but natural ordering yields `['file1', 'file2', 'file10']` because `10` and `2` are treated as whole numbers.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function alphaNumericalSort(left, right) {
+  return left.localeCompare(right, undefined, {
+    numeric: true,
+    sensitivity: 'base',
+  });
+}
+
+function naturalSort(values) {
+  if (!Array.isArray(values)) {
+    throw new TypeError('Values must be an array of strings');
+  }
+
+  return [...values].sort(alphaNumericalSort);
+}
+```
+
+```ts
+export function alphaNumericalSort(left: string, right: string): number {
+  return left.localeCompare(right, undefined, {
+    numeric: true,
+    sensitivity: 'base',
+  });
+}
+
+export function naturalSort(values: string[]): string[] {
+  return [...values].sort(alphaNumericalSort);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why plain lexicographic comparison fails on embedded numbers.
+- Make the comparator case-sensitive or locale-specific.
+- Extend the approach to version strings with multiple numeric segments.
+
+## Common Pitfalls
+
+- Treating the problem like ordinary alphabetical sorting.
+- Forgetting that the comparator, not the sorting engine, is the main algorithmic decision.
+- Assuming all locales and runtimes behave identically without checking the `localeCompare` options.

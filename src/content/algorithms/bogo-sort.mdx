@@ -1,0 +1,142 @@
+---
+title: Bogo Sort
+slug: bogo-sort
+category: Sorting
+summary: Repeatedly shuffle the array until it happens to become sorted.
+description: Bogo Sort is the intentionally terrible randomized sort that keeps permuting the input until luck produces order.
+dataStructures:
+  - Array
+techniques:
+  - Sorting
+  - Randomization
+  - Generate and Test
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - permutation sort
+  - stupid sort
+useCases:
+  - Demonstrating why brute-force random search is not a practical sorting strategy
+  - Comparing expected runtime with structured sorting algorithms
+  - Teaching Fisher-Yates style shuffling in a deliberately absurd context
+complexity:
+  time: Unbounded worst case, O(n * n!) expected
+  space: O(1)
+  notes: Bogo sort is only useful as a cautionary example. It has no meaningful production role.
+interviewSignals:
+  - The prompt is framed as a joke or asks for the worst possible sort.
+  - The surrounding task emphasizes random shuffling and repeated sortedness checks.
+relatedSlugs:
+  - fisher-yates-shuffle
+  - stooge-sort
+  - quick-sort
+provenance:
+  - title: TheAlgorithms/JavaScript - Sorts/BogoSort.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Sorts/BogoSort.js
+    kind: Implementation
+  - title: "free-programming-books - Open Data Structures: An Introduction"
+    href: https://opendatastructures.org/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Bogo sort is the cleanest reminder that “eventually correct” is not the same thing as algorithmically sound. It keeps trying random permutations until one of them is sorted, which makes it an anti-pattern rather than a real solution.
+
+## Worked Example
+
+For `[2, 1, 3]`, one shuffle might produce `[1, 3, 2]`, another `[3, 2, 1]`, and eventually some shuffle lands on `[1, 2, 3]`. The algorithm succeeds by chance rather than structure.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function bogoSort(values, maxAttempts = 100000) {
+  if (!Array.isArray(values)) {
+    throw new TypeError('Values must be an array');
+  }
+
+  const items = [...values];
+
+  function isSorted() {
+    for (let index = 1; index < items.length; index += 1) {
+      if (items[index - 1] > items[index]) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  function shuffle() {
+    for (let index = items.length - 1; index > 0; index -= 1) {
+      const randomIndex = Math.floor(Math.random() * (index + 1));
+      [items[index], items[randomIndex]] = [items[randomIndex], items[index]];
+    }
+  }
+
+  let attempts = 0;
+
+  while (!isSorted()) {
+    if (attempts >= maxAttempts) {
+      throw new RangeError('Exceeded the maximum number of shuffle attempts');
+    }
+
+    shuffle();
+    attempts += 1;
+  }
+
+  return items;
+}
+```
+
+```ts
+export function bogoSort(values: number[], maxAttempts = 100000): number[] {
+  const items = [...values];
+
+  function isSorted(): boolean {
+    for (let index = 1; index < items.length; index += 1) {
+      if (items[index - 1] > items[index]) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  function shuffle(): void {
+    for (let index = items.length - 1; index > 0; index -= 1) {
+      const randomIndex = Math.floor(Math.random() * (index + 1));
+      [items[index], items[randomIndex]] = [items[randomIndex], items[index]];
+    }
+  }
+
+  let attempts = 0;
+
+  while (!isSorted()) {
+    if (attempts >= maxAttempts) {
+      throw new RangeError('Exceeded the maximum number of shuffle attempts');
+    }
+
+    shuffle();
+    attempts += 1;
+  }
+
+  return items;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why the expected runtime explodes factorially.
+- Compare the shuffle routine with Fisher-Yates.
+- Describe why this is a useful teaching example even though it is useless in practice.
+
+## Common Pitfalls
+
+- Presenting bogo sort as a serious sorting option.
+- Using a biased shuffle routine and then reasoning about the wrong probability model.
+- Forgetting that the algorithm has no deterministic upper runtime bound.

@@ -328,9 +328,20 @@ This twenty-seventh expansion slice lifts the catalog from 194 to 200 entries.
 - Flash Sort
 - Odd Even Sort
 
+## Batch 28 added
+
+This twenty-eighth expansion slice lifts the catalog from 200 to 206 entries.
+
+- Alpha Numerical Sort
+- Bogo Sort
+- Intro Sort
+- Pigeonhole Sort
+- Simplified Wiggle Sort
+- Stooge Sort
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 27 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 28 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -339,9 +350,9 @@ All expansion entries from batch 1 through batch 27 now carry explicit per-entry
 ## Why this batch
 
 - It fills obvious interview-core gaps from TheAlgorithms/JavaScript without duplicating material already present in Algae.
-- It follows the verified sorting queue directly, adding a gravity-inspired model, a binary-search insertion variant, a specialized three-way partition, a scan-based selection problem, a distribution sort, and a parity-phase exchange sort.
-- It broadens the catalog across specialized linear-time partitioning, distribution-aware sorting, and selection-style array scanning instead of staying inside the previous mixed sort-and-text slice.
-- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially partitioning, hybrid sorting ideas, and array-selection fundamentals.
+- It follows the remaining verified sort queue directly, covering natural comparator ordering, randomized generate-and-test failure modes, production-grade hybrid sorting, range-count placement, wiggle-style rearrangement, and one famously bad recursive sorter.
+- It broadens the catalog across comparator design, hybrid algorithm engineering, integer range mapping, median-guided layout, and deliberate counterexamples to efficient sorting instead of staying inside the previous specialized partitioning slice.
+- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially sorting tradeoffs, hybrid designs, and how constraints change what makes a sorting routine useful.
 
 ## Supporting study references from the algorithms list
 
@@ -353,9 +364,9 @@ All expansion entries from batch 1 through batch 27 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- Alpha Numerical Sort
-- Bogo Sort
-- Intro Sort
-- Pigeonhole Sort
-- Simplified Wiggle Sort
-- Stooge Sort
+- Density
+- Kosaraju
+- Linear Search
+- Minesweeper
+- Node Neighbors
+- RLE

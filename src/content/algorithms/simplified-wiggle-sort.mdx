@@ -1,0 +1,112 @@
+---
+title: Simplified Wiggle Sort
+slug: simplified-wiggle-sort
+category: Array Patterns
+summary: Rearrange values so they alternate in a wave pattern `a0 <= a1 >= a2 <= a3 ...`.
+description: Simplified Wiggle Sort is the median-guided rearrangement routine that transforms an array into a wave-shaped ordering where equality is allowed.
+dataStructures:
+  - Array
+techniques:
+  - Median Partitioning
+  - Reordering
+  - Interleaving
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - wiggle sort
+  - wave arrangement
+useCases:
+  - Rearranging values into local peaks and valleys
+  - Teaching why some array-ordering problems are not full sorting problems
+  - Comparing median-based placement with full ascending sort
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: The simplified version only needs the non-strict wave condition, so an interleaving approach is enough and equal adjacent values are allowed.
+interviewSignals:
+  - The target order alternates between `<=` and `>=` rather than increasing globally.
+  - The prompt asks for peaks and valleys or a wiggle pattern, not a fully sorted array.
+relatedSlugs:
+  - quickselect
+  - two-pointers
+  - dutch-national-flag-sort
+provenance:
+  - title: TheAlgorithms/JavaScript - Sorts/SimplifiedWiggleSort.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Sorts/SimplifiedWiggleSort.js
+    kind: Implementation
+  - title: free-programming-books - Algorithm Design
+    href: https://jeffe.cs.illinois.edu/teaching/algorithms/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Simplified wiggle sort is a good reminder that not every ordering problem wants a globally sorted answer. The goal is only local structure: odd indexes should become peaks and even indexes should become valleys.
+
+## Worked Example
+
+For `[1, 5, 1, 1, 6, 4]`, one valid simplified wiggle arrangement is `[1, 6, 1, 5, 1, 4]`, which satisfies `1 <= 6 >= 1 <= 5 >= 1 <= 4`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function simplifiedWiggleSort(values) {
+  if (!Array.isArray(values)) {
+    throw new TypeError('Values must be an array of numbers');
+  }
+
+  const sorted = [...values].sort((left, right) => left - right);
+  const result = new Array(sorted.length);
+  let lower = Math.floor((sorted.length - 1) / 2);
+  let upper = sorted.length - 1;
+
+  for (let index = 0; index < result.length; index += 1) {
+    if (index % 2 === 0) {
+      result[index] = sorted[lower];
+      lower -= 1;
+    } else {
+      result[index] = sorted[upper];
+      upper -= 1;
+    }
+  }
+
+  return result;
+}
+```
+
+```ts
+export function simplifiedWiggleSort(values: number[]): number[] {
+  const sorted = [...values].sort((left, right) => left - right);
+  const result = new Array<number>(sorted.length);
+  let lower = Math.floor((sorted.length - 1) / 2);
+  let upper = sorted.length - 1;
+
+  for (let index = 0; index < result.length; index += 1) {
+    if (index % 2 === 0) {
+      result[index] = sorted[lower];
+      lower -= 1;
+    } else {
+      result[index] = sorted[upper];
+      upper -= 1;
+    }
+  }
+
+  return result;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Tighten the condition to require strict `<` and `>` where possible.
+- Explain why placing larger values in odd indexes creates the peaks.
+- Replace the full sort with a quickselect-based median strategy.
+
+## Common Pitfalls
+
+- Solving the wrong problem by fully sorting the array and stopping there.
+- Forgetting that the simplified version allows equal neighboring values.
+- Filling the output left-to-right from the sorted array and losing the wiggle pattern.

@@ -1,0 +1,124 @@
+---
+title: Stooge Sort
+slug: stooge-sort
+category: Sorting
+summary: Recursively sort the first two-thirds, then the last two-thirds, then the first two-thirds again.
+description: Stooge Sort is the famously inefficient divide-and-conquer sort that overlaps recursive subproblems instead of partitioning them well.
+dataStructures:
+  - Array
+techniques:
+  - Sorting
+  - Recursion
+  - Divide and Conquer
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - recursive bad sort
+  - overlapping thirds sort
+useCases:
+  - Demonstrating how recursion can be correct yet algorithmically terrible
+  - Comparing productive divide-and-conquer design with pathological overlap
+  - Teaching why asymptotic analysis matters even for short recursive code
+complexity:
+  time: O(n^2.71) approximately
+  space: O(log n)
+  notes: Stooge sort is correct, but it repeats too much work to be useful. It is mainly a teaching example.
+interviewSignals:
+  - The prompt is about odd historical sorts or intentionally inefficient recursion.
+  - The algorithm keeps revisiting overlapping ranges of the input.
+relatedSlugs:
+  - quick-sort
+  - merge-sort
+  - bogo-sort
+provenance:
+  - title: TheAlgorithms/JavaScript - Sorts/StoogeSort.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Sorts/StoogeSort.js
+    kind: Implementation
+  - title: "free-programming-books - Open Data Structures: An Introduction"
+    href: https://opendatastructures.org/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Stooge sort is useful precisely because it is such a bad idea. It shows that recursion alone does not make an algorithm elegant or efficient. The subproblems overlap so heavily that the runtime becomes dreadful.
+
+## Worked Example
+
+On `[4, 3, 2, 1]`, stooge sort compares the ends, swaps them if needed, then recursively sorts the first two-thirds, the last two-thirds, and the first two-thirds again. The overlap is what makes it explode in cost.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function stoogeSort(values) {
+  if (!Array.isArray(values)) {
+    throw new TypeError('Values must be an array of numbers');
+  }
+
+  const items = [...values];
+
+  function sortRange(left, right) {
+    if (items[right - 1] < items[left]) {
+      [items[left], items[right - 1]] = [items[right - 1], items[left]];
+    }
+
+    const length = right - left;
+
+    if (length > 2) {
+      const third = Math.floor(length / 3);
+      sortRange(left, right - third);
+      sortRange(left + third, right);
+      sortRange(left, right - third);
+    }
+  }
+
+  if (items.length > 1) {
+    sortRange(0, items.length);
+  }
+
+  return items;
+}
+```
+
+```ts
+export function stoogeSort(values: number[]): number[] {
+  const items = [...values];
+
+  function sortRange(left: number, right: number): void {
+    if (items[right - 1] < items[left]) {
+      [items[left], items[right - 1]] = [items[right - 1], items[left]];
+    }
+
+    const length = right - left;
+
+    if (length > 2) {
+      const third = Math.floor(length / 3);
+      sortRange(left, right - third);
+      sortRange(left + third, right);
+      sortRange(left, right - third);
+    }
+  }
+
+  if (items.length > 1) {
+    sortRange(0, items.length);
+  }
+
+  return items;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare stooge sort's recursion tree with merge sort's.
+- Explain why the overlapping thirds create so much repeated work.
+- Use the recurrence to estimate the exponent in the runtime.
+
+## Common Pitfalls
+
+- Mistaking divide-and-conquer structure for efficiency.
+- Forgetting that the range is half-open in many recursive implementations.
+- Using it as if it were a serious alternative to standard recursive sorts.

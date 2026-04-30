@@ -1,0 +1,313 @@
+---
+title: Intro Sort
+slug: intro-sort
+category: Sorting
+summary: Start with quicksort, switch to heapsort when recursion gets too deep, and use insertion sort on small partitions.
+description: Intro Sort is the production-style hybrid that combines quicksort's speed with heapsort's worst-case safety and insertion sort's small-array efficiency.
+dataStructures:
+  - Array
+  - Heap
+techniques:
+  - Sorting
+  - Divide and Conquer
+  - Hybrid Algorithm
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - introsort
+  - introspective sort
+useCases:
+  - Building a general-purpose comparison sort with worst-case guarantees
+  - Teaching why library sort implementations often blend multiple algorithms
+  - Comparing fast average-case partitioning with defensive fallbacks
+complexity:
+  time: O(n log n)
+  space: O(log n)
+  notes: The design goal is to keep quicksort's practical speed while preventing its pathological worst case.
+interviewSignals:
+  - The prompt asks for a production-grade comparison sort rather than one textbook technique in isolation.
+  - There is interest in switching strategies based on partition size or recursion depth.
+relatedSlugs:
+  - quick-sort
+  - heap-sort
+  - insertion-sort
+provenance:
+  - title: TheAlgorithms/JavaScript - Sorts/IntroSort.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Sorts/IntroSort.js
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Intro sort is what you discuss when the interviewer stops caring about one elegant idea and starts caring about robust engineering. It combines three familiar algorithms because each one is strong in a different regime.
+
+## Worked Example
+
+On a large random array, intro sort behaves mostly like quicksort. If unlucky pivots make the recursion depth grow too far, it switches to heapsort for that segment, and tiny partitions are handled with insertion sort because the constant factors are better there.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function introSort(values) {
+  if (!Array.isArray(values)) {
+    throw new TypeError('Values must be an array of numbers');
+  }
+
+  const items = [...values];
+  const threshold = 16;
+  const maxDepth = 2 * Math.floor(Math.log2(items.length || 1));
+
+  function swap(left, right) {
+    [items[left], items[right]] = [items[right], items[left]];
+  }
+
+  function insertionSort(left, right) {
+    for (let index = left + 1; index <= right; index += 1) {
+      const current = items[index];
+      let position = index - 1;
+
+      while (position >= left && items[position] > current) {
+        items[position + 1] = items[position];
+        position -= 1;
+      }
+
+      items[position + 1] = current;
+    }
+  }
+
+  function partition(left, right) {
+    const pivot = items[Math.floor((left + right) / 2)];
+    let low = left;
+    let high = right;
+
+    while (low <= high) {
+      while (items[low] < pivot) {
+        low += 1;
+      }
+
+      while (items[high] > pivot) {
+        high -= 1;
+      }
+
+      if (low <= high) {
+        swap(low, high);
+        low += 1;
+        high -= 1;
+      }
+    }
+
+    return low;
+  }
+
+  function heapSort(left, right) {
+    const size = right - left + 1;
+
+    function valueAt(index) {
+      return items[left + index];
+    }
+
+    function swapHeap(first, second) {
+      swap(left + first, left + second);
+    }
+
+    function siftDown(root, end) {
+      while (root * 2 + 1 <= end) {
+        const child = root * 2 + 1;
+        let candidate = root;
+
+        if (valueAt(candidate) < valueAt(child)) {
+          candidate = child;
+        }
+
+        if (child + 1 <= end && valueAt(candidate) < valueAt(child + 1)) {
+          candidate = child + 1;
+        }
+
+        if (candidate === root) {
+          return;
+        }
+
+        swapHeap(root, candidate);
+        root = candidate;
+      }
+    }
+
+    for (let root = Math.floor((size - 2) / 2); root >= 0; root -= 1) {
+      siftDown(root, size - 1);
+    }
+
+    for (let end = size - 1; end > 0; end -= 1) {
+      swapHeap(0, end);
+      siftDown(0, end - 1);
+    }
+  }
+
+  function sort(left, right, depthLimit) {
+    if (right - left + 1 <= threshold) {
+      insertionSort(left, right);
+      return;
+    }
+
+    if (depthLimit === 0) {
+      heapSort(left, right);
+      return;
+    }
+
+    const split = partition(left, right);
+
+    if (left < split - 1) {
+      sort(left, split - 1, depthLimit - 1);
+    }
+
+    if (split < right) {
+      sort(split, right, depthLimit - 1);
+    }
+  }
+
+  if (items.length > 1) {
+    sort(0, items.length - 1, maxDepth);
+  }
+
+  return items;
+}
+```
+
+```ts
+export function introSort(values: number[]): number[] {
+  const items = [...values];
+  const threshold = 16;
+  const maxDepth = 2 * Math.floor(Math.log2(items.length || 1));
+
+  function swap(left: number, right: number): void {
+    [items[left], items[right]] = [items[right], items[left]];
+  }
+
+  function insertionSort(left: number, right: number): void {
+    for (let index = left + 1; index <= right; index += 1) {
+      const current = items[index];
+      let position = index - 1;
+
+      while (position >= left && items[position] > current) {
+        items[position + 1] = items[position];
+        position -= 1;
+      }
+
+      items[position + 1] = current;
+    }
+  }
+
+  function partition(left: number, right: number): number {
+    const pivot = items[Math.floor((left + right) / 2)];
+    let low = left;
+    let high = right;
+
+    while (low <= high) {
+      while (items[low] < pivot) {
+        low += 1;
+      }
+
+      while (items[high] > pivot) {
+        high -= 1;
+      }
+
+      if (low <= high) {
+        swap(low, high);
+        low += 1;
+        high -= 1;
+      }
+    }
+
+    return low;
+  }
+
+  function heapSort(left: number, right: number): void {
+    const size = right - left + 1;
+
+    function valueAt(index: number): number {
+      return items[left + index];
+    }
+
+    function swapHeap(first: number, second: number): void {
+      swap(left + first, left + second);
+    }
+
+    function siftDown(root: number, end: number): void {
+      while (root * 2 + 1 <= end) {
+        const child = root * 2 + 1;
+        let candidate = root;
+
+        if (valueAt(candidate) < valueAt(child)) {
+          candidate = child;
+        }
+
+        if (child + 1 <= end && valueAt(candidate) < valueAt(child + 1)) {
+          candidate = child + 1;
+        }
+
+        if (candidate === root) {
+          return;
+        }
+
+        swapHeap(root, candidate);
+        root = candidate;
+      }
+    }
+
+    for (let root = Math.floor((size - 2) / 2); root >= 0; root -= 1) {
+      siftDown(root, size - 1);
+    }
+
+    for (let end = size - 1; end > 0; end -= 1) {
+      swapHeap(0, end);
+      siftDown(0, end - 1);
+    }
+  }
+
+  function sort(left: number, right: number, depthLimit: number): void {
+    if (right - left + 1 <= threshold) {
+      insertionSort(left, right);
+      return;
+    }
+
+    if (depthLimit === 0) {
+      heapSort(left, right);
+      return;
+    }
+
+    const split = partition(left, right);
+
+    if (left < split - 1) {
+      sort(left, split - 1, depthLimit - 1);
+    }
+
+    if (split < right) {
+      sort(split, right, depthLimit - 1);
+    }
+  }
+
+  if (items.length > 1) {
+    sort(0, items.length - 1, maxDepth);
+  }
+
+  return items;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why the depth limit keeps quicksort from degrading catastrophically.
+- Compare intro sort with tim sort as two different kinds of hybrid production sort.
+- Replace the pivot rule with median-of-three and discuss the effect.
+
+## Common Pitfalls
+
+- Claiming intro sort is just quicksort with a better pivot rule.
+- Forgetting that small partitions are often faster with insertion sort.
+- Omitting the heapsort fallback and losing the worst-case guarantee.

@@ -1,0 +1,154 @@
+---
+title: Pigeonhole Sort
+slug: pigeonhole-sort
+category: Sorting
+summary: Count how many times each integer value appears in the input range, then write the values back in order.
+description: Pigeonhole Sort is the range-based integer sorting algorithm that uses one bucket per distinct value in the minimum-to-maximum interval.
+dataStructures:
+  - Array
+techniques:
+  - Sorting
+  - Counting
+  - Range Mapping
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - pigeonhole sorting
+  - hole counting sort
+useCases:
+  - Sorting integers when the value range is small relative to input size
+  - Demonstrating an offset-based cousin of counting sort
+  - Explaining why constraints on the key range can change the right algorithm choice
+complexity:
+  time: O(n + range)
+  space: O(range)
+  notes: Pigeonhole sort is only attractive when the numeric range is not much larger than the number of items.
+interviewSignals:
+  - The input is integer-only and the key range is compact.
+  - The problem can be solved more directly by counting occurrences than by comparing values pairwise.
+relatedSlugs:
+  - counting-sort
+  - bucket-sort
+  - bead-sort
+provenance:
+  - title: TheAlgorithms/JavaScript - Sorts/PigeonHoleSort.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Sorts/PigeonHoleSort.js
+    kind: Implementation
+  - title: "free-programming-books - Open Data Structures: An Introduction"
+    href: https://opendatastructures.org/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Pigeonhole sort is the clean answer when every item is an integer and the range is small enough to index directly. Instead of comparing values against each other, you count how many times each value occurs and then rebuild the array.
+
+## Worked Example
+
+For `[8, 3, 2, 7, 4, 6, 8]`, the range is `2..8`, so create one counter for each value in that interval. After counting frequencies, rewrite the values from the smallest occupied hole to the largest.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function pigeonholeSort(values) {
+  if (!Array.isArray(values) || values.some((value) => !Number.isInteger(value))) {
+    throw new TypeError('Values must be an array of integers');
+  }
+
+  if (values.length < 2) {
+    return [...values];
+  }
+
+  const items = [...values];
+  let min = items[0];
+  let max = items[0];
+
+  for (const value of items) {
+    if (value < min) {
+      min = value;
+    }
+
+    if (value > max) {
+      max = value;
+    }
+  }
+
+  const holes = new Array(max - min + 1).fill(0);
+
+  for (const value of items) {
+    holes[value - min] += 1;
+  }
+
+  let writeIndex = 0;
+
+  for (let offset = 0; offset < holes.length; offset += 1) {
+    while (holes[offset] > 0) {
+      items[writeIndex] = offset + min;
+      writeIndex += 1;
+      holes[offset] -= 1;
+    }
+  }
+
+  return items;
+}
+```
+
+```ts
+export function pigeonholeSort(values: number[]): number[] {
+  if (values.some((value) => !Number.isInteger(value))) {
+    throw new TypeError('Values must be an array of integers');
+  }
+
+  if (values.length < 2) {
+    return [...values];
+  }
+
+  const items = [...values];
+  let min = items[0];
+  let max = items[0];
+
+  for (const value of items) {
+    if (value < min) {
+      min = value;
+    }
+
+    if (value > max) {
+      max = value;
+    }
+  }
+
+  const holes = new Array<number>(max - min + 1).fill(0);
+
+  for (const value of items) {
+    holes[value - min] += 1;
+  }
+
+  let writeIndex = 0;
+
+  for (let offset = 0; offset < holes.length; offset += 1) {
+    while (holes[offset] > 0) {
+      items[writeIndex] = offset + min;
+      writeIndex += 1;
+      holes[offset] -= 1;
+    }
+  }
+
+  return items;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare pigeonhole sort with counting sort when the minimum value is not zero.
+- Explain why a huge range makes the algorithm impractical.
+- Modify it to sort objects by a small integer key.
+
+## Common Pitfalls
+
+- Ignoring negative integers and forgetting the offset by `min`.
+- Using pigeonhole sort when the value range is vastly larger than the input.
+- Treating it as a generic comparison sort for arbitrary data types.
