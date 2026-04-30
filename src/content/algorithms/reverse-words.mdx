@@ -1,0 +1,92 @@
+---
+title: Reverse Words
+slug: reverse-words
+category: Strings
+summary: Reverse the order of words in a sentence by splitting on whitespace and joining the words back in reverse order.
+description: Reverse Words is the token-reordering string problem where the word order changes but the characters inside each word stay intact.
+dataStructures:
+  - String
+  - Array
+techniques:
+  - Tokenization
+  - Reverse Traversal
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - reverse word order
+  - sentence word reversal
+useCases:
+  - Reordering natural-language tokens
+  - Practicing whitespace normalization rules
+  - Contrasting word-level reversal with character-level reversal
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: Splitting on whitespace and joining with a single space usually normalizes repeated spaces, so verify whether the prompt wants exact spacing preserved.
+interviewSignals:
+  - The prompt asks to reverse words but not the letters inside each word.
+  - Whitespace normalization or trimming is part of the expected behavior.
+relatedSlugs:
+  - check-pangram
+  - count-vowels
+  - check-anagram
+provenance:
+  - title: TheAlgorithms/JavaScript - String/ReverseWords.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/String/ReverseWords.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Reverse-words problems look trivial until whitespace rules matter. The interviewer usually wants to know whether you are reversing tokens, characters, or preserving exact spacing.
+
+## Worked Example
+
+For `"  blue   sky here  "`, splitting on whitespace gives `['blue', 'sky', 'here']`, and reversing the words yields `"here sky blue"`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function reverseWords(value) {
+  if (typeof value !== 'string') {
+    throw new TypeError('Value must be a string');
+  }
+
+  return value
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .reverse()
+    .join(' ');
+}
+```
+
+```ts
+export function reverseWords(value: string): string {
+  return value
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .reverse()
+    .join(' ');
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Reverse each word's characters in place while preserving word order.
+- Preserve the exact spacing layout instead of normalizing it.
+- Solve the problem in place on a mutable character array.
+
+## Common Pitfalls
+
+- Reversing characters instead of words.
+- Forgetting to trim leading and trailing spaces when normalization is expected.
+- Collapsing repeated spaces even when the prompt requires preserving them exactly.

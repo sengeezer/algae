@@ -1,0 +1,123 @@
+---
+title: Z Function
+slug: z-function
+category: Strings
+summary: Compute prefix-match lengths for every index by maintaining the current matching window and reusing known results inside it.
+description: Z Function is the linear-time prefix-array routine that records how much of the string's prefix matches each suffix starting position.
+dataStructures:
+  - String
+  - Array
+techniques:
+  - Z Algorithm
+  - String Matching
+  - Prefix Reuse
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - z algorithm
+  - prefix match array
+useCases:
+  - Building substring search from prefix matches
+  - Detecting repeated prefixes and borders in strings
+  - Comparing linear-time pattern preprocessors such as Z and KMP
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: The key invariant is the current `[left, right]` window whose substring already matches the prefix, allowing work reuse instead of restarting comparisons.
+interviewSignals:
+  - The prompt asks for prefix-match lengths at every index or hints at a Z-array explicitly.
+  - Linear-time pattern preprocessing is required rather than naive repeated prefix comparisons.
+relatedSlugs:
+  - kmp-string-search
+  - rabin-karp
+  - boyer-moore
+provenance:
+  - title: TheAlgorithms/JavaScript - String/ZFunction.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/String/ZFunction.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Z Function is a classic string-preprocessing algorithm that tests whether you can preserve a window invariant and reuse previous matches instead of recomputing them character by character.
+
+## Worked Example
+
+For `"aabxaabx"`, the Z value at index `4` is `4` because the suffix starting there, `"aabx"`, matches the whole prefix of the same length.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function zFunction(text) {
+  const zArray = new Array(text.length).fill(0);
+  let left = 0;
+  let right = 0;
+
+  for (let index = 1; index < text.length; index += 1) {
+    if (index <= right) {
+      zArray[index] = Math.min(right - index + 1, zArray[index - left]);
+    }
+
+    while (
+      index + zArray[index] < text.length &&
+      text[zArray[index]] === text[index + zArray[index]]
+    ) {
+      zArray[index] += 1;
+    }
+
+    if (index + zArray[index] - 1 > right) {
+      left = index;
+      right = index + zArray[index] - 1;
+    }
+  }
+
+  return zArray;
+}
+```
+
+```ts
+export function zFunction(text: string): number[] {
+  const zArray = new Array<number>(text.length).fill(0);
+  let left = 0;
+  let right = 0;
+
+  for (let index = 1; index < text.length; index += 1) {
+    if (index <= right) {
+      zArray[index] = Math.min(right - index + 1, zArray[index - left]);
+    }
+
+    while (
+      index + zArray[index] < text.length &&
+      text[zArray[index]] === text[index + zArray[index]]
+    ) {
+      zArray[index] += 1;
+    }
+
+    if (index + zArray[index] - 1 > right) {
+      left = index;
+      right = index + zArray[index] - 1;
+    }
+  }
+
+  return zArray;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Use the Z array on `pattern + '#' + text` to implement substring search.
+- Compare the invariant here with the prefix-table invariant in KMP.
+- Return the longest border or repeated prefix implied by the Z array.
+
+## Common Pitfalls
+
+- Starting the main loop at index `0` instead of `1`.
+- Reusing a prior Z value without capping it to the current window boundary.
+- Forgetting to update the `[left, right]` window after extending a match.

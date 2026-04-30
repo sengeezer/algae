@@ -1,0 +1,98 @@
+---
+title: Check Pangram
+slug: check-pangram
+category: Strings
+summary: Decide whether a sentence uses every alphabet letter at least once by tracking distinct letters in a set.
+description: Check Pangram is the alphabet-coverage test for recognizing when a string contains all twenty-six English letters.
+dataStructures:
+  - String
+  - Set
+techniques:
+  - Set Membership
+  - Character Filtering
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - pangram test
+  - full alphabet check
+useCases:
+  - Validating puzzle phrases or typing exercises
+  - Practicing set-based character coverage checks
+  - Contrasting exact coverage with frequency-based string tasks
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: With a fixed English alphabet, the set never grows beyond 26 letters, so the extra space is constant in practice.
+interviewSignals:
+  - The prompt asks whether a sentence contains every alphabet letter.
+  - The order or frequency of the letters does not matter after coverage is recorded.
+relatedSlugs:
+  - count-vowels
+  - check-anagram
+  - reverse-words
+provenance:
+  - title: TheAlgorithms/JavaScript - String/CheckPangram.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/String/CheckPangram.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Pangram checks are simple set problems disguised as string questions. The trick is filtering down to alphabet letters and then stopping once full coverage is achieved.
+
+## Worked Example
+
+`"The quick brown fox jumps over the lazy dog"` is a pangram because, after ignoring spaces and case, the set of letters contains all 26 uppercase letters.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function checkPangram(value) {
+  if (typeof value !== 'string') {
+    throw new TypeError('Value must be a string');
+  }
+
+  const letters = new Set();
+
+  for (const char of value.toUpperCase()) {
+    if (char >= 'A' && char <= 'Z') {
+      letters.add(char);
+    }
+  }
+
+  return letters.size === 26;
+}
+```
+
+```ts
+export function checkPangram(value: string): boolean {
+  const letters = new Set<string>();
+
+  for (const char of value.toUpperCase()) {
+    if (char >= 'A' && char <= 'Z') {
+      letters.add(char);
+    }
+  }
+
+  return letters.size === 26;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the missing letters instead of only a boolean result.
+- Replace the set with a 26-bit mask.
+- Adapt the routine for other alphabets or Unicode scripts.
+
+## Common Pitfalls
+
+- Counting punctuation or spaces as letters.
+- Forgetting case normalization.
+- Using a frequency table when only presence or absence matters.

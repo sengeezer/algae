@@ -1,0 +1,97 @@
+---
+title: Count Vowels
+slug: count-vowels
+category: Strings
+summary: Count vowel characters in a string by scanning it once and matching only the vowel set.
+description: Count Vowels is the character-classification routine for measuring vowel frequency in a word, phrase, or sentence.
+dataStructures:
+  - String
+techniques:
+  - Character Classification
+  - String Scan
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - vowel count
+  - count vowels in string
+useCases:
+  - Building lightweight text statistics
+  - Practicing regex or set-based character filtering
+  - Supporting simple string-analysis warmup problems
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The vowel set is fixed, so each character only needs a constant-time membership check.
+interviewSignals:
+  - The prompt asks for the number of vowels in a string.
+  - You only need a linear scan, not any substring or pattern-preprocessing machinery.
+relatedSlugs:
+  - check-pangram
+  - first-unique-character
+  - reverse-words
+provenance:
+  - title: TheAlgorithms/JavaScript - String/CountVowels.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/String/CountVowels.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a small string-scan problem, but it is useful because the solution should stay proportional to the input length and avoid overcomplicating a fixed membership test.
+
+## Worked Example
+
+For `"Hello, World"`, the vowels are `e`, `o`, and `o`, so the count is `3`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function countVowels(value) {
+  if (typeof value !== 'string') {
+    throw new TypeError('Value must be a string');
+  }
+
+  let count = 0;
+
+  for (const char of value.toLowerCase()) {
+    if ('aeiou'.includes(char)) {
+      count += 1;
+    }
+  }
+
+  return count;
+}
+```
+
+```ts
+export function countVowels(value: string): number {
+  let count = 0;
+
+  for (const char of value.toLowerCase()) {
+    if ('aeiou'.includes(char)) {
+      count += 1;
+    }
+  }
+
+  return count;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Treat `y` as a vowel under a different rule set.
+- Return separate counts for each vowel instead of a single total.
+- Compare a regex-based implementation with explicit character scanning.
+
+## Common Pitfalls
+
+- Forgetting case normalization.
+- Counting non-letters that happen to resemble vowels under other encodings.
+- Reaching for heavier text-processing tools when a simple linear scan is enough.

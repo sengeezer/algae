@@ -1,0 +1,106 @@
+---
+title: First Unique Character
+slug: first-unique-character
+category: Strings
+summary: Find the earliest non-repeating character by counting frequencies first and then scanning for the first count of one.
+description: First Unique Character is the frequency-map string problem where you return the index of the earliest character that appears exactly once.
+dataStructures:
+  - String
+  - Hash Map
+techniques:
+  - Frequency Counting
+  - Two Pass Scan
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - first non-repeating character
+  - first unique char
+useCases:
+  - Finding a stable unique marker inside a string
+  - Practicing two-pass frequency-map solutions
+  - Contrasting index return problems with value return problems
+complexity:
+  time: O(n)
+  space: O(k)
+  notes: A first pass gathers counts, and a second pass preserves the original left-to-right ordering needed for the answer.
+interviewSignals:
+  - The prompt asks for the first character with frequency exactly one.
+  - Order matters, so a set alone is not enough.
+relatedSlugs:
+  - check-anagram
+  - count-vowels
+  - two-sum
+provenance:
+  - title: TheAlgorithms/JavaScript - String/FirstUniqueCharacter.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/String/FirstUniqueCharacter.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem checks whether you can separate counting from selection. The count map solves frequency, but the second pass is what preserves the first occurrence requirement.
+
+## Worked Example
+
+For `"leetcode"`, the counts show `l`, `t`, `c`, `o`, `d`, and `e` frequencies, and the first character with count `1` is `l` at index `0`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function firstUniqueCharacter(value) {
+  if (typeof value !== 'string') {
+    throw new TypeError('Value must be a string');
+  }
+
+  const counts = new Map();
+
+  for (const char of value) {
+    counts.set(char, (counts.get(char) ?? 0) + 1);
+  }
+
+  for (let index = 0; index < value.length; index += 1) {
+    if (counts.get(value[index]) === 1) {
+      return index;
+    }
+  }
+
+  return -1;
+}
+```
+
+```ts
+export function firstUniqueCharacter(value: string): number {
+  const counts = new Map<string, number>();
+
+  for (const char of value) {
+    counts.set(char, (counts.get(char) ?? 0) + 1);
+  }
+
+  for (let index = 0; index < value.length; index += 1) {
+    if (counts.get(value[index]) === 1) {
+      return index;
+    }
+  }
+
+  return -1;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the character instead of its index.
+- Optimize for a fixed lowercase alphabet with an array count table.
+- Extend the idea to a stream where characters arrive over time.
+
+## Common Pitfalls
+
+- Returning the smallest-count character instead of the first unique one.
+- Trying to decide uniqueness in one pass without keeping enough state.
+- Forgetting to return `-1` when no unique character exists.

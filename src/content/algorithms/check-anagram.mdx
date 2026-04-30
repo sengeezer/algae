@@ -1,0 +1,132 @@
+---
+title: Check Anagram
+slug: check-anagram
+category: Strings
+summary: Determine whether two strings are anagrams by normalizing them and comparing character frequencies.
+description: Check Anagram is the string-comparison routine for deciding whether two words or phrases contain the same letters in a different order.
+dataStructures:
+  - String
+  - Hash Map
+techniques:
+  - Frequency Counting
+  - String Normalization
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - anagram test
+  - valid anagram
+useCases:
+  - Comparing rearranged words or phrases
+  - Building intuition for frequency maps on strings
+  - Supporting grouping and matching tasks based on normalized letters
+complexity:
+  time: O(n)
+  space: O(k)
+  notes: The main interview nuance is whether spaces, punctuation, or case should be normalized away before comparing frequencies.
+interviewSignals:
+  - The prompt asks whether two strings can be rearranged into each other.
+  - Character counts matter more than original order.
+relatedSlugs:
+  - permutation-in-string
+  - first-unique-character
+  - count-vowels
+provenance:
+  - title: TheAlgorithms/JavaScript - String/CheckAnagram.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/String/CheckAnagram.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Anagram questions are usually really normalization questions. The interviewer wants to see whether you recognize that order is irrelevant once character counts are fixed.
+
+## Worked Example
+
+`"listen"` and `"silent"` are anagrams because each letter appears the same number of times in both strings. After counting the letters, every frequency matches exactly.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function normalize(input) {
+  return input.toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+function checkAnagram(left, right) {
+  if (typeof left !== 'string' || typeof right !== 'string') {
+    throw new TypeError('Both arguments must be strings');
+  }
+
+  const normalizedLeft = normalize(left);
+  const normalizedRight = normalize(right);
+
+  if (normalizedLeft.length !== normalizedRight.length) {
+    return false;
+  }
+
+  const counts = new Map();
+
+  for (const char of normalizedLeft) {
+    counts.set(char, (counts.get(char) ?? 0) + 1);
+  }
+
+  for (const char of normalizedRight) {
+    const nextCount = (counts.get(char) ?? 0) - 1;
+    if (nextCount < 0) {
+      return false;
+    }
+    counts.set(char, nextCount);
+  }
+
+  return true;
+}
+```
+
+```ts
+function normalize(input: string): string {
+  return input.toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+export function checkAnagram(left: string, right: string): boolean {
+  const normalizedLeft = normalize(left);
+  const normalizedRight = normalize(right);
+
+  if (normalizedLeft.length !== normalizedRight.length) {
+    return false;
+  }
+
+  const counts = new Map<string, number>();
+
+  for (const char of normalizedLeft) {
+    counts.set(char, (counts.get(char) ?? 0) + 1);
+  }
+
+  for (const char of normalizedRight) {
+    const nextCount = (counts.get(char) ?? 0) - 1;
+    if (nextCount < 0) {
+      return false;
+    }
+    counts.set(char, nextCount);
+  }
+
+  return true;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Group an array of words by their anagram signature.
+- Compare the frequency-map approach with sorting both strings first.
+- Clarify how punctuation, spaces, and case should be handled.
+
+## Common Pitfalls
+
+- Comparing strings directly without removing ordering from the problem.
+- Forgetting to normalize punctuation or case when the prompt treats them as irrelevant.
+- Sorting the strings by default when a linear-time frequency count is enough.
