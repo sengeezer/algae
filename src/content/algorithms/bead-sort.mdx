@@ -1,0 +1,135 @@
+---
+title: Bead Sort
+slug: bead-sort
+category: Sorting
+summary: Simulate beads falling under gravity so the count in each row settles into ascending numeric order.
+description: Bead Sort is the gravity-inspired integer sorting algorithm that models values as vertical bead stacks on a grid.
+dataStructures:
+  - Array
+  - Matrix
+techniques:
+  - Sorting
+  - Simulation
+  - Counting Grid
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - gravity sort
+  - abacus sort
+useCases:
+  - Demonstrating how physical intuition can inspire sorting mechanics
+  - Comparing simulation-heavy sorts with counting-based numeric sorts
+  - Teaching why input constraints matter as much as asymptotic notation
+complexity:
+  time: O(n * maxValue)
+  space: O(n * maxValue)
+  notes: Bead sort is only practical for small non-negative integers because the implicit grid grows with the largest value.
+interviewSignals:
+  - The values are small integers and a physical falling-beads metaphor is suggested.
+  - The algorithm is constrained to non-negative integer counts rather than arbitrary comparable items.
+relatedSlugs:
+  - counting-sort
+  - bucket-sort
+  - radix-sort
+provenance:
+  - title: TheAlgorithms/JavaScript - Sorts/BeadSort.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Sorts/BeadSort.js
+    kind: Implementation
+  - title: "free-programming-books - Open Data Structures: An Introduction"
+    href: https://opendatastructures.org/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Bead sort shows up when someone wants a sorting example that is more about modeling than comparison logic. Each number becomes a row of beads, and gravity does the work by letting each column settle downward.
+
+## Worked Example
+
+For `[5, 3, 1]`, create three rows where the first row has five beads, the second has three, and the third has one. After each column settles downward, the rows become `[1, 3, 5]` when you count the beads left in each row.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function beadSort(values) {
+  if (!Array.isArray(values) || values.some((value) => !Number.isInteger(value) || value < 0)) {
+    throw new RangeError('Values must be an array of non-negative integers');
+  }
+
+  if (values.length < 2) {
+    return [...values];
+  }
+
+  const maxValue = Math.max(...values);
+  const grid = values.map((value) => Array.from({ length: maxValue }, (_, index) => index < value));
+
+  for (let column = 0; column < maxValue; column += 1) {
+    let beads = 0;
+
+    for (let row = 0; row < grid.length; row += 1) {
+      if (grid[row][column]) {
+        beads += 1;
+      }
+    }
+
+    for (let row = grid.length - 1; row >= 0; row -= 1) {
+      grid[row][column] = beads > 0;
+      if (beads > 0) {
+        beads -= 1;
+      }
+    }
+  }
+
+  return grid.map((row) => row.reduce((count, bead) => count + (bead ? 1 : 0), 0));
+}
+```
+
+```ts
+export function beadSort(values: number[]): number[] {
+  if (values.some((value) => !Number.isInteger(value) || value < 0)) {
+    throw new RangeError('Values must be an array of non-negative integers');
+  }
+
+  if (values.length < 2) {
+    return [...values];
+  }
+
+  const maxValue = Math.max(...values);
+  const grid = values.map((value) => Array.from({ length: maxValue }, (_, index) => index < value));
+
+  for (let column = 0; column < maxValue; column += 1) {
+    let beads = 0;
+
+    for (let row = 0; row < grid.length; row += 1) {
+      if (grid[row][column]) {
+        beads += 1;
+      }
+    }
+
+    for (let row = grid.length - 1; row >= 0; row -= 1) {
+      grid[row][column] = beads > 0;
+      if (beads > 0) {
+        beads -= 1;
+      }
+    }
+  }
+
+  return grid.map((row) => row.reduce((count, bead) => count + (bead ? 1 : 0), 0));
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why bead sort is limited to non-negative integers.
+- Compare its grid cost with counting sort on the same input range.
+- Adapt the representation to make the gravity step easier to visualize on a whiteboard.
+
+## Common Pitfalls
+
+- Claiming bead sort works naturally for arbitrary comparable data.
+- Ignoring the dependence on the maximum value when describing complexity.
+- Forgetting that the simulation needs one column pass per possible bead height.

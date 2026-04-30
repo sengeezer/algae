@@ -317,9 +317,20 @@ This twenty-sixth expansion slice lifts the catalog from 188 to 194 entries.
 - Morse Code
 - Pancake Sort
 
+## Batch 27 added
+
+This twenty-seventh expansion slice lifts the catalog from 194 to 200 entries.
+
+- Bead Sort
+- Binary Insertion Sort
+- Dutch National Flag Sort
+- Find Second Largest Element
+- Flash Sort
+- Odd Even Sort
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 26 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 27 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -328,9 +339,9 @@ All expansion entries from batch 1 through batch 26 now carry explicit per-entry
 ## Why this batch
 
 - It fills obvious interview-core gaps from TheAlgorithms/JavaScript without duplicating material already present in Algae.
-- It follows the verified mixed queue directly, combining overlooked pedagogical sorting variants with two text-transformation utilities and one Caesar key-recovery heuristic.
-- It broadens the current catalog across bidirectional adjacent swaps, local insertion, backstep repair, prefix reversals, pattern-scored key recovery, and symbolic message encoding instead of repeating the previous substitution-cipher slice.
-- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially sorting tradeoffs, text-processing mechanics, and small search heuristics.
+- It follows the verified sorting queue directly, adding a gravity-inspired model, a binary-search insertion variant, a specialized three-way partition, a scan-based selection problem, a distribution sort, and a parity-phase exchange sort.
+- It broadens the catalog across specialized linear-time partitioning, distribution-aware sorting, and selection-style array scanning instead of staying inside the previous mixed sort-and-text slice.
+- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially partitioning, hybrid sorting ideas, and array-selection fundamentals.
 
 ## Supporting study references from the algorithms list
 
@@ -339,13 +350,12 @@ All expansion entries from batch 1 through batch 26 now carry explicit per-entry
 - Algorithms, 4th Edition
 - Competitive Programmer's Handbook
 - Open Data Structures: An Introduction
-- Text Algorithms
 
 ## Next candidates from the same sources
 
-- Bead Sort
-- Binary Insertion Sort
-- Dutch National Flag Sort
-- Find Second Largest Element
-- Flash Sort
-- Odd Even Sort
+- Alpha Numerical Sort
+- Bogo Sort
+- Intro Sort
+- Pigeonhole Sort
+- Simplified Wiggle Sort
+- Stooge Sort

@@ -1,0 +1,122 @@
+---
+title: Dutch National Flag Sort
+slug: dutch-national-flag-sort
+category: Sorting
+summary: Partition an array of three values by growing low, middle, and high regions with one linear scan.
+description: Dutch National Flag Sort is the three-way partition algorithm that orders 0s, 1s, and 2s in a single pass.
+dataStructures:
+  - Array
+techniques:
+  - Sorting
+  - Partitioning
+  - Multi-Pointer Scan
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - dutch flag problem
+  - three-way partition sort
+useCases:
+  - Sorting arrays that contain exactly three categories
+  - Teaching in-place partitioning with multiple moving boundaries
+  - Reusing three-way partition logic inside quicksort-style routines
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The algorithm is specialized. Its speed comes from the fact that the value range is fixed to three categories.
+interviewSignals:
+  - The input contains only `0`, `1`, and `2` or three labeled buckets.
+  - The interviewer wants an in-place one-pass alternative to counting and rewriting.
+relatedSlugs:
+  - two-pointers
+  - quick-sort
+  - counting-sort
+provenance:
+  - title: TheAlgorithms/JavaScript - Sorts/DutchNationalFlagSort.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Sorts/DutchNationalFlagSort.js
+    kind: Implementation
+  - title: free-programming-books - Algorithm Design
+    href: https://jeffe.cs.illinois.edu/teaching/algorithms/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Dutch National Flag Sort is the standard answer for “sort 0s, 1s, and 2s in one pass.” The key idea is to maintain three regions: already-placed lows on the left, already-placed highs on the right, and unknown elements in the middle.
+
+## Worked Example
+
+For `[2, 0, 2, 1, 1, 0]`, swapping the leading `2` toward the high end grows the right region. Encountering `0` grows the left region, while `1` values stay in the middle and simply advance the scan.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function dutchNationalFlagSort(values) {
+  if (!Array.isArray(values)) {
+    throw new TypeError('Values must be an array');
+  }
+
+  const items = [...values];
+  let low = 0;
+  let mid = 0;
+  let high = items.length - 1;
+
+  while (mid <= high) {
+    if (items[mid] === 0) {
+      [items[low], items[mid]] = [items[mid], items[low]];
+      low += 1;
+      mid += 1;
+    } else if (items[mid] === 1) {
+      mid += 1;
+    } else if (items[mid] === 2) {
+      [items[mid], items[high]] = [items[high], items[mid]];
+      high -= 1;
+    } else {
+      throw new RangeError('Values must contain only 0, 1, and 2');
+    }
+  }
+
+  return items;
+}
+```
+
+```ts
+export function dutchNationalFlagSort(values: number[]): number[] {
+  const items = [...values];
+  let low = 0;
+  let mid = 0;
+  let high = items.length - 1;
+
+  while (mid <= high) {
+    if (items[mid] === 0) {
+      [items[low], items[mid]] = [items[mid], items[low]];
+      low += 1;
+      mid += 1;
+    } else if (items[mid] === 1) {
+      mid += 1;
+    } else if (items[mid] === 2) {
+      [items[mid], items[high]] = [items[high], items[mid]];
+      high -= 1;
+    } else {
+      throw new RangeError('Values must contain only 0, 1, and 2');
+    }
+  }
+
+  return items;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why `mid` does not advance immediately after swapping with `high`.
+- Generalize the idea to partition around a pivot in quicksort.
+- Compare this with counting the number of 0s, 1s, and 2s first.
+
+## Common Pitfalls
+
+- Incrementing `mid` after a swap with `high` and skipping an unclassified value.
+- Forgetting that the algorithm is specialized to exactly three categories.
+- Describing it as a generic replacement for arbitrary comparison sorting.

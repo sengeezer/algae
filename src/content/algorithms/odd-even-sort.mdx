@@ -1,0 +1,124 @@
+---
+title: Odd Even Sort
+slug: odd-even-sort
+category: Sorting
+summary: Alternate odd-index and even-index adjacent compare-swap passes until no pass makes a change.
+description: Odd Even Sort is the parity-phased exchange sort that performs bubble-like work in alternating adjacency lanes.
+dataStructures:
+  - Array
+techniques:
+  - Sorting
+  - Adjacent Swapping
+  - Alternating Passes
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - brick sort
+  - odd-even transposition sort
+useCases:
+  - Comparing sequential and parity-separated adjacent exchange passes
+  - Explaining how simple local sorts map onto parallel processor layouts
+  - Teaching why alternating pass schedules can still preserve quadratic behavior
+complexity:
+  time: O(n^2)
+  space: O(1)
+  notes: Odd-even sort is mostly valuable as a teaching bridge between bubble-like local swaps and parallel-friendly pass decomposition.
+interviewSignals:
+  - The prompt alternates between comparing odd pairs and even pairs.
+  - The surrounding context mentions local interconnections or simple parallel sorting passes.
+relatedSlugs:
+  - bubble-sort
+  - cocktail-shaker-sort
+  - gnome-sort
+provenance:
+  - title: TheAlgorithms/JavaScript - Sorts/OddEvenSort.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Sorts/OddEvenSort.js
+    kind: Implementation
+  - title: "free-programming-books - Open Data Structures: An Introduction"
+    href: https://opendatastructures.org/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Odd-even sort is a clean way to separate adjacent swaps into two predictable phases. One phase fixes pairs starting at odd indexes, the next fixes pairs starting at even indexes, and the algorithm repeats until both phases make no changes.
+
+## Worked Example
+
+On `[5, 2, 4, 3]`, the odd phase compares `(2, 4)` first, then the even phase compares `(5, 2)` and `(4, 3)`. Repeating the two-phase cycle eventually bubbles every value into place.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function oddEvenSort(values) {
+  if (!Array.isArray(values)) {
+    throw new TypeError('Values must be an array of numbers');
+  }
+
+  const items = [...values];
+  let sorted = false;
+
+  while (!sorted) {
+    sorted = true;
+
+    for (let index = 1; index < items.length - 1; index += 2) {
+      if (items[index] > items[index + 1]) {
+        [items[index], items[index + 1]] = [items[index + 1], items[index]];
+        sorted = false;
+      }
+    }
+
+    for (let index = 0; index < items.length - 1; index += 2) {
+      if (items[index] > items[index + 1]) {
+        [items[index], items[index + 1]] = [items[index + 1], items[index]];
+        sorted = false;
+      }
+    }
+  }
+
+  return items;
+}
+```
+
+```ts
+export function oddEvenSort(values: number[]): number[] {
+  const items = [...values];
+  let sorted = false;
+
+  while (!sorted) {
+    sorted = true;
+
+    for (let index = 1; index < items.length - 1; index += 2) {
+      if (items[index] > items[index + 1]) {
+        [items[index], items[index + 1]] = [items[index + 1], items[index]];
+        sorted = false;
+      }
+    }
+
+    for (let index = 0; index < items.length - 1; index += 2) {
+      if (items[index] > items[index + 1]) {
+        [items[index], items[index + 1]] = [items[index + 1], items[index]];
+        sorted = false;
+      }
+    }
+  }
+
+  return items;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare odd-even sort with bubble sort on the same input.
+- Explain why the phase structure makes sense for parallel local communication.
+- Modify it to sort descending without changing the phase schedule.
+
+## Common Pitfalls
+
+- Running only the odd phase or only the even phase.
+- Assuming the parity split changes the worst-case quadratic behavior.
+- Forgetting to reset the `sorted` flag at the start of each full cycle.

@@ -1,0 +1,142 @@
+---
+title: Binary Insertion Sort
+slug: binary-insertion-sort
+category: Sorting
+summary: Use binary search to find the insertion point in the sorted prefix, then shift values right to make room.
+description: Binary Insertion Sort is the insertion-sort variant that reduces comparisons with binary search while keeping the same shift-heavy array writes.
+dataStructures:
+  - Array
+techniques:
+  - Sorting
+  - Binary Search
+  - Insertion
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - insertion sort with binary search
+  - binary insertion
+useCases:
+  - Reducing comparisons inside insertion sort on comparison-heavy values
+  - Teaching the difference between fewer comparisons and unchanged shift cost
+  - Building intuition for hybrid small-array sorting strategies
+complexity:
+  time: O(n^2)
+  space: O(1)
+  notes: Binary search lowers the comparison count for each insertion, but moving array elements still dominates the total runtime.
+interviewSignals:
+  - The sorted prefix invariant from insertion sort is still present.
+  - The interviewer asks how to improve insertion sort without changing its basic array-shift insertion step.
+relatedSlugs:
+  - insertion-sort
+  - binary-search
+  - shell-sort
+provenance:
+  - title: TheAlgorithms/JavaScript - Sorts/BinaryInsertionSort.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Sorts/BinaryInsertionSort.js
+    kind: Implementation
+  - title: "free-programming-books - Open Data Structures: An Introduction"
+    href: https://opendatastructures.org/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Binary insertion sort is a good interview contrast case. It sounds faster than insertion sort because it uses binary search, but the algorithm still has to shift elements one slot at a time after finding the insertion point.
+
+## Worked Example
+
+For `[7, 3, 5, 2]`, the prefix `[3, 7]` is sorted after two steps. When inserting `5`, binary search finds the gap between `3` and `7`, then `7` shifts right and `5` is written into the hole.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function binaryInsertionSort(values) {
+  if (!Array.isArray(values)) {
+    throw new TypeError('Values must be an array');
+  }
+
+  const items = [...values];
+
+  function insertionIndex(target, end) {
+    let left = 0;
+    let right = end;
+
+    while (left <= right) {
+      const mid = Math.floor((left + right) / 2);
+
+      if (items[mid] <= target) {
+        left = mid + 1;
+      } else {
+        right = mid - 1;
+      }
+    }
+
+    return left;
+  }
+
+  for (let index = 1; index < items.length; index += 1) {
+    const current = items[index];
+    const position = insertionIndex(current, index - 1);
+
+    for (let shift = index; shift > position; shift -= 1) {
+      items[shift] = items[shift - 1];
+    }
+
+    items[position] = current;
+  }
+
+  return items;
+}
+```
+
+```ts
+export function binaryInsertionSort(values: number[]): number[] {
+  const items = [...values];
+
+  function insertionIndex(target: number, end: number): number {
+    let left = 0;
+    let right = end;
+
+    while (left <= right) {
+      const mid = Math.floor((left + right) / 2);
+
+      if (items[mid] <= target) {
+        left = mid + 1;
+      } else {
+        right = mid - 1;
+      }
+    }
+
+    return left;
+  }
+
+  for (let index = 1; index < items.length; index += 1) {
+    const current = items[index];
+    const position = insertionIndex(current, index - 1);
+
+    for (let shift = index; shift > position; shift -= 1) {
+      items[shift] = items[shift - 1];
+    }
+
+    items[position] = current;
+  }
+
+  return items;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why the runtime stays quadratic even though the search step is logarithmic.
+- Compare this version with shell sort on medium-sized nearly sorted arrays.
+- Make the insertion stable by choosing whether equal keys go left or right.
+
+## Common Pitfalls
+
+- Claiming binary insertion sort becomes O(n log n) overall.
+- Reusing the binary search helper against an unsorted prefix.
+- Forgetting that the insertion point may be at the end of the current sorted region.

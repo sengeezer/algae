@@ -1,0 +1,220 @@
+---
+title: Flash Sort
+slug: flash-sort
+category: Sorting
+summary: Classify values into distribution buckets, permute them close to their final regions, then finish with insertion sort.
+description: Flash Sort is the distribution-based hybrid sort that works best on roughly uniform numeric data.
+dataStructures:
+  - Array
+techniques:
+  - Sorting
+  - Distribution Sorting
+  - Insertion Cleanup
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - Flashsort
+  - distribution sort with insertion cleanup
+useCases:
+  - Exploring distribution-based numeric sorting beyond counting and bucket sort
+  - Teaching how coarse classification can reduce the remaining insertion work
+  - Comparing average-case linear behavior with distribution-sensitive algorithms
+complexity:
+  time: O(n) average on roughly uniform inputs, O(n^2) worst case
+  space: O(n)
+  notes: Flash sort is powerful when values distribute well across classes, but its behavior depends heavily on the input distribution and implementation details.
+interviewSignals:
+  - The data is numeric and roughly uniformly distributed.
+  - The prompt hints at classifying values into coarse buckets before a final cleanup pass.
+relatedSlugs:
+  - bucket-sort
+  - counting-sort
+  - insertion-sort
+provenance:
+  - title: TheAlgorithms/JavaScript - Sorts/FlashSort.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Sorts/FlashSort.js
+    kind: Implementation
+  - title: "free-programming-books - Open Data Structures: An Introduction"
+    href: https://opendatastructures.org/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Flash sort is interesting because it is not purely a comparison sort and not purely a counting sort either. It first estimates where values should land by class, permutes them into roughly correct regions, and then relies on insertion sort to finish the nearly sorted result.
+
+## Worked Example
+
+On a roughly uniform array like `[3, 0, 2, 5, -1, 4, 1, -2]`, flash sort creates classes based on the minimum and maximum values, moves elements closer to their target class ranges, and then cleans up the small remaining disorder with insertion sort.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function flashSort(values) {
+  if (!Array.isArray(values)) {
+    throw new TypeError('Values must be an array of numbers');
+  }
+
+  const items = [...values];
+
+  if (items.length < 2) {
+    return items;
+  }
+
+  let min = items[0];
+  let maxIndex = 0;
+
+  for (let index = 1; index < items.length; index += 1) {
+    if (items[index] < min) {
+      min = items[index];
+    }
+
+    if (items[index] > items[maxIndex]) {
+      maxIndex = index;
+    }
+  }
+
+  if (items[maxIndex] === min) {
+    return items;
+  }
+
+  const classCount = Math.max(2, Math.floor(0.45 * items.length));
+  const classes = new Array(classCount).fill(0);
+  const scale = (classCount - 1) / (items[maxIndex] - min);
+
+  for (const value of items) {
+    classes[Math.floor(scale * (value - min))] += 1;
+  }
+
+  for (let index = 1; index < classCount; index += 1) {
+    classes[index] += classes[index - 1];
+  }
+
+  [items[0], items[maxIndex]] = [items[maxIndex], items[0]];
+
+  let moves = 0;
+  let index = 0;
+  let classIndex = classCount - 1;
+
+  while (moves < items.length - 1) {
+    while (index > classes[classIndex] - 1) {
+      index += 1;
+      classIndex = Math.floor(scale * (items[index] - min));
+    }
+
+    let flash = items[index];
+
+    while (index !== classes[classIndex]) {
+      classIndex = Math.floor(scale * (flash - min));
+      const target = --classes[classIndex];
+      [flash, items[target]] = [items[target], flash];
+      moves += 1;
+    }
+  }
+
+  for (let current = 1; current < items.length; current += 1) {
+    const value = items[current];
+    let position = current - 1;
+
+    while (position >= 0 && items[position] > value) {
+      items[position + 1] = items[position];
+      position -= 1;
+    }
+
+    items[position + 1] = value;
+  }
+
+  return items;
+}
+```
+
+```ts
+export function flashSort(values: number[]): number[] {
+  const items = [...values];
+
+  if (items.length < 2) {
+    return items;
+  }
+
+  let min = items[0];
+  let maxIndex = 0;
+
+  for (let index = 1; index < items.length; index += 1) {
+    if (items[index] < min) {
+      min = items[index];
+    }
+
+    if (items[index] > items[maxIndex]) {
+      maxIndex = index;
+    }
+  }
+
+  if (items[maxIndex] === min) {
+    return items;
+  }
+
+  const classCount = Math.max(2, Math.floor(0.45 * items.length));
+  const classes = new Array<number>(classCount).fill(0);
+  const scale = (classCount - 1) / (items[maxIndex] - min);
+
+  for (const value of items) {
+    classes[Math.floor(scale * (value - min))] += 1;
+  }
+
+  for (let index = 1; index < classCount; index += 1) {
+    classes[index] += classes[index - 1];
+  }
+
+  [items[0], items[maxIndex]] = [items[maxIndex], items[0]];
+
+  let moves = 0;
+  let index = 0;
+  let classIndex = classCount - 1;
+
+  while (moves < items.length - 1) {
+    while (index > classes[classIndex] - 1) {
+      index += 1;
+      classIndex = Math.floor(scale * (items[index] - min));
+    }
+
+    let flash = items[index];
+
+    while (index !== classes[classIndex]) {
+      classIndex = Math.floor(scale * (flash - min));
+      const target = --classes[classIndex];
+      [flash, items[target]] = [items[target], flash];
+      moves += 1;
+    }
+  }
+
+  for (let current = 1; current < items.length; current += 1) {
+    const value = items[current];
+    let position = current - 1;
+
+    while (position >= 0 && items[position] > value) {
+      items[position + 1] = items[position];
+      position -= 1;
+    }
+
+    items[position + 1] = value;
+  }
+
+  return items;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why flash sort is sensitive to input distribution.
+- Compare its class-building step with bucket sort and counting sort.
+- Return the class boundaries to help visualize the permutation phase.
+
+## Common Pitfalls
+
+- Advertising linear time without explaining the distribution assumption.
+- Forgetting the insertion-sort cleanup pass after the flash permutation.
+- Using it on arbitrary comparison data instead of numeric values that can be classed by range.

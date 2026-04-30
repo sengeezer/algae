@@ -1,0 +1,118 @@
+---
+title: Find Second Largest Element
+slug: find-second-largest-element
+category: Selection
+summary: Track the best and second-best distinct values in one scan without sorting the array.
+description: Find Second Largest Element is the distinct-second-maximum selection problem solved by a single pass over the input.
+dataStructures:
+  - Array
+techniques:
+  - Selection
+  - Single Pass Scan
+  - Extremum Tracking
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - second maximum
+  - second largest distinct value
+useCases:
+  - Answering a common interview warm-up without unnecessary sorting
+  - Teaching how to maintain multiple running extrema
+  - Handling duplicates while scanning numeric arrays once
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: Sorting works, but it spends extra time solving a harder problem than necessary. A single scan is both simpler and faster.
+interviewSignals:
+  - The prompt explicitly says duplicates should not count as distinct candidates.
+  - The interviewer asks for a solution better than fully sorting the input.
+relatedSlugs:
+  - quickselect
+  - priority-queue
+  - heap-sort
+provenance:
+  - title: TheAlgorithms/JavaScript - Sorts/FindSecondLargestElement.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Sorts/FindSecondLargestElement.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem is less about clever data structures than about picking the right level of work. You do not need to sort the array to know the second-largest distinct value. You only need to remember the largest and runner-up seen so far.
+
+## Worked Example
+
+For `[9, 4, 9, 7, 2]`, the best value is `9`. The second-best distinct value becomes `7`, not the repeated `9`, because duplicates do not count as a new rank.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function findSecondLargestElement(values) {
+  if (!Array.isArray(values) || values.length < 2) {
+    throw new RangeError('Values must contain at least two numbers');
+  }
+
+  let largest = -Infinity;
+  let secondLargest = -Infinity;
+
+  for (const value of values) {
+    if (value > largest) {
+      secondLargest = largest;
+      largest = value;
+    } else if (value > secondLargest && value < largest) {
+      secondLargest = value;
+    }
+  }
+
+  if (secondLargest === -Infinity) {
+    throw new RangeError('Values must contain at least two distinct numbers');
+  }
+
+  return secondLargest;
+}
+```
+
+```ts
+export function findSecondLargestElement(values: number[]): number {
+  if (values.length < 2) {
+    throw new RangeError('Values must contain at least two numbers');
+  }
+
+  let largest = -Infinity;
+  let secondLargest = -Infinity;
+
+  for (const value of values) {
+    if (value > largest) {
+      secondLargest = largest;
+      largest = value;
+    } else if (value > secondLargest && value < largest) {
+      secondLargest = value;
+    }
+  }
+
+  if (secondLargest === -Infinity) {
+    throw new RangeError('Values must contain at least two distinct numbers');
+  }
+
+  return secondLargest;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the third-largest distinct value as well.
+- Adapt the scan for streaming input where values arrive one at a time.
+- Compare this with using a heap or full sort for the same task.
+
+## Common Pitfalls
+
+- Sorting first when the prompt only asks for one rank statistic.
+- Letting duplicates of the maximum overwrite the second-largest value.
+- Returning a sentinel silently when the input lacks two distinct numbers.
