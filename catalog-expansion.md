@@ -427,9 +427,20 @@ This thirty-sixth expansion slice lifts the catalog from 248 to 254 entries.
 - Decimal Isolate
 - Reverse Number
 
+## Batch 37 added
+
+This thirty-seventh expansion slice lifts the catalog from 254 to 260 entries.
+
+- Aliquot Sum
+- Area
+- Arithmetic Geometric Mean
+- Armstrong Number
+- Automorphic Number
+- Bisection Method
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 36 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 37 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -438,9 +449,9 @@ All expansion entries from batch 1 through batch 36 now carry explicit per-entry
 ## Why this batch
 
 - It fills obvious interview-core gaps from TheAlgorithms/JavaScript without duplicating material already present in Algae.
-- It follows the next verified math-helper queue directly, adding absolute-value normalization, statistical summaries, rational digit expansion, fractional isolation, and digit-wise reversal.
-- It broadens the catalog across aggregation, numeric normalization, and remainder-driven arithmetic instead of staying inside the previous timing and scalar-conversion slice.
-- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially basic mathematical building blocks, number representation, and small helpers that still reward precise validation.
+- It follows the next verified math queue directly, adding divisor sums, geometry formulas, iterative mean convergence, digit-pattern checks, and a classic numerical root finder.
+- It broadens the catalog across number theory, geometry, and numerical analysis instead of staying inside the previous scalar-helper slice.
+- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially direct formulas, convergence reasoning, and digit-based predicates that still reward precise validation.
 
 ## Supporting study references from the algorithms list
 
@@ -450,9 +461,9 @@ All expansion entries from batch 1 through batch 36 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- Aliquot Sum
-- Area
-- Arithmetic Geometric Mean
-- Armstrong Number
-- Automorphic Number
-- Bisection Method
+- Check Kishnamurthy Number
+- Circular Arc
+- Collatz Sequence
+- Coordinate
+- Count Numbers Divisible
+- Determinant

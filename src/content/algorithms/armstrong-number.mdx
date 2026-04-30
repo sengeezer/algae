@@ -1,0 +1,124 @@
+---
+title: Armstrong Number
+slug: armstrong-number
+category: Mathematics
+summary: Check whether an integer equals the sum of its digits raised to the power of its digit count.
+description: Armstrong Number is the digit-power predicate that recognizes numbers equal to the powered sum of their own decimal digits.
+dataStructures:
+  - Number
+techniques:
+  - Digit Decomposition
+  - Power Accumulation
+  - Numeric Predicate
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - narcissistic number
+  - digit power sum check
+useCases:
+  - Building digit-based number-theory predicates
+  - Teaching how digit count and per-digit work combine in one pass
+  - Practicing arithmetic decomposition without string helpers
+complexity:
+  time: O(d)
+  space: O(1)
+  notes: The runtime scales with the number of decimal digits because each digit contributes exactly one powered term.
+interviewSignals:
+  - The prompt asks whether a number equals a special sum of its digits.
+  - The expected solution first determines the digit count and then accumulates powered digits.
+relatedSlugs:
+  - automorphic-number
+  - number-of-digits
+  - sum-of-digits
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/ArmstrongNumber.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/ArmstrongNumber.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Armstrong numbers are a standard digit-manipulation check. The main interview question is whether you can combine digit counting and per-digit exponentiation without getting lost in off-by-one behavior.
+
+## Worked Example
+
+`370` is an Armstrong number because it has `3` digits and $3^3 + 7^3 + 0^3 = 370$.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function armstrongNumber(value) {
+  if (!Number.isInteger(value) || value < 0) {
+    return false;
+  }
+
+  if (value === 0) {
+    return true;
+  }
+
+  const digits = [];
+  let remaining = value;
+
+  while (remaining > 0) {
+    digits.push(remaining % 10);
+    remaining = Math.floor(remaining / 10);
+  }
+
+  const power = digits.length;
+  let total = 0;
+
+  for (const digit of digits) {
+    total += digit ** power;
+  }
+
+  return total === value;
+}
+```
+
+```ts
+export function armstrongNumber(value: number): boolean {
+  if (!Number.isInteger(value) || value < 0) {
+    return false;
+  }
+
+  if (value === 0) {
+    return true;
+  }
+
+  const digits: number[] = [];
+  let remaining = value;
+
+  while (remaining > 0) {
+    digits.push(remaining % 10);
+    remaining = Math.floor(remaining / 10);
+  }
+
+  const power = digits.length;
+  let total = 0;
+
+  for (const digit of digits) {
+    total += digit ** power;
+  }
+
+  return total === value;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Generalize the check to other bases besides decimal.
+- Cache single-digit powers if you need to test many nearby numbers.
+- Compare an arithmetic digit loop with a string-based implementation.
+
+## Common Pitfalls
+
+- Forgetting that `0` is an Armstrong number.
+- Using the wrong exponent instead of the digit count.
+- Accepting fractional inputs even though the predicate is defined here for integers.

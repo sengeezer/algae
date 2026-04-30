@@ -1,0 +1,143 @@
+---
+title: Area
+slug: area
+category: Mathematics
+summary: Compute areas of common shapes using direct formulas, with validation for triangle side constraints when needed.
+description: Area is the geometry-formula collection that computes 2D shape areas from their defining measurements.
+dataStructures:
+  - Number
+  - Object
+techniques:
+  - Direct Formula Application
+  - Heron's Formula
+  - Input Validation
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - shape area formulas
+  - geometry area helpers
+useCases:
+  - Building geometry utilities for graphics or CAD-like tools
+  - Teaching how shape-specific formulas differ by available measurements
+  - Validating side constraints before applying triangle formulas
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: Each supported shape uses a fixed formula and a constant number of arithmetic operations.
+interviewSignals:
+  - The prompt asks for one or several standard shape areas from dimensions.
+  - The expected solution applies the correct formula and validates impossible triangle inputs.
+relatedSlugs:
+  - circular-arc
+  - euclidean-distance
+  - perfect-square
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/Area.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/Area.js
+    kind: Implementation
+  - title: free-programming-books - Algorithm Design
+    href: https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Area formulas are direct, but they still test whether you match the right formula to the given measurements and reject impossible inputs instead of blindly computing nonsense.
+
+## Worked Example
+
+For a triangle with sides `5`, `6`, and `7`, the semiperimeter is `9`, and Heron's formula gives `sqrt(9 * 4 * 3 * 2)`, which is about `14.697`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function validateNonNegative(value, label) {
+  if (typeof value !== 'number' || Number.isNaN(value) || value < 0) {
+    throw new RangeError(`${label} must be a non-negative number`);
+  }
+}
+
+function areaRectangle(length, width) {
+  validateNonNegative(length, 'Length');
+  validateNonNegative(width, 'Width');
+  return length * width;
+}
+
+function areaCircle(radius) {
+  validateNonNegative(radius, 'Radius');
+  return Math.PI * radius ** 2;
+}
+
+function areaTriangle(base, height) {
+  validateNonNegative(base, 'Base');
+  validateNonNegative(height, 'Height');
+  return (base * height) / 2;
+}
+
+function areaTriangleWithAllThreeSides(a, b, c) {
+  validateNonNegative(a, 'Side a');
+  validateNonNegative(b, 'Side b');
+  validateNonNegative(c, 'Side c');
+
+  if (a + b <= c || a + c <= b || b + c <= a) {
+    throw new RangeError('Triangle sides must satisfy the triangle inequality');
+  }
+
+  const semi = (a + b + c) / 2;
+  return Math.sqrt(semi * (semi - a) * (semi - b) * (semi - c));
+}
+```
+
+```ts
+function validateNonNegative(value: number, label: string): void {
+  if (Number.isNaN(value) || value < 0) {
+    throw new RangeError(`${label} must be a non-negative number`);
+  }
+}
+
+export function areaRectangle(length: number, width: number): number {
+  validateNonNegative(length, 'Length');
+  validateNonNegative(width, 'Width');
+  return length * width;
+}
+
+export function areaCircle(radius: number): number {
+  validateNonNegative(radius, 'Radius');
+  return Math.PI * radius ** 2;
+}
+
+export function areaTriangle(base: number, height: number): number {
+  validateNonNegative(base, 'Base');
+  validateNonNegative(height, 'Height');
+  return (base * height) / 2;
+}
+
+export function areaTriangleWithAllThreeSides(a: number, b: number, c: number): number {
+  validateNonNegative(a, 'Side a');
+  validateNonNegative(b, 'Side b');
+  validateNonNegative(c, 'Side c');
+
+  if (a + b <= c || a + c <= b || b + c <= a) {
+    throw new RangeError('Triangle sides must satisfy the triangle inequality');
+  }
+
+  const semi = (a + b + c) / 2;
+  return Math.sqrt(semi * (semi - a) * (semi - b) * (semi - c));
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Add parallelogram, trapezium, and rhombus helpers to the same module.
+- Compare base-height triangle area with Heron's formula.
+- Explain why negative dimensions should be rejected instead of absolutized.
+
+## Common Pitfalls
+
+- Applying a formula to impossible triangle sides.
+- Mixing surface area and 2D area in the same prompt.
+- Forgetting that radius, base, and height should be non-negative.

@@ -1,0 +1,127 @@
+---
+title: Arithmetic Geometric Mean
+slug: arithmetic-geometric-mean
+category: Mathematics
+summary: Iteratively replace two non-negative numbers with their arithmetic and geometric means until the pair converges.
+description: Arithmetic Geometric Mean is the convergence routine that repeatedly averages and square-roots a pair to reach a common limit.
+dataStructures:
+  - Number
+techniques:
+  - Iterative Convergence
+  - Mean Computation
+  - Square Root
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - AGM
+  - mean convergence iteration
+useCases:
+  - Studying convergence of numerical sequences
+  - Building special-function approximations that use AGM internally
+  - Teaching how iterative numerical methods stabilize toward a limit
+complexity:
+  time: O(k)
+  space: O(1)
+  notes: The runtime depends on how many iterations are needed to bring the pair within the requested tolerance.
+interviewSignals:
+  - The prompt asks for repeated averaging until two values effectively match.
+  - The expected solution updates the arithmetic and geometric means in lockstep.
+relatedSlugs:
+  - average-mean
+  - bisection-method
+  - square-root
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/ArithmeticGeometricMean.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/ArithmeticGeometricMean.js
+    kind: Implementation
+  - title: free-programming-books - Algorithm Design
+    href: https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+AGM is a compact numerical-methods exercise. It checks whether you can reason about convergence, validate the domain of the square root, and stop with a tolerance instead of relying on exact floating-point equality.
+
+## Worked Example
+
+Starting from `a = 24` and `g = 6`, the next pair is $(15, 12)$, then roughly $(13.5, 13.4164)$, and the values quickly converge to the same limit.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function arithmeticGeometricMean(a, g, tolerance = 1e-12, maxIterations = 1000) {
+  if (![a, g, tolerance].every((value) => typeof value === 'number' && Number.isFinite(value))) {
+    throw new TypeError('Inputs and tolerance must be finite numbers');
+  }
+
+  if (a < 0 || g < 0) {
+    throw new RangeError('AGM is defined here only for non-negative inputs');
+  }
+
+  let arithmetic = a;
+  let geometric = g;
+
+  for (let iteration = 0; iteration < maxIterations; iteration += 1) {
+    if (Math.abs(arithmetic - geometric) <= tolerance) {
+      return arithmetic;
+    }
+
+    const nextArithmetic = (arithmetic + geometric) / 2;
+    const nextGeometric = Math.sqrt(arithmetic * geometric);
+    arithmetic = nextArithmetic;
+    geometric = nextGeometric;
+  }
+
+  return arithmetic;
+}
+```
+
+```ts
+export function arithmeticGeometricMean(
+  a: number,
+  g: number,
+  tolerance = 1e-12,
+  maxIterations = 1000,
+): number {
+  if (![a, g, tolerance].every((value) => Number.isFinite(value))) {
+    throw new TypeError('Inputs and tolerance must be finite numbers');
+  }
+
+  if (a < 0 || g < 0) {
+    throw new RangeError('AGM is defined here only for non-negative inputs');
+  }
+
+  let arithmetic = a;
+  let geometric = g;
+
+  for (let iteration = 0; iteration < maxIterations; iteration += 1) {
+    if (Math.abs(arithmetic - geometric) <= tolerance) {
+      return arithmetic;
+    }
+
+    const nextArithmetic = (arithmetic + geometric) / 2;
+    const nextGeometric = Math.sqrt(arithmetic * geometric);
+    arithmetic = nextArithmetic;
+    geometric = nextGeometric;
+  }
+
+  return arithmetic;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why the arithmetic mean stays above the geometric mean during the iteration.
+- Compare a tolerance-based stop condition with exact equality.
+- Use AGM as a building block in a more advanced numerical approximation.
+
+## Common Pitfalls
+
+- Accepting negative inputs and then taking the square root of a negative product.
+- Using exact equality as the only convergence test.
+- Forgetting that floating-point convergence speed depends on the chosen tolerance.

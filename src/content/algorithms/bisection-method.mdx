@@ -1,0 +1,164 @@
+---
+title: Bisection Method
+slug: bisection-method
+category: Mathematics
+summary: Approximate a real root by repeatedly halving an interval whose endpoints have opposite-signed function values.
+description: Bisection Method is the interval-halving root finder that narrows a sign-changing bracket until the midpoint is precise enough.
+dataStructures:
+  - Function
+  - Number
+techniques:
+  - Binary Search on Reals
+  - Interval Halving
+  - Root Finding
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - interval root finding
+  - root bracketing search
+useCases:
+  - Approximating roots when derivatives are unavailable
+  - Teaching how sign changes certify a root bracket
+  - Building safe numerical solvers with predictable convergence
+complexity:
+  time: O(k)
+  space: O(1)
+  notes: Each iteration halves the interval width, so the number of iterations depends logarithmically on the required precision.
+interviewSignals:
+  - The prompt provides an interval where the function changes sign.
+  - The expected solution keeps the root bracket valid after every midpoint test.
+relatedSlugs:
+  - arithmetic-geometric-mean
+  - binary-search
+  - square-root
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/BisectionMethod.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/BisectionMethod.js
+    kind: Implementation
+  - title: free-programming-books - Algorithm Design
+    href: https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Bisection is the numerical-analysis version of binary search. It matters because it gives you a predictable, safe root finder when you can bracket a sign change but do not want to rely on a derivative.
+
+## Worked Example
+
+For $f(x) = x^2 - 2$ on `[1, 2]`, the function values have opposite signs, so a root lies inside. Repeated midpoint tests converge toward $\sqrt{2}$.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function bisectionMethod(left, right, func, iterations = 50) {
+  if (![left, right, iterations].every((value) => typeof value === 'number' && Number.isFinite(value))) {
+    throw new TypeError('Bounds and iteration count must be finite numbers');
+  }
+
+  if (!Number.isInteger(iterations) || iterations <= 0) {
+    throw new RangeError('Iterations must be a positive integer');
+  }
+
+  if (typeof func !== 'function') {
+    throw new TypeError('Expected a function to evaluate');
+  }
+
+  let a = left;
+  let b = right;
+  let fa = func(a);
+  let fb = func(b);
+
+  if (!Number.isFinite(fa) || !Number.isFinite(fb)) {
+    throw new RangeError('Function must be finite at both interval endpoints');
+  }
+
+  if (fa * fb > 0) {
+    throw new RangeError('Interval endpoints must bracket a root with opposite-signed values');
+  }
+
+  for (let step = 0; step < iterations; step += 1) {
+    const midpoint = (a + b) / 2;
+    const fm = func(midpoint);
+
+    if (fm === 0) {
+      return midpoint;
+    }
+
+    if (fa * fm <= 0) {
+      b = midpoint;
+      fb = fm;
+    } else {
+      a = midpoint;
+      fa = fm;
+    }
+  }
+
+  return (a + b) / 2;
+}
+```
+
+```ts
+export function bisectionMethod(
+  left: number,
+  right: number,
+  func: (value: number) => number,
+  iterations = 50,
+): number {
+  if (![left, right].every((value) => Number.isFinite(value))) {
+    throw new TypeError('Bounds must be finite numbers');
+  }
+
+  if (!Number.isInteger(iterations) || iterations <= 0) {
+    throw new RangeError('Iterations must be a positive integer');
+  }
+
+  let a = left;
+  let b = right;
+  let fa = func(a);
+  let fb = func(b);
+
+  if (!Number.isFinite(fa) || !Number.isFinite(fb)) {
+    throw new RangeError('Function must be finite at both interval endpoints');
+  }
+
+  if (fa * fb > 0) {
+    throw new RangeError('Interval endpoints must bracket a root with opposite-signed values');
+  }
+
+  for (let step = 0; step < iterations; step += 1) {
+    const midpoint = (a + b) / 2;
+    const fm = func(midpoint);
+
+    if (fm === 0) {
+      return midpoint;
+    }
+
+    if (fa * fm <= 0) {
+      b = midpoint;
+      fb = fm;
+    } else {
+      a = midpoint;
+      fa = fm;
+    }
+  }
+
+  return (a + b) / 2;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Replace the fixed iteration count with a tolerance on interval width or function value.
+- Compare bisection with Newton's method in terms of safety and speed.
+- Explain why the sign-change precondition matters.
+
+## Common Pitfalls
+
+- Starting from endpoints that do not actually bracket a root.
+- Forgetting to validate that the function is defined at both bounds.
+- Losing the sign-change invariant when choosing the next interval.
