@@ -1,0 +1,81 @@
+---
+title: Check Snake Case
+slug: check-snake-case
+category: Strings
+summary: Validate that words are lowercase and separated by underscores in snake_case form.
+description: Check Snake Case is the naming-convention predicate for testing whether a string follows the lowercase underscore-separated style common in Python and database schemas.
+dataStructures:
+  - String
+techniques:
+  - Regex Validation
+  - Naming Convention Check
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - snake_case validator
+  - underscore identifier check
+useCases:
+  - Validating Python-style variable names
+  - Distinguishing underscore-separated names from kebab-case and camelCase
+  - Practicing compact regex validation for identifiers
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The main edge cases are repeated underscores, uppercase letters, and leading or trailing separators.
+interviewSignals:
+  - The prompt asks whether a name is lowercase with underscore separators.
+  - The output is just a classification boolean rather than a transformed string.
+relatedSlugs:
+  - check-camel-case
+  - check-kebab-case
+  - check-pascal-case
+provenance:
+  - title: TheAlgorithms/JavaScript - String/CheckSnakeCase.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/String/CheckSnakeCase.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Snake-case checks show up in tooling and formatter-style prompts where identifier shape matters. The logic is straightforward, but sloppy patterns tend to accept invalid repeated separators.
+
+## Worked Example
+
+`"user_name"` passes because the segments are lowercase and underscore-separated. `"user__name"` fails because it contains an empty segment between two underscores.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function checkSnakeCase(value) {
+  if (typeof value !== 'string') {
+    throw new TypeError('Value must be a string');
+  }
+
+  return /^[a-z]+(?:_[a-z]+)*$/.test(value);
+}
+```
+
+```ts
+export function checkSnakeCase(value: string): boolean {
+  return /^[a-z]+(?:_[a-z]+)*$/.test(value);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Convert snake_case into camelCase or PascalCase.
+- Allow digits inside each segment and explain the regex change.
+- Compare snake_case validation with slug validation for URLs.
+
+## Common Pitfalls
+
+- Accepting repeated or trailing underscores.
+- Allowing uppercase letters without meaning to.
+- Using a loose substring regex instead of an anchored full-string check.

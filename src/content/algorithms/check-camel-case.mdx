@@ -1,0 +1,81 @@
+---
+title: Check Camel Case
+slug: check-camel-case
+category: Strings
+summary: Validate that an identifier starts with a lowercase letter and continues without separators in camelCase form.
+description: Check Camel Case is the naming-convention predicate for testing whether a string follows the usual lowerCamelCase identifier style.
+dataStructures:
+  - String
+techniques:
+  - Regex Validation
+  - Naming Convention Check
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - camelCase validator
+  - lower camel case check
+useCases:
+  - Validating variable or property names
+  - Classifying identifier styles before converting between them
+  - Practicing regex-based string predicates
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The main decision is whether digits, acronyms, or separators are allowed by the convention the prompt uses.
+interviewSignals:
+  - The prompt asks whether an identifier follows camelCase naming.
+  - The task is a yes-or-no style check rather than a full conversion between naming conventions.
+relatedSlugs:
+  - check-kebab-case
+  - check-pascal-case
+  - check-snake-case
+provenance:
+  - title: TheAlgorithms/JavaScript - String/CheckCamelCase.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/String/CheckCamelCase.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a lightweight validation problem, but it is useful because it turns naming rules into an explicit predicate instead of a hand-wavy style judgment.
+
+## Worked Example
+
+`"userName"` passes because it starts with a lowercase letter and contains only letters afterward. `"UserName"` fails because PascalCase starts with an uppercase letter instead.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function checkCamelCase(value) {
+  if (typeof value !== 'string') {
+    throw new TypeError('Value must be a string');
+  }
+
+  return /^[a-z][A-Za-z]*$/.test(value);
+}
+```
+
+```ts
+export function checkCamelCase(value: string): boolean {
+  return /^[a-z][A-Za-z]*$/.test(value);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Convert snake_case or kebab-case into camelCase.
+- Decide whether digits should be accepted and update the predicate accordingly.
+- Differentiate lowerCamelCase from PascalCase in one shared classifier.
+
+## Common Pitfalls
+
+- Treating PascalCase as camelCase.
+- Forgetting to reject underscores or hyphens.
+- Hard-coding one style rule when the prompt may allow digits or acronyms.

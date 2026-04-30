@@ -1,0 +1,104 @@
+---
+title: Check Word Occurrence
+slug: check-word-occurrence
+category: Strings
+summary: Count how many times each word appears in a sentence by tokenizing on whitespace and accumulating frequencies.
+description: Check Word Occurrence is the word-frequency routine for converting a sentence into a map from each token to its number of appearances.
+dataStructures:
+  - String
+  - Array
+  - Hash Map
+techniques:
+  - Tokenization
+  - Frequency Counting
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - word frequency map
+  - count word occurrences
+useCases:
+  - Summarizing repeated terms in a sentence or paragraph
+  - Building histogram-style word counts
+  - Practicing tokenization plus frequency-map accumulation
+complexity:
+  time: O(n)
+  space: O(k)
+  notes: The main ambiguity is case sensitivity and punctuation handling, so the prompt should clarify whether words need normalization first.
+interviewSignals:
+  - The prompt asks for counts of whole words, not letters or substrings.
+  - The expected output is an object or map keyed by token.
+relatedSlugs:
+  - count-letters
+  - first-unique-character
+  - reverse-words
+provenance:
+  - title: TheAlgorithms/JavaScript - String/CheckWordOccurrence.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/String/CheckWordOccurrence.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Word-occurrence problems are the token-level counterpart to character frequency questions. The interview signal is usually whether you separate tokenization from counting cleanly.
+
+## Worked Example
+
+For `"to be or not to be"`, tokenizing on spaces yields `['to', 'be', 'or', 'not', 'to', 'be']`, so the counts are `{ to: 2, be: 2, or: 1, not: 1 }`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function checkWordOccurrence(value, caseSensitive = false) {
+  if (typeof value !== 'string') {
+    throw new TypeError('Value must be a string');
+  }
+
+  if (typeof caseSensitive !== 'boolean') {
+    throw new TypeError('caseSensitive must be a boolean');
+  }
+
+  const normalized = caseSensitive ? value : value.toLowerCase();
+  const counts = {};
+
+  for (const word of normalized.trim().split(/\s+/).filter(Boolean)) {
+    counts[word] = (counts[word] ?? 0) + 1;
+  }
+
+  return counts;
+}
+```
+
+```ts
+export function checkWordOccurrence(
+  value: string,
+  caseSensitive = false,
+): Record<string, number> {
+  const normalized = caseSensitive ? value : value.toLowerCase();
+  const counts: Record<string, number> = {};
+
+  for (const word of normalized.trim().split(/\s+/).filter(Boolean)) {
+    counts[word] = (counts[word] ?? 0) + 1;
+  }
+
+  return counts;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Strip punctuation before counting words.
+- Return the most frequent word instead of the whole map.
+- Stream the input token by token instead of splitting the full string up front.
+
+## Common Pitfalls
+
+- Forgetting to define case sensitivity clearly.
+- Counting empty tokens when multiple spaces appear.
+- Mixing word frequency with substring frequency.

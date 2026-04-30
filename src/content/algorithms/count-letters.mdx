@@ -1,0 +1,102 @@
+---
+title: Count Letters
+slug: count-letters
+category: Strings
+summary: Count the occurrences of each letter in a string by scanning once and incrementing a frequency map.
+description: Count Letters is the character-frequency routine for turning a letters-only string into a histogram of per-letter counts.
+dataStructures:
+  - String
+  - Hash Map
+techniques:
+  - Frequency Counting
+  - Character Validation
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - character histogram
+  - letter frequency count
+useCases:
+  - Building letter histograms for text analysis
+  - Supporting anagram and uniqueness style follow-ups
+  - Practicing map accumulation over characters
+complexity:
+  time: O(n)
+  space: O(k)
+  notes: The input contract matters here because allowing spaces, digits, or punctuation changes whether you count them, skip them, or reject them.
+interviewSignals:
+  - The prompt asks for per-letter counts rather than just a total size.
+  - The output is an object or map keyed by character.
+relatedSlugs:
+  - check-anagram
+  - first-unique-character
+  - check-word-occurrence
+provenance:
+  - title: TheAlgorithms/JavaScript - String/CountLetters.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/String/CountLetters.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Count-letters problems are the simplest form of frequency mapping. They matter because the same pattern underlies anagram grouping, uniqueness checks, and many sliding-window string problems.
+
+## Worked Example
+
+For `"Hello"`, normalize to lowercase and count letters: `{ h: 1, e: 1, l: 2, o: 1 }`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function countLetters(value) {
+  if (typeof value !== 'string') {
+    throw new TypeError('Value must be a string');
+  }
+
+  if (!/^[a-z]+$/i.test(value)) {
+    throw new TypeError('Value must contain letters only');
+  }
+
+  const counts = {};
+
+  for (const char of value.toLowerCase()) {
+    counts[char] = (counts[char] ?? 0) + 1;
+  }
+
+  return counts;
+}
+```
+
+```ts
+export function countLetters(value: string): Record<string, number> {
+  if (!/^[a-z]+$/i.test(value)) {
+    throw new TypeError('Value must contain letters only');
+  }
+
+  const counts: Record<string, number> = {};
+
+  for (const char of value.toLowerCase()) {
+    counts[char] = (counts[char] ?? 0) + 1;
+  }
+
+  return counts;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Allow spaces and punctuation but ignore them instead of throwing.
+- Return the most frequent letter and its count.
+- Compare this direct map approach with an array-based count table for fixed alphabets.
+
+## Common Pitfalls
+
+- Forgetting case normalization.
+- Mixing total length with per-letter counts.
+- Not clarifying whether non-letter characters should be ignored or rejected.

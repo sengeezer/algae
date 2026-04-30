@@ -1,0 +1,81 @@
+---
+title: Check Pascal Case
+slug: check-pascal-case
+category: Strings
+summary: Validate that an identifier starts with an uppercase letter and contains no separators in PascalCase form.
+description: Check Pascal Case is the naming-convention predicate for testing whether a string follows the UpperCamelCase style commonly used for class and type names.
+dataStructures:
+  - String
+techniques:
+  - Regex Validation
+  - Naming Convention Check
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - PascalCase validator
+  - UpperCamelCase check
+useCases:
+  - Validating class or component names
+  - Distinguishing PascalCase from camelCase and snake_case
+  - Practicing precise identifier-style predicates
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The key distinction from camelCase is only the first character, so the check is easy to get subtly wrong.
+interviewSignals:
+  - The prompt asks whether a name is UpperCamelCase or PascalCase.
+  - You only need to classify the identifier, not transform it.
+relatedSlugs:
+  - check-camel-case
+  - check-kebab-case
+  - check-snake-case
+provenance:
+  - title: TheAlgorithms/JavaScript - String/CheckPascalCase.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/String/CheckPascalCase.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+PascalCase checks are usually paired with other naming-style classifiers. The interesting part is encoding just enough structure to reject separators and lowercase-leading identifiers.
+
+## Worked Example
+
+`"UserName"` passes because it starts uppercase and contains only letters. `"userName"` fails because that is camelCase instead.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function checkPascalCase(value) {
+  if (typeof value !== 'string') {
+    throw new TypeError('Value must be a string');
+  }
+
+  return /^[A-Z][A-Za-z]*$/.test(value);
+}
+```
+
+```ts
+export function checkPascalCase(value: string): boolean {
+  return /^[A-Z][A-Za-z]*$/.test(value);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Convert PascalCase to spaced title case.
+- Decide how acronyms such as `HTTPRequest` should be classified.
+- Build one routine that reports which naming style an identifier uses.
+
+## Common Pitfalls
+
+- Treating any uppercase letter anywhere as enough to qualify.
+- Accepting separators like hyphens or underscores.
+- Mixing PascalCase rules with camelCase rules.

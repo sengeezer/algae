@@ -1,0 +1,81 @@
+---
+title: Check Kebab Case
+slug: check-kebab-case
+category: Strings
+summary: Validate that words are lowercase and separated by hyphens in kebab-case form.
+description: Check Kebab Case is the naming-convention predicate for testing whether a string follows the lowercase hyphen-separated style common in URLs and CSS classes.
+dataStructures:
+  - String
+techniques:
+  - Regex Validation
+  - Naming Convention Check
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - kebab-case validator
+  - hyphenated identifier check
+useCases:
+  - Validating CSS class names or route segments
+  - Distinguishing hyphen-separated names from snake_case or camelCase
+  - Practicing regular-expression predicates over identifiers
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The important edge cases are repeated hyphens, underscores, and uppercase letters, which usually invalidate kebab-case.
+interviewSignals:
+  - The prompt asks whether an identifier is lowercase and hyphen-separated.
+  - The task is a predicate check rather than a full formatter.
+relatedSlugs:
+  - check-camel-case
+  - check-pascal-case
+  - check-snake-case
+provenance:
+  - title: TheAlgorithms/JavaScript - String/CheckKebabCase.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/String/CheckKebabCase.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Kebab-case checks are common when strings need to be safe for routes, CSS classes, or command names. The interviewer often wants to see whether you encode the style precisely instead of checking only for the presence of hyphens.
+
+## Worked Example
+
+`"user-name"` passes because each segment is lowercase and separated by a single hyphen. `"user_Name"` fails because underscores are not part of kebab-case.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function checkKebabCase(value) {
+  if (typeof value !== 'string') {
+    throw new TypeError('Value must be a string');
+  }
+
+  return /^[a-z]+(?:-[a-z]+)*$/.test(value);
+}
+```
+
+```ts
+export function checkKebabCase(value: string): boolean {
+  return /^[a-z]+(?:-[a-z]+)*$/.test(value);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Convert a camelCase identifier into kebab-case.
+- Decide whether digits should be allowed in each segment.
+- Explain the differences between kebab-case and slug normalization.
+
+## Common Pitfalls
+
+- Accepting underscores or spaces.
+- Allowing leading, trailing, or repeated hyphens.
+- Forgetting to reject uppercase letters.
