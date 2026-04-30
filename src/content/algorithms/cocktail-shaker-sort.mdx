@@ -1,0 +1,136 @@
+---
+title: Cocktail Shaker Sort
+slug: cocktail-shaker-sort
+category: Sorting
+summary: Bubble the largest value rightward, then bubble the smallest value leftward on the return pass.
+description: Cocktail Shaker Sort is the bidirectional bubble-sort variant that sweeps in both directions each round.
+dataStructures:
+  - Array
+techniques:
+  - Sorting
+  - Adjacent Swapping
+  - Bidirectional Traversal
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - bidirectional bubble sort
+  - shaker sort
+useCases:
+  - Comparing directional scan strategies in simple sorts
+  - Reducing how long tiny values stay trapped near the end of the array
+  - Teaching why small practical tweaks do not change quadratic behavior
+complexity:
+  time: O(n^2) average and worst case, O(n) best case with early stopping
+  space: O(1)
+  notes: The two-direction sweep improves some practical cases over plain bubble sort, but the asymptotic behavior remains quadratic.
+interviewSignals:
+  - The prompt extends bubble sort to move both extremes faster.
+  - A forward-only pass leaves small values near the end moving too slowly.
+relatedSlugs:
+  - bubble-sort
+  - comb-sort
+  - gnome-sort
+provenance:
+  - title: TheAlgorithms/JavaScript - Sorts/CocktailShakerSort.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Sorts/CocktailShakerSort.js
+    kind: Implementation
+  - title: "free-programming-books - Open Data Structures: An Introduction"
+    href: https://opendatastructures.org/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Cocktail shaker sort is the cleanest answer when someone asks how to improve bubble sort without changing its basic adjacent-swap model. The point is to move large items rightward and small items leftward in the same round.
+
+## Worked Example
+
+On `[5, 1, 4, 2, 8, 0]`, the forward pass pushes `8` toward the end, and the backward pass then pulls `0` toward the front. Each round tightens both boundaries instead of only the right boundary.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function cocktailShakerSort(values) {
+  if (!Array.isArray(values)) {
+    throw new TypeError('Values must be an array of numbers');
+  }
+
+  const items = [...values];
+  let start = 0;
+  let end = items.length - 1;
+  let swapped = true;
+
+  while (swapped && start < end) {
+    swapped = false;
+
+    for (let index = start; index < end; index += 1) {
+      if (items[index] > items[index + 1]) {
+        [items[index], items[index + 1]] = [items[index + 1], items[index]];
+        swapped = true;
+      }
+    }
+
+    end -= 1;
+
+    for (let index = end; index > start; index -= 1) {
+      if (items[index - 1] > items[index]) {
+        [items[index - 1], items[index]] = [items[index], items[index - 1]];
+        swapped = true;
+      }
+    }
+
+    start += 1;
+  }
+
+  return items;
+}
+```
+
+```ts
+export function cocktailShakerSort(values: number[]): number[] {
+  const items = [...values];
+  let start = 0;
+  let end = items.length - 1;
+  let swapped = true;
+
+  while (swapped && start < end) {
+    swapped = false;
+
+    for (let index = start; index < end; index += 1) {
+      if (items[index] > items[index + 1]) {
+        [items[index], items[index + 1]] = [items[index + 1], items[index]];
+        swapped = true;
+      }
+    }
+
+    end -= 1;
+
+    for (let index = end; index > start; index -= 1) {
+      if (items[index - 1] > items[index]) {
+        [items[index - 1], items[index]] = [items[index], items[index - 1]];
+        swapped = true;
+      }
+    }
+
+    start += 1;
+  }
+
+  return items;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare cocktail shaker sort with plain bubble sort on nearly sorted input.
+- Add explicit early-stop checks for both passes.
+- Explain why the asymptotic runtime does not improve even though constants can.
+
+## Common Pitfalls
+
+- Forgetting to shrink both the left and right boundaries.
+- Carrying a stale swapped flag between passes.
+- Claiming the bidirectional sweep changes the worst-case complexity.

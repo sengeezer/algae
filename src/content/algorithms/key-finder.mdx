@@ -1,0 +1,145 @@
+---
+title: Key Finder
+slug: key-finder
+category: Ciphers
+summary: Recover a likely Caesar-cipher shift by trying all 26 possibilities and scoring the decoded text against expected language markers.
+description: Key Finder is the brute-force Caesar key-recovery heuristic that ranks candidate plaintexts by simple word-pattern matches.
+dataStructures:
+  - String
+  - Array
+techniques:
+  - Brute Force
+  - Heuristic Scoring
+  - Pattern Matching
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - caesar key recovery
+  - shift detection heuristic
+useCases:
+  - Demonstrating exhaustive search over a tiny key space
+  - Teaching heuristic scoring when exact validation is unavailable
+  - Recovering likely Caesar shifts from natural-language text
+complexity:
+  time: O(26n)
+  space: O(n)
+  notes: The search space is tiny, so the algorithm is effectively linear in practice. The interesting part is choosing a scoring function that prefers plausible plaintext.
+interviewSignals:
+  - The cipher is small enough that every key can be tried.
+  - The output should be the most plausible shift, not just all decoded candidates.
+relatedSlugs:
+  - caesar-cipher
+  - count-substrings
+  - pattern-matching
+provenance:
+  - title: TheAlgorithms/JavaScript - Ciphers/KeyFinder.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Ciphers/KeyFinder.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Key Finder is a brute-force search problem with a scoring layer on top. The key space is tiny, so the real decision is how to rank candidate decryptions without introducing noisy side effects or environment-specific behavior.
+
+## Worked Example
+
+Suppose a Caesar-encrypted sentence decodes into natural-looking English only when shifted by `7`. Trying all 26 shifts and counting common markers like `" the "`, `" and "`, or `" is "` will usually make that shift score highest.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function keyFinder(cipherText) {
+  if (typeof cipherText !== 'string') {
+    throw new TypeError('Cipher text must be a string');
+  }
+
+  const markers = [' the ', ' and ', ' is ', ' of ', ' to ', ' be '];
+
+  function decodeWithShift(text, shift) {
+    const normalized = ((-shift % 26) + 26) % 26;
+
+    return text.replace(/[a-z]/gi, (char) => {
+      const base = /[A-Z]/.test(char) ? 65 : 97;
+      const index = char.charCodeAt(0) - base;
+      return String.fromCharCode(base + ((index + normalized) % 26));
+    });
+  }
+
+  let bestShift = 0;
+  let bestScore = -1;
+
+  for (let shift = 0; shift < 26; shift += 1) {
+    const decoded = ` ${decodeWithShift(cipherText, shift).toLowerCase()} `;
+    let score = 0;
+
+    for (const marker of markers) {
+      if (decoded.includes(marker)) {
+        score += 1;
+      }
+    }
+
+    if (score > bestScore) {
+      bestScore = score;
+      bestShift = shift;
+    }
+  }
+
+  return bestShift;
+}
+```
+
+```ts
+export function keyFinder(cipherText: string): number {
+  const markers = [' the ', ' and ', ' is ', ' of ', ' to ', ' be '];
+
+  function decodeWithShift(text: string, shift: number): string {
+    const normalized = ((-shift % 26) + 26) % 26;
+
+    return text.replace(/[a-z]/gi, (char) => {
+      const base = /[A-Z]/.test(char) ? 65 : 97;
+      const index = char.charCodeAt(0) - base;
+      return String.fromCharCode(base + ((index + normalized) % 26));
+    });
+  }
+
+  let bestShift = 0;
+  let bestScore = -1;
+
+  for (let shift = 0; shift < 26; shift += 1) {
+    const decoded = ` ${decodeWithShift(cipherText, shift).toLowerCase()} `;
+    let score = 0;
+
+    for (const marker of markers) {
+      if (decoded.includes(marker)) {
+        score += 1;
+      }
+    }
+
+    if (score > bestScore) {
+      bestScore = score;
+      bestShift = shift;
+    }
+  }
+
+  return bestShift;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the best decoded plaintext along with the key.
+- Use character-frequency scoring instead of a small marker dictionary.
+- Explain why this brute-force approach works for Caesar but not for large-key ciphers.
+
+## Common Pitfalls
+
+- Adding environment-specific side effects like DOM writes into a pure search routine.
+- Scoring only one hard-coded token and making the heuristic brittle.
+- Forgetting that Caesar decryption just tries every normalized shift.

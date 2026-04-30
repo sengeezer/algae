@@ -1,0 +1,138 @@
+---
+title: Pancake Sort
+slug: pancake-sort
+category: Sorting
+summary: Repeatedly flip a prefix to bring the maximum remaining element to the front, then flip again to send it to its final position.
+description: Pancake Sort is the prefix-reversal sorting algorithm inspired by flipping stacks with a spatula.
+dataStructures:
+  - Array
+techniques:
+  - Sorting
+  - Prefix Reversal
+  - Selection
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - prefix flip sort
+  - pancake flipping sort
+useCases:
+  - Practicing array reversal on constrained operations
+  - Comparing exotic sorting moves with standard swap-based sorts
+  - Explaining how repeated maximum placement can use flips instead of swaps
+complexity:
+  time: O(n^2)
+  space: O(1)
+  notes: Pancake sort is more interesting for its constrained operation model than for raw performance.
+interviewSignals:
+  - The only allowed move is reversing a prefix.
+  - The algorithm places one maximum element at the end each round.
+relatedSlugs:
+  - selection-sort
+  - reverse-string
+  - cycle-sort
+provenance:
+  - title: TheAlgorithms/JavaScript - Sorts/PancakeSort.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Sorts/PancakeSort.js
+    kind: Implementation
+  - title: "free-programming-books - Open Data Structures: An Introduction"
+    href: https://opendatastructures.org/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Pancake sort is a constrained-operation problem masquerading as a sorting problem. The challenge is not discovering the maximum element, but expressing the sort entirely with prefix reversals.
+
+## Worked Example
+
+For `[3, 6, 1, 5, 2, 4]`, first flip the prefix ending at `6` to bring the maximum to the front, then flip the full active prefix to move `6` to the end. Repeat on the shortened prefix.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function pancakeSort(values) {
+  if (!Array.isArray(values)) {
+    throw new TypeError('Values must be an array of numbers');
+  }
+
+  const items = [...values];
+
+  function flip(end) {
+    for (let left = 0, right = end; left < right; left += 1, right -= 1) {
+      [items[left], items[right]] = [items[right], items[left]];
+    }
+  }
+
+  for (let size = items.length; size > 1; size -= 1) {
+    let maxIndex = 0;
+
+    for (let index = 1; index < size; index += 1) {
+      if (items[index] > items[maxIndex]) {
+        maxIndex = index;
+      }
+    }
+
+    if (maxIndex === size - 1) {
+      continue;
+    }
+
+    if (maxIndex > 0) {
+      flip(maxIndex);
+    }
+
+    flip(size - 1);
+  }
+
+  return items;
+}
+```
+
+```ts
+export function pancakeSort(values: number[]): number[] {
+  const items = [...values];
+
+  function flip(end: number): void {
+    for (let left = 0, right = end; left < right; left += 1, right -= 1) {
+      [items[left], items[right]] = [items[right], items[left]];
+    }
+  }
+
+  for (let size = items.length; size > 1; size -= 1) {
+    let maxIndex = 0;
+
+    for (let index = 1; index < size; index += 1) {
+      if (items[index] > items[maxIndex]) {
+        maxIndex = index;
+      }
+    }
+
+    if (maxIndex === size - 1) {
+      continue;
+    }
+
+    if (maxIndex > 0) {
+      flip(maxIndex);
+    }
+
+    flip(size - 1);
+  }
+
+  return items;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the flip sequence instead of only the sorted array.
+- Compare pancake sort with selection sort under normal swap operations.
+- Explain how the constrained move set changes the implementation but not the asymptotic runtime.
+
+## Common Pitfalls
+
+- Flipping even when the maximum is already at the end of the active prefix.
+- Forgetting the two-flip pattern needed when the maximum is not already in front.
+- Using full-array reversals when only a prefix reversal is allowed.

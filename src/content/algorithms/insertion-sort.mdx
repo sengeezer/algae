@@ -1,0 +1,110 @@
+---
+title: Insertion Sort
+slug: insertion-sort
+category: Sorting
+summary: Grow a sorted prefix by inserting each new element into its correct spot among the items already processed.
+description: Insertion Sort is the stable comparison sort that repairs order one element at a time inside a growing prefix.
+dataStructures:
+  - Array
+techniques:
+  - Sorting
+  - Insertion
+  - Local Repair
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - direct insertion sort
+  - incremental sort
+useCases:
+  - Sorting small arrays efficiently
+  - Serving as the inner primitive inside hybrid sorts like TimSort
+  - Explaining stable local insertion on nearly sorted input
+complexity:
+  time: O(n^2) average and worst case, O(n) best case on nearly sorted input
+  space: O(1)
+  notes: Insertion sort is one of the few simple quadratic sorts that remains practically useful for small or almost sorted inputs.
+interviewSignals:
+  - The array is processed left to right with a sorted prefix invariant.
+  - Nearly sorted input makes local shifting cheap.
+relatedSlugs:
+  - shell-sort
+  - tim-sort
+  - selection-sort
+provenance:
+  - title: TheAlgorithms/JavaScript - Sorts/InsertionSort.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Sorts/InsertionSort.js
+    kind: Implementation
+  - title: "free-programming-books - Open Data Structures: An Introduction"
+    href: https://opendatastructures.org/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Insertion sort matters because it is both easy to reason about and genuinely useful in hybrid algorithms. The main invariant is simple: everything to the left of the current index is already sorted.
+
+## Worked Example
+
+For `[5, 2, 4, 6, 1, 3]`, when the algorithm reaches `4`, it shifts `5` one position right and inserts `4` between `2` and `5`. That same pattern repeats for each new element.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function insertionSort(values) {
+  if (!Array.isArray(values)) {
+    throw new TypeError('Values must be an array of numbers');
+  }
+
+  const items = [...values];
+
+  for (let index = 1; index < items.length; index += 1) {
+    const current = items[index];
+    let position = index - 1;
+
+    while (position >= 0 && items[position] > current) {
+      items[position + 1] = items[position];
+      position -= 1;
+    }
+
+    items[position + 1] = current;
+  }
+
+  return items;
+}
+```
+
+```ts
+export function insertionSort(values: number[]): number[] {
+  const items = [...values];
+
+  for (let index = 1; index < items.length; index += 1) {
+    const current = items[index];
+    let position = index - 1;
+
+    while (position >= 0 && items[position] > current) {
+      items[position + 1] = items[position];
+      position -= 1;
+    }
+
+    items[position + 1] = current;
+  }
+
+  return items;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why insertion sort is stable.
+- Compare insertion sort with bubble sort on nearly sorted arrays.
+- Use binary search to find the insertion point while keeping the same shift step.
+
+## Common Pitfalls
+
+- Swapping repeatedly instead of shifting and inserting once.
+- Losing the current value before shifting larger elements.
+- Missing the fact that nearly sorted inputs make the best case linear.

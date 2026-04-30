@@ -1,0 +1,106 @@
+---
+title: Gnome Sort
+slug: gnome-sort
+category: Sorting
+summary: Walk forward while adjacent items are ordered, and step backward after each swap until the new item is in place.
+description: Gnome Sort is the swap-and-step-back sorting algorithm that behaves like insertion by repeated local corrections.
+dataStructures:
+  - Array
+techniques:
+  - Sorting
+  - Adjacent Swapping
+  - Local Repair
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - stupid sort
+  - garden gnome sort
+useCases:
+  - Illustrating insertion-like behavior without explicit shifting
+  - Comparing swap-based and shift-based local repair strategies
+  - Teaching loop control with occasional backward steps
+complexity:
+  time: O(n^2) average and worst case
+  space: O(1)
+  notes: Gnome sort is conceptually close to insertion sort, but it pays for its simplicity with more swaps.
+interviewSignals:
+  - The prompt repeatedly swaps neighboring out-of-order items and walks back one step.
+  - A value keeps moving left until its local ordering is repaired.
+relatedSlugs:
+  - insertion-sort
+  - bubble-sort
+  - cocktail-shaker-sort
+provenance:
+  - title: TheAlgorithms/JavaScript - Sorts/GnomeSort.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Sorts/GnomeSort.js
+    kind: Implementation
+  - title: "free-programming-books - Open Data Structures: An Introduction"
+    href: https://opendatastructures.org/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Gnome sort is a good teaching algorithm because it exposes local repair directly. Instead of finding an insertion point first, it keeps swapping a misplaced value leftward until the neighboring order is fixed.
+
+## Worked Example
+
+On `[4, 2, 3, 1]`, compare `4` and `2`, swap them, then step back to verify the repaired position. The algorithm keeps doing this until it can safely walk forward again.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function gnomeSort(values) {
+  if (!Array.isArray(values)) {
+    throw new TypeError('Values must be an array of numbers');
+  }
+
+  const items = [...values];
+  let index = 1;
+
+  while (index < items.length) {
+    if (index === 0 || items[index - 1] <= items[index]) {
+      index += 1;
+    } else {
+      [items[index - 1], items[index]] = [items[index], items[index - 1]];
+      index -= 1;
+    }
+  }
+
+  return items;
+}
+```
+
+```ts
+export function gnomeSort(values: number[]): number[] {
+  const items = [...values];
+  let index = 1;
+
+  while (index < items.length) {
+    if (index === 0 || items[index - 1] <= items[index]) {
+      index += 1;
+    } else {
+      [items[index - 1], items[index]] = [items[index], items[index - 1]];
+      index -= 1;
+    }
+  }
+
+  return items;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare the number of swaps with insertion sort on the same input.
+- Explain why the algorithm sometimes moves backward.
+- Modify it to sort descending instead of ascending.
+
+## Common Pitfalls
+
+- Forgetting the `index === 0` guard before checking the left neighbor.
+- Assuming gnome sort shifts values instead of swapping them.
+- Describing it as asymptotically better than insertion sort.

@@ -1,0 +1,190 @@
+---
+title: Morse Code
+slug: morse-code
+category: Ciphers
+summary: Encode letters, digits, and common punctuation into dot-dash symbol groups separated by spaces.
+description: Morse Code is the character-to-symbol encoding scheme that maps textual characters into short and long signal patterns.
+dataStructures:
+  - String
+  - Hash Map
+techniques:
+  - Lookup Table
+  - Symbol Encoding
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - morse encoder
+  - dot dash encoding
+useCases:
+  - Demonstrating lookup-table based string transforms
+  - Practicing configurable symbol replacement
+  - Explaining the difference between encoding and encryption
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: Morse code is an encoding system rather than a secure cipher, but it is still a useful string-mapping exercise.
+interviewSignals:
+  - Each input character maps independently to a predefined signal pattern.
+  - The main question is table design and unknown-character handling.
+relatedSlugs:
+  - pattern-matching
+  - caesar-cipher
+  - count-letters
+provenance:
+  - title: TheAlgorithms/JavaScript - Ciphers/MorseCode.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Ciphers/MorseCode.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Morse code is mostly a lookup-table problem. The algorithmic work is choosing a clean mapping, preserving unsupported characters sensibly, and optionally allowing custom dot and dash symbols.
+
+## Worked Example
+
+`"SOS"` encodes as `"... --- ..."`, where each letter is translated independently and the encoded groups are separated by spaces.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function morseCode(message, dot = '.', dash = '-') {
+  if (typeof message !== 'string') {
+    throw new TypeError('Message must be a string');
+  }
+
+  const table = {
+    A: '.-',
+    B: '-...',
+    C: '-.-.',
+    D: '-..',
+    E: '.',
+    F: '..-.',
+    G: '--.',
+    H: '....',
+    I: '..',
+    J: '.---',
+    K: '-.-',
+    L: '.-..',
+    M: '--',
+    N: '-.',
+    O: '---',
+    P: '.--.',
+    Q: '--.-',
+    R: '.-.',
+    S: '...',
+    T: '-',
+    U: '..-',
+    V: '...-',
+    W: '.--',
+    X: '-..-',
+    Y: '-.--',
+    Z: '--..',
+    '1': '.----',
+    '2': '..---',
+    '3': '...--',
+    '4': '....-',
+    '5': '.....',
+    '6': '-....',
+    '7': '--...',
+    '8': '---..',
+    '9': '----.',
+    '0': '-----',
+    '.': '.-.-.-',
+    ',': '--..--',
+    '?': '..--..',
+    '!': '-.-.--',
+  };
+
+  return message
+    .split('')
+    .map((char) => {
+      if (char === ' ') {
+        return '';
+      }
+
+      const encoded = table[char.toUpperCase()] ?? char;
+      return encoded.replaceAll('.', dot).replaceAll('-', dash);
+    })
+    .join(' ')
+    .trim();
+}
+```
+
+```ts
+export function morseCode(message: string, dot = '.', dash = '-'): string {
+  const table: Record<string, string> = {
+    A: '.-',
+    B: '-...',
+    C: '-.-.',
+    D: '-..',
+    E: '.',
+    F: '..-.',
+    G: '--.',
+    H: '....',
+    I: '..',
+    J: '.---',
+    K: '-.-',
+    L: '.-..',
+    M: '--',
+    N: '-.',
+    O: '---',
+    P: '.--.',
+    Q: '--.-',
+    R: '.-.',
+    S: '...',
+    T: '-',
+    U: '..-',
+    V: '...-',
+    W: '.--',
+    X: '-..-',
+    Y: '-.--',
+    Z: '--..',
+    '1': '.----',
+    '2': '..---',
+    '3': '...--',
+    '4': '....-',
+    '5': '.....',
+    '6': '-....',
+    '7': '--...',
+    '8': '---..',
+    '9': '----.',
+    '0': '-----',
+    '.': '.-.-.-',
+    ',': '--..--',
+    '?': '..--..',
+    '!': '-.-.--',
+  };
+
+  return message
+    .split('')
+    .map((char) => {
+      if (char === ' ') {
+        return '';
+      }
+
+      const encoded = table[char.toUpperCase()] ?? char;
+      return encoded.replaceAll('.', dot).replaceAll('-', dash);
+    })
+    .join(' ')
+    .trim();
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Add a reverse decoder from Morse groups back to text.
+- Keep word boundaries explicit with `/` instead of double spaces.
+- Support a larger punctuation table or custom symbol alphabets.
+
+## Common Pitfalls
+
+- Calling Morse code encryption when it is really an encoding scheme.
+- Losing word boundaries by treating spaces like ordinary unknown characters.
+- Hard-coding one dot or dash representation when the prompt asks for custom symbols.
