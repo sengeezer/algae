@@ -1,0 +1,101 @@
+---
+title: Max Consecutive Ones
+slug: max-consecutive-ones
+category: Array Patterns
+summary: Scan a binary array once, tracking the current run of ones and the best run seen so far.
+description: Max Consecutive Ones is the linear array-scan problem for contiguous runs where no extra flips or replacements are allowed.
+dataStructures:
+  - Array
+techniques:
+  - Array Scan
+  - Counting
+difficulty: Easy
+interviewFrequency: High
+aliases:
+  - longest run of ones
+  - binary streak count
+useCases:
+  - Longest contiguous success streak in binary data
+  - Baseline version of flip-budget window follow-ups
+  - Practicing one-pass state updates with constant space
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The whole problem reduces to resetting the current run when a zero appears.
+interviewSignals:
+  - The input is a binary array and the prompt asks for the longest contiguous run of ones.
+  - There is no budget for replacements, so a full sliding-window structure is unnecessary.
+relatedSlugs:
+  - max-consecutive-ones-iii
+  - sliding-window
+  - two-pointers
+provenance:
+  - title: TheAlgorithms/JavaScript - Dynamic-Programming/Sliding-Window/MaxConsecutiveOnes.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Dynamic-Programming/Sliding-Window/MaxConsecutiveOnes.js
+    kind: Implementation
+  - title: free-programming-books - Algorithmic Thinking
+    href: https://labuladong.gitbook.io/algo-en
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem is the stripped-down version of many longer window questions. Because there is no replacement budget and no character-frequency logic, the solution is just a running count with resets.
+
+## Worked Example
+
+For `[1, 1, 0, 1, 1, 1]`, the first zero resets the current run from `2` back to `0`, then the final streak grows to `3`, which becomes the answer.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function maxConsecutiveOnes(nums) {
+  let current = 0;
+  let best = 0;
+
+  for (const value of nums) {
+    if (value === 1) {
+      current += 1;
+      best = Math.max(best, current);
+    } else {
+      current = 0;
+    }
+  }
+
+  return best;
+}
+```
+
+```ts
+export function maxConsecutiveOnes(nums: number[]): number {
+  let current = 0;
+  let best = 0;
+
+  for (const value of nums) {
+    if (value === 1) {
+      current += 1;
+      best = Math.max(best, current);
+    } else {
+      current = 0;
+    }
+  }
+
+  return best;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Allow flipping at most one zero, then at most `k` zeros.
+- Return the bounds of the best run, not just its length.
+- Generalize the same idea to longest repeated-character streaks in strings.
+
+## Common Pitfalls
+
+- Forgetting to reset the current streak after a zero.
+- Overengineering the solution with a full sliding window.
+- Updating the best length only at the end instead of during the scan.

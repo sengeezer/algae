@@ -1,0 +1,100 @@
+---
+title: Number of Subsets Equal to Given Sum
+slug: number-of-subsets-equal-to-given-sum
+category: Dynamic Programming
+summary: Count how many subsets hit a target sum by accumulating the number of ways to build each intermediate total.
+description: Number of Subsets Equal to Given Sum is the counting version of subset-sum and knapsack, where the goal is the number of valid selections rather than feasibility or maximum value.
+dataStructures:
+  - Array
+  - Table
+techniques:
+  - Dynamic Programming
+  - Counting DP
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - count subset sum
+  - number of subsets with sum k
+useCases:
+  - Counting valid budget or weight combinations
+  - Extending subset-sum from yes or no into total number of solutions
+  - Reusing knapsack-style DP for combinational counting
+complexity:
+  time: O(n * target)
+  space: O(target)
+  notes: Iterate the target backward so each number contributes at most once per row.
+interviewSignals:
+  - The prompt asks how many subsets work, not whether any subset works.
+  - Each item can be used at most once.
+relatedSlugs:
+  - knapsack-dp
+  - coin-change
+  - prefix-sum
+provenance:
+  - title: TheAlgorithms/JavaScript - Dynamic-Programming/NumberOfSubsetEqualToGivenSum.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Dynamic-Programming/NumberOfSubsetEqualToGivenSum.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the counting follow-up to subset sum. Once feasibility is solved, the next natural question is how many valid subsets reach the target, which changes the DP transition from boolean logic to addition.
+
+## Worked Example
+
+For `nums = [1, 2, 3, 3]` and `target = 6`, the valid subsets include `[1, 2, 3]` in two different ways because there are two distinct `3`s, plus `[3, 3]`.
+
+<Callout title="Backward iteration" tone="warning">
+  Update the target sums from high to low. Forward iteration would reuse the same number multiple times in one row and change the problem into an unbounded variant.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function countSubsets(nums, target) {
+  const dp = new Array(target + 1).fill(0);
+  dp[0] = 1;
+
+  for (const value of nums) {
+    for (let sum = target; sum >= value; sum -= 1) {
+      dp[sum] += dp[sum - value];
+    }
+  }
+
+  return dp[target];
+}
+```
+
+```ts
+export function countSubsets(nums: number[], target: number): number {
+  const dp = new Array<number>(target + 1).fill(0);
+  dp[0] = 1;
+
+  for (const value of nums) {
+    for (let sum = target; sum >= value; sum -= 1) {
+      dp[sum] += dp[sum - value];
+    }
+  }
+
+  return dp[target];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Count subsets modulo a large prime.
+- Compare this with coin change where items can be reused.
+- Reconstruct one valid subset in addition to the count.
+
+## Common Pitfalls
+
+- Iterating target sums forward and reusing the same item twice.
+- Solving only the boolean subset-sum version.
+- Forgetting that duplicate values still represent different choices when they occupy different indices.

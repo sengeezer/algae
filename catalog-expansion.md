@@ -97,9 +97,31 @@ This sixth expansion slice lifts the catalog from 68 to 74 entries.
 - Min Priority Queue
 - Permutation in String
 
+## Batch 7 added
+
+This seventh expansion slice lifts the catalog from 74 to 80 entries.
+
+- Dijkstra Smallest Path
+- Fast Fibonacci Number
+- Key Priority Queue
+- Letter Combination
+- Max Consecutive Ones III
+- Rat in a Maze
+
+## Batch 8 added
+
+This eighth expansion slice lifts the catalog from 80 to 86 entries.
+
+- Catalan Numbers
+- Knight Tour
+- Max Consecutive Ones
+- Number of Subsets Equal to Given Sum
+- Palindrome Partitioning
+- Unique Paths II
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 6 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 8 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -122,9 +144,9 @@ All expansion entries from batch 1 through batch 6 now carry explicit per-entry 
 
 ## Next candidates from the same sources
 
-- Dijkstra Smallest Path
-- Fast Fibonacci Number
-- Key Priority Queue
-- Letter Combination
-- Max Consecutive Ones III
-- Rat in a Maze
+- Minimum Cost Path
+- Pascal Triangle
+- Tribonacci Number
+- Longest Substring Without Repeating Characters
+- M Coloring Problem
+- Sum of Subset

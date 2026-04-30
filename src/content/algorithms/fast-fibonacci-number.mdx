@@ -1,0 +1,111 @@
+---
+title: Fast Fibonacci Number
+slug: fast-fibonacci-number
+category: Dynamic Programming
+summary: Compute Fibonacci values with logarithmic-time doubling identities instead of linear iteration.
+description: Fast Fibonacci Number is the interview optimization that upgrades the basic Fibonacci recurrence into divide-and-conquer arithmetic.
+dataStructures:
+  - Recursion Stack
+  - Tuple
+techniques:
+  - Divide and Conquer
+  - Fast Doubling
+  - Dynamic Programming
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - fast doubling fibonacci
+  - logarithmic fibonacci
+useCases:
+  - Computing very large Fibonacci indices efficiently
+  - Demonstrating recurrence optimization beyond linear DP
+  - Building intuition for matrix exponentiation style speedups
+complexity:
+  time: O(log n)
+  space: O(log n)
+  notes: The interview win is the fast-doubling identities, which compute `F(2k)` and `F(2k + 1)` from `F(k)` and `F(k + 1)`.
+interviewSignals:
+  - The prompt asks for a very large Fibonacci index.
+  - A linear loop is correct but too slow for the target constraints.
+relatedSlugs:
+  - climbing-stairs
+  - memoization-dp
+  - binary-lifting
+provenance:
+  - title: TheAlgorithms/JavaScript - Dynamic-Programming/FastFibonacciNumber.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Dynamic-Programming/FastFibonacciNumber.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+The ordinary Fibonacci recurrence is often used as a warm-up, then the interviewer tightens the constraints. Fast doubling is the next step when `O(n)` iteration is no longer good enough.
+
+## Worked Example
+
+If you know `F(k)` and `F(k + 1)`, then you can compute `F(2k)` and `F(2k + 1)` directly. Recurse on `n / 2`, then rebuild the answer from those two formulas instead of stepping through every value up to `n`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function fibonacciPair(index) {
+  if (index === 0) {
+    return [0, 1];
+  }
+
+  const [a, b] = fibonacciPair(Math.floor(index / 2));
+  const c = a * (2 * b - a);
+  const d = a * a + b * b;
+
+  if (index % 2 === 0) {
+    return [c, d];
+  }
+
+  return [d, c + d];
+}
+
+function fastFibonacci(index) {
+  return fibonacciPair(index)[0];
+}
+```
+
+```ts
+function fibonacciPair(index: number): [number, number] {
+  if (index === 0) {
+    return [0, 1];
+  }
+
+  const [a, b] = fibonacciPair(Math.floor(index / 2));
+  const c = a * (2 * b - a);
+  const d = a * a + b * b;
+
+  if (index % 2 === 0) {
+    return [c, d];
+  }
+
+  return [d, c + d];
+}
+
+export function fastFibonacci(index: number): number {
+  return fibonacciPair(index)[0];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the value modulo a large prime.
+- Compare fast doubling with matrix exponentiation.
+- Handle the first few base cases explicitly and explain why they still fit the formulas.
+
+## Common Pitfalls
+
+- Reverting to linear recursion and losing the whole optimization.
+- Mixing up the fast-doubling formulas for even and odd indices.
+- Ignoring integer overflow when the language has fixed-size numeric types.

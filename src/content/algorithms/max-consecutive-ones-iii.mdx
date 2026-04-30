@@ -1,0 +1,121 @@
+---
+title: Max Consecutive Ones III
+slug: max-consecutive-ones-iii
+category: Array Patterns
+summary: Use a sliding window that can absorb at most `k` zeros while stretching the longest run of ones.
+description: Max Consecutive Ones III is the fixed-constraint window interview problem for turning a flip budget into a longest-valid-segment scan.
+dataStructures:
+  - Array
+techniques:
+  - Sliding Window
+  - Two Pointers
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - longest ones with flips
+  - flip k zeros
+useCases:
+  - Longest contiguous segment under a limited replacement budget
+  - Practicing window shrinking on a simple numeric invariant
+  - Generalizing from binary arrays to bounded-mismatch windows
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: "The invariant is simple: the window may contain at most `k` zeros at any time."
+interviewSignals:
+  - The prompt allows flipping or replacing up to `k` bad values.
+  - The answer is the longest contiguous segment satisfying that budget.
+relatedSlugs:
+  - sliding-window
+  - two-pointers
+  - permutation-in-string
+provenance:
+  - title: TheAlgorithms/JavaScript - Dynamic-Programming/Sliding-Window/MaxConsecutiveOnesIII.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Dynamic-Programming/Sliding-Window/MaxConsecutiveOnesIII.js
+    kind: Implementation
+  - title: free-programming-books - Algorithmic Thinking
+    href: https://labuladong.gitbook.io/algo-en
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a strong interview window problem because the invariant is easy to state and easy to violate. The current segment is valid only while the number of zeros stays within the allowed flip budget.
+
+## Worked Example
+
+For `nums = [1, 1, 0, 0, 1, 1, 1]` and `k = 1`, the window can contain one zero but must shrink as soon as a second zero enters. That grow-then-shrink pattern is the whole solution.
+
+<Callout title="Window rule" tone="tip">
+  Count zeros, not ones. The budget is expressed in terms of the bad values you are allowed to absorb.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function longestOnes(nums, flips) {
+  let left = 0;
+  let zeroCount = 0;
+  let best = 0;
+
+  for (let right = 0; right < nums.length; right += 1) {
+    if (nums[right] === 0) {
+      zeroCount += 1;
+    }
+
+    while (zeroCount > flips) {
+      if (nums[left] === 0) {
+        zeroCount -= 1;
+      }
+
+      left += 1;
+    }
+
+    best = Math.max(best, right - left + 1);
+  }
+
+  return best;
+}
+```
+
+```ts
+export function longestOnes(nums: number[], flips: number): number {
+  let left = 0;
+  let zeroCount = 0;
+  let best = 0;
+
+  for (let right = 0; right < nums.length; right += 1) {
+    if (nums[right] === 0) {
+      zeroCount += 1;
+    }
+
+    while (zeroCount > flips) {
+      if (nums[left] === 0) {
+        zeroCount -= 1;
+      }
+
+      left += 1;
+    }
+
+    best = Math.max(best, right - left + 1);
+  }
+
+  return best;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the actual best window bounds, not just its length.
+- Generalize this to strings with at most `k` replacements.
+- Explain why each pointer still moves at most `n` times.
+
+## Common Pitfalls
+
+- Counting the wrong value and shrinking on the wrong condition.
+- Forgetting to shrink until the window is valid again.
+- Recomputing the number of zeros from scratch after each move.

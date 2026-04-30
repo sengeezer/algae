@@ -1,0 +1,123 @@
+---
+title: Unique Paths II
+slug: unique-paths-ii
+category: Dynamic Programming
+summary: Count right-and-down routes through a grid while obstacle cells zero out any path count that would pass through them.
+description: Unique Paths II is the blocked-grid follow-up where the original path-count recurrence still works, but obstacle cells break the flow.
+dataStructures:
+  - Matrix
+  - Array
+techniques:
+  - Dynamic Programming
+  - Grid Traversal
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - obstacle grid paths
+  - blocked robot paths
+useCases:
+  - Counting monotonic routes around blocked cells
+  - Extending simple grid DP with cell-level invalid states
+  - Practicing one-row DP with obstacles
+complexity:
+  time: O(rows * cols)
+  space: O(cols)
+  notes: An obstacle does not contribute a special value; it simply forces the number of paths through that cell to zero.
+interviewSignals:
+  - Movement is still restricted to right and down.
+  - Some cells are blocked, but the prompt still asks for a path count rather than a route.
+relatedSlugs:
+  - unique-paths
+  - rat-in-a-maze
+  - number-of-islands
+provenance:
+  - title: TheAlgorithms/JavaScript - Dynamic-Programming/UniquePaths2.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Dynamic-Programming/UniquePaths2.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the natural follow-up to Unique Paths. The recurrence stays almost identical, but obstacle cells break the propagation by contributing zero paths from that point onward.
+
+## Worked Example
+
+If the middle cell of a `3 x 3` grid is blocked, any route that would pass through it disappears. The final path count is just the sum of paths that reach the destination by going around that obstacle.
+
+<Callout title="Reset rule" tone="tip">
+  When a cell is blocked, set its path count to zero immediately. Do not try to add top and left values into an obstacle cell.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function uniquePaths2(grid) {
+  const rows = grid.length;
+  const cols = grid[0].length;
+  const dp = Array.from({ length: rows }, () => new Array(cols).fill(0));
+
+  if (grid[0][0] === 1) {
+    return 0;
+  }
+
+  dp[0][0] = 1;
+
+  for (let row = 0; row < rows; row += 1) {
+    for (let col = 0; col < cols; col += 1) {
+      if (grid[row][col] === 1) {
+        dp[row][col] = 0;
+        continue;
+      }
+
+      if (row > 0) {
+        dp[row][col] += dp[row - 1][col];
+      }
+
+      if (col > 0) {
+        dp[row][col] += dp[row][col - 1];
+      }
+    }
+  }
+
+  return dp[rows - 1][cols - 1];
+}
+```
+
+```ts
+export function uniquePaths2(grid: number[][]): number {
+  const cols = grid[0].length;
+  const dp = new Array<number>(cols).fill(0);
+  dp[0] = grid[0][0] === 1 ? 0 : 1;
+
+  for (let row = 0; row < grid.length; row += 1) {
+    for (let col = 0; col < cols; col += 1) {
+      if (grid[row][col] === 1) {
+        dp[col] = 0;
+      } else if (col > 0) {
+        dp[col] += dp[col - 1];
+      }
+    }
+  }
+
+  return dp[cols - 1];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare the one-row DP with a full grid table.
+- Return one valid route instead of the total count.
+- Extend this to weighted grids where cost replaces count.
+
+## Common Pitfalls
+
+- Failing to zero out blocked cells.
+- Forgetting the blocked-start or blocked-end edge cases.
+- Mixing this counting problem up with shortest-path traversal.

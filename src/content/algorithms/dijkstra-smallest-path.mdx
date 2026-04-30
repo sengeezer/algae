@@ -1,0 +1,163 @@
+---
+title: Dijkstra Smallest Path
+slug: dijkstra-smallest-path
+category: Graphs
+summary: Track best-known distances with a min-priority queue so the first settled route to each node is the cheapest non-negative path.
+description: Dijkstra Smallest Path is the weighted-graph interview pattern for returning one cheapest route, not just the distance table.
+dataStructures:
+  - Graph
+  - Heap
+  - Priority Queue
+  - Hash Map
+techniques:
+  - Shortest Path
+  - Greedy
+  - Priority Queue
+difficulty: Hard
+interviewFrequency: High
+aliases:
+  - weighted shortest route
+  - dijkstra path reconstruction
+useCases:
+  - Recovering the cheapest route between two nodes
+  - Navigation or network routing with non-negative weights
+  - Converting a distance-only Dijkstra solution into an explicit path answer
+complexity:
+  time: O((V + E) log V)
+  space: O(V)
+  notes: The key extra step beyond ordinary Dijkstra is storing each node's predecessor when a shorter route is found.
+interviewSignals:
+  - The graph is weighted and the prompt asks for the route itself, not just the total cost.
+  - Every edge weight is non-negative, so BFS is too weak and Bellman-Ford is unnecessary.
+relatedSlugs:
+  - dijkstra
+  - breadth-first-shortest-path
+  - min-priority-queue
+provenance:
+  - title: TheAlgorithms/JavaScript - Graphs/DijkstraSmallestPath.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Graphs/DijkstraSmallestPath.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Interviewers often start with weighted shortest distance and then extend the problem: now return the path. The algorithm is still Dijkstra, but you must remember how each node was reached when its distance improved.
+
+## Worked Example
+
+If the cheapest route to `D` becomes `A -> C -> D` with cost `7`, store `parent[D] = C` when that update happens. After the queue finishes, walk those parent links backward from the target to reconstruct the final path.
+
+<Callout title="Constraint check" tone="warning">
+  Negative edges still break this approach. Path reconstruction does not change Dijkstra's non-negative weight requirement.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function dijkstraSmallestPath(graph, start, target) {
+  const distances = new Map([[start, 0]]);
+  const parent = new Map([[start, null]]);
+  const queue = [[0, start]];
+
+  while (queue.length > 0) {
+    queue.sort((a, b) => a[0] - b[0]);
+    const [distance, node] = queue.shift();
+
+    if (distance > (distances.get(node) ?? Infinity)) {
+      continue;
+    }
+
+    if (node === target) {
+      break;
+    }
+
+    for (const [neighbor, weight] of graph.get(node) ?? []) {
+      const candidate = distance + weight;
+
+      if (candidate < (distances.get(neighbor) ?? Infinity)) {
+        distances.set(neighbor, candidate);
+        parent.set(neighbor, node);
+        queue.push([candidate, neighbor]);
+      }
+    }
+  }
+
+  if (!distances.has(target)) {
+    return [];
+  }
+
+  const path = [];
+  for (let node = target; node !== null; node = parent.get(node) ?? null) {
+    path.push(node);
+  }
+
+  return path.reverse();
+}
+```
+
+```ts
+type WeightedEdge = [to: string, weight: number];
+
+export function dijkstraSmallestPath(
+  graph: Map<string, WeightedEdge[]>,
+  start: string,
+  target: string,
+): string[] {
+  const distances = new Map<string, number>([[start, 0]]);
+  const parent = new Map<string, string | null>([[start, null]]);
+  const queue: Array<[distance: number, node: string]> = [[0, start]];
+
+  while (queue.length > 0) {
+    queue.sort((left, right) => left[0] - right[0]);
+    const [distance, node] = queue.shift()!;
+
+    if (distance > (distances.get(node) ?? Number.POSITIVE_INFINITY)) {
+      continue;
+    }
+
+    if (node === target) {
+      break;
+    }
+
+    for (const [neighbor, weight] of graph.get(node) ?? []) {
+      const candidate = distance + weight;
+
+      if (candidate < (distances.get(neighbor) ?? Number.POSITIVE_INFINITY)) {
+        distances.set(neighbor, candidate);
+        parent.set(neighbor, node);
+        queue.push([candidate, neighbor]);
+      }
+    }
+  }
+
+  if (!distances.has(target)) {
+    return [];
+  }
+
+  const path: string[] = [];
+  for (let node: string | null = target; node !== null; node = parent.get(node) ?? null) {
+    path.push(node);
+  }
+
+  return path.reverse();
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return both the path and total cost.
+- Replace the sorted array with a real min-priority queue.
+- Explain why early exit at the target is correct.
+
+## Common Pitfalls
+
+- Forgetting to update the parent when a shorter route is found.
+- Using Dijkstra on graphs with negative weights.
+- Reconstructing the path even when the target was never reached.

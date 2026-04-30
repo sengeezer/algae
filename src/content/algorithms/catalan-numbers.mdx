@@ -1,0 +1,99 @@
+---
+title: Catalan Numbers
+slug: catalan-numbers
+category: Dynamic Programming
+summary: Count recursively structured objects by splitting around every possible root and summing the valid left-right combinations.
+description: Catalan Numbers are the combinatorial DP pattern behind balanced parentheses counts, unique BST shapes, and many recursively structured counting problems.
+dataStructures:
+  - Array
+techniques:
+  - Dynamic Programming
+  - Combinatorics
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - catalan sequence
+  - recursive structure counting
+useCases:
+  - Counting balanced parentheses strings
+  - Counting unique binary search tree shapes
+  - Counting valid recursive splits or triangulations
+complexity:
+  time: O(n^2)
+  space: O(n)
+  notes: The pattern appears when each valid structure can be formed by choosing one split point and multiplying independent left and right counts.
+interviewSignals:
+  - The prompt asks for how many valid recursive structures exist rather than generating them.
+  - Each answer can be decomposed into left and right substructures around a chosen root.
+relatedSlugs:
+  - generate-parentheses
+  - binary-search-tree
+  - unique-paths
+provenance:
+  - title: TheAlgorithms/JavaScript - Dynamic-Programming/CatalanNumbers.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Dynamic-Programming/CatalanNumbers.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Catalan Numbers usually show up disguised as a counting problem. The interviewer may ask about balanced parentheses, valid BST shapes, or polygon triangulations, but the core recurrence is the same: choose a split point, then multiply the number of valid left and right structures.
+
+## Worked Example
+
+To compute `C(3)`, choose each possible root position. The first root contributes `C(0) * C(2)`, the second contributes `C(1) * C(1)`, and the third contributes `C(2) * C(0)`. Summing those cases gives `5`.
+
+<Callout title="Recognition cue" tone="note">
+  If every valid structure can be assembled from an independent left part and right part around a root, Catalan-style counting should be on your shortlist.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function catalanNumber(index) {
+  const dp = new Array(index + 1).fill(0);
+  dp[0] = 1;
+
+  for (let total = 1; total <= index; total += 1) {
+    for (let leftSize = 0; leftSize < total; leftSize += 1) {
+      dp[total] += dp[leftSize] * dp[total - 1 - leftSize];
+    }
+  }
+
+  return dp[index];
+}
+```
+
+```ts
+export function catalanNumber(index: number): number {
+  const dp = new Array<number>(index + 1).fill(0);
+  dp[0] = 1;
+
+  for (let total = 1; total <= index; total += 1) {
+    for (let leftSize = 0; leftSize < total; leftSize += 1) {
+      dp[total] += dp[leftSize] * dp[total - 1 - leftSize];
+    }
+  }
+
+  return dp[index];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Map this recurrence to counting unique BSTs.
+- Compare the tabulated solution with the closed-form formula.
+- Generate the actual structures instead of only counting them.
+
+## Common Pitfalls
+
+- Adding left and right counts when they should be multiplied.
+- Missing the base case `C(0) = 1`.
+- Failing to recognize the same recurrence under a different story problem.

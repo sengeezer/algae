@@ -1,0 +1,135 @@
+---
+title: Letter Combination
+slug: letter-combination
+category: Backtracking
+summary: Expand digit-to-letter choices one position at a time to generate every valid phone keypad combination.
+description: Letter Combination is the recursive interview problem that turns a digit string into a controlled combinatorial search over keypad mappings.
+dataStructures:
+  - String
+  - Array
+  - Recursion Stack
+techniques:
+  - Backtracking
+  - Depth-First Search
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - phone keypad combinations
+  - digit-letter combinations
+useCases:
+  - Generating all keypad expansions for a digit string
+  - Practicing recursive path construction with branching choices
+  - Demonstrating Cartesian-product style backtracking
+complexity:
+  time: O(branch^n)
+  space: O(n)
+  notes: Each digit contributes a small branching factor, so the important interview skill is building and unwinding the current path cleanly.
+interviewSignals:
+  - The prompt maps digits to multiple letters.
+  - The answer requires every valid string, not just one possible combination.
+relatedSlugs:
+  - generate-parentheses
+  - generate-permutations
+  - backtracking-search
+provenance:
+  - title: TheAlgorithms/JavaScript - Recursive/LetterCombination.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Recursive/LetterCombination.js
+    kind: Implementation
+  - title: free-programming-books - Algorithmic Thinking
+    href: https://labuladong.gitbook.io/algo-en
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem looks simple, but it is a clean test of recursive state construction. Each digit expands into a small set of letters, and the search must choose one letter per digit until a full word is formed.
+
+## Worked Example
+
+For `digits = "23"`, the first digit contributes `a`, `b`, or `c`, and the second contributes `d`, `e`, or `f`. The final answer is the Cartesian product of those two sets, such as `ad`, `ae`, `af`, and so on.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function letterCombination(digits) {
+  if (digits.length === 0) {
+    return [];
+  }
+
+  const mapping = {
+    2: "abc",
+    3: "def",
+    4: "ghi",
+    5: "jkl",
+    6: "mno",
+    7: "pqrs",
+    8: "tuv",
+    9: "wxyz",
+  };
+  const results = [];
+
+  function backtrack(index, path) {
+    if (index === digits.length) {
+      results.push(path);
+      return;
+    }
+
+    for (const letter of mapping[digits[index]]) {
+      backtrack(index + 1, path + letter);
+    }
+  }
+
+  backtrack(0, "");
+  return results;
+}
+```
+
+```ts
+export function letterCombination(digits: string): string[] {
+  if (digits.length === 0) {
+    return [];
+  }
+
+  const mapping: Record<string, string> = {
+    2: "abc",
+    3: "def",
+    4: "ghi",
+    5: "jkl",
+    6: "mno",
+    7: "pqrs",
+    8: "tuv",
+    9: "wxyz",
+  };
+  const results: string[] = [];
+
+  function backtrack(index: number, path: string): void {
+    if (index === digits.length) {
+      results.push(path);
+      return;
+    }
+
+    for (const letter of mapping[digits[index]]) {
+      backtrack(index + 1, path + letter);
+    }
+  }
+
+  backtrack(0, "");
+  return results;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Handle invalid digits like `0` and `1` explicitly.
+- Generate the combinations iteratively with a queue.
+- Compare this search space with permutations and subsets.
+
+## Common Pitfalls
+
+- Treating the problem like permutations instead of position-by-position expansion.
+- Forgetting the empty-input base case.
+- Reusing shared mutable state without undoing it on backtrack.

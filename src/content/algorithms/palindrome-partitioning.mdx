@@ -1,0 +1,151 @@
+---
+title: Palindrome Partitioning
+slug: palindrome-partitioning
+category: Backtracking
+summary: Split a string into pieces so every chosen segment is a palindrome, undoing each cut when the branch is done.
+description: Palindrome Partitioning is the backtracking interview problem that mixes recursive partitioning with fast palindrome checks.
+dataStructures:
+  - String
+  - Array
+  - Recursion Stack
+techniques:
+  - Backtracking
+  - Depth-First Search
+  - Palindrome Checking
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - palindrome splits
+  - palindrome decomposition
+useCases:
+  - Generating all valid palindrome segmentations of a string
+  - Combining partition choices with per-segment validation
+  - Practicing substring recursion with pruning
+complexity:
+  time: O(n * 2^n)
+  space: O(n)
+  notes: The search branches on every possible cut point, so avoiding repeated palindrome work is the main optimization lever.
+interviewSignals:
+  - The prompt asks for all valid partitions of a string.
+  - Every segment must satisfy a local palindrome condition.
+relatedSlugs:
+  - backtracking-search
+  - longest-palindromic-subsequence
+  - generate-permutations
+provenance:
+  - title: TheAlgorithms/JavaScript - Recursive/PalindromePartitioning.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Recursive/PalindromePartitioning.js
+    kind: Implementation
+  - title: free-programming-books - Algorithmic Thinking
+    href: https://labuladong.gitbook.io/algo-en
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Palindrome Partitioning is a good interview problem because it combines two small ideas. You must choose where to cut the string, and every chosen piece must pass a palindrome test before the branch can continue.
+
+## Worked Example
+
+For `"aab"`, the valid partitions are `["a", "a", "b"]` and `["aa", "b"]`. The branch `["a", "ab"]` dies immediately because `"ab"` is not a palindrome.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function palindromePartitions(text) {
+  const results = [];
+  const path = [];
+
+  function isPalindrome(left, right) {
+    while (left < right) {
+      if (text[left] !== text[right]) {
+        return false;
+      }
+
+      left += 1;
+      right -= 1;
+    }
+
+    return true;
+  }
+
+  function dfs(start) {
+    if (start === text.length) {
+      results.push([...path]);
+      return;
+    }
+
+    for (let end = start; end < text.length; end += 1) {
+      if (!isPalindrome(start, end)) {
+        continue;
+      }
+
+      path.push(text.slice(start, end + 1));
+      dfs(end + 1);
+      path.pop();
+    }
+  }
+
+  dfs(0);
+  return results;
+}
+```
+
+```ts
+export function palindromePartitions(text: string): string[][] {
+  const results: string[][] = [];
+  const path: string[] = [];
+
+  function isPalindrome(left: number, right: number): boolean {
+    let start = left;
+    let end = right;
+
+    while (start < end) {
+      if (text[start] !== text[end]) {
+        return false;
+      }
+
+      start += 1;
+      end -= 1;
+    }
+
+    return true;
+  }
+
+  function dfs(start: number): void {
+    if (start === text.length) {
+      results.push([...path]);
+      return;
+    }
+
+    for (let end = start; end < text.length; end += 1) {
+      if (!isPalindrome(start, end)) {
+        continue;
+      }
+
+      path.push(text.slice(start, end + 1));
+      dfs(end + 1);
+      path.pop();
+    }
+  }
+
+  dfs(0);
+  return results;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Precompute palindrome substrings to reduce repeated checks.
+- Return the minimum number of cuts instead of every partition.
+- Explain how this differs from palindrome subsequence problems.
+
+## Common Pitfalls
+
+- Reusing a non-palindromic segment because the cut logic is correct.
+- Forgetting to undo the last chosen segment on backtrack.
+- Confusing substring partitions with subsequences.

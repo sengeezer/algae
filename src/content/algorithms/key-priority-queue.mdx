@@ -1,0 +1,249 @@
+---
+title: Key Priority Queue
+slug: key-priority-queue
+category: Heap
+summary: Pair each item with a lookup key so priorities can be updated or queried without scanning the whole heap.
+description: Key Priority Queue is the interview-ready extension of a heap where elements are addressed by key instead of only by insertion order.
+dataStructures:
+  - Heap
+  - Array
+  - Hash Map
+techniques:
+  - Priority Queue
+  - Heap
+  - Data Structure Design
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - indexed priority queue
+  - keyed heap
+useCases:
+  - Updating priorities by item key
+  - Supporting decrease-key style operations
+  - Combining heap extraction with direct key lookup
+complexity:
+  time: O(log n) update and extract, O(1) key lookup
+  space: O(n)
+  notes: The crucial addition is a map from key to heap index so updates do not require a linear scan.
+interviewSignals:
+  - The prompt needs both min extraction and direct access to an item's current priority.
+  - A plain heap is insufficient because existing entries must be updated by key.
+relatedSlugs:
+  - min-priority-queue
+  - priority-queue
+  - dijkstra-smallest-path
+provenance:
+  - title: TheAlgorithms/JavaScript - Data-Structures/Heap/KeyPriorityQueue.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Data-Structures/Heap/KeyPriorityQueue.js
+    kind: Implementation
+  - title: "free-programming-books - Open Data Structures: An Introduction"
+    href: https://opendatastructures.org/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Plain heaps are great when values are only inserted and extracted. As soon as the interviewer asks you to update an existing item's priority by key, you need one more ingredient: a map from each key to its current heap position.
+
+## Worked Example
+
+If the item keyed by `task-7` changes priority from `9` to `3`, use the index map to find its heap slot immediately, rewrite the value, then sift up from there until heap order is restored.
+
+<Callout title="Design hinge" tone="warning">
+  Without the key-to-index map, priority updates degrade to `O(n)` because the heap alone cannot tell you where a specific item lives.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class KeyPriorityQueue {
+  constructor() {
+    this.heap = [];
+    this.positions = new Map();
+  }
+
+  swap(left, right) {
+    [this.heap[left], this.heap[right]] = [this.heap[right], this.heap[left]];
+    this.positions.set(this.heap[left].key, left);
+    this.positions.set(this.heap[right].key, right);
+  }
+
+  set(key, priority) {
+    if (this.positions.has(key)) {
+      const index = this.positions.get(key);
+      this.heap[index].priority = priority;
+      this.siftUp(index);
+      this.siftDown(index);
+      return;
+    }
+
+    this.heap.push({ key, priority });
+    this.positions.set(key, this.heap.length - 1);
+    this.siftUp(this.heap.length - 1);
+  }
+
+  pop() {
+    if (this.heap.length === 0) {
+      return undefined;
+    }
+
+    const top = this.heap[0];
+    const last = this.heap.pop();
+    this.positions.delete(top.key);
+
+    if (this.heap.length > 0 && last !== undefined) {
+      this.heap[0] = last;
+      this.positions.set(last.key, 0);
+      this.siftDown(0);
+    }
+
+    return top;
+  }
+
+  siftUp(index) {
+    let child = index;
+
+    while (child > 0) {
+      const parent = Math.floor((child - 1) / 2);
+
+      if (this.heap[parent].priority <= this.heap[child].priority) {
+        break;
+      }
+
+      this.swap(parent, child);
+      child = parent;
+    }
+  }
+
+  siftDown(index) {
+    let parent = index;
+
+    while (true) {
+      let candidate = parent;
+      const left = parent * 2 + 1;
+      const right = parent * 2 + 2;
+
+      if (left < this.heap.length && this.heap[left].priority < this.heap[candidate].priority) {
+        candidate = left;
+      }
+
+      if (right < this.heap.length && this.heap[right].priority < this.heap[candidate].priority) {
+        candidate = right;
+      }
+
+      if (candidate === parent) {
+        return;
+      }
+
+      this.swap(parent, candidate);
+      parent = candidate;
+    }
+  }
+}
+```
+
+```ts
+type QueueEntry = {
+  key: string;
+  priority: number;
+};
+
+export class KeyPriorityQueue {
+  private readonly heap: QueueEntry[] = [];
+  private readonly positions = new Map<string, number>();
+
+  set(key: string, priority: number): void {
+    if (this.positions.has(key)) {
+      const index = this.positions.get(key)!;
+      this.heap[index].priority = priority;
+      this.siftUp(index);
+      this.siftDown(index);
+      return;
+    }
+
+    this.heap.push({ key, priority });
+    this.positions.set(key, this.heap.length - 1);
+    this.siftUp(this.heap.length - 1);
+  }
+
+  pop(): QueueEntry | undefined {
+    if (this.heap.length === 0) {
+      return undefined;
+    }
+
+    const top = this.heap[0];
+    const last = this.heap.pop();
+    this.positions.delete(top.key);
+
+    if (this.heap.length > 0 && last !== undefined) {
+      this.heap[0] = last;
+      this.positions.set(last.key, 0);
+      this.siftDown(0);
+    }
+
+    return top;
+  }
+
+  private swap(left: number, right: number): void {
+    [this.heap[left], this.heap[right]] = [this.heap[right], this.heap[left]];
+    this.positions.set(this.heap[left].key, left);
+    this.positions.set(this.heap[right].key, right);
+  }
+
+  private siftUp(index: number): void {
+    let child = index;
+
+    while (child > 0) {
+      const parent = Math.floor((child - 1) / 2);
+
+      if (this.heap[parent].priority <= this.heap[child].priority) {
+        break;
+      }
+
+      this.swap(parent, child);
+      child = parent;
+    }
+  }
+
+  private siftDown(index: number): void {
+    let parent = index;
+
+    while (true) {
+      let candidate = parent;
+      const left = parent * 2 + 1;
+      const right = parent * 2 + 2;
+
+      if (left < this.heap.length && this.heap[left].priority < this.heap[candidate].priority) {
+        candidate = left;
+      }
+
+      if (right < this.heap.length && this.heap[right].priority < this.heap[candidate].priority) {
+        candidate = right;
+      }
+
+      if (candidate === parent) {
+        return;
+      }
+
+      this.swap(parent, candidate);
+      parent = candidate;
+    }
+  }
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Add explicit `decreaseKey` and `increaseKey` methods.
+- Support deleting an arbitrary key.
+- Compare this design with inserting duplicate heap entries and ignoring stale ones.
+
+## Common Pitfalls
+
+- Forgetting to update the position map during swaps.
+- Using a plain heap and paying `O(n)` to find existing keys.
+- Re-sifting only upward or only downward after a priority change.

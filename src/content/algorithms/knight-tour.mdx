@@ -1,0 +1,164 @@
+---
+title: Knight Tour
+slug: knight-tour
+category: Backtracking
+summary: Move a knight across the board so every square is visited exactly once while failed routes are undone immediately.
+description: Knight Tour is the board-search interview problem that turns constrained moves into a Hamiltonian-path style backtracking challenge.
+dataStructures:
+  - Matrix
+  - Recursion Stack
+  - Array
+techniques:
+  - Backtracking
+  - Depth-First Search
+  - Graph Traversal
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - knight's tour
+  - chessboard traversal
+useCases:
+  - Visiting every board cell exactly once under move constraints
+  - Demonstrating search with branching moves and rollback
+  - Discussing heuristic ordering on hard backtracking problems
+complexity:
+  time: O(8^(n^2))
+  space: O(n^2)
+  notes: Pure backtracking branches aggressively, so interviews often discuss move ordering heuristics even if the baseline solution is brute force.
+interviewSignals:
+  - A knight must visit every square exactly once.
+  - The prompt is about legal-move search and complete coverage, not shortest path.
+relatedSlugs:
+  - rat-in-a-maze
+  - n-queens
+  - backtracking-search
+provenance:
+  - title: TheAlgorithms/JavaScript - Backtracking/KnightTour.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Backtracking/KnightTour.js
+    kind: Implementation
+  - title: free-programming-books - Algorithmic Thinking
+    href: https://labuladong.gitbook.io/algo-en
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Knight Tour is a pure search-discipline problem. Every move must satisfy the knight constraint, every square may be visited once, and every wrong branch must be rolled back cleanly before the next move is tried.
+
+## Worked Example
+
+Starting at the top-left square, mark it as step `0`, then recursively try each legal knight move as step `1`. If no sequence completes the full board, undo the last move and try the next candidate.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function knightTour(size) {
+  const board = Array.from({ length: size }, () => new Array(size).fill(-1));
+  const moves = [
+    [2, 1],
+    [1, 2],
+    [-1, 2],
+    [-2, 1],
+    [-2, -1],
+    [-1, -2],
+    [1, -2],
+    [2, -1],
+  ];
+
+  function dfs(row, col, step) {
+    board[row][col] = step;
+
+    if (step === size * size - 1) {
+      return true;
+    }
+
+    for (const [rowOffset, colOffset] of moves) {
+      const nextRow = row + rowOffset;
+      const nextCol = col + colOffset;
+
+      if (
+        nextRow < 0
+        || nextRow >= size
+        || nextCol < 0
+        || nextCol >= size
+        || board[nextRow][nextCol] !== -1
+      ) {
+        continue;
+      }
+
+      if (dfs(nextRow, nextCol, step + 1)) {
+        return true;
+      }
+    }
+
+    board[row][col] = -1;
+    return false;
+  }
+
+  return dfs(0, 0, 0) ? board : [];
+}
+```
+
+```ts
+export function knightTour(size: number): number[][] {
+  const board = Array.from({ length: size }, () => new Array<number>(size).fill(-1));
+  const moves: Array<[number, number]> = [
+    [2, 1],
+    [1, 2],
+    [-1, 2],
+    [-2, 1],
+    [-2, -1],
+    [-1, -2],
+    [1, -2],
+    [2, -1],
+  ];
+
+  function dfs(row: number, col: number, step: number): boolean {
+    board[row][col] = step;
+
+    if (step === size * size - 1) {
+      return true;
+    }
+
+    for (const [rowOffset, colOffset] of moves) {
+      const nextRow = row + rowOffset;
+      const nextCol = col + colOffset;
+
+      if (
+        nextRow < 0
+        || nextRow >= size
+        || nextCol < 0
+        || nextCol >= size
+        || board[nextRow][nextCol] !== -1
+      ) {
+        continue;
+      }
+
+      if (dfs(nextRow, nextCol, step + 1)) {
+        return true;
+      }
+    }
+
+    board[row][col] = -1;
+    return false;
+  }
+
+  return dfs(0, 0, 0) ? board : [];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain how Warnsdorff's heuristic changes the search order.
+- Return every valid tour instead of the first one found.
+- Compare this with a Hamiltonian path problem on a graph.
+
+## Common Pitfalls
+
+- Forgetting to unmark a cell when a branch fails.
+- Confusing legal knight moves with adjacent grid moves.
+- Expecting brute force to scale without heuristic help.

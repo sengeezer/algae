@@ -1,0 +1,132 @@
+---
+title: Rat in a Maze
+slug: rat-in-a-maze
+category: Backtracking
+summary: Explore paths through a grid while marking visited cells and abandoning routes that hit walls or dead ends.
+description: Rat in a Maze is the grid-search interview problem that tests backtracking, path construction, and visited-state cleanup.
+dataStructures:
+  - Matrix
+  - Recursion Stack
+  - Array
+techniques:
+  - Backtracking
+  - Depth-First Search
+  - Graph Traversal
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - maze backtracking
+  - path through grid
+useCases:
+  - Finding a valid path through blocked cells
+  - Demonstrating path search with visited-state rollback
+  - Extending backtracking from arrays to grids
+complexity:
+  time: O(branch^steps)
+  space: O(steps)
+  notes: The main interview skill is marking a cell as part of the current path and then undoing that mark when the branch fails.
+interviewSignals:
+  - The input is a maze or grid with blocked cells.
+  - The answer asks for a path or all paths from a start cell to an end cell.
+relatedSlugs:
+  - backtracking-search
+  - flood-fill
+  - sudoku-solver
+provenance:
+  - title: TheAlgorithms/JavaScript - Backtracking/RatInAMaze.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Backtracking/RatInAMaze.js
+    kind: Implementation
+  - title: free-programming-books - Algorithmic Thinking
+    href: https://labuladong.gitbook.io/algo-en
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Rat in a Maze is a compact grid backtracking problem. It tests whether you can search for a path while keeping the current route separate from cells that belong to failed branches.
+
+## Worked Example
+
+Starting from the top-left cell, move only into open cells. If a route reaches a dead end, undo the last move, unmark the cell from the current path, and try the next direction.
+
+<Callout title="State hygiene" tone="warning">
+  Mark visited cells before recursing and unmark them when backtracking. Otherwise the search can either loop forever or incorrectly block valid routes.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function ratInAMaze(maze) {
+  const size = maze.length;
+  const path = Array.from({ length: size }, () => new Array(size).fill(0));
+
+  function dfs(row, col) {
+    if (
+      row < 0 || row >= size || col < 0 || col >= size || maze[row][col] === 0 || path[row][col] === 1
+    ) {
+      return false;
+    }
+
+    path[row][col] = 1;
+
+    if (row === size - 1 && col === size - 1) {
+      return true;
+    }
+
+    if (dfs(row + 1, col) || dfs(row, col + 1) || dfs(row - 1, col) || dfs(row, col - 1)) {
+      return true;
+    }
+
+    path[row][col] = 0;
+    return false;
+  }
+
+  return dfs(0, 0) ? path : [];
+}
+```
+
+```ts
+export function ratInAMaze(maze: number[][]): number[][] {
+  const size = maze.length;
+  const path = Array.from({ length: size }, () => new Array<number>(size).fill(0));
+
+  function dfs(row: number, col: number): boolean {
+    if (
+      row < 0 || row >= size || col < 0 || col >= size || maze[row][col] === 0 || path[row][col] === 1
+    ) {
+      return false;
+    }
+
+    path[row][col] = 1;
+
+    if (row === size - 1 && col === size - 1) {
+      return true;
+    }
+
+    if (dfs(row + 1, col) || dfs(row, col + 1) || dfs(row - 1, col) || dfs(row, col - 1)) {
+      return true;
+    }
+
+    path[row][col] = 0;
+    return false;
+  }
+
+  return dfs(0, 0) ? path : [];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return every valid path instead of the first one found.
+- Restrict movement to only right and down.
+- Compare this with flood fill and shortest-path grid problems.
+
+## Common Pitfalls
+
+- Forgetting to unmark cells when a branch fails.
+- Walking into walls or revisiting cells in the current path.
+- Confusing any valid path with the shortest path.
