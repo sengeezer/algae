@@ -405,9 +405,20 @@ This thirty-fourth expansion slice lifts the catalog from 236 to 242 entries.
 - Title Case Conversion
 - Upper Case Conversion
 
+## Batch 35 added
+
+This thirty-fifth expansion slice lifts the catalog from 242 to 248 entries.
+
+- Interval Timer
+- Parse Date
+- Degree To Radian
+- Number Of Digits
+- Radian To Degree
+- Signum
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 34 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 35 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -416,21 +427,20 @@ All expansion entries from batch 1 through batch 34 now carry explicit per-entry
 ## Why this batch
 
 - It fills obvious interview-core gaps from TheAlgorithms/JavaScript without duplicating material already present in Algae.
-- It closes out the remaining exact conversion entries from the current TheAlgorithms/JavaScript conversions surface and adds one adjacent timing helper to keep the slice at six items.
-- It broadens the catalog across time-format normalization, month-length lookup, color-space transforms, and ASCII-driven casing routines instead of repeating the previous scalar unit conversions.
-- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially constant-time formula application, representation changes, and small utilities that still reward precise validation.
+- It follows the next verified timing-and-math queue directly, adding elapsed-time measurement, strict date parsing, angle conversion, digit counting, and sign extraction.
+- It broadens the catalog across runtime instrumentation, calendar validation, and scalar normalization instead of staying inside the previous color and casing slice.
+- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially constant-time formulas, defensive input handling, and small numerical helpers that still reveal edge-case discipline.
 
 ## Supporting study references from the algorithms list
 
 - Algorithms, 4th Edition
 - Competitive Programmer's Handbook
-- Text Algorithms
 
 ## Next candidates from the same sources
 
-- Interval Timer
-- Parse Date
-- Degree To Radian
-- Number Of Digits
-- Radian To Degree
-- Signum
+- Abs
+- Average Mean
+- Average Median
+- Decimal Expansion
+- Decimal Isolate
+- Reverse Number

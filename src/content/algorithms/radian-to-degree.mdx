@@ -1,0 +1,86 @@
+---
+title: Radian To Degree
+slug: radian-to-degree
+category: Mathematics
+summary: Convert an angle in radians into degrees by multiplying by `180 / pi`.
+description: Radian To Degree is the constant-time angle conversion that maps radian measurements into degree form.
+dataStructures:
+  - Number
+techniques:
+  - Unit Conversion
+  - Constant-Time Formula
+  - Scalar Normalization
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - angle to degrees
+  - radian conversion
+useCases:
+  - Formatting trigonometric outputs for humans
+  - Comparing geometric formulas written in different angle units
+  - Normalizing angle values for UI display and debugging
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The conversion applies one fixed multiplication regardless of the input value.
+interviewSignals:
+  - The prompt expects the inverse of the degree-to-radian formula.
+  - The expected solution treats the input as a scalar conversion instead of deriving it iteratively.
+relatedSlugs:
+  - degree-to-radian
+  - euclidean-distance
+  - zellers-congruence-algorithm
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/RadianToDegree.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/RadianToDegree.js
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the inverse of degree-to-radian conversion, so it often appears as a quick check that the candidate actually understands the unit relationship instead of memorizing one formula by itself.
+
+## Worked Example
+
+`pi / 2` radians becomes `90` degrees. The conversion is again linear because both units describe the same underlying rotation.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function radianToDegree(radians) {
+  if (typeof radians !== 'number' || Number.isNaN(radians)) {
+    throw new TypeError('Expected a numeric radian value');
+  }
+
+  return radians * (180 / Math.PI);
+}
+```
+
+```ts
+export function radianToDegree(radians: number): number {
+  if (Number.isNaN(radians)) {
+    throw new TypeError('Expected a numeric radian value');
+  }
+
+  return radians * (180 / Math.PI);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Show that converting degrees to radians and back is only approximately identity under floating-point arithmetic.
+- Normalize any resulting angle into the `0` to `360` range.
+- Explain why using the wrong conversion constant can still look plausible in small tests.
+
+## Common Pitfalls
+
+- Reusing the forward conversion constant by mistake.
+- Forgetting to label units at API boundaries.
+- Expecting exact integer output for every radian input.

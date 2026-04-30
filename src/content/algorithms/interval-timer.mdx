@@ -1,0 +1,201 @@
+---
+title: Interval Timer
+slug: interval-timer
+category: Timing Functions
+summary: Run a repeating callback while also measuring total runtime and elapsed time between checkpoints.
+description: Interval Timer is the timing helper that wraps a repeating interval with runtime and checkpoint measurement.
+dataStructures:
+  - Object
+  - Number
+  - Function
+techniques:
+  - State Tracking
+  - Callback Scheduling
+  - Time Measurement
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - elapsed timer
+  - repeating timer helper
+useCases:
+  - Measuring how long a repeated task has been running
+  - Building lightweight benchmark or polling helpers
+  - Teaching the difference between total runtime and elapsed checkpoints
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: Each timer operation touches a fixed amount of state regardless of how long the timer has been running.
+interviewSignals:
+  - The prompt asks for both repeated execution and elapsed-time inspection.
+  - The expected solution keeps timer state explicit instead of deriving elapsed time from opaque interval IDs.
+relatedSlugs:
+  - parse-date
+  - get-month-days
+  - railway-time-conversion
+provenance:
+  - title: TheAlgorithms/JavaScript - Timing-Functions/IntervalTimer.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Timing-Functions/IntervalTimer.js
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Timer utilities are small, but they test whether you can manage mutable state without confusing interval handles, runtime, and elapsed checkpoints. The interesting part is not `setInterval` itself, but the bookkeeping around it.
+
+## Worked Example
+
+If a timer runs a callback every `50` milliseconds, `getRunTime()` should report total time since `startTimer()`, while `getElapsedTime()` should report the delta since the previous checkpoint.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class IntervalTimer {
+  constructor(intervalMs = 10, callback = () => {}) {
+    if (!Number.isInteger(intervalMs) || intervalMs <= 0) {
+      throw new RangeError('Interval must be a positive integer number of milliseconds');
+    }
+
+    if (typeof callback !== 'function') {
+      throw new TypeError('Callback must be a function');
+    }
+
+    this.intervalMs = intervalMs;
+    this.callback = callback;
+    this.timerId = null;
+    this.startedAt = null;
+    this.lastCheckpointAt = null;
+  }
+
+  startTimer() {
+    if (this.timerId !== null) {
+      return;
+    }
+
+    const now = Date.now();
+    this.startedAt = now;
+    this.lastCheckpointAt = now;
+    this.timerId = setInterval(this.callback, this.intervalMs);
+  }
+
+  stopTimer() {
+    if (this.timerId !== null) {
+      clearInterval(this.timerId);
+      this.timerId = null;
+    }
+
+    return this.getRunTime();
+  }
+
+  getElapsedTime(offset = 0) {
+    if (this.lastCheckpointAt === null) {
+      return 0;
+    }
+
+    const now = Date.now();
+    const elapsed = Math.max(0, now - this.lastCheckpointAt - offset);
+    this.lastCheckpointAt = now;
+    return elapsed;
+  }
+
+  getRunTime() {
+    return this.startedAt === null ? 0 : Date.now() - this.startedAt;
+  }
+
+  resetTimer() {
+    const elapsed = this.getRunTime();
+    if (this.timerId !== null) {
+      clearInterval(this.timerId);
+    }
+
+    this.timerId = null;
+    this.startedAt = null;
+    this.lastCheckpointAt = null;
+    return elapsed;
+  }
+}
+```
+
+```ts
+export class IntervalTimer {
+  private intervalMs: number;
+  private callback: () => void;
+  private timerId: ReturnType<typeof setInterval> | null = null;
+  private startedAt: number | null = null;
+  private lastCheckpointAt: number | null = null;
+
+  constructor(intervalMs = 10, callback: () => void = () => {}) {
+    if (!Number.isInteger(intervalMs) || intervalMs <= 0) {
+      throw new RangeError('Interval must be a positive integer number of milliseconds');
+    }
+
+    this.intervalMs = intervalMs;
+    this.callback = callback;
+  }
+
+  startTimer(): void {
+    if (this.timerId !== null) {
+      return;
+    }
+
+    const now = Date.now();
+    this.startedAt = now;
+    this.lastCheckpointAt = now;
+    this.timerId = setInterval(this.callback, this.intervalMs);
+  }
+
+  stopTimer(): number {
+    if (this.timerId !== null) {
+      clearInterval(this.timerId);
+      this.timerId = null;
+    }
+
+    return this.getRunTime();
+  }
+
+  getElapsedTime(offset = 0): number {
+    if (this.lastCheckpointAt === null) {
+      return 0;
+    }
+
+    const now = Date.now();
+    const elapsed = Math.max(0, now - this.lastCheckpointAt - offset);
+    this.lastCheckpointAt = now;
+    return elapsed;
+  }
+
+  getRunTime(): number {
+    return this.startedAt === null ? 0 : Date.now() - this.startedAt;
+  }
+
+  resetTimer(): number {
+    const elapsed = this.getRunTime();
+    if (this.timerId !== null) {
+      clearInterval(this.timerId);
+    }
+
+    this.timerId = null;
+    this.startedAt = null;
+    this.lastCheckpointAt = null;
+    return elapsed;
+  }
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Swap `Date.now()` for a monotonic source like `performance.now()` in environments where that matters.
+- Add pause and resume without losing the accumulated runtime.
+- Explain why timer callbacks can drift relative to the requested interval.
+
+## Common Pitfalls
+
+- Treating an interval handle as if it were elapsed time.
+- Restarting an already running timer and leaking multiple intervals.
+- Forgetting to clear the interval when resetting the timer.

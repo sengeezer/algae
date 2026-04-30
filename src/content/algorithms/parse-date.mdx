@@ -1,0 +1,151 @@
+---
+title: Parse Date
+slug: parse-date
+category: Timing Functions
+summary: Parse a `dd/mm/yyyy` string into numeric day, month, and year fields after validating calendar bounds.
+description: Parse Date is the strict date parser that turns a fixed-format string into validated calendar components.
+dataStructures:
+  - String
+  - Object
+techniques:
+  - Pattern Matching
+  - Date Parsing
+  - Input Validation
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - date parser
+  - dd/mm/yyyy parsing
+useCases:
+  - Validating form input before calendar calculations
+  - Converting date strings into structured values for downstream logic
+  - Teaching how parsing and validation differ in date handling
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The parser inspects a fixed-width pattern and performs constant-time calendar checks.
+interviewSignals:
+  - The prompt requires rejecting impossible dates instead of only matching the string shape.
+  - The expected solution separates format validation from month and day range validation.
+relatedSlugs:
+  - get-month-days
+  - date-day-difference
+  - date-to-day
+provenance:
+  - title: TheAlgorithms/JavaScript - Timing-Functions/ParseDate.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Timing-Functions/ParseDate.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Date parsing looks simple until validation starts to matter. Interviewers use it to see whether you stop at regex matching or keep going until the parsed date is actually possible on a calendar.
+
+## Worked Example
+
+`29/02/2024` parses successfully to `{ day: 29, month: 2, year: 2024 }`, but `29/02/2023` must be rejected because February has only `28` days in that year.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function isLeapYear(year) {
+  return year % 400 === 0 || (year % 4 === 0 && year % 100 !== 0);
+}
+
+function getMonthDays(month, year) {
+  if (!Number.isInteger(month) || month < 1 || month > 12) {
+    throw new RangeError('Month must be an integer from 1 to 12');
+  }
+
+  if ([1, 3, 5, 7, 8, 10, 12].includes(month)) {
+    return 31;
+  }
+
+  if ([4, 6, 9, 11].includes(month)) {
+    return 30;
+  }
+
+  return isLeapYear(year) ? 29 : 28;
+}
+
+function parseDate(input) {
+  if (typeof input !== 'string') {
+    throw new TypeError('Expected a date string');
+  }
+
+  const match = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(input);
+  if (!match) {
+    throw new RangeError('Date must use dd/mm/yyyy format');
+  }
+
+  const day = Number(match[1]);
+  const month = Number(match[2]);
+  const year = Number(match[3]);
+  const maxDay = getMonthDays(month, year);
+
+  if (day < 1 || day > maxDay) {
+    throw new RangeError('Invalid day value for the parsed month and year');
+  }
+
+  return { day, month, year };
+}
+```
+
+```ts
+function isLeapYear(year: number): boolean {
+  return year % 400 === 0 || (year % 4 === 0 && year % 100 !== 0);
+}
+
+function getMonthDays(month: number, year: number): number {
+  if (!Number.isInteger(month) || month < 1 || month > 12) {
+    throw new RangeError('Month must be an integer from 1 to 12');
+  }
+
+  if ([1, 3, 5, 7, 8, 10, 12].includes(month)) {
+    return 31;
+  }
+
+  if ([4, 6, 9, 11].includes(month)) {
+    return 30;
+  }
+
+  return isLeapYear(year) ? 29 : 28;
+}
+
+export function parseDate(input: string): { day: number; month: number; year: number } {
+  const match = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(input);
+  if (!match) {
+    throw new RangeError('Date must use dd/mm/yyyy format');
+  }
+
+  const day = Number(match[1]);
+  const month = Number(match[2]);
+  const year = Number(match[3]);
+  const maxDay = getMonthDays(month, year);
+
+  if (day < 1 || day > maxDay) {
+    throw new RangeError('Invalid day value for the parsed month and year');
+  }
+
+  return { day, month, year };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Accept ISO-style `yyyy-mm-dd` input as an alternate format.
+- Explain why parsing and validation should stay separate in larger systems.
+- Reuse this parser inside `dateToDay` or `dateDayDifference` implementations.
+
+## Common Pitfalls
+
+- Accepting month `0` or `13` because the regex matched two digits.
+- Validating the string shape but not the day range for the parsed month.
+- Forgetting leap-year rules for February.

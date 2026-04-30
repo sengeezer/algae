@@ -1,0 +1,98 @@
+---
+title: Signum
+slug: signum
+category: Mathematics
+summary: Return `-1`, `0`, or `1` depending on whether a numeric input is negative, zero, or positive.
+description: Signum is the sign-classification helper that collapses any real number into its direction relative to zero.
+dataStructures:
+  - Number
+techniques:
+  - Case Analysis
+  - Numeric Classification
+  - Constant-Time Branching
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - sign function
+  - numeric sign check
+useCases:
+  - Normalizing comparisons to a small finite result set
+  - Steering branch logic based on value direction
+  - Teaching how zero behaves as its own special case
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The function performs a constant number of comparisons regardless of input size.
+interviewSignals:
+  - The prompt asks for the sign of a value rather than its magnitude.
+  - The expected solution distinguishes zero explicitly instead of folding it into positive or negative branches.
+relatedSlugs:
+  - number-of-digits
+  - square-root
+  - two-sum
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/Signum.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/Signum.js
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Signum is tiny, but it exposes whether you treat zero carefully and whether you separate classification from magnitude. That pattern comes up in larger algorithms all the time.
+
+## Worked Example
+
+`signum(-8)` returns `-1`, `signum(0)` returns `0`, and `signum(19)` returns `1`. The numeric size does not matter once the sign has been classified.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function signum(value) {
+  if (typeof value !== 'number') {
+    throw new TypeError('Expected a numeric input');
+  }
+
+  if (Number.isNaN(value)) {
+    return NaN;
+  }
+
+  if (value === 0) {
+    return 0;
+  }
+
+  return value > 0 ? 1 : -1;
+}
+```
+
+```ts
+export function signum(value: number): -1 | 0 | 1 | number {
+  if (Number.isNaN(value)) {
+    return NaN;
+  }
+
+  if (value === 0) {
+    return 0;
+  }
+
+  return value > 0 ? 1 : -1;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare this helper with `Math.sign`, especially around `NaN` and `-0`.
+- Return a string label like `negative`, `zero`, or `positive` instead of numeric codes.
+- Use signum inside a comparator or normalization routine.
+
+## Common Pitfalls
+
+- Forgetting that `0` needs its own branch.
+- Treating `NaN` as positive or negative instead of propagating it.
+- Returning the input value instead of the normalized sign class.

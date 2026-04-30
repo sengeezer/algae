@@ -1,0 +1,108 @@
+---
+title: Number Of Digits
+slug: number-of-digits
+category: Mathematics
+summary: Count the decimal digits in an integer by repeatedly dividing by `10` until nothing remains.
+description: Number Of Digits is the integer-size routine that measures how many decimal positions a signed integer occupies.
+dataStructures:
+  - Number
+techniques:
+  - Digit Decomposition
+  - Repeated Division
+  - Absolute Value Normalization
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - digit count
+  - decimal length of integer
+useCases:
+  - Bounding loops that process digits one at a time
+  - Comparing arithmetic digit extraction with string conversion
+  - Teaching special handling for `0` and negative values
+complexity:
+  time: O(d)
+  space: O(1)
+  notes: Each iteration removes one decimal digit, so the runtime scales with the number of digits rather than the magnitude directly.
+interviewSignals:
+  - The prompt asks for the size of an integer in base 10.
+  - The expected solution explicitly handles `0` and negative inputs.
+relatedSlugs:
+  - sum-of-digits
+  - binary-equivalent
+  - signum
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/NumberOfDigits.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/NumberOfDigits.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Counting digits is a small arithmetic problem that exposes whether you think carefully about edge cases. `0` is the usual trap because it has one digit even though a loop that only runs while the number is positive would report none.
+
+## Worked Example
+
+`-42050` has `5` digits. The sign does not count toward the total, so the routine works on the absolute value before peeling digits away.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function numberOfDigits(value) {
+  if (!Number.isInteger(value)) {
+    throw new RangeError('Value must be an integer');
+  }
+
+  let remaining = Math.abs(value);
+  if (remaining === 0) {
+    return 1;
+  }
+
+  let digits = 0;
+  while (remaining > 0) {
+    digits += 1;
+    remaining = Math.floor(remaining / 10);
+  }
+
+  return digits;
+}
+```
+
+```ts
+export function numberOfDigits(value: number): number {
+  if (!Number.isInteger(value)) {
+    throw new RangeError('Value must be an integer');
+  }
+
+  let remaining = Math.abs(value);
+  if (remaining === 0) {
+    return 1;
+  }
+
+  let digits = 0;
+  while (remaining > 0) {
+    digits += 1;
+    remaining = Math.floor(remaining / 10);
+  }
+
+  return digits;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Implement the logarithm-based alternative and compare its edge cases.
+- Generalize the routine to bases other than decimal.
+- Reuse the logic in a palindrome or reverse-number check.
+
+## Common Pitfalls
+
+- Returning `0` for the input `0`.
+- Counting the negative sign as if it were a digit.
+- Accepting fractional inputs when the prompt is about integers.
