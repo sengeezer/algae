@@ -1,0 +1,99 @@
+---
+title: Co Prime Check
+slug: co-prime-check
+category: Mathematics
+summary: Determine whether two integers are coprime by checking whether their gcd is exactly 1.
+description: Co Prime Check is the direct gcd-based test for whether two integers share any common divisor larger than 1.
+dataStructures:
+  - Number
+techniques:
+  - Euclidean Algorithm
+  - Number Theory
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - relatively prime check
+  - coprime test
+useCases:
+  - Checking whether a modular inverse can exist
+  - Simplifying fractions and ratio reasoning
+  - Filtering integer pairs that share no prime factors
+complexity:
+  time: O(log(min(a, b)))
+  space: O(1)
+  notes: The problem collapses to a single gcd computation, so explicit factorization is usually unnecessary.
+interviewSignals:
+  - The prompt asks whether two numbers share any common divisor.
+  - Terms like relative prime or coprime appear in the statement.
+relatedSlugs:
+  - extended-euclidean-gcd
+  - eulers-totient
+  - prime-factors
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/CoPrimeCheck.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/CoPrimeCheck.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the shortest path from number-theory vocabulary to executable logic. Once you know that two numbers are coprime exactly when their gcd is `1`, the whole problem becomes a standard Euclidean loop.
+
+## Worked Example
+
+`14` and `25` are coprime because `gcd(14, 25) = 1`. By contrast, `21` and `35` are not coprime because their gcd is `7`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function gcd(a, b) {
+  let left = Math.abs(a);
+  let right = Math.abs(b);
+
+  while (right !== 0) {
+    [left, right] = [right, left % right];
+  }
+
+  return left;
+}
+
+function coPrimeCheck(left, right) {
+  return gcd(left, right) === 1;
+}
+```
+
+```ts
+function gcd(a: number, b: number): number {
+  let left = Math.abs(a);
+  let right = Math.abs(b);
+
+  while (right !== 0) {
+    [left, right] = [right, left % right];
+  }
+
+  return left;
+}
+
+export function coPrimeCheck(left: number, right: number): boolean {
+  return gcd(left, right) === 1;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why coprimality is the requirement for a modular inverse.
+- Use prime factors instead of gcd and compare the cost.
+- Handle zero explicitly and explain the result.
+
+## Common Pitfalls
+
+- Reaching for factorization when gcd already answers the question.
+- Forgetting that negative signs do not affect coprimality after taking absolute values.
+- Assuming every pair that is not divisible by `2` must be coprime.

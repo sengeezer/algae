@@ -1,0 +1,143 @@
+---
+title: Dice Coefficient
+slug: dice-coefficient
+category: String
+summary: Compare two strings by measuring how much their bigram multisets overlap.
+description: Dice Coefficient is the bigram-based similarity score that returns a value between `0` and `1` for approximate string matching.
+dataStructures:
+  - String
+  - Map
+techniques:
+  - Similarity Metric
+  - Hash Map
+  - Bigram Counting
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - Sorensen-Dice coefficient
+  - bigram similarity score
+useCases:
+  - Ranking fuzzy string matches
+  - Detecting approximate duplicates in short text
+  - Comparing string similarity without full dynamic programming
+complexity:
+  time: O(m + n)
+  space: O(m)
+  notes: Exact equality and strings shorter than length `2` are special cases because there may be no bigrams to compare.
+interviewSignals:
+  - The prompt asks for a similarity score between `0` and `1`.
+  - Shared substrings of length `2` matter more than full edit reconstruction.
+relatedSlugs:
+  - edit-distance
+  - hamming-distance
+  - rabin-karp
+provenance:
+  - title: TheAlgorithms/JavaScript - String/DiceCoefficient.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/String/DiceCoefficient.js
+    kind: Implementation
+  - title: free-programming-books - Algorithmic Thinking
+    href: https://labuladong.gitbook.io/algo-en
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Dice coefficient is the lightweight alternative when you need a quick similarity score instead of an exact transformation cost. It works well on short strings because shared bigrams capture local structure without building a full DP table.
+
+## Worked Example
+
+`"night"` has bigrams `ni`, `ig`, `gh`, `ht`, while `"nacht"` has `na`, `ac`, `ch`, `ht`. The overlap is one bigram, so the score is `2 * 1 / (4 + 4) = 0.25`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function mapBigrams(text) {
+  const counts = new Map();
+
+  for (let index = 0; index < text.length - 1; index += 1) {
+    const bigram = text.slice(index, index + 2);
+    counts.set(bigram, (counts.get(bigram) ?? 0) + 1);
+  }
+
+  return counts;
+}
+
+function diceCoefficient(left, right) {
+  if (left === right) {
+    return 1;
+  }
+
+  if (left.length < 2 || right.length < 2) {
+    return 0;
+  }
+
+  const leftBigrams = mapBigrams(left);
+  let overlap = 0;
+
+  for (let index = 0; index < right.length - 1; index += 1) {
+    const bigram = right.slice(index, index + 2);
+    const count = leftBigrams.get(bigram) ?? 0;
+
+    if (count > 0) {
+      leftBigrams.set(bigram, count - 1);
+      overlap += 1;
+    }
+  }
+
+  return (2 * overlap) / (left.length + right.length - 2);
+}
+```
+
+```ts
+function mapBigrams(text: string): Map<string, number> {
+  const counts = new Map<string, number>();
+
+  for (let index = 0; index < text.length - 1; index += 1) {
+    const bigram = text.slice(index, index + 2);
+    counts.set(bigram, (counts.get(bigram) ?? 0) + 1);
+  }
+
+  return counts;
+}
+
+export function diceCoefficient(left: string, right: string): number {
+  if (left === right) {
+    return 1;
+  }
+
+  if (left.length < 2 || right.length < 2) {
+    return 0;
+  }
+
+  const leftBigrams = mapBigrams(left);
+  let overlap = 0;
+
+  for (let index = 0; index < right.length - 1; index += 1) {
+    const bigram = right.slice(index, index + 2);
+    const count = leftBigrams.get(bigram) ?? 0;
+
+    if (count > 0) {
+      leftBigrams.set(bigram, count - 1);
+      overlap += 1;
+    }
+  }
+
+  return (2 * overlap) / (left.length + right.length - 2);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare this score with edit distance on the same string pair.
+- Normalize case or strip punctuation before building bigrams.
+- Extend the approach to trigrams or token-level similarity.
+
+## Common Pitfalls
+
+- Forgetting the special handling for strings shorter than length `2`.
+- Counting shared bigrams without respecting multiplicity.
+- Expecting the coefficient to explain the exact edit operations between strings.

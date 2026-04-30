@@ -1,0 +1,119 @@
+---
+title: Extended Euclidean GCD
+slug: extended-euclidean-gcd
+category: Mathematics
+summary: Compute the gcd together with coefficients that express it as a linear combination of the original inputs.
+description: Extended Euclidean GCD is the number-theory workhorse that upgrades a plain gcd routine into one that also returns the Bezout coefficients needed for inverses and Diophantine equations.
+dataStructures:
+  - Array
+  - Number
+techniques:
+  - Number Theory
+  - Euclidean Algorithm
+  - Iteration
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - extended gcd
+  - Bezout coefficients
+useCases:
+  - Computing modular inverses
+  - Solving equations of the form `ax + by = gcd(a, b)`
+  - Explaining why gcd relationships power number-theory follow-ups
+complexity:
+  time: O(log(min(a, b)))
+  space: O(1)
+  notes: The key upgrade over the standard gcd loop is that the same quotients also update the coefficient sequences.
+interviewSignals:
+  - The prompt needs coefficients, not only the gcd.
+  - Modular inverse or Diophantine-equation reasoning appears immediately after the gcd step.
+relatedSlugs:
+  - modular-arithmetic
+  - co-prime-check
+  - eulers-totient
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/ExtendedEuclideanGCD.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/ExtendedEuclideanGCD.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the moment where gcd stops being just a divisor question and becomes a construction tool. Once you can return the coefficients as well, modular inverses and linear equations fall out naturally.
+
+## Worked Example
+
+For `30` and `18`, the gcd is `6`, and one valid coefficient pair is `(-1, 2)` because `30 * (-1) + 18 * 2 = 6`.
+
+<Callout title="What changes" tone="note">
+  The remainder updates are the same as ordinary Euclid. The only extra work is carrying two coefficient sequences alongside the remainder sequence.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function extendedEuclideanGcd(a, b) {
+  if (!Number.isInteger(a) || !Number.isInteger(b) || a < 1 || b < 1) {
+    throw new TypeError('Inputs must be positive integers');
+  }
+
+  let oldR = a;
+  let r = b;
+  let oldS = 1;
+  let s = 0;
+  let oldT = 0;
+  let t = 1;
+
+  while (r !== 0) {
+    const quotient = Math.floor(oldR / r);
+    [oldR, r] = [r, oldR - quotient * r];
+    [oldS, s] = [s, oldS - quotient * s];
+    [oldT, t] = [t, oldT - quotient * t];
+  }
+
+  return [oldR, oldS, oldT];
+}
+```
+
+```ts
+export function extendedEuclideanGcd(a: number, b: number): [number, number, number] {
+  if (!Number.isInteger(a) || !Number.isInteger(b) || a < 1 || b < 1) {
+    throw new TypeError('Inputs must be positive integers');
+  }
+
+  let oldR = a;
+  let r = b;
+  let oldS = 1;
+  let s = 0;
+  let oldT = 0;
+  let t = 1;
+
+  while (r !== 0) {
+    const quotient = Math.floor(oldR / r);
+    [oldR, r] = [r, oldR - quotient * r];
+    [oldS, s] = [s, oldS - quotient * s];
+    [oldT, t] = [t, oldT - quotient * t];
+  }
+
+  return [oldR, oldS, oldT];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Use the returned coefficient to build a modular inverse.
+- Explain when `ax + by = c` has a solution for arbitrary `c`.
+- Compare the iterative version with the recursive derivation.
+
+## Common Pitfalls
+
+- Returning only the gcd and losing the whole point of the extended version.
+- Mixing up the coefficient order after swapping remainder states.
+- Forgetting that modular inverses require the gcd to be `1`.

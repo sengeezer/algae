@@ -1,0 +1,102 @@
+---
+title: Binary Count Set Bits
+slug: binary-count-set-bits
+category: Bit Manipulation
+summary: Count the number of 1 bits in an integer by repeatedly clearing its lowest set bit.
+description: Binary Count Set Bits is the classic popcount routine that turns each set bit into one loop iteration instead of scanning every bit position one by one.
+dataStructures:
+  - Bitmask
+  - Number
+techniques:
+  - Bit Manipulation
+  - Brian Kernighan Trick
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - popcount
+  - count set bits
+useCases:
+  - Counting active flags in a bitmask
+  - Comparing bit tricks with naive bit-by-bit scans
+  - Supporting subset and parity style routines
+complexity:
+  time: O(k)
+  space: O(1)
+  notes: Each loop removes one set bit, so the runtime depends on how many ones are present rather than on the total word size.
+interviewSignals:
+  - The prompt asks for the number of set bits in an integer or mask.
+  - The interviewer hints that scanning every bit position is not the only option.
+relatedSlugs:
+  - bitmask-dp
+  - binary-equivalent
+  - modular-arithmetic
+provenance:
+  - title: TheAlgorithms/JavaScript - Bit-Manipulation/BinaryCountSetBits.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Bit-Manipulation/BinaryCountSetBits.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the standard example of how one small bit trick can change the effective loop cost. Instead of checking every bit position, you let the binary representation tell you how many iterations are necessary.
+
+## Worked Example
+
+For `13`, whose binary form is `1101`, the first pass clears the last `1` to get `1100`, the next clears to `1000`, and the last clears to `0000`. The count is `3`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function binaryCountSetBits(value) {
+  if (!Number.isInteger(value) || value < 0) {
+    throw new TypeError('Value must be a non-negative integer');
+  }
+
+  let remaining = value;
+  let count = 0;
+
+  while (remaining !== 0) {
+    remaining &= remaining - 1;
+    count += 1;
+  }
+
+  return count;
+}
+```
+
+```ts
+export function binaryCountSetBits(value: number): number {
+  if (!Number.isInteger(value) || value < 0) {
+    throw new TypeError('Value must be a non-negative integer');
+  }
+
+  let remaining = value;
+  let count = 0;
+
+  while (remaining !== 0) {
+    remaining &= remaining - 1;
+    count += 1;
+  }
+
+  return count;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare this trick with a loop that shifts and checks each bit.
+- Return the parity of the bit count instead of the full total.
+- Extend the same reasoning to check whether a number is a power of two.
+
+## Common Pitfalls
+
+- Forgetting that JavaScript bitwise operators work on 32-bit integers.
+- Applying the routine to non-integer input.
+- Using a bit-position scan when the set-bit count is much smaller than the word size.

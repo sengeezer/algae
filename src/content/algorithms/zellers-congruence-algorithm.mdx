@@ -1,0 +1,151 @@
+---
+title: Zeller's Congruence Algorithm
+slug: zellers-congruence-algorithm
+category: Mathematics
+summary: Compute the weekday for a Gregorian date with a constant-time congruence formula.
+description: Zeller's Congruence Algorithm is the closed-form weekday computation that replaces day-by-day accumulation with direct arithmetic on date components.
+dataStructures:
+  - Number
+techniques:
+  - Date Arithmetic
+  - Congruence Formula
+  - Number Theory
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - zellers congruence
+  - day of week formula
+useCases:
+  - Computing the weekday of a calendar date without built-in date libraries
+  - Supporting calendar-generation follow-ups
+  - Replacing iterative epoch walks with constant-time arithmetic
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: January and February are treated as months `13` and `14` of the previous year before the formula is applied.
+interviewSignals:
+  - The prompt asks for the weekday from a specific date.
+  - A built-in date library is disallowed or clearly not the point of the exercise.
+relatedSlugs:
+  - find-month-calendar
+  - modular-arithmetic
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/ZellersCongruenceAlgorithm.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/ZellersCongruenceAlgorithm.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the constant-time answer to weekday-from-date prompts. Instead of marching forward from an epoch, you use a formula that folds the day, month, year, century, and leap-year corrections into one arithmetic expression.
+
+## Worked Example
+
+For `2026-04-30`, apply the date directly because April is month `4`. The formula maps the date to weekday index `5`, which corresponds to `Thursday`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function zellersCongruenceAlgorithm(day, month, year) {
+  if (!Number.isInteger(day) || !Number.isInteger(month) || !Number.isInteger(year)) {
+    throw new TypeError('Arguments must be integers');
+  }
+
+  if (month < 1 || month > 12 || day < 1 || day > 31) {
+    throw new RangeError('Date components are out of range');
+  }
+
+  let adjustedMonth = month;
+  let adjustedYear = year;
+
+  if (adjustedMonth < 3) {
+    adjustedMonth += 12;
+    adjustedYear -= 1;
+  }
+
+  const yearOfCentury = adjustedYear % 100;
+  const zeroBasedCentury = Math.floor(adjustedYear / 100);
+  const weekdayIndex = (
+    day +
+    Math.floor((13 * (adjustedMonth + 1)) / 5) +
+    yearOfCentury +
+    Math.floor(yearOfCentury / 4) +
+    Math.floor(zeroBasedCentury / 4) +
+    5 * zeroBasedCentury
+  ) % 7;
+
+  const weekdays = [
+    'Saturday',
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+  ];
+
+  return weekdays[weekdayIndex];
+}
+```
+
+```ts
+export function zellersCongruenceAlgorithm(day: number, month: number, year: number): string {
+  if (!Number.isInteger(day) || !Number.isInteger(month) || !Number.isInteger(year)) {
+    throw new TypeError('Arguments must be integers');
+  }
+
+  if (month < 1 || month > 12 || day < 1 || day > 31) {
+    throw new RangeError('Date components are out of range');
+  }
+
+  let adjustedMonth = month;
+  let adjustedYear = year;
+
+  if (adjustedMonth < 3) {
+    adjustedMonth += 12;
+    adjustedYear -= 1;
+  }
+
+  const yearOfCentury = adjustedYear % 100;
+  const zeroBasedCentury = Math.floor(adjustedYear / 100);
+  const weekdayIndex = (
+    day +
+    Math.floor((13 * (adjustedMonth + 1)) / 5) +
+    yearOfCentury +
+    Math.floor(yearOfCentury / 4) +
+    Math.floor(zeroBasedCentury / 4) +
+    5 * zeroBasedCentury
+  ) % 7;
+
+  const weekdays = [
+    'Saturday',
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+  ];
+
+  return weekdays[weekdayIndex];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare the formula with epoch-based day counting.
+- Extend the validation so day bounds match the selected month and leap-year rules.
+- Use the weekday result inside a full month-calendar renderer.
+
+## Common Pitfalls
+
+- Forgetting to treat January and February as months of the previous year.
+- Mixing up Zeller's weekday indexing order.
+- Trusting only day `1..31` validation when month-specific bounds still matter.

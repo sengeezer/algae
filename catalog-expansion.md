@@ -174,9 +174,20 @@ This thirteenth expansion slice lifts the catalog from 110 to 116 entries.
 - Subsequence Recursive
 - Hamming Distance
 
+## Batch 14 added
+
+This fourteenth expansion slice lifts the catalog from 116 to 122 entries.
+
+- Binary Count Set Bits
+- Generate Subsets
+- Extended Euclidean GCD
+- Co Prime Check
+- Dice Coefficient
+- Zeller's Congruence Algorithm
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 13 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 14 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -185,7 +196,7 @@ All expansion entries from batch 1 through batch 13 now carry explicit per-entry
 ## Why this batch
 
 - It fills obvious interview-core gaps from TheAlgorithms/JavaScript without duplicating material already present in Algae.
-- It broadens the current catalog across backtracking, number theory, recursive enumeration, and string-comparison problems instead of overloading a single category.
+- It broadens the current catalog across bit manipulation, gcd-driven number theory, string similarity, and constant-time date arithmetic instead of overloading a single category.
 - It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially standard DP, graph, and search/backtracking topics.
 
 ## Supporting study references from the algorithms list
@@ -199,9 +210,9 @@ All expansion entries from batch 1 through batch 13 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- Binary Count Set Bits
-- Generate Subsets
-- Extended Euclidean GCD
-- Co Prime Check
-- Dice Coefficient
-- Zeller's Congruence Algorithm
+- Gray Codes
+- Is Power Of Two
+- Next Power Of Two
+- Euclidean Distance
+- Find HCF
+- Find LCM
