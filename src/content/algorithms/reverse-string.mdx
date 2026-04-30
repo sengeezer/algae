@@ -1,0 +1,94 @@
+---
+title: Reverse String
+slug: reverse-string
+category: Strings
+summary: Reverse the characters in a string by scanning from the end or by converting the string into a reversible sequence.
+description: Reverse String is the foundational string-manipulation routine for producing a new string whose characters appear in the opposite order.
+dataStructures:
+  - String
+  - Array
+techniques:
+  - Reverse Traversal
+  - Two-Pointer Thinking
+difficulty: Easy
+interviewFrequency: High
+aliases:
+  - string reversal
+  - reverse characters
+useCases:
+  - Building intuition for pointer movement and immutable strings
+  - Preparing for palindrome and two-pointer follow-ups
+  - Demonstrating simple iterative string construction
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: In languages with immutable strings, the main difference is whether you build a fresh string iteratively or reverse a temporary character array.
+interviewSignals:
+  - The prompt asks to reverse characters rather than words.
+  - A direct linear scan from right to left is sufficient.
+relatedSlugs:
+  - reverse-words
+  - check-rearrange-palindrome
+  - two-pointers
+provenance:
+  - title: TheAlgorithms/JavaScript - String/ReverseString.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/String/ReverseString.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is one of the most common introductory string questions because it makes the costs of immutable strings visible. It also leads naturally into in-place array reversal and palindrome checks.
+
+## Worked Example
+
+`"algae"` reversed character by character from the end becomes `"eagla"`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function reverseString(value) {
+  if (typeof value !== 'string') {
+    throw new TypeError('Value must be a string');
+  }
+
+  let reversed = '';
+
+  for (let index = value.length - 1; index >= 0; index -= 1) {
+    reversed += value[index];
+  }
+
+  return reversed;
+}
+```
+
+```ts
+export function reverseString(value: string): string {
+  let reversed = '';
+
+  for (let index = value.length - 1; index >= 0; index -= 1) {
+    reversed += value[index];
+  }
+
+  return reversed;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Reverse the string in place when the input is a mutable character array.
+- Reverse only letters while leaving punctuation in place.
+- Compare the iterative build with `split('').reverse().join('')` for readability and cost.
+
+## Common Pitfalls
+
+- Reversing words instead of characters.
+- Assuming strings are mutable in JavaScript or TypeScript.
+- Ignoring Unicode grapheme-cluster issues when emojis or combining marks are involved.

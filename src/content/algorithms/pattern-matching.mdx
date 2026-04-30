@@ -1,0 +1,133 @@
+---
+title: Pattern Matching
+slug: pattern-matching
+category: Strings
+summary: Find the starting index of a pattern inside text using the straightforward character-by-character search approach.
+description: Pattern Matching is the baseline substring-search routine that scans every feasible start index and checks whether the pattern matches there.
+dataStructures:
+  - String
+techniques:
+  - Naive Pattern Search
+  - Case Normalization
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - naive substring search
+  - simple pattern search
+useCases:
+  - Teaching the baseline before KMP, Rabin-Karp, or Z-based search
+  - Solving small input substring-search tasks
+  - Practicing nested-loop reasoning over text and patterns
+complexity:
+  time: O(n * m)
+  space: O(1)
+  notes: The key contract questions are whether the search is case-sensitive and what sentinel value should mean "not found."
+interviewSignals:
+  - The prompt asks where a pattern first occurs inside a larger text.
+  - You can solve it directly without preprocessing the pattern.
+relatedSlugs:
+  - count-substrings
+  - rabin-karp
+  - kmp-string-search
+provenance:
+  - title: TheAlgorithms/JavaScript - String/PatternMatching.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/String/PatternMatching.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the baseline string-search algorithm every optimized method improves on. The interviewer often wants to see the simple nested-loop version first before discussing better asymptotics.
+
+## Worked Example
+
+Searching for `"cada"` in `"abracadabra"` checks each possible start index until index `4`, where the next four characters match exactly.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function patternMatching(text, pattern) {
+  if (typeof text !== 'string' || typeof pattern !== 'string') {
+    throw new TypeError('Both arguments must be strings');
+  }
+
+  const normalizedText = text.toLowerCase();
+  const normalizedPattern = pattern.toLowerCase();
+
+  if (normalizedPattern.length === 0) {
+    return 0;
+  }
+
+  for (
+    let start = 0;
+    start <= normalizedText.length - normalizedPattern.length;
+    start += 1
+  ) {
+    let matched = true;
+
+    for (let offset = 0; offset < normalizedPattern.length; offset += 1) {
+      if (normalizedText[start + offset] !== normalizedPattern[offset]) {
+        matched = false;
+        break;
+      }
+    }
+
+    if (matched) {
+      return start;
+    }
+  }
+
+  return -1;
+}
+```
+
+```ts
+export function patternMatching(text: string, pattern: string): number {
+  const normalizedText = text.toLowerCase();
+  const normalizedPattern = pattern.toLowerCase();
+
+  if (normalizedPattern.length === 0) {
+    return 0;
+  }
+
+  for (
+    let start = 0;
+    start <= normalizedText.length - normalizedPattern.length;
+    start += 1
+  ) {
+    let matched = true;
+
+    for (let offset = 0; offset < normalizedPattern.length; offset += 1) {
+      if (normalizedText[start + offset] !== normalizedPattern[offset]) {
+        matched = false;
+        break;
+      }
+    }
+
+    if (matched) {
+      return start;
+    }
+  }
+
+  return -1;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return every match index instead of only the first one.
+- Make the search case-sensitive.
+- Replace the naive search with KMP or Rabin-Karp for large repeated queries.
+
+## Common Pitfalls
+
+- Iterating the inner loop against the text length instead of the pattern length.
+- Not defining the result for an empty pattern.
+- Returning a formatted message string instead of a reusable index value.

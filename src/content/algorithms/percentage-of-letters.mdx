@@ -1,0 +1,105 @@
+---
+title: Percentage Of Letters
+slug: percentage-of-letters
+category: Strings
+summary: Compute what percentage of characters in a string equal a target letter, rounded down to a whole number.
+description: Percentage Of Letters is the counting-and-scaling routine for measuring how often one character appears relative to the full length of a string.
+dataStructures:
+  - String
+techniques:
+  - Frequency Counting
+  - Integer Arithmetic
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - letter frequency percentage
+  - character share calculation
+useCases:
+  - Measuring character prevalence in short strings
+  - Practicing integer percentage calculations
+  - Reinforcing simple single-pass counting patterns
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The main contract questions are whether the search is case-sensitive and whether the target must be exactly one character long.
+interviewSignals:
+  - The prompt asks for a percentage, not a raw count.
+  - The output is usually rounded down to the nearest whole percent.
+relatedSlugs:
+  - count-letters
+  - max-character
+  - count-vowels
+provenance:
+  - title: TheAlgorithms/JavaScript - String/PercentageOfLetters.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/String/PercentageOfLetters.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a compact way to combine counting with a tiny bit of arithmetic. The algorithm is simple, but it tests whether you can preserve the prompt’s exact rounding rule.
+
+## Worked Example
+
+For `"foobar"` and target `"o"`, the letter appears `2` times in a string of length `6`, so the answer is $\lfloor 100 \cdot 2 / 6 \rfloor = 33$.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function percentageOfLetters(value, target) {
+  if (typeof value !== 'string' || typeof target !== 'string') {
+    throw new TypeError('Both arguments must be strings');
+  }
+
+  if (target.length !== 1) {
+    throw new Error('Target must be exactly one character');
+  }
+
+  let count = 0;
+
+  for (const char of value) {
+    if (char === target) {
+      count += 1;
+    }
+  }
+
+  return value.length === 0 ? 0 : Math.floor((count * 100) / value.length);
+}
+```
+
+```ts
+export function percentageOfLetters(value: string, target: string): number {
+  if (target.length !== 1) {
+    throw new Error('Target must be exactly one character');
+  }
+
+  let count = 0;
+
+  for (const char of value) {
+    if (char === target) {
+      count += 1;
+    }
+  }
+
+  return value.length === 0 ? 0 : Math.floor((count * 100) / value.length);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Make the comparison case-insensitive.
+- Return the exact fraction instead of rounding down to a whole percent.
+- Generalize the routine to percentages for all characters at once.
+
+## Common Pitfalls
+
+- Rounding to the nearest percent instead of flooring.
+- Forgetting to define behavior for the empty string.
+- Accepting a multi-character target without clarifying the contract.

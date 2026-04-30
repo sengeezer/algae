@@ -1,0 +1,148 @@
+---
+title: Validate Credit Card
+slug: validate-credit-card
+category: Strings
+summary: Validate a card number by checking its digits, allowed prefixes, length, and Luhn checksum.
+description: Validate Credit Card is the structured-string verification routine for deciding whether a candidate card number matches basic issuer-format constraints and passes the Luhn algorithm.
+dataStructures:
+  - String
+  - Array
+techniques:
+  - Checksum Validation
+  - Input Validation
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - Luhn card validator
+  - credit card checksum check
+useCases:
+  - Screening likely valid card numbers before payment processing
+  - Practicing parity-sensitive checksum logic
+  - Learning the Luhn pattern used in many identifier formats
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: Luhn validation is only a format check, not proof that an account is open or chargeable.
+interviewSignals:
+  - The prompt mentions card numbers, issuer prefixes, or the Luhn algorithm.
+  - The solution needs both structural checks and checksum logic.
+relatedSlugs:
+  - format-phone-number
+  - generate-guid
+  - count-substrings
+provenance:
+  - title: TheAlgorithms/JavaScript - String/ValidateCreditCard.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/String/ValidateCreditCard.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem is mostly about implementing the Luhn checksum carefully. The subtle part is doubling every second digit from the right, which depends on the total length parity.
+
+## Worked Example
+
+For `"4532015112830366"`, the number is all digits, matches an allowed prefix, has a valid length, and its Luhn checksum ends in a multiple of `10`, so it passes.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function passesLuhn(value) {
+  let sum = 0;
+  let shouldDouble = false;
+
+  for (let index = value.length - 1; index >= 0; index -= 1) {
+    let digit = Number(value[index]);
+
+    if (shouldDouble) {
+      digit *= 2;
+      if (digit > 9) {
+        digit -= 9;
+      }
+    }
+
+    sum += digit;
+    shouldDouble = !shouldDouble;
+  }
+
+  return sum % 10 === 0;
+}
+
+function validateCreditCard(value) {
+  if (typeof value !== 'string') {
+    throw new TypeError('Value must be a string');
+  }
+
+  if (!/^\d+$/.test(value)) {
+    throw new TypeError('Value must contain digits only');
+  }
+
+  if (value.length < 13 || value.length > 16) {
+    return false;
+  }
+
+  if (!/^(4|5|6|34|35|37)/.test(value)) {
+    return false;
+  }
+
+  return passesLuhn(value);
+}
+```
+
+```ts
+function passesLuhn(value: string): boolean {
+  let sum = 0;
+  let shouldDouble = false;
+
+  for (let index = value.length - 1; index >= 0; index -= 1) {
+    let digit = Number(value[index]);
+
+    if (shouldDouble) {
+      digit *= 2;
+      if (digit > 9) {
+        digit -= 9;
+      }
+    }
+
+    sum += digit;
+    shouldDouble = !shouldDouble;
+  }
+
+  return sum % 10 === 0;
+}
+
+export function validateCreditCard(value: string): boolean {
+  if (!/^\d+$/.test(value)) {
+    throw new TypeError('Value must contain digits only');
+  }
+
+  if (value.length < 13 || value.length > 16) {
+    return false;
+  }
+
+  if (!/^(4|5|6|34|35|37)/.test(value)) {
+    return false;
+  }
+
+  return passesLuhn(value);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Normalize spaces or dashes before validating the digits.
+- Return a reason code instead of only a boolean.
+- Support issuer-specific prefix and length rules with a configuration table.
+
+## Common Pitfalls
+
+- Doubling based on the left index instead of alternating from the right.
+- Treating Luhn success as proof the card is real or active.
+- Forgetting to reject non-digit input before the checksum pass.

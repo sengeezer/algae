@@ -1,0 +1,103 @@
+---
+title: Check Rearrange Palindrome
+slug: check-rearrange-palindrome
+category: Strings
+summary: Determine whether a string's characters can be rearranged to form a palindrome by tracking which counts are odd.
+description: Check Rearrange Palindrome is the parity-based string test for deciding whether some permutation of a string can read the same forward and backward.
+dataStructures:
+  - String
+  - Hash Map
+  - Set
+techniques:
+  - Frequency Counting
+  - Parity Tracking
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - palindrome permutation check
+  - rearrange-to-palindrome test
+useCases:
+  - Validating whether characters can form a symmetric arrangement
+  - Practicing odd-versus-even count reasoning
+  - Building intuition for palindrome permutation follow-ups
+complexity:
+  time: O(n)
+  space: O(k)
+  notes: The main contract question is whether spaces, punctuation, and case should be normalized before counting odd frequencies.
+interviewSignals:
+  - The prompt asks whether a string can be permuted into a palindrome.
+  - Character-count parity matters more than exact order.
+relatedSlugs:
+  - check-anagram
+  - first-unique-character
+  - count-letters
+provenance:
+  - title: TheAlgorithms/JavaScript - String/CheckRearrangePalindrome.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/String/CheckRearrangePalindrome.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a frequency-count problem disguised as a palindrome problem. The core observation is that a palindrome can have at most one character with an odd count.
+
+## Worked Example
+
+`"carrace"` can be rearranged into `"racecar"`. Its counts are `c: 2`, `a: 2`, `r: 2`, `e: 1`, so only one character has an odd frequency.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function checkRearrangePalindrome(value) {
+  if (typeof value !== 'string') {
+    throw new TypeError('Value must be a string');
+  }
+
+  const oddChars = new Set();
+
+  for (const char of value.toLowerCase().replace(/[^a-z0-9]/g, '')) {
+    if (oddChars.has(char)) {
+      oddChars.delete(char);
+    } else {
+      oddChars.add(char);
+    }
+  }
+
+  return oddChars.size <= 1;
+}
+```
+
+```ts
+export function checkRearrangePalindrome(value: string): boolean {
+  const oddChars = new Set<string>();
+
+  for (const char of value.toLowerCase().replace(/[^a-z0-9]/g, '')) {
+    if (oddChars.has(char)) {
+      oddChars.delete(char);
+    } else {
+      oddChars.add(char);
+    }
+  }
+
+  return oddChars.size <= 1;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Construct one valid palindrome instead of returning only a boolean.
+- Preserve spaces and punctuation instead of normalizing them away.
+- Solve the same problem with a bitmask when the alphabet is fixed.
+
+## Common Pitfalls
+
+- Checking whether the original string is already a palindrome instead of whether a permutation can be one.
+- Forgetting that at most one odd frequency is allowed.
+- Leaving normalization rules undefined when the input may contain spaces or punctuation.

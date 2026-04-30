@@ -1,0 +1,131 @@
+---
+title: Max Word
+slug: max-word
+category: Strings
+summary: Return the most frequent word in a sentence by tokenizing the text and tracking word frequencies.
+description: Max Word is the token-frequency routine for finding which word appears most often in a sentence or short passage.
+dataStructures:
+  - String
+  - Array
+  - Hash Map
+techniques:
+  - Tokenization
+  - Frequency Counting
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - most frequent word
+  - dominant word
+useCases:
+  - Summarizing repeated terms in short text
+  - Practicing word-level frequency maps
+  - Comparing tokenization choices for natural-language input
+complexity:
+  time: O(n)
+  space: O(k)
+  notes: The main ambiguities are punctuation handling, case sensitivity, and what to do when multiple words tie for the highest count.
+interviewSignals:
+  - The prompt asks which word occurs most often.
+  - The natural solution is tokenization followed by a frequency map and argmax pass.
+relatedSlugs:
+  - check-word-occurrence
+  - max-character
+  - reverse-words
+provenance:
+  - title: TheAlgorithms/JavaScript - String/MaxWord.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/String/MaxWord.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the word-level version of the max-character problem. The interesting part is less about counting and more about being explicit about normalization and tie-breaking rules.
+
+## Worked Example
+
+For `"Lala lili lala"`, lowercasing and tokenizing produces `['lala', 'lili', 'lala']`, so `"lala"` is the max word.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function maxWord(value) {
+  if (typeof value !== 'string') {
+    throw new TypeError('Value must be a string');
+  }
+
+  const words = value
+    .trim()
+    .toLowerCase()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (words.length === 0) {
+    return null;
+  }
+
+  const counts = new Map();
+  let bestWord = words[0];
+  let bestCount = 0;
+
+  for (const word of words) {
+    const nextCount = (counts.get(word) ?? 0) + 1;
+    counts.set(word, nextCount);
+
+    if (nextCount > bestCount) {
+      bestWord = word;
+      bestCount = nextCount;
+    }
+  }
+
+  return bestWord;
+}
+```
+
+```ts
+export function maxWord(value: string): string | null {
+  const words = value
+    .trim()
+    .toLowerCase()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (words.length === 0) {
+    return null;
+  }
+
+  const counts = new Map<string, number>();
+  let bestWord = words[0];
+  let bestCount = 0;
+
+  for (const word of words) {
+    const nextCount = (counts.get(word) ?? 0) + 1;
+    counts.set(word, nextCount);
+
+    if (nextCount > bestCount) {
+      bestWord = word;
+      bestCount = nextCount;
+    }
+  }
+
+  return bestWord;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return all top-frequency words instead of just one.
+- Strip punctuation before tokenizing.
+- Stream tokens from a large file instead of splitting the whole sentence at once.
+
+## Common Pitfalls
+
+- Splitting only on single spaces and counting empty tokens.
+- Ignoring tie-breaking rules.
+- Forgetting to normalize case when the prompt treats words case-insensitively.
