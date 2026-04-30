@@ -295,9 +295,20 @@ This twenty-fourth expansion slice lifts the catalog from 176 to 182 entries.
 - Selection Sort
 - Shell Sort
 
+## Batch 25 added
+
+This twenty-fifth expansion slice lifts the catalog from 182 to 188 entries.
+
+- Affine Cipher
+- Atbash
+- Caesar Cipher
+- Keyword Shifted Alphabet
+- Vigenere Cipher
+- XOR Cipher
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 24 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 25 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -306,9 +317,9 @@ All expansion entries from batch 1 through batch 24 now carry explicit per-entry
 ## Why this batch
 
 - It fills obvious interview-core gaps from TheAlgorithms/JavaScript without duplicating material already present in Algae.
-- It rounds out the missing introductory sort family from TheAlgorithms/JavaScript after the previous batch added the more specialized distribution and hybrid sort entries.
-- It broadens the current catalog across adjacent-swap optimization, bucketed distribution, gap-based exchange, minimal-write cycle placement, in-place minimum selection, and gapped insertion passes instead of repeating the comparison sorts already present.
-- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially foundational sorting tradeoffs and implementation patterns.
+- It switches to a coherent cipher slice because the next exact queue contained a published duplicate and two nonexistent upstream filenames.
+- It broadens the current catalog across substitution, affine modular mapping, keyed alphabet remapping, polyalphabetic shifts, and symmetric XOR transforms instead of staying inside one algorithm family.
+- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially text-processing transformations and modular-arithmetic reasoning.
 
 ## Supporting study references from the algorithms list
 
@@ -321,9 +332,9 @@ All expansion entries from batch 1 through batch 24 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- Affine Cipher
-- Caesar Cipher
-- Hill Cipher
-- Rail Fence Cipher
-- Vigenere Cipher
-- Tower Of Hanoi
+- Cocktail Shaker Sort
+- Gnome Sort
+- Insertion Sort
+- Key Finder
+- Morse Code
+- Pancake Sort

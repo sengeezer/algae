@@ -1,0 +1,114 @@
+---
+title: Vigenere Cipher
+slug: vigenere-cipher
+category: Ciphers
+summary: Encrypt text with repeated Caesar-style shifts derived from a keyword, advancing the key only when a letter is processed.
+description: Vigenere Cipher is the polyalphabetic substitution cipher that uses keyword-controlled per-character shifts.
+dataStructures:
+  - String
+techniques:
+  - Modular Arithmetic
+  - Polyalphabetic Cipher
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - keyword shift cipher
+  - polyalphabetic substitution cipher
+useCases:
+  - Demonstrating why varying shifts are stronger than a fixed Caesar rotation
+  - Practicing dual-index traversal across text and key
+  - Comparing per-letter key application with fixed substitution tables
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: The main implementation trap is advancing the key index only when the current input character is alphabetic.
+interviewSignals:
+  - A keyword determines a different shift for each plaintext letter.
+  - Key-position handling around punctuation is part of the problem.
+relatedSlugs:
+  - caesar-cipher
+  - affine-cipher
+  - keyword-shifted-alphabet
+provenance:
+  - title: TheAlgorithms/JavaScript - Ciphers/VigenereCipher.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Ciphers/VigenereCipher.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Vigenere cipher is the natural follow-up once a fixed Caesar shift feels too simple. The algorithm is still lightweight, but it introduces the important bookkeeping problem of coordinating the message index and the key index correctly.
+
+## Worked Example
+
+Encrypting `"ATTACK"` with key `"LEMON"` uses shifts `L, E, M, O, N, L`, producing `"LXFOPV"`. The keyword wraps when it runs out.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function vigenereCipher(message, key, mode = 'encrypt') {
+  if (typeof message !== 'string' || typeof key !== 'string') {
+    throw new TypeError('Message and key must be strings');
+  }
+
+  const normalizedKey = key.toLowerCase().replace(/[^a-z]/g, '');
+  if (normalizedKey.length === 0) {
+    throw new Error('Key must contain at least one letter');
+  }
+
+  let keyIndex = 0;
+
+  return message.replace(/[a-z]/gi, (char) => {
+    const base = /[A-Z]/.test(char) ? 65 : 97;
+    const shift = normalizedKey.charCodeAt(keyIndex % normalizedKey.length) - 97;
+    const direction = mode === 'encrypt' ? shift : -shift;
+    const index = char.charCodeAt(0) - base;
+    keyIndex += 1;
+    return String.fromCharCode(base + (((index + direction) % 26 + 26) % 26));
+  });
+}
+```
+
+```ts
+export function vigenereCipher(
+  message: string,
+  key: string,
+  mode: 'encrypt' | 'decrypt' = 'encrypt',
+): string {
+  const normalizedKey = key.toLowerCase().replace(/[^a-z]/g, '');
+
+  if (normalizedKey.length === 0) {
+    throw new Error('Key must contain at least one letter');
+  }
+
+  let keyIndex = 0;
+
+  return message.replace(/[a-z]/gi, (char) => {
+    const base = /[A-Z]/.test(char) ? 65 : 97;
+    const shift = normalizedKey.charCodeAt(keyIndex % normalizedKey.length) - 97;
+    const direction = mode === 'encrypt' ? shift : -shift;
+    const index = char.charCodeAt(0) - base;
+    keyIndex += 1;
+    return String.fromCharCode(base + (((index + direction) % 26 + 26) % 26));
+  });
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Preserve punctuation without consuming a key character.
+- Recover the plaintext when the key is known and the message contains mixed case.
+- Compare Vigenere with one-time pad and explain why repeated keys are weaker.
+
+## Common Pitfalls
+
+- Advancing the key index on spaces or punctuation.
+- Forgetting to normalize negative wraparound during decryption.
+- Accepting an empty or nonalphabetic key.

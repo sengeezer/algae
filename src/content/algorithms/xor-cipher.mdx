@@ -1,0 +1,91 @@
+---
+title: XOR Cipher
+slug: xor-cipher
+category: Ciphers
+summary: Encrypt or decrypt a string by XORing each character code with the same numeric key.
+description: XOR Cipher is the simple symmetric transform where applying the same key twice restores the original text.
+dataStructures:
+  - String
+techniques:
+  - Bit Manipulation
+  - Symmetric Cipher
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - xor encryption
+  - additive xor cipher
+useCases:
+  - Demonstrating that XOR is its own inverse
+  - Practicing character-code and bitwise operations
+  - Explaining why display-safe encoding is often needed after binary transforms
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: XOR cipher is useful for teaching bitwise symmetry, but real-world encryption needs proper key management and authenticated algorithms.
+interviewSignals:
+  - The same routine encrypts and decrypts when the same key is reused.
+  - The problem is about bitwise transformation rather than alphabet rotation.
+relatedSlugs:
+  - hamming-distance
+  - binary-equivalent
+  - modular-arithmetic
+provenance:
+  - title: TheAlgorithms/JavaScript - Ciphers/XORCipher.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Ciphers/XORCipher.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+XOR cipher appears when an interviewer wants a very small symmetric transformation with bitwise flavor. The central insight is that `x ^ k ^ k = x`, so the same operation both encrypts and decrypts.
+
+## Worked Example
+
+If you XOR the character code for `A` with key `42`, you get a transformed code. XORing that transformed code with `42` again returns the original `A`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function xorCipher(value, key) {
+  if (typeof value !== 'string' || !Number.isInteger(key)) {
+    throw new TypeError('Value must be a string and key must be an integer');
+  }
+
+  return value
+    .split('')
+    .map((char) => String.fromCharCode(char.charCodeAt(0) ^ key))
+    .join('');
+}
+```
+
+```ts
+export function xorCipher(value: string, key: number): string {
+  if (!Number.isInteger(key)) {
+    throw new TypeError('Key must be an integer');
+  }
+
+  return value
+    .split('')
+    .map((char) => String.fromCharCode(char.charCodeAt(0) ^ key))
+    .join('');
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the transformed bytes as hex or base64 instead of raw characters.
+- Explain why reusing the same XOR key is insecure.
+- Extend the function to XOR against a repeated multi-byte key.
+
+## Common Pitfalls
+
+- Assuming the output will always stay printable text.
+- Forgetting that the same operation decrypts the ciphertext.
+- Mixing Unicode expectations with UTF-16 code-unit level operations.

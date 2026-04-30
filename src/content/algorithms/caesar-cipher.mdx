@@ -1,0 +1,97 @@
+---
+title: Caesar Cipher
+slug: caesar-cipher
+category: Ciphers
+summary: Shift each alphabetic character by a fixed number of positions while wrapping around the alphabet.
+description: Caesar Cipher is the classic rotation-based substitution cipher for fixed-key alphabet shifts.
+dataStructures:
+  - String
+techniques:
+  - Modular Arithmetic
+  - Substitution Cipher
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - shift cipher
+  - rotation cipher
+useCases:
+  - Demonstrating modular wrapping over letters
+  - Building intuition for simple substitution schemes
+  - Serving as a stepping stone to more complex keyed ciphers
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: Caesar cipher is historically famous but cryptographically trivial. The implementation value is mostly in correct wraparound and case handling.
+interviewSignals:
+  - The prompt shifts letters by a fixed amount.
+  - Negative or oversized rotations should still normalize correctly.
+relatedSlugs:
+  - affine-cipher
+  - vigenere-cipher
+  - modular-arithmetic
+provenance:
+  - title: TheAlgorithms/JavaScript - Ciphers/CaesarCipher.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Ciphers/CaesarCipher.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Caesar cipher is the simplest wraparound string transformation. The real implementation detail is normalizing the shift and preserving non-letters instead of trying to rotate everything indiscriminately.
+
+## Worked Example
+
+With rotation `3`, `"Algae"` becomes `"Dojdh"`: each letter moves three positions forward, wrapping around from `Z` to `C` when needed.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function caesarCipher(value, shift) {
+  if (typeof value !== 'string' || !Number.isInteger(shift)) {
+    throw new TypeError('Value must be a string and shift must be an integer');
+  }
+
+  const normalized = ((shift % 26) + 26) % 26;
+
+  return value.replace(/[a-z]/gi, (char) => {
+    const base = /[A-Z]/.test(char) ? 65 : 97;
+    const index = char.charCodeAt(0) - base;
+    return String.fromCharCode(base + ((index + normalized) % 26));
+  });
+}
+```
+
+```ts
+export function caesarCipher(value: string, shift: number): string {
+  if (!Number.isInteger(shift)) {
+    throw new TypeError('Shift must be an integer');
+  }
+
+  const normalized = ((shift % 26) + 26) % 26;
+
+  return value.replace(/[a-z]/gi, (char) => {
+    const base = /[A-Z]/.test(char) ? 65 : 97;
+    const index = char.charCodeAt(0) - base;
+    return String.fromCharCode(base + ((index + normalized) % 26));
+  });
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Handle negative rotations as left shifts.
+- Brute-force all 26 possible shifts and rank likely plaintexts.
+- Compare Caesar cipher with affine and Vigenere ciphers.
+
+## Common Pitfalls
+
+- Failing to normalize shifts larger than 26 or negative shifts.
+- Rotating punctuation and spaces that should stay unchanged.
+- Rebuilding the alphabet map on every character instead of once per call.

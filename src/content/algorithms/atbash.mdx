@@ -1,0 +1,91 @@
+---
+title: Atbash
+slug: atbash
+category: Ciphers
+summary: Encode text by mirroring each letter across the alphabet so `A <-> Z`, `B <-> Y`, and so on.
+description: Atbash is the fixed reversed-alphabet substitution cipher that is its own inverse.
+dataStructures:
+  - String
+techniques:
+  - Alphabet Mapping
+  - Substitution Cipher
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - reversed alphabet cipher
+  - self-inverse substitution cipher
+useCases:
+  - Demonstrating simple symmetric letter mappings
+  - Practicing case preservation during substitution
+  - Comparing fixed remapping with shift-based ciphers
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: Atbash is involutive, meaning the same transformation both encrypts and decrypts.
+interviewSignals:
+  - The prompt describes a reversed alphabet rather than a numeric shift.
+  - Encryption and decryption use the exact same operation.
+relatedSlugs:
+  - caesar-cipher
+  - keyword-shifted-alphabet
+  - upper
+provenance:
+  - title: TheAlgorithms/JavaScript - Ciphers/Atbash.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Ciphers/Atbash.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Atbash is a straightforward mapping problem. The key interview move is preserving case and non-letter characters cleanly while noticing that the cipher is self-inverse.
+
+## Worked Example
+
+`"Algae"` becomes `"Zotzv"`: `A` mirrors to `Z`, `l` mirrors to `o`, `g` mirrors to `t`, and so on.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function atbash(value) {
+  if (typeof value !== 'string') {
+    throw new TypeError('Value must be a string');
+  }
+
+  return value.replace(/[a-z]/gi, (char) => {
+    const isUpper = /[A-Z]/.test(char);
+    const base = isUpper ? 65 : 97;
+    const index = char.charCodeAt(0) - base;
+    return String.fromCharCode(base + (25 - index));
+  });
+}
+```
+
+```ts
+export function atbash(value: string): string {
+  return value.replace(/[a-z]/gi, (char) => {
+    const isUpper = /[A-Z]/.test(char);
+    const base = isUpper ? 65 : 97;
+    const index = char.charCodeAt(0) - base;
+    return String.fromCharCode(base + (25 - index));
+  });
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Extend the mapping to a custom alphabet.
+- Compare Atbash with Caesar cipher and explain why Atbash is self-inverse.
+- Preserve accents or Unicode letters with a custom lookup table.
+
+## Common Pitfalls
+
+- Forgetting to preserve the case of the input characters.
+- Touching digits or punctuation that should remain unchanged.
+- Treating Atbash like a shift when it is really a mirror mapping.

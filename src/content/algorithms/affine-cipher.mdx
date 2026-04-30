@@ -1,0 +1,162 @@
+---
+title: Affine Cipher
+slug: affine-cipher
+category: Ciphers
+summary: Encrypt letters with the modular formula $E(x) = (a x + b) \bmod 26$, where $a$ must be coprime with 26.
+description: Affine Cipher is the substitution cipher that combines multiplication and addition over alphabet indices.
+dataStructures:
+  - String
+techniques:
+  - Modular Arithmetic
+  - Substitution Cipher
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - affine substitution cipher
+  - modular shift cipher
+useCases:
+  - Demonstrating modular inverses in text transformation
+  - Comparing simple substitution schemes
+  - Practicing validation around coprime constraints
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: The cipher is historically interesting, but it is not secure by modern standards and mainly matters here as a clean modular-arithmetic exercise.
+interviewSignals:
+  - The prompt combines a linear formula with alphabet positions.
+  - Decryption requires a modular inverse, not just reversing an additive shift.
+relatedSlugs:
+  - modular-arithmetic
+  - co-prime-check
+  - caesar-cipher
+provenance:
+  - title: TheAlgorithms/JavaScript - Ciphers/AffineCipher.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Ciphers/AffineCipher.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Affine cipher questions are really modular-arithmetic questions in disguise. The interesting part is not the alphabet lookup itself, but the fact that decryption only works when the multiplicative coefficient has an inverse modulo 26.
+
+## Worked Example
+
+If `a = 5` and `b = 8`, the letter `A` maps to index `0`, so the encrypted index is `(5 * 0 + 8) mod 26 = 8`, which becomes `I`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function affineCipher(value, a, b, mode = 'encrypt') {
+  if (typeof value !== 'string') {
+    throw new TypeError('Value must be a string');
+  }
+
+  if (!Number.isInteger(a) || !Number.isInteger(b)) {
+    throw new TypeError('Coefficients must be integers');
+  }
+
+  function gcd(left, right) {
+    while (right !== 0) {
+      [left, right] = [right, left % right];
+    }
+
+    return Math.abs(left);
+  }
+
+  function mod(n, m) {
+    return ((n % m) + m) % m;
+  }
+
+  function modInverse(number, modulus) {
+    for (let candidate = 1; candidate < modulus; candidate += 1) {
+      if (mod(number * candidate, modulus) === 1) {
+        return candidate;
+      }
+    }
+
+    throw new Error('Coefficient a must be coprime with 26');
+  }
+
+  if (gcd(a, 26) !== 1) {
+    throw new Error('Coefficient a must be coprime with 26');
+  }
+
+  const inverse = modInverse(a, 26);
+
+  return value.replace(/[a-z]/gi, (char) => {
+    const base = /[A-Z]/.test(char) ? 65 : 97;
+    const index = char.charCodeAt(0) - base;
+    const nextIndex = mode === 'encrypt'
+      ? mod(a * index + b, 26)
+      : mod(inverse * (index - b), 26);
+
+    return String.fromCharCode(base + nextIndex);
+  });
+}
+```
+
+```ts
+export function affineCipher(
+  value: string,
+  a: number,
+  b: number,
+  mode: 'encrypt' | 'decrypt' = 'encrypt',
+): string {
+  function gcd(left: number, right: number): number {
+    while (right !== 0) {
+      [left, right] = [right, left % right];
+    }
+
+    return Math.abs(left);
+  }
+
+  function mod(n: number, m: number): number {
+    return ((n % m) + m) % m;
+  }
+
+  function modInverse(number: number, modulus: number): number {
+    for (let candidate = 1; candidate < modulus; candidate += 1) {
+      if (mod(number * candidate, modulus) === 1) {
+        return candidate;
+      }
+    }
+
+    throw new Error('Coefficient a must be coprime with 26');
+  }
+
+  if (gcd(a, 26) !== 1) {
+    throw new Error('Coefficient a must be coprime with 26');
+  }
+
+  const inverse = modInverse(a, 26);
+
+  return value.replace(/[a-z]/gi, (char) => {
+    const base = /[A-Z]/.test(char) ? 65 : 97;
+    const index = char.charCodeAt(0) - base;
+    const nextIndex = mode === 'encrypt'
+      ? mod(a * index + b, 26)
+      : mod(inverse * (index - b), 26);
+
+    return String.fromCharCode(base + nextIndex);
+  });
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why `a = 13` is invalid for the English alphabet.
+- Compare affine cipher with Caesar cipher as a special additive case.
+- Generalize the implementation to a different alphabet size.
+
+## Common Pitfalls
+
+- Forgetting the coprime requirement for the multiplicative coefficient.
+- Returning sentinel placeholders for spaces instead of preserving non-letters directly.
+- Reversing the additive part without also applying the modular inverse during decryption.

@@ -1,0 +1,127 @@
+---
+title: Keyword Shifted Alphabet
+slug: keyword-shifted-alphabet
+category: Ciphers
+summary: Build a substitution alphabet from a unique-letter keyword, then translate plaintext through that custom alphabet.
+description: Keyword Shifted Alphabet is the keyed substitution cipher that prepends a deduplicated keyword to the remaining alphabet letters.
+dataStructures:
+  - String
+  - Array
+techniques:
+  - Alphabet Mapping
+  - Substitution Cipher
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - keyword cipher
+  - keyed substitution alphabet
+useCases:
+  - Practicing custom translation-table construction
+  - Comparing keyed and fixed substitution schemes
+  - Validating uniqueness constraints on a small alphabet
+complexity:
+  time: O(n + k)
+  space: O(k)
+  notes: The keyword must be validated carefully because duplicate letters would make the mapping ambiguous.
+interviewSignals:
+  - The prompt generates a substitution alphabet from a keyword.
+  - Duplicate keyword characters need to be rejected or normalized deliberately.
+relatedSlugs:
+  - caesar-cipher
+  - atbash
+  - vigenere-cipher
+provenance:
+  - title: TheAlgorithms/JavaScript - Ciphers/KeywordShiftedAlphabet.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Ciphers/KeywordShiftedAlphabet.js
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is really a table-construction problem. Once you build the keyed alphabet correctly, encryption and decryption reduce to indexed translation while preserving case and non-alphabetic characters.
+
+## Worked Example
+
+With keyword `"keyword"`, the cipher alphabet begins `K E Y W O R D A B C ...`. Plaintext letters are translated position by position from the normal alphabet into that keyed sequence.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function keywordShiftedAlphabet(keyword, message, mode = 'encrypt') {
+  if (typeof keyword !== 'string' || typeof message !== 'string') {
+    throw new TypeError('Keyword and message must be strings');
+  }
+
+  const normalizedKeyword = keyword.toLowerCase();
+  if (!/^[a-z]+$/.test(normalizedKeyword)) {
+    throw new Error('Keyword must contain only letters');
+  }
+
+  if (new Set(normalizedKeyword).size !== normalizedKeyword.length) {
+    throw new Error('Keyword must not repeat letters');
+  }
+
+  const alphabet = 'abcdefghijklmnopqrstuvwxyz';
+  const keyedAlphabet = normalizedKeyword + [...alphabet]
+    .filter((char) => !normalizedKeyword.includes(char))
+    .join('');
+  const source = mode === 'encrypt' ? alphabet : keyedAlphabet;
+  const target = mode === 'encrypt' ? keyedAlphabet : alphabet;
+
+  return message.replace(/[a-z]/gi, (char) => {
+    const lower = char.toLowerCase();
+    const mapped = target[source.indexOf(lower)];
+    return /[A-Z]/.test(char) ? mapped.toUpperCase() : mapped;
+  });
+}
+```
+
+```ts
+export function keywordShiftedAlphabet(
+  keyword: string,
+  message: string,
+  mode: 'encrypt' | 'decrypt' = 'encrypt',
+): string {
+  const normalizedKeyword = keyword.toLowerCase();
+
+  if (!/^[a-z]+$/.test(normalizedKeyword)) {
+    throw new Error('Keyword must contain only letters');
+  }
+
+  if (new Set(normalizedKeyword).size !== normalizedKeyword.length) {
+    throw new Error('Keyword must not repeat letters');
+  }
+
+  const alphabet = 'abcdefghijklmnopqrstuvwxyz';
+  const keyedAlphabet = normalizedKeyword + [...alphabet]
+    .filter((char) => !normalizedKeyword.includes(char))
+    .join('');
+  const source = mode === 'encrypt' ? alphabet : keyedAlphabet;
+  const target = mode === 'encrypt' ? keyedAlphabet : alphabet;
+
+  return message.replace(/[a-z]/gi, (char) => {
+    const lower = char.toLowerCase();
+    const mapped = target[source.indexOf(lower)];
+    return /[A-Z]/.test(char) ? mapped.toUpperCase() : mapped;
+  });
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Normalize repeated keyword letters instead of rejecting them.
+- Show the translation table explicitly for debugging.
+- Compare keyword substitution with Caesar and Vigenere ciphers.
+
+## Common Pitfalls
+
+- Forgetting to reject or deduplicate repeated keyword letters.
+- Replacing non-letter characters that should pass through untouched.
+- Mixing up the source and target alphabets during decryption.
