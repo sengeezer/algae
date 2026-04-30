@@ -1,0 +1,114 @@
+---
+title: Minimum Cost Path
+slug: minimum-cost-path
+category: Dynamic Programming
+summary: Accumulate the cheapest running cost through a weighted grid when movement is restricted to monotonic steps.
+description: Minimum Cost Path is the weighted-grid DP interview problem where every cell adds cost and the best answer is built from cheaper prefixes.
+dataStructures:
+  - Matrix
+  - Array
+techniques:
+  - Dynamic Programming
+  - Grid Traversal
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - minimum path sum
+  - weighted grid dp
+useCases:
+  - Computing the cheapest monotonic route through a matrix
+  - Turning recursive path exploration into tabulated grid state
+  - Modeling cumulative cost across constrained moves
+complexity:
+  time: O(rows * cols)
+  space: O(cols)
+  notes: The key recurrence is current cost plus the cheaper of the top and left predecessor states.
+interviewSignals:
+  - The prompt asks for the minimum total cost rather than the number of paths.
+  - Movement is constrained to right and down, so graph search is heavier than necessary.
+relatedSlugs:
+  - unique-paths
+  - unique-paths-ii
+  - dijkstra
+provenance:
+  - title: TheAlgorithms/JavaScript - Dynamic-Programming/MinimumCostPath.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Dynamic-Programming/MinimumCostPath.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Minimum Cost Path is the weighted follow-up to simple grid-counting problems. Instead of asking how many ways to reach the destination, the interviewer asks for the cheapest route, so each cell stores the best cumulative cost seen so far.
+
+## Worked Example
+
+For `[[2, 1], [3, 1], [4, 2]]`, the cheapest route is `2 -> 1 -> 1 -> 2`, for a total of `6`. Each cell only needs the cheaper of the path from above or the path from the left.
+
+<Callout title="State choice" tone="tip">
+  Store cumulative cost, not the path itself. Once the cheapest cost table is correct, route reconstruction is a separate follow-up.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function minimumCostPath(matrix) {
+  const rows = matrix.length;
+  const cols = matrix[0].length;
+  const dp = Array.from({ length: rows }, () => new Array(cols).fill(0));
+
+  dp[0][0] = matrix[0][0];
+
+  for (let col = 1; col < cols; col += 1) {
+    dp[0][col] = dp[0][col - 1] + matrix[0][col];
+  }
+
+  for (let row = 1; row < rows; row += 1) {
+    dp[row][0] = dp[row - 1][0] + matrix[row][0];
+  }
+
+  for (let row = 1; row < rows; row += 1) {
+    for (let col = 1; col < cols; col += 1) {
+      dp[row][col] = Math.min(dp[row - 1][col], dp[row][col - 1]) + matrix[row][col];
+    }
+  }
+
+  return dp[rows - 1][cols - 1];
+}
+```
+
+```ts
+export function minimumCostPath(matrix: number[][]): number {
+  const cols = matrix[0].length;
+  const dp = new Array<number>(cols).fill(Number.POSITIVE_INFINITY);
+  dp[0] = 0;
+
+  for (const row of matrix) {
+    dp[0] += row[0];
+
+    for (let col = 1; col < cols; col += 1) {
+      dp[col] = Math.min(dp[col], dp[col - 1]) + row[col];
+    }
+  }
+
+  return dp[cols - 1];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Reconstruct the actual cheapest path, not just its total cost.
+- Explain when Dijkstra becomes necessary instead of grid DP.
+- Add blocked cells or diagonal movement and update the recurrence.
+
+## Common Pitfalls
+
+- Treating this as an unweighted path-count problem.
+- Forgetting to initialize the first row and first column separately.
+- Using a greedy local choice instead of cumulative state.

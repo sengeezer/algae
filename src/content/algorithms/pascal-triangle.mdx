@@ -1,0 +1,114 @@
+---
+title: Pascal Triangle
+slug: pascal-triangle
+category: Dynamic Programming
+summary: Generate each row from the adjacent pairs in the row above to build binomial-coefficient structure iteratively.
+description: Pascal Triangle is the constructive combinatorics pattern where every interior value is derived from two overlapping subproblems in the previous row.
+dataStructures:
+  - Array
+  - Matrix
+techniques:
+  - Dynamic Programming
+  - Combinatorics
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - binomial triangle
+  - row generation
+useCases:
+  - Generating binomial-coefficient tables
+  - Building triangle-shaped DP state from prior rows
+  - Explaining combinations through iterative construction
+complexity:
+  time: O(rows^2)
+  space: O(rows^2)
+  notes: Every interior entry is the sum of the two values immediately above it.
+interviewSignals:
+  - The prompt asks for the first `n` rows or a specific row of Pascal's Triangle.
+  - The solution is naturally built from previous rows rather than direct closed-form arithmetic.
+relatedSlugs:
+  - catalan-numbers
+  - unique-paths
+  - tribonacci-number
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/PascalTriangle.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/PascalTriangle.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Pascal Triangle is a compact way to test whether you can generate structured output from previously computed state. It also opens the door to follow-ups about combinations, binomial coefficients, and row-space optimization.
+
+## Worked Example
+
+Starting from `[1]`, the next row is `[1, 1]`. The next row becomes `[1, 2, 1]` because the center value comes from `1 + 1`. Repeating that rule generates the full triangle.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function pascalTriangle(numRows) {
+  if (numRows === 0) {
+    return [];
+  }
+
+  const triangle = [[1]];
+
+  for (let row = 1; row < numRows; row += 1) {
+    const previous = triangle[row - 1];
+    const nextRow = [1];
+
+    for (let index = 0; index < previous.length - 1; index += 1) {
+      nextRow.push(previous[index] + previous[index + 1]);
+    }
+
+    nextRow.push(1);
+    triangle.push(nextRow);
+  }
+
+  return triangle;
+}
+```
+
+```ts
+export function pascalTriangle(numRows: number): number[][] {
+  if (numRows === 0) {
+    return [];
+  }
+
+  const triangle: number[][] = [[1]];
+
+  for (let row = 1; row < numRows; row += 1) {
+    const previous = triangle[row - 1];
+    const nextRow: number[] = [1];
+
+    for (let index = 0; index < previous.length - 1; index += 1) {
+      nextRow.push(previous[index] + previous[index + 1]);
+    }
+
+    nextRow.push(1);
+    triangle.push(nextRow);
+  }
+
+  return triangle;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return only the `k`th row using `O(k)` extra space.
+- Relate row values to combination counts like `n choose r`.
+- Explain how this differs from a closed-form combinatorics solution.
+
+## Common Pitfalls
+
+- Forgetting that every row starts and ends with `1`.
+- Mutating the previous row before the next row is fully computed.
+- Overcomplicating a simple constructive DP problem.

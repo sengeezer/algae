@@ -1,0 +1,112 @@
+---
+title: Tribonacci Number
+slug: tribonacci-number
+category: Dynamic Programming
+summary: Extend the Fibonacci pattern so each state depends on the previous three values instead of two.
+description: Tribonacci Number is the sequence-DP interview variant that checks whether you can generalize a familiar recurrence without changing the core tabulation pattern.
+dataStructures:
+  - Array
+techniques:
+  - Dynamic Programming
+  - Iterative DP
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - tribonacci sequence
+  - three-term fibonacci
+useCases:
+  - Generalizing simple recurrence relations
+  - Practicing bottom-up sequence DP with shifted dependencies
+  - Reducing naive recursion into linear-time tabulation
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The only conceptual change from Fibonacci is widening the dependency window from two terms to three.
+interviewSignals:
+  - The next value depends on the previous three states.
+  - A direct recursive solution is correct but obviously too repetitive.
+relatedSlugs:
+  - fast-fibonacci-number
+  - climbing-stairs
+  - memoization-dp
+provenance:
+  - title: TheAlgorithms/JavaScript - Dynamic-Programming/TribonacciNumber.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Dynamic-Programming/TribonacciNumber.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Tribonacci is the classic recurrence follow-up after Fibonacci. It tests whether you understand the DP pattern itself, not just the memorized formula for one specific sequence.
+
+## Worked Example
+
+With base values `T(0) = 0`, `T(1) = 1`, and `T(2) = 1`, the next value is `T(3) = 0 + 1 + 1 = 2`. Every later state reuses the previous three totals in the same way.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function tribonacciNumber(index) {
+  if (index === 0) {
+    return 0;
+  }
+
+  if (index <= 2) {
+    return 1;
+  }
+
+  const dp = new Array(index + 1).fill(0);
+  dp[1] = 1;
+  dp[2] = 1;
+
+  for (let current = 3; current <= index; current += 1) {
+    dp[current] = dp[current - 1] + dp[current - 2] + dp[current - 3];
+  }
+
+  return dp[index];
+}
+```
+
+```ts
+export function tribonacciNumber(index: number): number {
+  if (index === 0) {
+    return 0;
+  }
+
+  if (index <= 2) {
+    return 1;
+  }
+
+  let first = 0;
+  let second = 1;
+  let third = 1;
+
+  for (let current = 3; current <= index; current += 1) {
+    const next = first + second + third;
+    first = second;
+    second = third;
+    third = next;
+  }
+
+  return third;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Reduce the tabulated version to constant extra space.
+- Compare this recurrence with climbing-stairs variants.
+- Return the result modulo a large prime for huge indices.
+
+## Common Pitfalls
+
+- Reusing Fibonacci base cases without adjusting them for Tribonacci.
+- Writing exponential recursion when iterative DP is enough.
+- Forgetting that `T(0)` is typically `0`, not `1`.

@@ -119,9 +119,20 @@ This eighth expansion slice lifts the catalog from 80 to 86 entries.
 - Palindrome Partitioning
 - Unique Paths II
 
+## Batch 9 added
+
+This ninth expansion slice lifts the catalog from 86 to 92 entries.
+
+- Minimum Cost Path
+- Pascal Triangle
+- Tribonacci Number
+- Longest Substring Without Repeating Characters
+- M Coloring Problem
+- Sum of Subset
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 8 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 9 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -144,9 +155,9 @@ All expansion entries from batch 1 through batch 8 now carry explicit per-entry 
 
 ## Next candidates from the same sources
 
-- Minimum Cost Path
-- Pascal Triangle
-- Tribonacci Number
-- Longest Substring Without Repeating Characters
-- M Coloring Problem
-- Sum of Subset
+- Abbreviation
+- Binary Exponentiation
+- Binomial Coefficient
+- Matrix Exponentiation
+- Max Non Adjacent Sum
+- Rod Cutting

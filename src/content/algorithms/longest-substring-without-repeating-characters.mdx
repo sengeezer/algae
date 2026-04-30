@@ -1,0 +1,114 @@
+---
+title: Longest Substring Without Repeating Characters
+slug: longest-substring-without-repeating-characters
+category: Array Patterns
+summary: Expand a sliding window across the string and move its left edge just far enough to remove duplicates.
+description: Longest Substring Without Repeating Characters is the canonical sliding-window string problem where the answer lives inside the largest duplicate-free contiguous range.
+dataStructures:
+  - String
+  - Hash Map
+techniques:
+  - Sliding Window
+  - Two Pointers
+  - Hash Map
+difficulty: Medium
+interviewFrequency: Very High
+aliases:
+  - longest unique substring
+  - substring without repetition
+useCases:
+  - Finding the longest contiguous segment with unique characters
+  - Practicing window repair after a constraint violation
+  - Generalizing to at-most-k-distinct or replacement-budget windows
+complexity:
+  time: O(n)
+  space: O(k)
+  notes: The window stays linear because each index enters and leaves the active range at most once.
+interviewSignals:
+  - The prompt asks for a substring, not a subsequence.
+  - Duplicates invalidate the current window, so left boundary updates matter.
+relatedSlugs:
+  - sliding-window
+  - two-pointers
+  - permutation-in-string
+provenance:
+  - title: TheAlgorithms/JavaScript - Dynamic-Programming/Sliding-Window/LongestSubstringWithoutRepeatingCharacters.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Dynamic-Programming/Sliding-Window/LongestSubstringWithoutRepeatingCharacters.js
+    kind: Implementation
+  - title: free-programming-books - Algorithmic Thinking
+    href: https://labuladong.gitbook.io/algo-en
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is one of the standard sliding-window interview questions because it forces you to maintain a valid contiguous segment incrementally. The key skill is repairing the window immediately after a repeated character appears.
+
+## Worked Example
+
+For `"abcabcbb"`, the longest valid window starts as `"abc"`. When the second `a` arrives, the left boundary jumps past the earlier `a`, keeping the window duplicate-free instead of restarting from scratch.
+
+<Callout title="Substring, not subsequence" tone="warning">
+  The answer must stay contiguous. If you mentally skip characters, you have switched to a different problem.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function lengthOfLongestSubstring(text) {
+  const lastSeen = new Map();
+  let left = 0;
+  let best = 0;
+
+  for (let right = 0; right < text.length; right += 1) {
+    const char = text[right];
+
+    if (lastSeen.has(char) && lastSeen.get(char) >= left) {
+      left = lastSeen.get(char) + 1;
+    }
+
+    lastSeen.set(char, right);
+    best = Math.max(best, right - left + 1);
+  }
+
+  return best;
+}
+```
+
+```ts
+export function lengthOfLongestSubstring(text: string): number {
+  const lastSeen = new Map<string, number>();
+  let left = 0;
+  let best = 0;
+
+  for (let right = 0; right < text.length; right += 1) {
+    const char = text[right];
+    const previous = lastSeen.get(char);
+
+    if (previous !== undefined && previous >= left) {
+      left = previous + 1;
+    }
+
+    lastSeen.set(char, right);
+    best = Math.max(best, right - left + 1);
+  }
+
+  return best;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the actual substring, not only its length.
+- Adapt the pattern to at most `k` distinct characters.
+- Explain why deleting one character at a time can still be linear.
+
+## Common Pitfalls
+
+- Resetting the window completely when only part of it is invalid.
+- Confusing substring and subsequence.
+- Letting the left pointer move backward after seeing an older duplicate.

@@ -1,0 +1,149 @@
+---
+title: M Coloring Problem
+slug: m-coloring-problem
+category: Backtracking
+summary: Assign colors to graph vertices one by one, backtracking whenever adjacent vertices would end up with the same color.
+description: M Coloring Problem is the constraint-satisfaction version of graph coloring where the search explores feasible color assignments under a fixed palette size.
+dataStructures:
+  - Graph
+  - Matrix
+  - Array
+  - Recursion Stack
+techniques:
+  - Backtracking
+  - Graph Traversal
+  - Constraint Satisfaction
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - graph coloring
+  - m-coloring
+useCases:
+  - Determining whether a graph can be colored with a bounded palette
+  - Practicing recursive assignment with local validity checks
+  - Explaining constraint search on adjacency matrices
+complexity:
+  time: O(m^V)
+  space: O(V)
+  notes: The practical win comes from pruning illegal color assignments before they branch further.
+interviewSignals:
+  - The graph must be colored so adjacent vertices differ.
+  - The number of available colors is fixed in advance.
+relatedSlugs:
+  - backtracking-search
+  - n-queens
+  - rat-in-a-maze
+provenance:
+  - title: TheAlgorithms/JavaScript - Backtracking/MColoringProblem.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Backtracking/MColoringProblem.js
+    kind: Implementation
+  - title: free-programming-books - Algorithmic Thinking
+    href: https://labuladong.gitbook.io/algo-en
+    kind: Reference
+---
+
+## Why It Surfaces
+
+M Coloring Problem tests whether you can combine recursion with a tight local constraint. Each vertex must choose one color from a small palette, and the whole search only works if illegal assignments are rejected immediately.
+
+## Worked Example
+
+Color vertex `0` first, then move to vertex `1`, and so on. If coloring vertex `3` with color `2` conflicts with one of its neighbors, undo that choice and try the next color before continuing.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function mColoringProblem(graph, maxColors) {
+  const colors = new Array(graph.length).fill(0);
+
+  function isSafe(vertex, color) {
+    for (let neighbor = 0; neighbor < graph.length; neighbor += 1) {
+      if (graph[vertex][neighbor] === 1 && colors[neighbor] === color) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  function dfs(vertex) {
+    if (vertex === graph.length) {
+      return true;
+    }
+
+    for (let color = 1; color <= maxColors; color += 1) {
+      if (!isSafe(vertex, color)) {
+        continue;
+      }
+
+      colors[vertex] = color;
+
+      if (dfs(vertex + 1)) {
+        return true;
+      }
+
+      colors[vertex] = 0;
+    }
+
+    return false;
+  }
+
+  return dfs(0) ? colors : [];
+}
+```
+
+```ts
+export function mColoringProblem(graph: number[][], maxColors: number): number[] {
+  const colors = new Array<number>(graph.length).fill(0);
+
+  function isSafe(vertex: number, color: number): boolean {
+    for (let neighbor = 0; neighbor < graph.length; neighbor += 1) {
+      if (graph[vertex][neighbor] === 1 && colors[neighbor] === color) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  function dfs(vertex: number): boolean {
+    if (vertex === graph.length) {
+      return true;
+    }
+
+    for (let color = 1; color <= maxColors; color += 1) {
+      if (!isSafe(vertex, color)) {
+        continue;
+      }
+
+      colors[vertex] = color;
+
+      if (dfs(vertex + 1)) {
+        return true;
+      }
+
+      colors[vertex] = 0;
+    }
+
+    return false;
+  }
+
+  return dfs(0) ? colors : [];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return all valid colorings instead of the first one.
+- Switch from an adjacency matrix to adjacency lists.
+- Explain why this search is different from shortest-path or traversal problems.
+
+## Common Pitfalls
+
+- Forgetting to clear a vertex color when backtracking.
+- Checking only some neighbors instead of all adjacent vertices.
+- Treating graph coloring like a greedy coloring problem when the prompt asks for an exact feasible assignment.

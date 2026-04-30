@@ -1,0 +1,125 @@
+---
+title: Sum of Subset
+slug: sum-of-subset
+category: Backtracking
+summary: Explore take-or-skip subset branches and prune the search as soon as the running total exceeds the target.
+description: Sum of Subset is the backtracking version of subset-sum where the goal is to enumerate valid subsets, not only detect feasibility.
+dataStructures:
+  - Array
+  - Recursion Stack
+techniques:
+  - Backtracking
+  - Depth-First Search
+  - Pruning
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - subset sum backtracking
+  - enumerate target subsets
+useCases:
+  - Listing every subset that reaches a target sum
+  - Comparing search enumeration with DP counting or feasibility
+  - Demonstrating pruning on sorted non-negative inputs
+complexity:
+  time: O(2^n)
+  space: O(n)
+  notes: Ordering the inputs and pruning when the running sum exceeds the target keeps the search tractable on small interview inputs.
+interviewSignals:
+  - The prompt asks for all subsets, not just a boolean answer.
+  - The values are non-negative, so overshooting the target is a valid pruning signal.
+relatedSlugs:
+  - backtracking-search
+  - number-of-subsets-equal-to-given-sum
+  - knapsack-dp
+provenance:
+  - title: TheAlgorithms/JavaScript - Backtracking/SumOfSubset.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Backtracking/SumOfSubset.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem is the enumeration counterpart to subset-sum DP. Instead of asking whether a target can be reached, the interviewer wants every valid subset, which shifts the focus back to recursive search and pruning.
+
+## Worked Example
+
+For `nums = [2, 3, 5, 6, 8]` and `target = 10`, valid answers include `[2, 3, 5]` and `[2, 8]`. Once a branch reaches `11` or `12`, it can stop immediately because all inputs are non-negative.
+
+<Callout title="Pruning assumption" tone="warning">
+  The simple `sum > target` prune only works when the remaining values cannot lower the total. If negative numbers are allowed, the search logic must change.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function sumOfSubset(nums, target) {
+  const results = [];
+  const path = [];
+
+  function dfs(index, sum) {
+    if (sum === target) {
+      results.push([...path]);
+      return;
+    }
+
+    if (sum > target) {
+      return;
+    }
+
+    for (let next = index; next < nums.length; next += 1) {
+      path.push(nums[next]);
+      dfs(next + 1, sum + nums[next]);
+      path.pop();
+    }
+  }
+
+  dfs(0, 0);
+  return results;
+}
+```
+
+```ts
+export function sumOfSubset(nums: number[], target: number): number[][] {
+  const results: number[][] = [];
+  const path: number[] = [];
+
+  function dfs(index: number, sum: number): void {
+    if (sum === target) {
+      results.push([...path]);
+      return;
+    }
+
+    if (sum > target) {
+      return;
+    }
+
+    for (let next = index; next < nums.length; next += 1) {
+      path.push(nums[next]);
+      dfs(next + 1, sum + nums[next]);
+      path.pop();
+    }
+  }
+
+  dfs(0, 0);
+  return results;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return only whether at least one subset exists.
+- Count valid subsets instead of listing them.
+- Handle duplicate values without returning duplicate subsets.
+
+## Common Pitfalls
+
+- Forgetting that enumeration needs the path itself, not just the running sum.
+- Using `sum > target` pruning when negative values are present.
+- Reusing the same element more than once in a supposedly 0/1 subset search.
