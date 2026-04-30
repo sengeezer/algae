@@ -130,9 +130,20 @@ This ninth expansion slice lifts the catalog from 86 to 92 entries.
 - M Coloring Problem
 - Sum of Subset
 
+## Batch 10 added
+
+This tenth expansion slice lifts the catalog from 92 to 98 entries.
+
+- Abbreviation
+- Binary Exponentiation
+- Binomial Coefficient
+- Matrix Exponentiation
+- Max Non Adjacent Sum
+- Rod Cutting
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 9 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 10 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -155,9 +166,9 @@ All expansion entries from batch 1 through batch 9 now carry explicit per-entry 
 
 ## Next candidates from the same sources
 
-- Abbreviation
-- Binary Exponentiation
-- Binomial Coefficient
-- Matrix Exponentiation
-- Max Non Adjacent Sum
-- Rod Cutting
+- Fibonacci Number
+- Sieve of Eratosthenes
+- Levenshtein Distance
+- Max Product of Three
+- Breadth First Tree Traversal
+- Tower of Hanoi

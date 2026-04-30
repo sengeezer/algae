@@ -1,0 +1,142 @@
+---
+title: Matrix Exponentiation
+slug: matrix-exponentiation
+category: Mathematics
+summary: Raise a square matrix to a large power with exponentiation by squaring so repeated transitions become logarithmic in the exponent.
+description: Matrix Exponentiation is the fast-power interview pattern for linear recurrences, transition systems, and path counting when repeated matrix multiplication would be too slow.
+dataStructures:
+  - Matrix
+techniques:
+  - Matrix Multiplication
+  - Exponentiation by Squaring
+  - Divide and Conquer
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - fast matrix power
+  - matrix power by squaring
+useCases:
+  - Accelerating Fibonacci-style recurrences
+  - Applying transition matrices many times
+  - Counting fixed-length walks in graphs
+complexity:
+  time: O(d^3 log p)
+  space: O(d^2 log p)
+  notes: The algorithm is just binary exponentiation lifted from numbers to square matrices, with the identity matrix as the zero-power base case.
+interviewSignals:
+  - The same linear transition must be applied many times.
+  - A recurrence can be rewritten as multiplying by a fixed square matrix.
+relatedSlugs:
+  - binary-exponentiation
+  - fast-fibonacci-number
+  - tribonacci-number
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/MatrixExponentiationRecursive.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/MatrixExponentiationRecursive.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Matrix exponentiation appears when an interviewer wants a recurrence faster than linear time. Once a recurrence is encoded as a transition matrix, repeated application becomes a power problem instead of a step-by-step simulation.
+
+## Worked Example
+
+If a recurrence advances by multiplying a state vector with matrix `M`, then applying that transition `n` times means computing `M^n`. Exponentiation by squaring reduces that from `n` matrix multiplications to `log n` levels.
+
+<Callout title="Base case" tone="tip">
+  The zero power of any square matrix is the identity matrix of the same dimension, not the original matrix.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function multiplyMatrices(left, right) {
+  const size = left.length;
+  const result = Array.from({ length: size }, () => new Array(size).fill(0));
+
+  for (let row = 0; row < size; row += 1) {
+    for (let col = 0; col < size; col += 1) {
+      for (let index = 0; index < size; index += 1) {
+        result[row][col] += left[row][index] * right[index][col];
+      }
+    }
+  }
+
+  return result;
+}
+
+function identityMatrix(size) {
+  return Array.from({ length: size }, (_, row) =>
+    Array.from({ length: size }, (_, col) => (row === col ? 1 : 0)),
+  );
+}
+
+function matrixExponentiation(matrix, power) {
+  if (power === 0) {
+    return identityMatrix(matrix.length);
+  }
+
+  if (power % 2 === 1) {
+    return multiplyMatrices(matrixExponentiation(matrix, power - 1), matrix);
+  }
+
+  const half = matrixExponentiation(matrix, Math.floor(power / 2));
+  return multiplyMatrices(half, half);
+}
+```
+
+```ts
+function multiplyMatrices(left: number[][], right: number[][]): number[][] {
+  const size = left.length;
+  const result = Array.from({ length: size }, () => new Array<number>(size).fill(0));
+
+  for (let row = 0; row < size; row += 1) {
+    for (let col = 0; col < size; col += 1) {
+      for (let index = 0; index < size; index += 1) {
+        result[row][col] += left[row][index] * right[index][col];
+      }
+    }
+  }
+
+  return result;
+}
+
+function identityMatrix(size: number): number[][] {
+  return Array.from({ length: size }, (_, row) =>
+    Array.from({ length: size }, (_, col) => (row === col ? 1 : 0)),
+  );
+}
+
+export function matrixExponentiation(matrix: number[][], power: number): number[][] {
+  if (power === 0) {
+    return identityMatrix(matrix.length);
+  }
+
+  if (power % 2 === 1) {
+    return multiplyMatrices(matrixExponentiation(matrix, power - 1), matrix);
+  }
+
+  const half = matrixExponentiation(matrix, Math.floor(power / 2));
+  return multiplyMatrices(half, half);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Apply a modulus to keep values bounded.
+- Use a specific transition matrix for Fibonacci or Tribonacci.
+- Compare recursive and iterative powering strategies.
+
+## Common Pitfalls
+
+- Returning the original matrix instead of the identity matrix for power zero.
+- Confusing element-wise multiplication with matrix multiplication.
+- Missing the logarithmic win and multiplying the matrix linearly `p` times.

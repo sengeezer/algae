@@ -1,0 +1,104 @@
+---
+title: Binary Exponentiation
+slug: binary-exponentiation
+category: Mathematics
+summary: Raise a value to a large power in logarithmic time by squaring the base while halving the exponent.
+description: Binary Exponentiation is exponentiation by squaring, the standard interview optimization for fast power, modular arithmetic, and repeated multiplication under large exponents.
+dataStructures:
+  - Number
+techniques:
+  - Exponentiation by Squaring
+  - Divide and Conquer
+  - Iterative Optimization
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - fast power
+  - exponentiation by squaring
+useCases:
+  - Computing `x^n` under large exponents
+  - Building modular exponentiation or power helpers
+  - Serving as the scalar analogue of matrix exponentiation
+complexity:
+  time: O(log n)
+  space: O(1)
+  notes: Every loop step consumes one exponent bit, which is why the total work scales with the number of bits in `n`.
+interviewSignals:
+  - Repeated multiplication would be too slow for the target exponent.
+  - The prompt may add a modulo but the same squaring pattern still applies.
+relatedSlugs:
+  - matrix-exponentiation
+  - fast-fibonacci-number
+  - binary-lifting
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/BinaryExponentiationIterative.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/BinaryExponentiationIterative.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Binary exponentiation is a classic interview optimization because it replaces `n` multiplications with repeated squaring. Once the exponent is large enough, anything linear is obviously too slow.
+
+## Worked Example
+
+To compute `3^13`, inspect the exponent in binary. Multiply the answer by the current base when the current bit is `1`, square the base every step, and shift the exponent right until it reaches zero.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function binaryExponentiation(base, exponent) {
+  let value = base;
+  let power = exponent;
+  let answer = 1;
+
+  while (power > 0) {
+    if (power % 2 === 1) {
+      answer *= value;
+    }
+
+    value *= value;
+    power = Math.floor(power / 2);
+  }
+
+  return answer;
+}
+```
+
+```ts
+export function binaryExponentiation(base: number, exponent: number): number {
+  let value = base;
+  let power = exponent;
+  let answer = 1;
+
+  while (power > 0) {
+    if (power % 2 === 1) {
+      answer *= value;
+    }
+
+    value *= value;
+    power = Math.floor(power / 2);
+  }
+
+  return answer;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Add a modulus to avoid overflow and support cryptography-style prompts.
+- Compare the iterative and recursive formulations.
+- Use the same idea to exponentiate matrices.
+
+## Common Pitfalls
+
+- Falling back to `O(n)` repeated multiplication.
+- Forgetting to multiply the answer when the current exponent bit is odd.
+- Mishandling the `exponent = 0` base case.

@@ -1,0 +1,102 @@
+---
+title: Rod Cutting
+slug: rod-cutting
+category: Dynamic Programming
+summary: Maximize revenue by splitting a rod into priced lengths and reusing the best smaller solutions.
+description: Rod Cutting is the unbounded-choice DP interview pattern where each cut length can be used repeatedly and the best answer is built from optimal shorter rods.
+dataStructures:
+  - Array
+  - Table
+techniques:
+  - Dynamic Programming
+  - Unbounded Knapsack
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - rod revenue optimization
+  - cut planning dp
+useCases:
+  - Optimizing piecewise pricing problems
+  - Reusing a fixed menu of lengths multiple times
+  - Contrasting 0/1 knapsack with unbounded DP
+complexity:
+  time: O(n^2)
+  space: O(n)
+  notes: Each rod length is solved by trying every possible first cut and adding the best revenue for the remainder.
+interviewSignals:
+  - The same cut length may be reused multiple times.
+  - The prompt asks for maximum revenue rather than the list of cuts.
+relatedSlugs:
+  - knapsack-dp
+  - coin-change
+  - max-non-adjacent-sum
+provenance:
+  - title: TheAlgorithms/JavaScript - Dynamic-Programming/RodCutting.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Dynamic-Programming/RodCutting.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Rod Cutting is the classic DP framing for repeated choice under composition. Unlike 0/1 knapsack, one cut size can be reused again and again, so the solution behaves like an unbounded optimization problem.
+
+## Worked Example
+
+If a length-4 rod has prices `[1, 5, 8, 9]`, then cutting it into two length-2 pieces yields `10`, which beats selling the full rod for `9`. The DP finds that by trying every possible first cut for each smaller length.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function rodCutting(prices, length) {
+  const dp = new Array(length + 1).fill(0);
+
+  for (let rod = 1; rod <= length; rod += 1) {
+    let best = Number.NEGATIVE_INFINITY;
+
+    for (let cut = 1; cut <= rod; cut += 1) {
+      best = Math.max(best, prices[cut - 1] + dp[rod - cut]);
+    }
+
+    dp[rod] = best;
+  }
+
+  return dp[length];
+}
+```
+
+```ts
+export function rodCutting(prices: number[], length: number): number {
+  const dp = new Array<number>(length + 1).fill(0);
+
+  for (let rod = 1; rod <= length; rod += 1) {
+    let best = Number.NEGATIVE_INFINITY;
+
+    for (let cut = 1; cut <= rod; cut += 1) {
+      best = Math.max(best, prices[cut - 1] + dp[rod - cut]);
+    }
+
+    dp[rod] = best;
+  }
+
+  return dp[length];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the sequence of cuts, not only the best revenue.
+- Compare this with 0/1 knapsack and coin change.
+- Add a fixed cutting cost and update the recurrence.
+
+## Common Pitfalls
+
+- Treating each cut size as usable only once.
+- Forgetting that prices are indexed by cut length.
+- Using a greedy highest-price piece instead of DP over all first cuts.

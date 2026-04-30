@@ -1,0 +1,97 @@
+---
+title: Max Non Adjacent Sum
+slug: max-non-adjacent-sum
+category: Dynamic Programming
+summary: Maximize the total by choosing values that never sit next to each other in the array.
+description: Max Non Adjacent Sum is the core house-robber style DP where each position forces a take-or-skip decision against the previous position.
+dataStructures:
+  - Array
+techniques:
+  - Dynamic Programming
+  - Rolling State
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - maximum sum without adjacent elements
+  - house robber base pattern
+useCases:
+  - Picking profitable items with a one-step cooldown
+  - Modeling mutually exclusive neighboring choices
+  - Reducing 2D DP into constant rolling state
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The two rolling states represent the best total when the current value is taken versus skipped.
+interviewSignals:
+  - Selecting one element blocks its immediate neighbors.
+  - The prompt asks for a maximum total, not the number of valid selections.
+relatedSlugs:
+  - house-robber
+  - knapsack-dp
+  - kadane-algorithm
+provenance:
+  - title: TheAlgorithms/JavaScript - Dynamic-Programming/MaxNonAdjacentSum.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Dynamic-Programming/MaxNonAdjacentSum.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Max Non Adjacent Sum is the stripped-down version of many cooldown or spacing problems. The whole recurrence comes from one question: if you take this value, what previous state is still legal?
+
+## Worked Example
+
+For `[1, 5, 3, 7, 2]`, taking `5` blocks `3`, then taking `7` gives a total of `12`. The DP tracks the best answer when the current position is included and when it is skipped.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function maxNonAdjacentSum(nums) {
+  let take = 0;
+  let skip = 0;
+
+  for (const value of nums) {
+    const nextTake = skip + value;
+    const nextSkip = Math.max(skip, take);
+    take = nextTake;
+    skip = nextSkip;
+  }
+
+  return Math.max(take, skip);
+}
+```
+
+```ts
+export function maxNonAdjacentSum(nums: number[]): number {
+  let take = 0;
+  let skip = 0;
+
+  for (const value of nums) {
+    const nextTake = skip + value;
+    const nextSkip = Math.max(skip, take);
+    take = nextTake;
+    skip = nextSkip;
+  }
+
+  return Math.max(take, skip);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the chosen indices as well as the best total.
+- Explain how this maps directly to House Robber.
+- Clarify whether taking nothing is allowed when all values are negative.
+
+## Common Pitfalls
+
+- Treating this as a contiguous-subarray problem like Kadane.
+- Using the updated `take` value too early when computing `skip`.
+- Forgetting that each choice only conflicts with immediate neighbors.

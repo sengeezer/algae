@@ -1,0 +1,131 @@
+---
+title: Abbreviation
+slug: abbreviation
+category: Dynamic Programming
+summary: Decide whether one string can become another by capitalizing some lowercase letters and deleting the rest.
+description: Abbreviation is the string-DP interview problem where each source character can be matched, capitalized, discarded, or rejected depending on its case and the target prefix.
+dataStructures:
+  - String
+  - Table
+techniques:
+  - Dynamic Programming
+  - String DP
+  - Tabulation
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - capitalize or delete
+  - string abbreviation transform
+useCases:
+  - Validating constrained string normalization rules
+  - Matching an uppercase target from a mixed-case source
+  - Explaining DP over string prefixes with limited edit operations
+complexity:
+  time: O(source * target)
+  space: O(source * target)
+  notes: The DP state tracks whether each source prefix can produce each target prefix under the capitalize-or-delete rules.
+interviewSignals:
+  - Lowercase letters may be deleted, but uppercase letters in the source are mandatory.
+  - Matching depends on string prefixes rather than a greedy local choice.
+relatedSlugs:
+  - edit-distance
+  - longest-common-subsequence
+  - trie
+provenance:
+  - title: TheAlgorithms/JavaScript - Dynamic-Programming/Abbreviation.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Dynamic-Programming/Abbreviation.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Abbreviation is a strong DP interview problem because the operations look small but the decisions interact across prefixes. Greedy capitalization or deletion is not enough because a choice that works locally can block the rest of the target string.
+
+## Worked Example
+
+If `source = "daBcd"` and `target = "ABC"`, you can delete `d`, capitalize `a` into `A`, keep `B`, capitalize `c` into `C`, and delete the trailing `d`. A DP table records that each of those prefix decisions remains feasible.
+
+<Callout title="Constraint hinge" tone="warning">
+  Uppercase letters in the source cannot be discarded. If one of them fails to match the next target character, that whole DP path dies immediately.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function canAbbreviate(source, target) {
+  const dp = Array.from({ length: source.length + 1 }, () => new Array(target.length + 1).fill(false));
+  dp[0][0] = true;
+
+  for (let sourceIndex = 0; sourceIndex < source.length; sourceIndex += 1) {
+    for (let targetIndex = 0; targetIndex <= target.length; targetIndex += 1) {
+      if (!dp[sourceIndex][targetIndex]) {
+        continue;
+      }
+
+      const sourceChar = source[sourceIndex];
+
+      if (sourceChar === sourceChar.toLowerCase()) {
+        dp[sourceIndex + 1][targetIndex] = true;
+      }
+
+      if (
+        targetIndex < target.length
+        && sourceChar.toUpperCase() === target[targetIndex]
+      ) {
+        dp[sourceIndex + 1][targetIndex + 1] = true;
+      }
+    }
+  }
+
+  return dp[source.length][target.length];
+}
+```
+
+```ts
+export function canAbbreviate(source: string, target: string): boolean {
+  const dp = Array.from({ length: source.length + 1 }, () => new Array<boolean>(target.length + 1).fill(false));
+  dp[0][0] = true;
+
+  for (let sourceIndex = 0; sourceIndex < source.length; sourceIndex += 1) {
+    for (let targetIndex = 0; targetIndex <= target.length; targetIndex += 1) {
+      if (!dp[sourceIndex][targetIndex]) {
+        continue;
+      }
+
+      const sourceChar = source[sourceIndex];
+
+      if (sourceChar === sourceChar.toLowerCase()) {
+        dp[sourceIndex + 1][targetIndex] = true;
+      }
+
+      if (
+        targetIndex < target.length
+        && sourceChar.toUpperCase() === target[targetIndex]
+      ) {
+        dp[sourceIndex + 1][targetIndex + 1] = true;
+      }
+    }
+  }
+
+  return dp[source.length][target.length];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Reduce the table to one row if only feasibility is needed.
+- Return one valid sequence of operations instead of a boolean answer.
+- Compare this with edit distance and subsequence matching.
+
+## Common Pitfalls
+
+- Deleting uppercase letters even though the rules forbid it.
+- Using greedy capitalization instead of prefix DP.
+- Forgetting that lowercase letters can either match or disappear.

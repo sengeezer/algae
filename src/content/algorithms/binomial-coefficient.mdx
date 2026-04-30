@@ -1,0 +1,100 @@
+---
+title: Binomial Coefficient
+slug: binomial-coefficient
+category: Mathematics
+summary: Compute `n choose k` by accumulating a multiplicative product instead of expanding full factorials.
+description: Binomial Coefficient is the combinatorics interview staple for counting selections, connecting direct arithmetic formulas with Pascal-style dynamic programming.
+dataStructures:
+  - Number
+techniques:
+  - Combinatorics
+  - Multiplicative Formula
+  - Symmetry Reduction
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - n choose k
+  - combinations count
+useCases:
+  - Counting how many ways to choose `k` items from `n`
+  - Connecting direct combinatorics to Pascal Triangle
+  - Avoiding factorial overflow in combination calculations
+complexity:
+  time: O(k)
+  space: O(1)
+  notes: Use the symmetry `C(n, k) = C(n, n - k)` to minimize the number of multiplicative steps.
+interviewSignals:
+  - The prompt asks for counts of subsets, teams, or combinations.
+  - A direct factorial expression is easy to write but less stable than a reduced product.
+relatedSlugs:
+  - pascal-triangle
+  - catalan-numbers
+  - binary-exponentiation
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/BinomialCoefficient.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/BinomialCoefficient.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Binomial coefficient is the shortest route from combinatorics theory into interview code. It often appears as a counting subroutine, and a good solution avoids full factorials when the numbers get large.
+
+## Worked Example
+
+`C(5, 2)` counts how many 2-element groups can be chosen from 5 items. Using the multiplicative view, the answer becomes `(5 * 4) / (2 * 1) = 10`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function binomialCoefficient(n, k) {
+  if (k < 0 || k > n) {
+    return 0;
+  }
+
+  let choose = Math.min(k, n - k);
+  let result = 1;
+
+  for (let step = 1; step <= choose; step += 1) {
+    result = (result * (n - choose + step)) / step;
+  }
+
+  return result;
+}
+```
+
+```ts
+export function binomialCoefficient(n: number, k: number): number {
+  if (k < 0 || k > n) {
+    return 0;
+  }
+
+  const choose = Math.min(k, n - k);
+  let result = 1;
+
+  for (let step = 1; step <= choose; step += 1) {
+    result = (result * (n - choose + step)) / step;
+  }
+
+  return result;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Rebuild the same values with Pascal Triangle DP.
+- Explain how to compute the value modulo a prime.
+- Compare numerical stability between factorial and multiplicative forms.
+
+## Common Pitfalls
+
+- Computing full factorials and overflowing earlier than necessary.
+- Forgetting the symmetry reduction with `min(k, n - k)`.
+- Ignoring invalid cases where `k < 0` or `k > n`.
