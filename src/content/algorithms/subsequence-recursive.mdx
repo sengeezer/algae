@@ -1,0 +1,110 @@
+---
+title: Subsequence Recursive
+slug: subsequence-recursive
+category: Recursion
+summary: Generate every non-empty subsequence by deciding for each character whether to take it or skip it while preserving original order.
+description: Subsequence Recursive is the take-or-skip recursion pattern for enumerating subsequences of a string without ever reordering the chosen characters.
+dataStructures:
+  - String
+  - Array
+  - Recursion Stack
+techniques:
+  - Recursion
+  - Backtracking
+  - Lexicographic Enumeration
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - generate subsequences
+  - recursive subsequence enumeration
+useCases:
+  - Listing all subsequences of a string
+  - Teaching include-or-exclude branching on recursive state
+  - Contrasting subsequences with permutations and substrings
+complexity:
+  time: O(2^n * n)
+  space: O(n)
+  notes: The recursion tree has two choices per character, and materializing or sorting the output adds extra work proportional to answer size.
+interviewSignals:
+  - Characters must remain in original left-to-right order.
+  - The task asks for all subsequences rather than only the longest or a count.
+relatedSlugs:
+  - longest-common-subsequence
+  - generate-permutations
+  - letter-combination
+provenance:
+  - title: TheAlgorithms/JavaScript - Recursive/SubsequenceRecursive.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Recursive/SubsequenceRecursive.js
+    kind: Implementation
+  - title: free-programming-books - Algorithmic Thinking
+    href: https://labuladong.gitbook.io/algo-en
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This pattern is the string version of subset generation. Each character offers a binary decision, but unlike permutations, every accepted path must preserve the original order of the string.
+
+## Worked Example
+
+For `"abc"`, the non-empty subsequences are `a`, `ab`, `abc`, `ac`, `b`, `bc`, and `c`. The empty string is usually excluded unless the prompt explicitly asks for it.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function subsequenceRecursive(text) {
+  const results = new Set();
+
+  function dfs(index, path) {
+    if (index === text.length) {
+      if (path.length > 0) {
+        results.add(path);
+      }
+      return;
+    }
+
+    dfs(index + 1, path + text[index]);
+    dfs(index + 1, path);
+  }
+
+  dfs(0, '');
+  return [...results].sort();
+}
+```
+
+```ts
+export function subsequenceRecursive(text: string): string[] {
+  const results = new Set<string>();
+
+  function dfs(index: number, path: string): void {
+    if (index === text.length) {
+      if (path.length > 0) {
+        results.add(path);
+      }
+      return;
+    }
+
+    dfs(index + 1, path + text[index]);
+    dfs(index + 1, path);
+  }
+
+  dfs(0, '');
+  return [...results].sort();
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the count only instead of materializing every subsequence.
+- Avoid the final sort while still generating lexicographic order.
+- Compare this branching pattern with longest common subsequence DP.
+
+## Common Pitfalls
+
+- Reordering characters and accidentally generating permutations instead.
+- Including the empty string when the prompt says non-empty subsequences only.
+- Emitting duplicates for repeated characters without deduplication.

@@ -1,0 +1,172 @@
+---
+title: Modular Arithmetic
+slug: modular-arithmetic
+category: Mathematics
+summary: Normalize values inside a modulus ring and implement addition, subtraction, multiplication, and division through modular inverses.
+description: Modular Arithmetic is the residue-class toolkit for keeping values bounded under a modulus while still supporting the common interview operations correctly.
+dataStructures:
+  - Number
+techniques:
+  - Number Theory
+  - Residue Arithmetic
+  - Extended Euclidean Algorithm
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - arithmetic modulo m
+  - modular operations
+useCases:
+  - Keeping counts bounded under a large modulus
+  - Implementing modular inverses for division-like operations
+  - Reasoning about arithmetic in competitive-programming style prompts
+complexity:
+  time: O(log MOD)
+  space: O(1)
+  notes: Addition, subtraction, and multiplication are constant time, while modular division needs an inverse and therefore depends on gcd structure.
+interviewSignals:
+  - The answer must be reported modulo a fixed number.
+  - Division appears in a modular setting where ordinary `/` is not valid.
+relatedSlugs:
+  - binary-exponentiation
+  - eulers-totient
+  - prime-factors
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/ModularArithmetic.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/ModularArithmetic.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Many interview problems say “take the answer modulo `m`” and expect you to know which algebraic shortcuts still work. Addition and multiplication carry over cleanly, but division only works when the divisor has an inverse in the ring.
+
+## Worked Example
+
+Inside modulus `7`, `5 + 6 = 4` and `5 * 6 = 2`. Division is different: `3 / 5` means `3 * inverse(5)`, and since `5 * 3 = 15 = 1 mod 7`, the result is `3 * 3 = 2`.
+
+<Callout title="Division rule" tone="warning">
+  Modular division is only valid when the divisor and the modulus are coprime, because only then does the inverse exist.
+</Callout>
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function extendedGcd(a, b) {
+  let oldR = a;
+  let r = b;
+  let oldS = 1;
+  let s = 0;
+
+  while (r !== 0) {
+    const quotient = Math.floor(oldR / r);
+    [oldR, r] = [r, oldR - quotient * r];
+    [oldS, s] = [s, oldS - quotient * s];
+  }
+
+  return [oldR, oldS];
+}
+
+class ModRing {
+  constructor(modulus) {
+    if (!Number.isInteger(modulus) || modulus <= 0) {
+      throw new TypeError('Modulus must be a positive integer');
+    }
+
+    this.modulus = modulus;
+  }
+
+  normalize(value) {
+    return ((value % this.modulus) + this.modulus) % this.modulus;
+  }
+
+  add(left, right) {
+    return this.normalize(this.normalize(left) + this.normalize(right));
+  }
+
+  subtract(left, right) {
+    return this.normalize(this.normalize(left) - this.normalize(right));
+  }
+
+  multiply(left, right) {
+    return this.normalize(this.normalize(left) * this.normalize(right));
+  }
+
+  divide(left, right) {
+    const [gcd, inverse] = extendedGcd(this.normalize(right), this.modulus);
+    if (gcd !== 1) {
+      throw new Error('Divisor has no modular inverse');
+    }
+
+    return this.multiply(left, inverse);
+  }
+}
+```
+
+```ts
+function extendedGcd(a: number, b: number): [number, number] {
+  let oldR = a;
+  let r = b;
+  let oldS = 1;
+  let s = 0;
+
+  while (r !== 0) {
+    const quotient = Math.floor(oldR / r);
+    [oldR, r] = [r, oldR - quotient * r];
+    [oldS, s] = [s, oldS - quotient * s];
+  }
+
+  return [oldR, oldS];
+}
+
+export class ModRing {
+  constructor(private readonly modulus: number) {
+    if (!Number.isInteger(modulus) || modulus <= 0) {
+      throw new TypeError('Modulus must be a positive integer');
+    }
+  }
+
+  normalize(value: number): number {
+    return ((value % this.modulus) + this.modulus) % this.modulus;
+  }
+
+  add(left: number, right: number): number {
+    return this.normalize(this.normalize(left) + this.normalize(right));
+  }
+
+  subtract(left: number, right: number): number {
+    return this.normalize(this.normalize(left) - this.normalize(right));
+  }
+
+  multiply(left: number, right: number): number {
+    return this.normalize(this.normalize(left) * this.normalize(right));
+  }
+
+  divide(left: number, right: number): number {
+    const [gcd, inverse] = extendedGcd(this.normalize(right), this.modulus);
+    if (gcd !== 1) {
+      throw new Error('Divisor has no modular inverse');
+    }
+
+    return this.multiply(left, inverse);
+  }
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Replace the inverse step with fast power when the modulus is prime.
+- Precompute factorials and inverse factorials for repeated combination queries.
+- Explain why JavaScript `%` needs normalization for negative values.
+
+## Common Pitfalls
+
+- Using ordinary division instead of multiplying by an inverse.
+- Forgetting to normalize negative subtraction results.
+- Assuming every divisor has an inverse under every modulus.

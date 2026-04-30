@@ -1,0 +1,103 @@
+---
+title: Lucas Series
+slug: lucas-series
+category: Mathematics
+summary: Compute the nth Lucas number with the Fibonacci recurrence but the distinct starting values 2 and 1.
+description: Lucas Series is the close Fibonacci relative that uses the same recurrence while changing only the base cases, which makes it a good test of recurrence understanding instead of memorization.
+dataStructures:
+  - Number
+techniques:
+  - Iteration
+  - Linear Recurrence
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - lucas numbers
+  - nth lucas number
+useCases:
+  - Comparing related recurrence sequences
+  - Practicing iterative state compression on numeric sequences
+  - Checking whether a recurrence solution really depends on its seeds
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The recurrence matches Fibonacci exactly, so the entire behavior changes only because the sequence starts from `2` and `1`.
+interviewSignals:
+  - The prompt uses a Fibonacci-style recurrence with different base cases.
+  - The fastest direct solution only needs the previous two sequence values.
+relatedSlugs:
+  - fibonacci-number
+  - fast-fibonacci-number
+  - tribonacci-number
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/LucasSeries.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/LucasSeries.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Lucas numbers are useful because they force you to separate the recurrence from the initial conditions. If you only memorize Fibonacci, you usually get this wrong on the first try.
+
+## Worked Example
+
+The series starts `2, 1`. That gives `L(2) = 3`, `L(3) = 4`, and `L(4) = 7`, since every term is still the sum of the previous two.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function lucasSeries(index) {
+  if (!Number.isInteger(index) || index < 0) {
+    throw new TypeError('Index must be a non-negative integer');
+  }
+
+  let previous = 2;
+  let current = 1;
+
+  for (let step = 0; step < index; step += 1) {
+    const next = previous + current;
+    previous = current;
+    current = next;
+  }
+
+  return previous;
+}
+```
+
+```ts
+export function lucasSeries(index: number): number {
+  if (!Number.isInteger(index) || index < 0) {
+    throw new TypeError('Index must be a non-negative integer');
+  }
+
+  let previous = 2;
+  let current = 1;
+
+  for (let step = 0; step < index; step += 1) {
+    const next = previous + current;
+    previous = current;
+    current = next;
+  }
+
+  return previous;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the answer modulo a large prime.
+- Derive a matrix-exponentiation version for larger indices.
+- Compare how Lucas and Fibonacci differ despite sharing the same recurrence.
+
+## Common Pitfalls
+
+- Reusing Fibonacci base cases by mistake.
+- Returning the wrong variable after the loop because of off-by-one indexing.
+- Falling back to naive recursion and recreating the exponential call tree.

@@ -1,0 +1,113 @@
+---
+title: All Combinations of Size K
+slug: all-combinations-of-size-k
+category: Backtracking
+summary: Enumerate every size-k subset by choosing increasing values and backtracking as soon as a partial choice is complete.
+description: All Combinations of Size K is the fixed-size subset generator that turns choose-or-skip recursion into a clean combination enumerator without duplicate orderings.
+dataStructures:
+  - Array
+  - Recursion Stack
+techniques:
+  - Backtracking
+  - Combinatorics
+  - Depth-First Search
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - k combinations
+  - choose k values
+useCases:
+  - Enumerating fixed-size teams or selections
+  - Contrasting combinations with order-sensitive permutations
+  - Practicing choose-recurse-unchoose state management
+complexity:
+  time: O(C(n, k) * k)
+  space: O(k)
+  notes: Keeping the current path in increasing order prevents duplicate combinations that differ only by arrangement.
+interviewSignals:
+  - The prompt asks for size-k selections rather than all possible subset sizes.
+  - Order does not matter in the output, so each branch should only consider later candidates.
+relatedSlugs:
+  - generate-permutations
+  - permutation-and-combination
+  - sum-of-subset
+provenance:
+  - title: TheAlgorithms/JavaScript - Backtracking/AllCombinationsOfSizeK.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Backtracking/AllCombinationsOfSizeK.js
+    kind: Implementation
+  - title: free-programming-books - Algorithmic Thinking
+    href: https://labuladong.gitbook.io/algo-en
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the cleanest combination generator in the catalog. It looks similar to permutations at first, but the real constraint is that each partial answer must stay in increasing order so the same group is not emitted multiple times.
+
+## Worked Example
+
+For `n = 4` and `k = 2`, start with `1` and recurse into `[1, 2]`, `[1, 3]`, and `[1, 4]`. Then backtrack and start with `2`, producing `[2, 3]` and `[2, 4]`, and finally `[3, 4]`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function allCombinationsOfSizeK(n, k) {
+  const combinations = [];
+  const path = [];
+
+  function backtrack(start) {
+    if (path.length === k) {
+      combinations.push([...path]);
+      return;
+    }
+
+    for (let value = start; value <= n; value += 1) {
+      path.push(value);
+      backtrack(value + 1);
+      path.pop();
+    }
+  }
+
+  backtrack(1);
+  return combinations;
+}
+```
+
+```ts
+export function allCombinationsOfSizeK(n: number, k: number): number[][] {
+  const combinations: number[][] = [];
+  const path: number[] = [];
+
+  function backtrack(start: number): void {
+    if (path.length === k) {
+      combinations.push([...path]);
+      return;
+    }
+
+    for (let value = start; value <= n; value += 1) {
+      path.push(value);
+      backtrack(value + 1);
+      path.pop();
+    }
+  }
+
+  backtrack(1);
+  return combinations;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Prune branches when the remaining values cannot fill the rest of the path.
+- Generate combinations from an input array instead of the numeric range `1..n`.
+- Compare the branching pattern with permutations and subsets.
+
+## Common Pitfalls
+
+- Treating different orders of the same values as distinct answers.
+- Forgetting to pop from the current path on backtrack.
+- Reusing the same value more than once in a single combination.

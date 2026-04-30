@@ -1,0 +1,99 @@
+---
+title: Hamming Distance
+slug: hamming-distance
+category: String
+summary: Count how many positions differ between two equal-length strings by scanning them character by character.
+description: Hamming Distance is the fixed-length mismatch metric for strings or bitstrings where only substitutions matter and insertions or deletions are out of scope.
+dataStructures:
+  - String
+techniques:
+  - Pairwise Comparison
+  - String Scan
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - bit mismatch count
+  - same-length string distance
+useCases:
+  - Comparing binary strings or error-correcting code words
+  - Measuring simple same-length string similarity
+  - Distinguishing substitution-only problems from full edit distance
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: Hamming distance is defined only when both inputs have the same length unless the prompt changes the metric.
+interviewSignals:
+  - The input strings are the same length.
+  - The task asks for mismatched positions rather than insertions, deletions, or replacements.
+relatedSlugs:
+  - edit-distance
+  - kmp-string-search
+  - rabin-karp
+provenance:
+  - title: TheAlgorithms/JavaScript - String/HammingDistance.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/String/HammingDistance.js
+    kind: Implementation
+  - title: free-programming-books - Algorithmic Thinking
+    href: https://labuladong.gitbook.io/algo-en
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Hamming distance is the simplest string-difference metric, but it is only correct under a strict equal-length assumption. That makes it a useful contrast with edit distance, where insertions and deletions are allowed.
+
+## Worked Example
+
+Comparing `"karolin"` with `"kathrin"` yields mismatches at positions `3`, `4`, and `5`, so the Hamming distance is `3`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function hammingDistance(left, right) {
+  if (left.length !== right.length) {
+    throw new Error('Strings must be of the same length');
+  }
+
+  let distance = 0;
+  for (let index = 0; index < left.length; index += 1) {
+    if (left[index] !== right[index]) {
+      distance += 1;
+    }
+  }
+
+  return distance;
+}
+```
+
+```ts
+export function hammingDistance(left: string, right: string): number {
+  if (left.length !== right.length) {
+    throw new Error('Strings must be of the same length');
+  }
+
+  let distance = 0;
+  for (let index = 0; index < left.length; index += 1) {
+    if (left[index] !== right[index]) {
+      distance += 1;
+    }
+  }
+
+  return distance;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compute the distance between integers with XOR and bit counting.
+- Compare Hamming distance with edit distance on strings of different lengths.
+- Weight different positions differently instead of counting every mismatch equally.
+
+## Common Pitfalls
+
+- Applying the metric to strings with different lengths.
+- Confusing mismatched positions with the number of distinct characters.
+- Reaching for dynamic programming when a single linear scan is enough.

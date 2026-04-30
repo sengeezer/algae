@@ -1,0 +1,107 @@
+---
+title: Prime Factors
+slug: prime-factors
+category: Mathematics
+summary: Factor an integer by dividing out each small divisor completely before moving on to the next candidate.
+description: Prime Factors is the trial-division factorization reference for decomposing an integer into its prime building blocks with multiplicity.
+dataStructures:
+  - Array
+  - Number
+techniques:
+  - Prime Factorization
+  - Trial Division
+  - Number Theory
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - prime decomposition
+  - factorization by trial division
+useCases:
+  - Breaking numbers into prime components
+  - Supporting divisor-count and totient follow-up formulas
+  - Simplifying arithmetic reasoning about gcd and lcm
+complexity:
+  time: O(sqrt(n))
+  space: O(1)
+  notes: Dividing a factor out repeatedly shrinks the remaining value fast and preserves multiplicity in the output.
+interviewSignals:
+  - The task asks for the actual prime decomposition rather than only a primality check.
+  - Repeated factors such as `2 * 2 * 3` need to appear with their full multiplicity.
+relatedSlugs:
+  - linear-sieve
+  - eulers-totient
+  - sieve-of-eratosthenes
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/PrimeFactors.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/PrimeFactors.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Prime factorization is one of the most reusable reductions in number theory. Once a value is broken into primes, divisor counts, totients, and many gcd-style arguments become direct formulas.
+
+## Worked Example
+
+For `84`, divide by `2` twice to get `21`, then divide by `3` once to get `7`. The prime factorization is `[2, 2, 3, 7]`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function primeFactors(value) {
+  const factors = [];
+  let remaining = value;
+
+  for (let divisor = 2; divisor * divisor <= remaining; divisor += 1) {
+    while (remaining % divisor === 0) {
+      factors.push(divisor);
+      remaining = Math.floor(remaining / divisor);
+    }
+  }
+
+  if (remaining > 1) {
+    factors.push(remaining);
+  }
+
+  return factors;
+}
+```
+
+```ts
+export function primeFactors(value: number): number[] {
+  const factors: number[] = [];
+  let remaining = value;
+
+  for (let divisor = 2; divisor * divisor <= remaining; divisor += 1) {
+    while (remaining % divisor === 0) {
+      factors.push(divisor);
+      remaining = Math.floor(remaining / divisor);
+    }
+  }
+
+  if (remaining > 1) {
+    factors.push(remaining);
+  }
+
+  return factors;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return compressed pairs of `(prime, exponent)` instead of a flat list.
+- Use a smallest-prime-factor sieve to answer many factorizations quickly.
+- Explain how the factorization feeds directly into Euler's totient formula.
+
+## Common Pitfalls
+
+- Dividing by a factor only once and losing repeated multiplicity.
+- Forgetting to append the final leftover prime factor.
+- Continuing to loop against the original `n` instead of the shrinking remainder.

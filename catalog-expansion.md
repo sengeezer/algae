@@ -163,9 +163,20 @@ This twelfth expansion slice lifts the catalog from 104 to 110 entries.
 - Partition
 - Permutation and Combination
 
+## Batch 13 added
+
+This thirteenth expansion slice lifts the catalog from 110 to 116 entries.
+
+- All Combinations of Size K
+- Lucas Series
+- Modular Arithmetic
+- Prime Factors
+- Subsequence Recursive
+- Hamming Distance
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 12 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 13 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -174,7 +185,7 @@ All expansion entries from batch 1 through batch 12 now carry explicit per-entry
 ## Why this batch
 
 - It fills obvious interview-core gaps from TheAlgorithms/JavaScript without duplicating material already present in Algae.
-- It broadens the current catalog across dynamic programming, backtracking, graph traversal, and array-invariant problems instead of overloading a single category.
+- It broadens the current catalog across backtracking, number theory, recursive enumeration, and string-comparison problems instead of overloading a single category.
 - It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially standard DP, graph, and search/backtracking topics.
 
 ## Supporting study references from the algorithms list
@@ -188,9 +199,9 @@ All expansion entries from batch 1 through batch 12 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- All Combinations of Size K
-- Lucas Series
-- Modular Arithmetic
-- Prime Factors
-- Subsequence Recursive
-- Hamming Distance
+- Binary Count Set Bits
+- Generate Subsets
+- Extended Euclidean GCD
+- Co Prime Check
+- Dice Coefficient
+- Zeller's Congruence Algorithm
