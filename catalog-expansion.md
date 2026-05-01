@@ -570,9 +570,18 @@ This forty-ninth expansion slice lifts the catalog from 326 to 332 entries.
 - Problem 021
 - Problem 023
 
+## Batch 50 added
+
+This fiftieth expansion slice lifts the catalog from 332 to 336 entries.
+
+- Problem 025
+- Problem 028
+- Problem 035
+- Problem 044
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 49 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 50 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -581,9 +590,9 @@ All expansion entries from batch 1 through batch 49 now carry explicit per-entry
 ## Why this batch
 
 - It fills obvious interview-core gaps from TheAlgorithms/JavaScript without duplicating material already present in Algae.
-- It follows the next verified queue directly, continuing the Project Euler track with number-word counting, bottom-up triangle dynamic programming, month-by-month calendar traversal, factorial digit arithmetic, divisor-sum pair detection, and abundant-number coverage.
-- It broadens the catalog across string-free numeric formatting, calendar math, carry-based big-integer simulation, and reusable divisor-sum helpers instead of staying inside the previous grid-and-lattice slice.
-- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially compact challenge-style routines that still reward careful recurrence choices, date invariants, and replacing repeated brute force with cached arithmetic structure.
+- It finishes the remaining upstream Project Euler tail directly, covering digit-threshold Fibonacci indexing, spiral diagonal sums, circular-prime rotation checks, and pentagonal-number pair search.
+- It broadens the catalog across BigInt recurrence stepping, layer-based closed-form accumulation, sieve-backed digit rotation filtering, and quadratic-form membership tests instead of staying inside the previous divisor-and-calendar slice.
+- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially compact challenge-style routines that still reward exact arithmetic, pattern derivation, and replacing naive search with reusable numeric tests.
 
 ## Supporting study references from the algorithms list
 
@@ -593,7 +602,4 @@ All expansion entries from batch 1 through batch 49 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- Problem 025
-- Problem 028
-- Problem 035
-- Problem 044
+- No remaining exact absent upstream Project-Euler entries remain in the current TheAlgorithms/JavaScript `DIRECTORY.md` listing.

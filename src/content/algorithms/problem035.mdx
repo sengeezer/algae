@@ -1,0 +1,180 @@
+---
+title: Problem 035
+slug: problem035
+category: Project Euler
+summary: Count the circular primes below a limit by rotating digits and checking every rotation for primality.
+description: Problem 035 is the circular-prime problem that combines sieve preprocessing with digit-rotation pruning.
+dataStructures:
+  - Set
+  - Array
+  - String
+techniques:
+  - Prime Sieve
+  - Digit Rotation
+  - Search Pruning
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - circular primes
+  - project euler 35
+useCases:
+  - Reusing a sieve for many follow-up primality checks
+  - Filtering candidates early based on forbidden digits
+  - Generating cyclic rotations of fixed-width numeric strings
+complexity:
+  time: O(n log log n + p d)
+  space: O(n)
+  notes: The sieve handles primality preprocessing, and digit filtering discards many impossible circular-prime candidates before rotation checks.
+interviewSignals:
+  - The prompt asks about primality across every rotation of a number's digits.
+  - The intended solution precomputes primes and prunes candidates containing even digits or `5`.
+relatedSlugs:
+  - prime-check
+  - sieve-of-eratosthenes
+  - linear-sieve
+provenance:
+  - title: TheAlgorithms/JavaScript - Project-Euler/Problem035.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Project-Euler/Problem035.js
+    kind: Implementation
+  - title: Project Euler - Problem 35
+    href: https://projecteuler.net/problem=35
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a prime-generation problem with a string-rotation layer on top. The useful optimization is that any multi-digit candidate containing `0`, `2`, `4`, `5`, `6`, or `8` can be rejected immediately.
+
+## Worked Example
+
+`197` is circular prime because rotations `197`, `971`, and `719` are all prime. A sieve plus a prime set makes each rotation check cheap.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function sieve(limit) {
+  const isPrime = new Array(limit).fill(true);
+  isPrime[0] = false;
+  isPrime[1] = false;
+
+  for (let value = 2; value * value < limit; value += 1) {
+    if (!isPrime[value]) {
+      continue;
+    }
+
+    for (let multiple = value * value; multiple < limit; multiple += value) {
+      isPrime[multiple] = false;
+    }
+  }
+
+  return isPrime;
+}
+
+function rotations(text) {
+  const result = [];
+  for (let index = 0; index < text.length; index += 1) {
+    result.push(text.slice(index) + text.slice(0, index));
+  }
+  return result;
+}
+
+function problem035(limit = 1000000) {
+  if (!Number.isInteger(limit) || limit < 2) {
+    throw new RangeError('Limit must be an integer at least 2');
+  }
+
+  const isPrime = sieve(limit);
+  const primeSet = new Set();
+  for (let value = 2; value < limit; value += 1) {
+    if (isPrime[value]) {
+      primeSet.add(value);
+    }
+  }
+
+  let total = 0;
+  for (const prime of primeSet) {
+    const text = String(prime);
+    if (text.length > 1 && /[024568]/.test(text)) {
+      continue;
+    }
+
+    if (rotations(text).every((rotation) => primeSet.has(Number(rotation)))) {
+      total += 1;
+    }
+  }
+
+  return total;
+}
+```
+
+```ts
+function sieve(limit: number): boolean[] {
+  const isPrime = new Array<boolean>(limit).fill(true);
+  isPrime[0] = false;
+  isPrime[1] = false;
+
+  for (let value = 2; value * value < limit; value += 1) {
+    if (!isPrime[value]) {
+      continue;
+    }
+
+    for (let multiple = value * value; multiple < limit; multiple += value) {
+      isPrime[multiple] = false;
+    }
+  }
+
+  return isPrime;
+}
+
+function rotations(text: string): string[] {
+  const result: string[] = [];
+  for (let index = 0; index < text.length; index += 1) {
+    result.push(text.slice(index) + text.slice(0, index));
+  }
+  return result;
+}
+
+export function problem035(limit = 1000000): number {
+  if (!Number.isInteger(limit) || limit < 2) {
+    throw new RangeError('Limit must be an integer at least 2');
+  }
+
+  const isPrime = sieve(limit);
+  const primeSet = new Set<number>();
+  for (let value = 2; value < limit; value += 1) {
+    if (isPrime[value]) {
+      primeSet.add(value);
+    }
+  }
+
+  let total = 0;
+  for (const prime of primeSet) {
+    const text = String(prime);
+    if (text.length > 1 && /[024568]/.test(text)) {
+      continue;
+    }
+
+    if (rotations(text).every((rotation) => primeSet.has(Number(rotation)))) {
+      total += 1;
+    }
+  }
+
+  return total;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the circular primes themselves rather than only their count.
+- Cache validated rotation cycles so equivalent rotations are not checked repeatedly.
+- Explain why `2` and `5` remain valid even though the general digit-pruning rule would reject their digits.
+
+## Common Pitfalls
+
+- Checking each rotation with trial division instead of using a precomputed prime set.
+- Forgetting that any multi-digit number containing an even digit or `5` cannot be circular prime.
+- Treating leading-zero rotations as valid new numbers instead of failing the primality test implicitly.

@@ -1,0 +1,126 @@
+---
+title: Problem 044
+slug: problem044
+category: Project Euler
+summary: Find the smallest pentagonal difference `D` such that both the sum and difference of a pentagonal pair are pentagonal.
+description: Problem 044 is the pentagonal-pair search that mixes generated figurate numbers with a closed-form pentagonal membership test.
+dataStructures:
+  - Number
+techniques:
+  - Figurate Numbers
+  - Nested Search
+  - Quadratic Membership Test
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - pentagon numbers
+  - project euler 44
+useCases:
+  - Searching generated number sequences for structured pair relationships
+  - Reusing closed-form inverse tests instead of storing huge lookup tables
+  - Applying quadratic discriminants to sequence membership checks
+complexity:
+  time: O(k^2)
+  space: O(1)
+  notes: The search grows by new outer pentagonal numbers, and each candidate pair is checked with an exact inverse-formula test.
+interviewSignals:
+  - The prompt defines a figurate sequence and asks for a pair whose sum and difference stay in the same sequence.
+  - The intended solution uses the inverse pentagonal formula to test membership quickly.
+relatedSlugs:
+  - quadratic-roots
+  - perfect-square
+  - problem028
+provenance:
+  - title: TheAlgorithms/JavaScript - Project-Euler/Problem044.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Project-Euler/Problem044.js
+    kind: Implementation
+  - title: Project Euler - Problem 44
+    href: https://projecteuler.net/problem=44
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a generated-sequence search with a sharp helper test. The key is to avoid storing every pentagonal number indefinitely by checking pentagonality through the inverse formula.
+
+## Worked Example
+
+The `n`th pentagonal number is `P(n) = n(3n - 1) / 2`. A candidate difference `D = P(k) - P(j)` is valid only when both `P(k) - P(j)` and `P(k) + P(j)` are pentagonal.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function pentagonal(index) {
+  return (index * (3 * index - 1)) / 2;
+}
+
+function isPentagonal(value) {
+  const candidate = (Math.sqrt(24 * value + 1) + 1) / 6;
+  return Number.isInteger(candidate);
+}
+
+function problem044(startIndex = 1) {
+  if (!Number.isInteger(startIndex) || startIndex < 1) {
+    throw new RangeError('Start index must be a positive integer');
+  }
+
+  for (let k = startIndex + 1; ; k += 1) {
+    const pk = pentagonal(k);
+
+    for (let j = k - 1; j >= 1; j -= 1) {
+      const pj = pentagonal(j);
+      const difference = pk - pj;
+
+      if (isPentagonal(difference) && isPentagonal(pk + pj)) {
+        return difference;
+      }
+    }
+  }
+}
+```
+
+```ts
+function pentagonal(index: number): number {
+  return (index * (3 * index - 1)) / 2;
+}
+
+function isPentagonal(value: number): boolean {
+  const candidate = (Math.sqrt(24 * value + 1) + 1) / 6;
+  return Number.isInteger(candidate);
+}
+
+export function problem044(startIndex = 1): number {
+  if (!Number.isInteger(startIndex) || startIndex < 1) {
+    throw new RangeError('Start index must be a positive integer');
+  }
+
+  for (let k = startIndex + 1; ; k += 1) {
+    const pk = pentagonal(k);
+
+    for (let j = k - 1; j >= 1; j -= 1) {
+      const pj = pentagonal(j);
+      const difference = pk - pj;
+
+      if (isPentagonal(difference) && isPentagonal(pk + pj)) {
+        return difference;
+      }
+    }
+  }
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Store generated pentagonal numbers in a set and compare performance with the inverse-formula approach.
+- Return the pair `(Pj, Pk)` together with the minimized difference.
+- Generalize the approach to other figurate sequences with invertible formulas.
+
+## Common Pitfalls
+
+- Treating approximate floating-point roots as exact without an integer check.
+- Searching sums and differences by scanning a list linearly instead of using a closed-form membership test.
+- Forgetting that the search should minimize the difference, not the pentagonal values themselves.

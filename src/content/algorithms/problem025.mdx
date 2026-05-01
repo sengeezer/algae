@@ -1,0 +1,107 @@
+---
+title: Problem 025
+slug: problem025
+category: Project Euler
+summary: Find the index of the first Fibonacci term that reaches a target number of decimal digits.
+description: Problem 025 is the digit-threshold Fibonacci problem that advances the recurrence until the current term crosses a power-of-ten boundary.
+dataStructures:
+  - BigInt
+  - Number
+techniques:
+  - Fibonacci Recurrence
+  - BigInt Arithmetic
+  - Threshold Search
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - 1000 digit fibonacci number
+  - project euler 25
+useCases:
+  - Finding when a recurrence first crosses a magnitude threshold
+  - Comparing BigInt threshold checks with repeated string conversion
+  - Reusing iterative Fibonacci stepping in exact-arithmetic tasks
+complexity:
+  time: O(index * digits)
+  space: O(digits)
+  notes: Each loop performs one BigInt addition, and the threshold comparison avoids converting every term to a decimal string.
+interviewSignals:
+  - The prompt asks for the index of the first Fibonacci term with a given number of digits.
+  - The intended solution iterates the recurrence and compares against `10^(digits-1)`.
+relatedSlugs:
+  - fast-fibonacci-number
+  - fibonacci-number
+  - number-of-digits
+provenance:
+  - title: TheAlgorithms/JavaScript - Project-Euler/Problem025.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Project-Euler/Problem025.js
+    kind: Implementation
+  - title: Project Euler - Problem 25
+    href: https://projecteuler.net/problem=25
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a threshold problem over a recurrence. The useful trick is that you do not need to count digits on every step with `toString`; you can stop once the Fibonacci term is at least `10^(targetDigits - 1)`.
+
+## Worked Example
+
+`F12 = 144`, so index `12` is the first Fibonacci term with `3` digits. The same logic scales by advancing the sequence until the current term reaches the smallest number with the desired width.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function problem025(targetDigits = 1000) {
+  if (!Number.isInteger(targetDigits) || targetDigits < 1) {
+    throw new RangeError('Target digits must be a positive integer');
+  }
+
+  const threshold = 10n ** BigInt(targetDigits - 1);
+  let previous = 0n;
+  let current = 1n;
+  let index = 1;
+
+  while (current < threshold) {
+    [previous, current] = [current, previous + current];
+    index += 1;
+  }
+
+  return index;
+}
+```
+
+```ts
+export function problem025(targetDigits = 1000): number {
+  if (!Number.isInteger(targetDigits) || targetDigits < 1) {
+    throw new RangeError('Target digits must be a positive integer');
+  }
+
+  const threshold = 10n ** BigInt(targetDigits - 1);
+  let previous = 0n;
+  let current = 1n;
+  let index = 1;
+
+  while (current < threshold) {
+    [previous, current] = [current, previous + current];
+    index += 1;
+  }
+
+  return index;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the Fibonacci value itself in addition to the index.
+- Compare this iterative BigInt approach with estimating the index using logarithms and Binet-style approximations.
+- Explain why comparing against a power of ten is faster than converting every term to a string.
+
+## Common Pitfalls
+
+- Counting digits by string conversion on every iteration when a threshold comparison is enough.
+- Using `Number` instead of `BigInt` and losing exactness for large terms.
+- Misaligning Fibonacci indexing when the sequence starts at `F1 = 1`, `F2 = 1`.

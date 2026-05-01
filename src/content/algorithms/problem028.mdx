@@ -1,0 +1,106 @@
+---
+title: Problem 028
+slug: problem028
+category: Project Euler
+summary: Sum the diagonal values in an odd-sized clockwise number spiral by adding one ring at a time.
+description: Problem 028 is the spiral-diagonal-sum problem that reduces each square ring to a closed-form corner contribution.
+dataStructures:
+  - Number
+techniques:
+  - Pattern Derivation
+  - Closed-Form Summation
+  - Layer Accumulation
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - number spiral diagonals
+  - project euler 28
+useCases:
+  - Deriving formulas from repeated geometric patterns
+  - Replacing explicit matrix construction with ring-based arithmetic
+  - Practicing square and corner-sequence reasoning
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The sum is accumulated one odd-dimension ring at a time without building the spiral itself.
+interviewSignals:
+  - The prompt describes a spiral visually but only asks for the diagonal sum.
+  - The intended solution exploits the corner pattern of each outer ring.
+relatedSlugs:
+  - prefix-sum
+  - problem011
+  - problem015
+provenance:
+  - title: TheAlgorithms/JavaScript - Project-Euler/Problem028.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Project-Euler/Problem028.js
+    kind: Implementation
+  - title: Project Euler - Problem 28
+    href: https://projecteuler.net/problem=28
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a pattern-recognition problem disguised as grid construction. The diagonals are determined entirely by the corners of each odd-sized square ring.
+
+## Worked Example
+
+For a `5 x 5` spiral, the diagonal sum is `101`. The outer `5 x 5` ring adds corners `25`, `21`, `17`, and `13`, and each larger odd ring follows the same spacing pattern.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function problem028(dimension = 1001) {
+  if (!Number.isInteger(dimension) || dimension < 1) {
+    throw new RangeError('Dimension must be a positive integer');
+  }
+
+  if (dimension % 2 === 0) {
+    throw new RangeError('Dimension must be odd');
+  }
+
+  let total = 1;
+
+  for (let side = 3; side <= dimension; side += 2) {
+    total += 4 * side * side - 6 * (side - 1);
+  }
+
+  return total;
+}
+```
+
+```ts
+export function problem028(dimension = 1001): number {
+  if (!Number.isInteger(dimension) || dimension < 1) {
+    throw new RangeError('Dimension must be a positive integer');
+  }
+
+  if (dimension % 2 === 0) {
+    throw new RangeError('Dimension must be odd');
+  }
+
+  let total = 1;
+
+  for (let side = 3; side <= dimension; side += 2) {
+    total += 4 * side * side - 6 * (side - 1);
+  }
+
+  return total;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Derive the same result as a single closed-form polynomial in the number of layers.
+- Return the four corner values for each ring along with the cumulative sum.
+- Explain why even dimensions do not produce the same symmetric center-based spiral setup.
+
+## Common Pitfalls
+
+- Building the full spiral matrix when only the ring corners matter.
+- Forgetting that the problem is defined for odd dimensions centered on `1`.
+- Double-counting the center value when summing layers.
