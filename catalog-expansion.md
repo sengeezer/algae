@@ -482,9 +482,20 @@ This forty-first expansion slice lifts the catalog from 278 to 284 entries.
 - Is Square Free
 - Juggler Sequence
 
+## Batch 42 added
+
+This forty-second expansion slice lifts the catalog from 284 to 290 entries.
+
+- Leap Year
+- Liouville Function
+- Mandelbrot
+- Matrix Exponentiation Recursive
+- Mean Absolute Deviation
+- Mean Square Error
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 41 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 42 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -493,9 +504,9 @@ All expansion entries from batch 1 through batch 41 now carry explicit per-entry
 ## Why this batch
 
 - It fills obvious interview-core gaps from TheAlgorithms/JavaScript without duplicating material already present in Algae.
-- It follows the next verified math queue directly, adding parity predicates, an integer palindrome check, pronic and square-free classifiers, and the juggler recurrence.
-- It broadens the catalog across arithmetic classification and sequence generation instead of staying inside the previous divisor-and-coordinate helper slice.
-- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially compact predicate-style helpers that still require careful integer validation and boundary handling.
+- It follows the next verified math queue directly, adding leap-year classification, prime-factor parity, fractal rendering, recursive matrix powering, and two statistical error metrics.
+- It broadens the catalog across calendar logic, analytical helpers, and linear-algebra acceleration instead of staying inside the previous arithmetic-classification slice.
+- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially mathematical utilities that still reward careful validation, recurrence handling, and exact numeric reasoning.
 
 ## Supporting study references from the algorithms list
 
@@ -505,9 +516,9 @@ All expansion entries from batch 1 through batch 41 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- Leap Year
-- Linear Sieve
-- Liouville Function
-- Lucas Series
-- Mandelbrot
-- Matrix Exponentiation Recursive
+- Midpoint Integration
+- Mobius Function
+- Modular Binary Exponentiation Recursive
+- Parity Outlier
+- Perfect Cube
+- Perfect Number

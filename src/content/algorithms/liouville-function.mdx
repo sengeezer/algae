@@ -1,0 +1,114 @@
+---
+title: Liouville Function
+slug: liouville-function
+category: Mathematics
+summary: Return `1` or `-1` depending on whether a positive integer has an even or odd number of prime factors counted with multiplicity.
+description: Liouville Function is the factor-parity helper that maps a positive integer to $(-1)^{\Omega(n)}$.
+dataStructures:
+  - Number
+techniques:
+  - Prime Factor Counting
+  - Number Theory
+  - Parity Classification
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - liouville lambda
+  - prime-factor parity function
+useCases:
+  - Classifying integers by the parity of their prime-factor multiplicity
+  - Supporting analytic number-theory exercises
+  - Reusing prime factorization logic in compact arithmetic functions
+complexity:
+  time: O(sqrt(n))
+  space: O(1)
+  notes: A trial-division factor count only needs to scan up to the square root of the remaining value.
+interviewSignals:
+  - The prompt asks for $\lambda(n)$ or about the parity of prime factors with multiplicity.
+  - The expected solution counts repeated prime factors instead of only distinct ones.
+relatedSlugs:
+  - prime-factors
+  - is-square-free
+  - mobius-function
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/LiouvilleFunction.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/LiouvilleFunction.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+The Liouville function is a compact arithmetic helper that tests whether you count prime factors with multiplicity rather than only distinct factors.
+
+## Worked Example
+
+`12 = 2 * 2 * 3`, so it has `3` prime factors counted with multiplicity and $\lambda(12) = -1$. `36 = 2 * 2 * 3 * 3` has `4` such factors, so $\lambda(36) = 1$.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function liouvilleFunction(value) {
+  if (!Number.isInteger(value) || value <= 0) {
+    throw new RangeError('Value must be a positive integer');
+  }
+
+  let remaining = value;
+  let factorCount = 0;
+
+  for (let divisor = 2; divisor * divisor <= remaining; divisor += 1) {
+    while (remaining % divisor === 0) {
+      factorCount += 1;
+      remaining /= divisor;
+    }
+  }
+
+  if (remaining > 1) {
+    factorCount += 1;
+  }
+
+  return factorCount % 2 === 0 ? 1 : -1;
+}
+```
+
+```ts
+export function liouvilleFunction(value: number): 1 | -1 {
+  if (!Number.isInteger(value) || value <= 0) {
+    throw new RangeError('Value must be a positive integer');
+  }
+
+  let remaining = value;
+  let factorCount = 0;
+
+  for (let divisor = 2; divisor * divisor <= remaining; divisor += 1) {
+    while (remaining % divisor === 0) {
+      factorCount += 1;
+      remaining /= divisor;
+    }
+  }
+
+  if (remaining > 1) {
+    factorCount += 1;
+  }
+
+  return factorCount % 2 === 0 ? 1 : -1;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare the Liouville and Möbius functions on square-free inputs.
+- Reuse a prime-factor sieve to answer this function for many values efficiently.
+- Explain why multiplicity matters for `12` and `36`.
+
+## Common Pitfalls
+
+- Counting only distinct prime factors.
+- Accepting zero or negative inputs without defining the function there.
+- Factoring naively all the way to `n` instead of stopping near the square root.

@@ -1,0 +1,99 @@
+---
+title: Mean Absolute Deviation
+slug: mean-absolute-deviation
+category: Mathematics
+summary: Measure average spread around the mean by averaging the absolute deviations from that mean.
+description: Mean Absolute Deviation is the dispersion metric that summarizes how far values sit from their arithmetic mean on average.
+dataStructures:
+  - Array
+  - Number
+techniques:
+  - Statistical Aggregation
+  - Absolute Difference
+  - Mean Calculation
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - MAD
+  - average absolute deviation
+useCases:
+  - Summarizing dataset spread in a robust, easy-to-explain way
+  - Comparing central tendency and dispersion in one pass over data
+  - Teaching how absolute deviations differ from squared deviations
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: One pass computes the mean, and another pass accumulates the absolute deviations.
+interviewSignals:
+  - The prompt asks for average distance from the mean rather than variance or standard deviation.
+  - The expected solution computes the mean first and then aggregates absolute differences.
+relatedSlugs:
+  - average-mean
+  - mean-square-error
+  - average-median
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/MeanAbsoluteDeviation.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/MeanAbsoluteDeviation.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Mean absolute deviation is a small statistics helper that tests whether you separate the center computation from the spread computation and whether you choose absolute differences rather than squared ones.
+
+## Worked Example
+
+For `[2, 34, 5, 0, -2]`, the mean is `7.8`. The absolute deviations from the mean average to `10.48`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function meanAbsoluteDeviation(values) {
+  if (!Array.isArray(values) || values.length === 0) {
+    throw new TypeError('Expected a non-empty array');
+  }
+
+  if (!values.every((value) => typeof value === 'number' && Number.isFinite(value))) {
+    throw new TypeError('Array must contain only finite numbers');
+  }
+
+  const mean = values.reduce((total, value) => total + value, 0) / values.length;
+  const absoluteSum = values.reduce((total, value) => total + Math.abs(value - mean), 0);
+  return absoluteSum / values.length;
+}
+```
+
+```ts
+export function meanAbsoluteDeviation(values: number[]): number {
+  if (!Array.isArray(values) || values.length === 0) {
+    throw new TypeError('Expected a non-empty array');
+  }
+
+  if (!values.every((value) => Number.isFinite(value))) {
+    throw new TypeError('Array must contain only finite numbers');
+  }
+
+  const mean = values.reduce((total, value) => total + value, 0) / values.length;
+  const absoluteSum = values.reduce((total, value) => total + Math.abs(value - mean), 0);
+  return absoluteSum / values.length;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare mean absolute deviation with variance and standard deviation.
+- Return both the mean and the mean absolute deviation together.
+- Explain why absolute deviations are sometimes easier to interpret than squared deviations.
+
+## Common Pitfalls
+
+- Forgetting to compute the mean before the deviations.
+- Using squared differences instead of absolute differences.
+- Allowing empty arrays and dividing by zero.

@@ -1,0 +1,86 @@
+---
+title: Leap Year
+slug: leap-year
+category: Mathematics
+summary: Determine whether a calendar year has an extra day by applying the century and divisible-by-four rules in the correct order.
+description: Leap Year is the calendar-classification helper that decides whether February has 29 days in a given year.
+dataStructures:
+  - Number
+techniques:
+  - Divisibility Rules
+  - Case Analysis
+  - Constant-Time Classification
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - is leap year
+  - calendar leap-year check
+useCases:
+  - Validating dates and month lengths
+  - Teaching how overlapping divisibility rules interact
+  - Supporting day-count or calendar algorithms
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The leap-year decision comes from a constant number of divisibility checks.
+interviewSignals:
+  - The prompt mentions February, 366-day years, or century exceptions.
+  - The expected solution handles the `400`, `100`, and `4` rules in the correct precedence order.
+relatedSlugs:
+  - get-month-days
+  - parse-date
+  - zellers-congruence-algorithm
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/LeapYear.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/LeapYear.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Leap-year checks are small, but they reliably expose whether you remember the century exception instead of stopping at divisibility by `4`.
+
+## Worked Example
+
+`2024` is a leap year because it is divisible by `4` and not by `100`. `1900` is not a leap year because century years must also be divisible by `400`. `2000` is a leap year because it passes that `400` rule.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function isLeapYear(year) {
+  if (!Number.isInteger(year)) {
+    throw new TypeError('Year must be an integer');
+  }
+
+  return year % 400 === 0 || (year % 100 !== 0 && year % 4 === 0);
+}
+```
+
+```ts
+export function isLeapYear(year: number): boolean {
+  if (!Number.isInteger(year)) {
+    throw new TypeError('Year must be an integer');
+  }
+
+  return year % 400 === 0 || (year % 100 !== 0 && year % 4 === 0);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Use this helper inside date parsing or day-of-week calculations.
+- Explain why the Gregorian rules need both the `100` and `400` exceptions.
+- Compare this direct rule set with a lookup-table approach for a bounded year range.
+
+## Common Pitfalls
+
+- Treating every year divisible by `4` as a leap year.
+- Forgetting that `2000` is a leap year even though `1900` is not.
+- Accepting non-integer year inputs without defining the behavior.

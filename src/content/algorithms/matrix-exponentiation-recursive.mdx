@@ -1,0 +1,171 @@
+---
+title: Matrix Exponentiation Recursive
+slug: matrix-exponentiation-recursive
+category: Mathematics
+summary: Raise a square matrix to a non-negative power with recursive exponentiation by squaring.
+description: Matrix Exponentiation Recursive is the divide-and-conquer power routine that combines identity matrices, matrix multiplication, and exponentiation by squaring.
+dataStructures:
+  - Matrix
+  - Number
+techniques:
+  - Matrix Exponentiation
+  - Exponentiation by Squaring
+  - Recursion
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - recursive matrix power
+  - matrix power by squaring
+useCases:
+  - Speeding up linear recurrences and transition-matrix problems
+  - Teaching how exponentiation by squaring extends beyond scalars
+  - Building fast repeated state transitions on square matrices
+complexity:
+  time: O(n^3 log p)
+  space: O(n^2 log p)
+  notes: Each recursion level performs one or two square-matrix multiplications, and each multiplication costs cubic time in the matrix dimension.
+interviewSignals:
+  - The prompt asks for repeated application of the same square matrix.
+  - The expected solution avoids multiplying the matrix by itself `p` times linearly.
+relatedSlugs:
+  - matrix-multiplication
+  - binary-exponentiation
+  - fibonacci
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/MatrixExponentiationRecursive.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/MatrixExponentiationRecursive.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the matrix version of exponentiation by squaring. It matters because many recurrence and graph-transition problems become fast once you raise a matrix in logarithmic exponent time instead of linearly.
+
+## Worked Example
+
+Any square matrix raised to power `0` becomes the identity matrix of the same size. For power `2`, you multiply the matrix by itself once. For large exponents, repeated squaring keeps the work logarithmic in the power.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function validateSquareMatrix(matrix) {
+  if (!Array.isArray(matrix) || matrix.length === 0 || !matrix.every((row) => Array.isArray(row) && row.length === matrix.length)) {
+    throw new RangeError('Input must be a non-empty square matrix');
+  }
+}
+
+function identityMatrix(size) {
+  return Array.from({ length: size }, (_, row) =>
+    Array.from({ length: size }, (_, col) => (row === col ? 1 : 0)),
+  );
+}
+
+function multiplySquareMatrices(left, right) {
+  const size = left.length;
+  const result = Array.from({ length: size }, () => new Array(size).fill(0));
+
+  for (let row = 0; row < size; row += 1) {
+    for (let col = 0; col < size; col += 1) {
+      for (let index = 0; index < size; index += 1) {
+        result[row][col] += left[row][index] * right[index][col];
+      }
+    }
+  }
+
+  return result;
+}
+
+function matrixExponentiationRecursive(matrix, power) {
+  validateSquareMatrix(matrix);
+
+  if (!Number.isInteger(power) || power < 0) {
+    throw new RangeError('Power must be a non-negative integer');
+  }
+
+  if (power === 0) {
+    return identityMatrix(matrix.length);
+  }
+
+  if (power === 1) {
+    return matrix.map((row) => row.slice());
+  }
+
+  if (power % 2 === 1) {
+    return multiplySquareMatrices(matrixExponentiationRecursive(matrix, power - 1), matrix);
+  }
+
+  const half = matrixExponentiationRecursive(matrix, power / 2);
+  return multiplySquareMatrices(half, half);
+}
+```
+
+```ts
+function validateSquareMatrix(matrix: number[][]): void {
+  if (!Array.isArray(matrix) || matrix.length === 0 || !matrix.every((row) => Array.isArray(row) && row.length === matrix.length)) {
+    throw new RangeError('Input must be a non-empty square matrix');
+  }
+}
+
+function identityMatrix(size: number): number[][] {
+  return Array.from({ length: size }, (_, row) =>
+    Array.from({ length: size }, (_, col) => (row === col ? 1 : 0)),
+  );
+}
+
+function multiplySquareMatrices(left: number[][], right: number[][]): number[][] {
+  const size = left.length;
+  const result = Array.from({ length: size }, () => new Array<number>(size).fill(0));
+
+  for (let row = 0; row < size; row += 1) {
+    for (let col = 0; col < size; col += 1) {
+      for (let index = 0; index < size; index += 1) {
+        result[row][col] += left[row][index] * right[index][col];
+      }
+    }
+  }
+
+  return result;
+}
+
+export function matrixExponentiationRecursive(matrix: number[][], power: number): number[][] {
+  validateSquareMatrix(matrix);
+
+  if (!Number.isInteger(power) || power < 0) {
+    throw new RangeError('Power must be a non-negative integer');
+  }
+
+  if (power === 0) {
+    return identityMatrix(matrix.length);
+  }
+
+  if (power === 1) {
+    return matrix.map((row) => row.slice());
+  }
+
+  if (power % 2 === 1) {
+    return multiplySquareMatrices(matrixExponentiationRecursive(matrix, power - 1), matrix);
+  }
+
+  const half = matrixExponentiationRecursive(matrix, power / 2);
+  return multiplySquareMatrices(half, half);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Add modular arithmetic to support competitive-programming prompts.
+- Use this helper to accelerate Fibonacci computation through a transition matrix.
+- Compare the recursive version with an iterative binary-exponentiation loop.
+
+## Common Pitfalls
+
+- Forgetting that only square matrices can be raised to integer powers this way.
+- Returning the original matrix instead of an identity matrix at power `0`.
+- Multiplying linearly `p` times instead of squaring recursively.

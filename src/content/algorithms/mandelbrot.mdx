@@ -1,0 +1,233 @@
+---
+title: Mandelbrot
+slug: mandelbrot
+category: Mathematics
+summary: Render RGB data for a Mandelbrot-set view by iterating complex quadratic updates and coloring pixels by their escape behavior.
+description: Mandelbrot is the fractal-rendering routine that maps image pixels to complex-plane coordinates and measures how quickly each point diverges.
+dataStructures:
+  - Array
+  - Number
+techniques:
+  - Fractal Iteration
+  - Coordinate Mapping
+  - Escape-Time Coloring
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - mandelbrot set renderer
+  - escape-time fractal
+useCases:
+  - Rendering fractal previews or educational visualizations
+  - Teaching how image coordinates map to figure coordinates
+  - Demonstrating escape-time algorithms over the complex plane
+complexity:
+  time: O(width * height * steps)
+  space: O(width * height)
+  notes: Every pixel may run up to the maximum iteration count before a color is assigned.
+interviewSignals:
+  - The prompt mentions Mandelbrot rendering, escape time, or fractal coloring.
+  - The expected solution iterates a recurrence per pixel and stores color data in an image-sized structure.
+relatedSlugs:
+  - coordinate
+  - matrix-exponentiation-recursive
+  - mean-square-error
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/Mandelbrot.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/Mandelbrot.js
+    kind: Implementation
+  - title: free-programming-books - Algorithm Design
+    href: https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a good example of a numerical algorithm that turns pure math into visible output. It checks whether you can keep coordinate transforms, recurrence updates, and coloring logic separated clearly.
+
+## Worked Example
+
+The classic view centers near `(-0.6, 0)` with figure width about `3.2`. For each pixel, you map to a complex number `c`, iterate `z[n+1] = z[n]^2 + c`, and color the pixel by how fast the magnitude escapes beyond the divergence threshold.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function getDistance(figureX, figureY, maxStep) {
+  let a = figureX;
+  let b = figureY;
+
+  for (let step = 0; step < maxStep; step += 1) {
+    const nextA = a * a - b * b + figureX;
+    b = 2 * a * b + figureY;
+    a = nextA;
+
+    if (a * a + b * b > 4) {
+      return step / Math.max(1, maxStep - 1);
+    }
+  }
+
+  return 1;
+}
+
+function colorMap(distance, useDistanceColorCoding) {
+  if (distance >= 1) {
+    return [0, 0, 0];
+  }
+
+  if (!useDistanceColorCoding) {
+    return [255, 255, 255];
+  }
+
+  const hue = 360 * distance;
+  const hi = Math.floor(hue / 60) % 6;
+  const f = hue / 60 - Math.floor(hue / 60);
+  const value = 255;
+  const q = Math.floor(value * (1 - f));
+  const t = Math.floor(value * f);
+
+  switch (hi) {
+    case 0:
+      return [value, t, 0];
+    case 1:
+      return [q, value, 0];
+    case 2:
+      return [0, value, t];
+    case 3:
+      return [0, q, value];
+    case 4:
+      return [t, 0, value];
+    default:
+      return [value, 0, q];
+  }
+}
+
+function getRgbData(
+  imageWidth = 800,
+  imageHeight = 600,
+  figureCenterX = -0.6,
+  figureCenterY = 0,
+  figureWidth = 3.2,
+  maxStep = 50,
+  useDistanceColorCoding = true,
+) {
+  if (![imageWidth, imageHeight, figureWidth, maxStep].every((value) => Number.isInteger(value) ? value > 0 : Number.isFinite(value))) {
+    throw new RangeError('Image size and maxStep must be positive, and figureWidth must be finite');
+  }
+
+  const rgbData = [];
+  const figureHeight = (figureWidth / imageWidth) * imageHeight;
+
+  for (let imageX = 0; imageX < imageWidth; imageX += 1) {
+    rgbData[imageX] = [];
+    for (let imageY = 0; imageY < imageHeight; imageY += 1) {
+      const figureX = figureCenterX + (imageX / imageWidth - 0.5) * figureWidth;
+      const figureY = figureCenterY + (imageY / imageHeight - 0.5) * figureHeight;
+      const distance = getDistance(figureX, figureY, maxStep);
+      rgbData[imageX][imageY] = colorMap(distance, useDistanceColorCoding);
+    }
+  }
+
+  return rgbData;
+}
+```
+
+```ts
+type Rgb = [number, number, number];
+
+function getDistance(figureX: number, figureY: number, maxStep: number): number {
+  let a = figureX;
+  let b = figureY;
+
+  for (let step = 0; step < maxStep; step += 1) {
+    const nextA = a * a - b * b + figureX;
+    b = 2 * a * b + figureY;
+    a = nextA;
+
+    if (a * a + b * b > 4) {
+      return step / Math.max(1, maxStep - 1);
+    }
+  }
+
+  return 1;
+}
+
+function colorMap(distance: number, useDistanceColorCoding: boolean): Rgb {
+  if (distance >= 1) {
+    return [0, 0, 0];
+  }
+
+  if (!useDistanceColorCoding) {
+    return [255, 255, 255];
+  }
+
+  const hue = 360 * distance;
+  const hi = Math.floor(hue / 60) % 6;
+  const f = hue / 60 - Math.floor(hue / 60);
+  const value = 255;
+  const q = Math.floor(value * (1 - f));
+  const t = Math.floor(value * f);
+
+  switch (hi) {
+    case 0:
+      return [value, t, 0];
+    case 1:
+      return [q, value, 0];
+    case 2:
+      return [0, value, t];
+    case 3:
+      return [0, q, value];
+    case 4:
+      return [t, 0, value];
+    default:
+      return [value, 0, q];
+  }
+}
+
+export function getRgbData(
+  imageWidth = 800,
+  imageHeight = 600,
+  figureCenterX = -0.6,
+  figureCenterY = 0,
+  figureWidth = 3.2,
+  maxStep = 50,
+  useDistanceColorCoding = true,
+): Rgb[][] {
+  if (!Number.isInteger(imageWidth) || imageWidth <= 0 || !Number.isInteger(imageHeight) || imageHeight <= 0) {
+    throw new RangeError('Image dimensions must be positive integers');
+  }
+
+  if (!Number.isFinite(figureWidth) || figureWidth <= 0 || !Number.isInteger(maxStep) || maxStep <= 0) {
+    throw new RangeError('Figure width and maxStep must be positive');
+  }
+
+  const rgbData: Rgb[][] = [];
+  const figureHeight = (figureWidth / imageWidth) * imageHeight;
+
+  for (let imageX = 0; imageX < imageWidth; imageX += 1) {
+    rgbData[imageX] = [];
+    for (let imageY = 0; imageY < imageHeight; imageY += 1) {
+      const figureX = figureCenterX + (imageX / imageWidth - 0.5) * figureWidth;
+      const figureY = figureCenterY + (imageY / imageHeight - 0.5) * figureHeight;
+      const distance = getDistance(figureX, figureY, maxStep);
+      rgbData[imageX][imageY] = colorMap(distance, useDistanceColorCoding);
+    }
+  }
+
+  return rgbData;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare black-and-white membership coloring with distance-based coloring.
+- Add zoom and pan controls by varying the figure center and width.
+- Stop using arrays of arrays and instead render directly into an `ImageData` buffer.
+
+## Common Pitfalls
+
+- Mixing image coordinates with figure coordinates.
+- Forgetting that points inside the set should stay black when using the escape-time coloring.
+- Using a too-small iteration cap and misclassifying boundary points.

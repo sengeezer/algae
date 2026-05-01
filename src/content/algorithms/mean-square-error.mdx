@@ -1,0 +1,115 @@
+---
+title: Mean Square Error
+slug: mean-square-error
+category: Mathematics
+summary: Measure average prediction error by averaging the squared differences between predicted and expected values.
+description: Mean Square Error is the squared-loss metric that summarizes how far predictions deviate from target values on average.
+dataStructures:
+  - Array
+  - Number
+techniques:
+  - Error Aggregation
+  - Squared Loss
+  - Statistical Metric
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - MSE
+  - average squared error
+useCases:
+  - Evaluating regression outputs against expected values
+  - Comparing model prediction quality with a standard loss function
+  - Teaching how squaring emphasizes larger errors
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The metric only needs one pass over the paired arrays once their lengths are validated.
+interviewSignals:
+  - The prompt provides predicted and expected arrays and asks for a loss metric.
+  - The expected solution squares per-position errors and averages them.
+relatedSlugs:
+  - mean-absolute-deviation
+  - average-mean
+  - signum
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/MeanSquareError.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/MeanSquareError.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Mean square error is one of the most common loss functions in prediction tasks. The coding task is simple, but it still checks whether you validate paired-array lengths and use squared differences rather than absolute ones.
+
+## Worked Example
+
+If predicted values are `[2, 4, 6]` and expected values are `[1, 4, 7]`, the squared errors are `1`, `0`, and `1`, so the mean square error is `2 / 3`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function meanSquareError(predicted, expected) {
+  if (!Array.isArray(predicted) || !Array.isArray(expected)) {
+    throw new TypeError('Expected two arrays');
+  }
+
+  if (predicted.length === 0 || predicted.length !== expected.length) {
+    throw new RangeError('Arrays must be non-empty and have the same length');
+  }
+
+  if (![predicted, expected].every((list) => list.every((value) => typeof value === 'number' && Number.isFinite(value)))) {
+    throw new TypeError('Arrays must contain only finite numbers');
+  }
+
+  let error = 0;
+
+  for (let index = 0; index < expected.length; index += 1) {
+    error += (expected[index] - predicted[index]) ** 2;
+  }
+
+  return error / expected.length;
+}
+```
+
+```ts
+export function meanSquareError(predicted: number[], expected: number[]): number {
+  if (!Array.isArray(predicted) || !Array.isArray(expected)) {
+    throw new TypeError('Expected two arrays');
+  }
+
+  if (predicted.length === 0 || predicted.length !== expected.length) {
+    throw new RangeError('Arrays must be non-empty and have the same length');
+  }
+
+  if (![predicted, expected].every((list) => list.every((value) => Number.isFinite(value)))) {
+    throw new TypeError('Arrays must contain only finite numbers');
+  }
+
+  let error = 0;
+
+  for (let index = 0; index < expected.length; index += 1) {
+    error += (expected[index] - predicted[index]) ** 2;
+  }
+
+  return error / expected.length;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare mean square error with mean absolute error.
+- Return root mean square error instead.
+- Explain why large errors matter more under squared loss.
+
+## Common Pitfalls
+
+- Forgetting to validate equal lengths before indexing both arrays.
+- Using absolute errors instead of squared errors.
+- Allowing empty arrays and dividing by zero.
