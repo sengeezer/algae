@@ -3,6 +3,7 @@
 ## Sources for JavaScript / TypeScript algorithms
 - https://github.com/TheAlgorithms/JavaScript
 - https://github.com/AllThingsSmitty/javascript-algorithms
+- https://www.geeksforgeeks.org/dsa/
 - https://github.com/EbookFoundation/free-programming-books/blob/main/books/free-programming-books-subjects.md#algorithms--data-structures
 
 ## Existing overlap to skip
@@ -602,9 +603,20 @@ This fifty-second expansion slice lifts the catalog from 342 to 348 entries.
 - Queue
 - Debounce Function
 
+## Batch 53 added
+
+This fifty-third expansion slice lifts the catalog from 348 to 354 entries.
+
+- Deque
+- Articulation Points
+- Bridges in a Graph
+- Euler Path and Euler Circuit
+- Suffix Array
+- Square Root Decomposition
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 52 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 53 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -613,10 +625,10 @@ All expansion entries from batch 1 through batch 52 now carry explicit per-entry
 ## Why this batch
 
 - It fills obvious interview-core gaps from TheAlgorithms/JavaScript without duplicating material already present in Algae.
-- It starts a new implementation source after saturating TheAlgorithms/JavaScript modulo variants, taking the first clean absences from the curated `AllThingsSmitty/javascript-algorithms` sequence.
-- It broadens the catalog with two-pointer merging, baseline array scanning, foundational linear data structures, and a timing-oriented control-flow utility instead of staying inside more specialized recursive and sliding-window variants.
-- It fills several foundational building blocks that interviewers often assume candidates can implement from scratch even when the catalog already covers downstream problem-specific uses like circular queues, linked-list cycle detection, or stack-based expression evaluation.
-- It leaves both current implementation sources effectively exhausted except for semantic duplicates or alternative implementations, which means the next pass should pivot to a genuinely new source rather than keep harvesting variants.
+- It starts the GeeksforGeeks DSA expansion line after exhausting the two JavaScript-first implementation sources, using a defensible advanced-topic learning order rather than a grab bag of unrelated pages.
+- It broadens the catalog across bidirectional queue design, low-link graph analysis, Eulerian traversal classification, suffix-based string indexing, and block decomposition for range queries instead of staying in foundational data-structure territory.
+- It adds several interview-relevant ideas that are not just new names but genuinely new techniques: Tarjan low-link invariants, odd-degree Euler criteria, suffix ordering, and square-root block tradeoffs.
+- It keeps the next frontier inside the same GeeksforGeeks track, which means the next batch can stay source-consistent while moving into heavier specialized algorithms.
 
 ## Supporting study references from the algorithms list
 
@@ -626,4 +638,4 @@ All expansion entries from batch 1 through batch 52 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- No remaining clean absences remain in the current TheAlgorithms/JavaScript DIRECTORY or the `AllThingsSmitty/javascript-algorithms` README sequence once semantic duplicates are excluded. The next expansion pass should choose a new implementation source instead of revisiting variants.
+- The next exact GeeksforGeeks frontier after this batch is `Manacher's Algorithm`, `Heavy-Light Decomposition`, `Aho-Corasick Algorithm`, `Centroid Decomposition`, `Max Flow (Dinic's Algorithm)`, and `Bipartite Matching`.

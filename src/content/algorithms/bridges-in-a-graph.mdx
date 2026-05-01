@@ -1,0 +1,151 @@
+---
+title: Bridges in a Graph
+slug: bridges-in-a-graph
+category: Graphs
+summary: Use DFS discovery times and low-link values to find edges whose removal disconnects an undirected graph.
+description: Bridges in a Graph is the cut-edge version of Tarjan low-link analysis, where an edge is critical if its child subtree cannot reconnect above the parent.
+dataStructures:
+  - Graph
+  - Array
+techniques:
+  - Depth-First Search
+  - Tarjan Low-Link
+  - Graph Connectivity
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - critical edges
+  - bridge edges
+useCases:
+  - Finding single points of failure in networks
+  - Classifying critical roads or links
+  - Reusing low-link DFS logic for edge-criticality analysis
+complexity:
+  time: O(V + E)
+  space: O(V)
+  notes: An edge `(u, v)` is a bridge exactly when the child's low-link value stays strictly above the parent's discovery time.
+interviewSignals:
+  - The prompt asks which edges are critical for keeping an undirected graph connected.
+  - Removing a single edge can split the graph into more components.
+relatedSlugs:
+  - articulation-points
+  - connected-components
+  - depth-first-search
+provenance:
+  - title: GeeksforGeeks - Bridge in a Graph
+    href: https://www.geeksforgeeks.org/bridge-in-a-graph/
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Bridges are the edge-level counterpart to articulation points. The interview value is in understanding the low-link invariant well enough to say whether a child subtree has any back edge that bypasses the parent edge.
+
+## Worked Example
+
+If a DFS tree edge from `2` to `5` leads into a subtree whose `low[5]` remains greater than `disc[2]`, then nothing below `5` reconnects to `2` or above without using the edge `(2, 5)`. That edge is therefore a bridge.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function bridgesInGraph(graph) {
+  const visited = new Array(graph.length).fill(false);
+  const disc = new Array(graph.length).fill(0);
+  const low = new Array(graph.length).fill(0);
+  const bridges = [];
+  let time = 0;
+
+  function dfs(node, parent) {
+    visited[node] = true;
+    disc[node] = time;
+    low[node] = time;
+    time += 1;
+
+    for (const neighbor of graph[node]) {
+      if (neighbor === parent) {
+        continue;
+      }
+
+      if (!visited[neighbor]) {
+        dfs(neighbor, node);
+        low[node] = Math.min(low[node], low[neighbor]);
+
+        if (low[neighbor] > disc[node]) {
+          bridges.push([node, neighbor]);
+        }
+      } else {
+        low[node] = Math.min(low[node], disc[neighbor]);
+      }
+    }
+  }
+
+  for (let node = 0; node < graph.length; node += 1) {
+    if (!visited[node]) {
+      dfs(node, -1);
+    }
+  }
+
+  return bridges;
+}
+```
+
+```ts
+export function bridgesInGraph(graph: number[][]): Array<[number, number]> {
+  const visited = new Array<boolean>(graph.length).fill(false);
+  const disc = new Array<number>(graph.length).fill(0);
+  const low = new Array<number>(graph.length).fill(0);
+  const bridges: Array<[number, number]> = [];
+  let time = 0;
+
+  function dfs(node: number, parent: number): void {
+    visited[node] = true;
+    disc[node] = time;
+    low[node] = time;
+    time += 1;
+
+    for (const neighbor of graph[node]) {
+      if (neighbor === parent) {
+        continue;
+      }
+
+      if (!visited[neighbor]) {
+        dfs(neighbor, node);
+        low[node] = Math.min(low[node], low[neighbor]);
+
+        if (low[neighbor] > disc[node]) {
+          bridges.push([node, neighbor]);
+        }
+      } else {
+        low[node] = Math.min(low[node], disc[neighbor]);
+      }
+    }
+  }
+
+  for (let node = 0; node < graph.length; node += 1) {
+    if (!visited[node]) {
+      dfs(node, -1);
+    }
+  }
+
+  return bridges;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Output articulation points and bridges in one DFS pass.
+- Explain the difference between the bridge condition `>` and the articulation condition `>=`.
+- Extend the reasoning to 2-edge-connected components.
+
+## Common Pitfalls
+
+- Forgetting that the algorithm is for undirected graphs.
+- Updating low-link values with the parent edge.
+- Counting an undirected edge twice without a parent check.

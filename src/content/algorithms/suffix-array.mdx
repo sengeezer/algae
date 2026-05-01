@@ -1,0 +1,127 @@
+---
+title: Suffix Array
+slug: suffix-array
+category: Strings
+summary: Sort suffix starting positions so repeated substring and pattern queries can binary-search over lexicographic suffix order.
+description: Suffix Array is the indexed-string structure that replaces repeated full rescans with ordered suffix positions and enables efficient substring querying.
+dataStructures:
+  - String
+  - Array
+techniques:
+  - String Indexing
+  - Lexicographic Sorting
+  - Binary Search
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - suffix index
+  - sorted suffix positions
+useCases:
+  - Fast repeated substring queries on a static string
+  - Longest repeated substring setups
+  - Building toward LCP-based string-processing techniques
+complexity:
+  time: O(n^2 log n) naive construction
+  space: O(n)
+  notes: The naive build is still useful in interviews and teaching, but production-scale suffix arrays use faster construction than explicit full-suffix sorting.
+interviewSignals:
+  - The prompt involves many substring checks on one fixed string.
+  - A trie or KMP solves one query, but a reusable whole-string index would fit better.
+relatedSlugs:
+  - trie
+  - kmp-string-search
+  - z-function
+provenance:
+  - title: GeeksforGeeks - Suffix Array Introduction
+    href: https://www.geeksforgeeks.org/suffix-array-set-1-introduction/
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Suffix arrays appear when the same string will be queried repeatedly. The key idea is that once all suffixes are sorted, substring queries can work against that sorted order instead of scanning the full text from scratch each time.
+
+## Worked Example
+
+For `banana`, the sorted suffixes are `a`, `ana`, `anana`, `banana`, `na`, and `nana`, which correspond to starting indices `[5, 3, 1, 0, 4, 2]`. That ordered index list is the suffix array.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function buildSuffixArray(text) {
+  return Array.from({ length: text.length }, (_, index) => index)
+    .sort((left, right) => text.slice(left).localeCompare(text.slice(right)));
+}
+
+function containsPattern(text, pattern) {
+  const suffixArray = buildSuffixArray(text);
+  let left = 0;
+  let right = suffixArray.length - 1;
+
+  while (left <= right) {
+    const mid = Math.floor((left + right) / 2);
+    const suffix = text.slice(suffixArray[mid]);
+
+    if (suffix.startsWith(pattern)) {
+      return true;
+    }
+
+    if (suffix < pattern) {
+      left = mid + 1;
+    } else {
+      right = mid - 1;
+    }
+  }
+
+  return false;
+}
+```
+
+```ts
+export function buildSuffixArray(text: string): number[] {
+  return Array.from({ length: text.length }, (_, index) => index)
+    .sort((left, right) => text.slice(left).localeCompare(text.slice(right)));
+}
+
+export function containsPattern(text: string, pattern: string): boolean {
+  const suffixArray = buildSuffixArray(text);
+  let left = 0;
+  let right = suffixArray.length - 1;
+
+  while (left <= right) {
+    const mid = Math.floor((left + right) / 2);
+    const suffix = text.slice(suffixArray[mid]);
+
+    if (suffix.startsWith(pattern)) {
+      return true;
+    }
+
+    if (suffix < pattern) {
+      left = mid + 1;
+    } else {
+      right = mid - 1;
+    }
+  }
+
+  return false;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Build the LCP array to speed up repeated comparisons.
+- Explain why naive construction is not fast enough for very large texts.
+- Compare suffix arrays with tries and suffix trees.
+
+## Common Pitfalls
+
+- Claiming the naive suffix-sort build is linear or `O(n log n)`.
+- Storing full copied suffix strings when index-based comparisons would be enough.
+- Forgetting that binary search compares against suffix order, not original positions.

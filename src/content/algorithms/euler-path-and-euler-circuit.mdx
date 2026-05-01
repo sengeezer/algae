@@ -1,0 +1,158 @@
+---
+title: Euler Path and Euler Circuit
+slug: euler-path-and-euler-circuit
+category: Graphs
+summary: Check connectivity and odd-degree counts to determine whether an undirected graph can traverse every edge exactly once.
+description: Euler Path and Euler Circuit is the graph-classification problem where traversability depends on using every edge exactly once and on whether odd-degree vertices exist.
+dataStructures:
+  - Graph
+  - Array
+techniques:
+  - Graph Traversal
+  - Degree Counting
+  - Eulerian Classification
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - eulerian path
+  - eulerian circuit
+  - edge-covering walk
+useCases:
+  - Route design that must use every edge exactly once
+  - Recognizing when Hierholzer's algorithm is applicable
+  - Classifying graphs before constructing an actual Euler traversal
+complexity:
+  time: O(V + E)
+  space: O(V)
+  notes: For undirected graphs, classification only needs connectivity over non-isolated vertices plus a count of odd-degree nodes.
+interviewSignals:
+  - The prompt asks to use every edge exactly once.
+  - The distinction between starting and ending at the same node matters.
+relatedSlugs:
+  - depth-first-search
+  - connected-components
+  - topological-sort
+provenance:
+  - title: GeeksforGeeks - Eulerian Path and Circuit
+    href: https://www.geeksforgeeks.org/eulerian-path-and-circuit/
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Eulerian questions test whether you can separate structural criteria from traversal construction. Before you ever build the path, you should know that an undirected graph has an Euler circuit with zero odd-degree vertices and an Euler path with exactly two.
+
+## Worked Example
+
+If every non-isolated vertex belongs to one connected component and exactly two vertices have odd degree, then an Euler path exists and must start at one odd-degree vertex and end at the other. If no vertices have odd degree, the path can close into a circuit.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function classifyEulerianGraph(graph) {
+  const start = graph.findIndex((neighbors) => neighbors.length > 0);
+  if (start === -1) {
+    return 'circuit';
+  }
+
+  const visited = new Array(graph.length).fill(false);
+
+  function dfs(node) {
+    visited[node] = true;
+
+    for (const neighbor of graph[node]) {
+      if (!visited[neighbor]) {
+        dfs(neighbor);
+      }
+    }
+  }
+
+  dfs(start);
+
+  for (let node = 0; node < graph.length; node += 1) {
+    if (graph[node].length > 0 && !visited[node]) {
+      return 'none';
+    }
+  }
+
+  const oddCount = graph.reduce(
+    (count, neighbors) => count + (neighbors.length % 2 === 1 ? 1 : 0),
+    0,
+  );
+
+  if (oddCount === 0) {
+    return 'circuit';
+  }
+
+  if (oddCount === 2) {
+    return 'path';
+  }
+
+  return 'none';
+}
+```
+
+```ts
+export function classifyEulerianGraph(
+  graph: number[][],
+): 'none' | 'path' | 'circuit' {
+  const start = graph.findIndex((neighbors) => neighbors.length > 0);
+  if (start === -1) {
+    return 'circuit';
+  }
+
+  const visited = new Array<boolean>(graph.length).fill(false);
+
+  function dfs(node: number): void {
+    visited[node] = true;
+
+    for (const neighbor of graph[node]) {
+      if (!visited[neighbor]) {
+        dfs(neighbor);
+      }
+    }
+  }
+
+  dfs(start);
+
+  for (let node = 0; node < graph.length; node += 1) {
+    if (graph[node].length > 0 && !visited[node]) {
+      return 'none';
+    }
+  }
+
+  const oddCount = graph.reduce(
+    (count, neighbors) => count + (neighbors.length % 2 === 1 ? 1 : 0),
+    0,
+  );
+
+  if (oddCount === 0) {
+    return 'circuit';
+  }
+
+  if (oddCount === 2) {
+    return 'path';
+  }
+
+  return 'none';
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Construct the actual traversal using Hierholzer's algorithm.
+- Adapt the conditions for directed graphs.
+- Explain why isolated vertices do not invalidate Eulerian classification.
+
+## Common Pitfalls
+
+- Confusing Euler paths with Hamiltonian paths.
+- Forgetting to ignore zero-degree vertices during connectivity checks.
+- Applying the undirected degree rule to directed graphs without adjustment.

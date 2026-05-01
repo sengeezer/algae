@@ -1,0 +1,181 @@
+---
+title: Deque
+slug: deque
+category: Queues
+summary: Insert and remove from both ends in constant time by wrapping a fixed buffer with modular arithmetic.
+description: Deque is the double-ended queue structure that supports O(1) front and back operations and underpins monotonic queues, sliding-window maxima, and bidirectional buffering.
+dataStructures:
+  - Queue
+  - Array
+techniques:
+  - Data Structure Design
+  - Ring Buffer
+  - Modular Arithmetic
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - double-ended queue
+  - bidirectional queue
+useCases:
+  - Maintaining candidates for sliding window maximum
+  - Building browser history or undo-redo buffers
+  - Modeling workloads that need both front and back access
+complexity:
+  time: O(1) insert and delete at both ends
+  space: O(capacity)
+  notes: The circular-array version only stays constant time if it tracks front and size explicitly instead of shifting elements.
+interviewSignals:
+  - The prompt needs queue behavior plus efficient front and back updates.
+  - A regular queue is too restrictive because items may enter or leave from either end.
+relatedSlugs:
+  - queue
+  - circular-queue
+  - monotonic-queue
+provenance:
+  - title: GeeksforGeeks - Deque Introduction and Applications
+    href: https://www.geeksforgeeks.org/deque-set-1-introduction-applications/
+    kind: Implementation
+  - title: "free-programming-books - Open Data Structures: An Introduction"
+    href: https://opendatastructures.org/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Deque questions show up when a normal queue is almost enough but the problem also needs efficient eviction or insertion at the opposite end. The structure is especially useful when candidates must stay ordered while old values fall out of a window.
+
+## Worked Example
+
+In a capacity-5 deque, if the front index is `1` and the size is `3`, then the live elements occupy logical positions `1`, `2`, and `3`. Inserting at the front moves the front index to `(1 - 1 + 5) % 5 = 0` without shifting anything.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class Deque {
+  constructor(capacity) {
+    this.values = new Array(capacity);
+    this.front = 0;
+    this.count = 0;
+  }
+
+  insertFront(value) {
+    if (this.count === this.values.length) {
+      return false;
+    }
+
+    this.front = (this.front - 1 + this.values.length) % this.values.length;
+    this.values[this.front] = value;
+    this.count += 1;
+    return true;
+  }
+
+  insertRear(value) {
+    if (this.count === this.values.length) {
+      return false;
+    }
+
+    const rear = (this.front + this.count) % this.values.length;
+    this.values[rear] = value;
+    this.count += 1;
+    return true;
+  }
+
+  deleteFront() {
+    if (this.count === 0) {
+      return undefined;
+    }
+
+    const value = this.values[this.front];
+    this.values[this.front] = undefined;
+    this.front = (this.front + 1) % this.values.length;
+    this.count -= 1;
+    return value;
+  }
+
+  deleteRear() {
+    if (this.count === 0) {
+      return undefined;
+    }
+
+    const rear = (this.front + this.count - 1) % this.values.length;
+    const value = this.values[rear];
+    this.values[rear] = undefined;
+    this.count -= 1;
+    return value;
+  }
+}
+```
+
+```ts
+export class Deque<T> {
+  private readonly values: Array<T | undefined>;
+  private front = 0;
+  private count = 0;
+
+  constructor(capacity: number) {
+    this.values = new Array<T | undefined>(capacity);
+  }
+
+  insertFront(value: T): boolean {
+    if (this.count === this.values.length) {
+      return false;
+    }
+
+    this.front = (this.front - 1 + this.values.length) % this.values.length;
+    this.values[this.front] = value;
+    this.count += 1;
+    return true;
+  }
+
+  insertRear(value: T): boolean {
+    if (this.count === this.values.length) {
+      return false;
+    }
+
+    const rear = (this.front + this.count) % this.values.length;
+    this.values[rear] = value;
+    this.count += 1;
+    return true;
+  }
+
+  deleteFront(): T | undefined {
+    if (this.count === 0) {
+      return undefined;
+    }
+
+    const value = this.values[this.front];
+    this.values[this.front] = undefined;
+    this.front = (this.front + 1) % this.values.length;
+    this.count -= 1;
+    return value;
+  }
+
+  deleteRear(): T | undefined {
+    if (this.count === 0) {
+      return undefined;
+    }
+
+    const rear = (this.front + this.count - 1) % this.values.length;
+    const value = this.values[rear];
+    this.values[rear] = undefined;
+    this.count -= 1;
+    return value;
+  }
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Add resizing while preserving order.
+- Use the deque to solve sliding-window maximum.
+- Compare the circular-array design with a doubly linked list implementation.
+
+## Common Pitfalls
+
+- Shifting the whole array instead of wrapping indices.
+- Losing track of full versus empty state.
+- Forgetting that rear indexing must also wrap with modulo arithmetic.

@@ -1,0 +1,163 @@
+---
+title: Articulation Points
+slug: articulation-points
+category: Graphs
+summary: Use DFS discovery times and low-link values to find vertices whose removal disconnects an undirected graph.
+description: Articulation Points is the Tarjan-style cut-vertex problem where low-link analysis reveals which vertices are structurally critical to graph connectivity.
+dataStructures:
+  - Graph
+  - Array
+techniques:
+  - Depth-First Search
+  - Tarjan Low-Link
+  - Graph Connectivity
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - cut vertices
+  - critical vertices
+useCases:
+  - Network failure analysis
+  - Identifying critical routers or dependencies
+  - Understanding low-link invariants in DFS trees
+complexity:
+  time: O(V + E)
+  space: O(V)
+  notes: The key invariant is that `low[v]` tells you how far upward a child subtree can reconnect without using the parent edge.
+interviewSignals:
+  - The prompt asks which vertices are critical for keeping an undirected graph connected.
+  - Removing one node can split the graph into more components.
+relatedSlugs:
+  - bridges-in-a-graph
+  - connected-components
+  - depth-first-search
+provenance:
+  - title: GeeksforGeeks - Articulation Points or Cut Vertices in a Graph
+    href: https://www.geeksforgeeks.org/articulation-points-or-cut-vertices-in-a-graph/
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Articulation points are one of the cleanest reasons to learn low-link values. The interview goal is usually to see whether you can describe why a subtree either reconnects to an ancestor or depends on its parent vertex to stay attached.
+
+## Worked Example
+
+If vertex `1` connects two otherwise separate regions, then DFS will discover a child subtree of `1` whose `low` value never reaches above `1`. That means removing `1` disconnects that subtree from the rest of the graph.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function articulationPoints(graph) {
+  const visited = new Array(graph.length).fill(false);
+  const disc = new Array(graph.length).fill(0);
+  const low = new Array(graph.length).fill(0);
+  const cut = new Array(graph.length).fill(false);
+  let time = 0;
+
+  function dfs(node, parent) {
+    visited[node] = true;
+    disc[node] = time;
+    low[node] = time;
+    time += 1;
+    let childCount = 0;
+
+    for (const neighbor of graph[node]) {
+      if (neighbor === parent) {
+        continue;
+      }
+
+      if (!visited[neighbor]) {
+        childCount += 1;
+        dfs(neighbor, node);
+        low[node] = Math.min(low[node], low[neighbor]);
+
+        if (parent !== -1 && low[neighbor] >= disc[node]) {
+          cut[node] = true;
+        }
+      } else {
+        low[node] = Math.min(low[node], disc[neighbor]);
+      }
+    }
+
+    if (parent === -1 && childCount > 1) {
+      cut[node] = true;
+    }
+  }
+
+  for (let node = 0; node < graph.length; node += 1) {
+    if (!visited[node]) {
+      dfs(node, -1);
+    }
+  }
+
+  return cut.flatMap((isCut, node) => (isCut ? [node] : []));
+}
+```
+
+```ts
+export function articulationPoints(graph: number[][]): number[] {
+  const visited = new Array<boolean>(graph.length).fill(false);
+  const disc = new Array<number>(graph.length).fill(0);
+  const low = new Array<number>(graph.length).fill(0);
+  const cut = new Array<boolean>(graph.length).fill(false);
+  let time = 0;
+
+  function dfs(node: number, parent: number): void {
+    visited[node] = true;
+    disc[node] = time;
+    low[node] = time;
+    time += 1;
+    let childCount = 0;
+
+    for (const neighbor of graph[node]) {
+      if (neighbor === parent) {
+        continue;
+      }
+
+      if (!visited[neighbor]) {
+        childCount += 1;
+        dfs(neighbor, node);
+        low[node] = Math.min(low[node], low[neighbor]);
+
+        if (parent !== -1 && low[neighbor] >= disc[node]) {
+          cut[node] = true;
+        }
+      } else {
+        low[node] = Math.min(low[node], disc[neighbor]);
+      }
+    }
+
+    if (parent === -1 && childCount > 1) {
+      cut[node] = true;
+    }
+  }
+
+  for (let node = 0; node < graph.length; node += 1) {
+    if (!visited[node]) {
+      dfs(node, -1);
+    }
+  }
+
+  return cut.flatMap((isCut, node) => (isCut ? [node] : []));
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return how many components each articulation point would create if removed.
+- Adapt the traversal to output bridges at the same time.
+- Explain why the root uses a different cut-vertex condition from non-root vertices.
+
+## Common Pitfalls
+
+- Applying the technique to a directed graph without changing the model.
+- Forgetting to skip the parent edge during low-link updates.
+- Using `>` instead of `>=` for the articulation-point condition.

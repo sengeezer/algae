@@ -1,0 +1,155 @@
+---
+title: Square Root Decomposition
+slug: square-root-decomposition
+category: Range Queries
+summary: Split an array into blocks of about `sqrt(n)` elements so range queries can jump over whole blocks instead of scanning every value.
+description: Square Root Decomposition is the block-based range-query technique that trades a small preprocessing step for `O(sqrt(n))` queries and simple point updates.
+dataStructures:
+  - Array
+  - Block Array
+techniques:
+  - Range Queries
+  - Block Decomposition
+  - Preprocessing
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - sqrt decomposition
+  - block decomposition
+useCases:
+  - Static or semi-dynamic range-sum queries
+  - Middle-ground query optimization before segment trees
+  - Teaching preprocessing tradeoffs without a tree structure
+complexity:
+  time: O(sqrt(n)) query, O(1) point update, O(n) preprocess
+  space: O(n)
+  notes: The technique shines when queries are frequent, point updates are simple, and a full segment tree would be unnecessary overhead.
+interviewSignals:
+  - The prompt needs many interval queries but only light updates.
+  - Prefix sums are too weak, but segment trees feel heavier than necessary.
+relatedSlugs:
+  - prefix-sum
+  - fenwick-tree
+  - segment-tree
+provenance:
+  - title: GeeksforGeeks - Square Root Decomposition Algorithm
+    href: https://www.geeksforgeeks.org/dsa/square-root-sqrt-decomposition-algorithm/
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Square root decomposition is a useful interview midpoint. It is more powerful than raw prefix sums for repeated queries with updates, but simpler to explain and implement than a full segment tree.
+
+## Worked Example
+
+If an array has `16` values, use blocks of size `4`. A query over `[3, 13]` sums the partial prefix of the first block, then the full middle blocks in constant time each, then the partial tail of the last block.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class SquareRootDecomposition {
+  constructor(values) {
+    this.values = [...values];
+    this.blockSize = Math.ceil(Math.sqrt(Math.max(1, values.length)));
+    this.blocks = new Array(Math.ceil(values.length / this.blockSize)).fill(0);
+
+    for (let index = 0; index < values.length; index += 1) {
+      this.blocks[Math.floor(index / this.blockSize)] += values[index];
+    }
+  }
+
+  query(left, right) {
+    let sum = 0;
+    let index = left;
+
+    while (index <= right && index % this.blockSize !== 0) {
+      sum += this.values[index];
+      index += 1;
+    }
+
+    while (index + this.blockSize - 1 <= right) {
+      sum += this.blocks[Math.floor(index / this.blockSize)];
+      index += this.blockSize;
+    }
+
+    while (index <= right) {
+      sum += this.values[index];
+      index += 1;
+    }
+
+    return sum;
+  }
+
+  update(index, value) {
+    const block = Math.floor(index / this.blockSize);
+    this.blocks[block] += value - this.values[index];
+    this.values[index] = value;
+  }
+}
+```
+
+```ts
+export class SquareRootDecomposition {
+  private readonly values: number[];
+  private readonly blockSize: number;
+  private readonly blocks: number[];
+
+  constructor(values: number[]) {
+    this.values = [...values];
+    this.blockSize = Math.ceil(Math.sqrt(Math.max(1, values.length)));
+    this.blocks = new Array<number>(Math.ceil(values.length / this.blockSize)).fill(0);
+
+    for (let index = 0; index < values.length; index += 1) {
+      this.blocks[Math.floor(index / this.blockSize)] += values[index];
+    }
+  }
+
+  query(left: number, right: number): number {
+    let sum = 0;
+    let index = left;
+
+    while (index <= right && index % this.blockSize !== 0) {
+      sum += this.values[index];
+      index += 1;
+    }
+
+    while (index + this.blockSize - 1 <= right) {
+      sum += this.blocks[Math.floor(index / this.blockSize)];
+      index += this.blockSize;
+    }
+
+    while (index <= right) {
+      sum += this.values[index];
+      index += 1;
+    }
+
+    return sum;
+  }
+
+  update(index: number, value: number): void {
+    const block = Math.floor(index / this.blockSize);
+    this.blocks[block] += value - this.values[index];
+    this.values[index] = value;
+  }
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Adapt the block aggregate from sum to minimum or maximum.
+- Compare this design with a Fenwick tree and a segment tree.
+- Extend it to two-dimensional queries.
+
+## Common Pitfalls
+
+- Choosing a block size inconsistently with the array length.
+- Forgetting to update the block aggregate after a point change.
+- Assuming it handles heavy range updates as naturally as lazy propagation.
