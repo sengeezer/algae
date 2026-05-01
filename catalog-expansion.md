@@ -704,9 +704,17 @@ This sixty-second expansion slice lifts the catalog from 396 to 399 entries.
 - Clone a Directed Acyclic Graph
 - Shortest Path in Directed Acyclic Graph
 
+## Batch 63 added
+
+This sixty-third expansion slice lifts the catalog from 399 to 402 entries.
+
+- Multistage Graph (Shortest Path)
+- Shortest path in an unweighted graph
+- Karp's minimum mean (or average) weight cycle algorithm
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 62 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 63 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -714,10 +722,10 @@ All expansion entries from batch 1 through batch 62 now carry explicit per-entry
 
 ## Why this batch
 
-- It advances the source-ordered GeeksforGeeks frontier through the remaining clean items around the cycles boundary, explicitly skipping only duplicates such as the disjoint-set introduction and already-covered shortest-path staples.
-- It broadens the catalog across bounded-length cycle counting, DAG cloning with DFS memoization, and shortest-path relaxation on topologically ordered DAGs.
-- It adds several interview patterns that were not previously first-class entries: counting unique simple cycles while avoiding overcounting, deep-copying an acyclic directed graph, and exploiting acyclicity to beat general-purpose shortest-path algorithms.
-- It leaves the next continuation point at the next unclaimed shortest-path item after the newly covered DAG shortest-path entry.
+- It advances the source-ordered GeeksforGeeks shortest-path frontier after the DAG section without reopening already represented staples such as Johnson's and Dial's algorithms.
+- It broadens the catalog across backward dynamic programming on stage-ordered graphs, BFS path reconstruction on unweighted graphs, and Karp's min-max dynamic programming for minimum mean directed cycles.
+- It adds several interview patterns that were not previously first-class entries: recovering an explicit shortest route in an unweighted graph, exploiting stage boundaries instead of generic shortest-path machinery, and optimizing cycle quality by average weight rather than total weight.
+- It leaves the next continuation point at the next clean trio of shortest-path and weighted-cycle entries already confirmed as local absences.
 
 ## Supporting study references from the algorithms list
 
@@ -727,4 +735,4 @@ All expansion entries from batch 1 through batch 62 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- The current GeeksforGeeks backfill frontier now continues with `Multistage Graph (Shortest Path)`, `Shortest path in an unweighted graph`, and `Minimum mean weight cycle algorithm`; nearby items like the disjoint-set introduction, `Dijkstra`, `Bellman-Ford`, `Floyd Warshall`, `Johnson's algorithm`, and `Dial's algorithm` are already represented.
+- The current GeeksforGeeks backfill frontier now continues with `Shortest Path in a Binary Weight Graph`, `Minimum Weight Cycle in a Graph`, and `D'Esopo-Pape Algorithm : Single Source Shortest Path`; nearby items like `Johnson's Algorithm` and `Dial's Algorithm` are already represented.

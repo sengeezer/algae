@@ -1,0 +1,161 @@
+---
+title: Shortest path in an unweighted graph
+slug: shortest-path-in-an-unweighted-graph
+category: Graphs
+summary: Use BFS to discover the minimum distance layer by layer while storing parents so the actual route can be reconstructed.
+description: Shortest path in an unweighted graph is the path-reconstruction variant of BFS where every edge costs one and the answer is the route itself.
+dataStructures:
+  - Graph
+  - Queue
+  - Array
+techniques:
+  - Breadth-First Search
+  - Path Reconstruction
+  - Shortest Path
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - unweighted graph shortest path
+  - BFS shortest route
+useCases:
+  - Recovering an actual minimum-hop route instead of only the distance
+  - Routing over unweighted networks or friendship graphs
+  - Extending basic BFS with parent tracking
+complexity:
+  time: O(V + E)
+  space: O(V)
+  notes: Parent pointers let BFS return the exact shortest path once the destination is reached.
+interviewSignals:
+  - Every edge has equal cost, so hop count is the right optimization target.
+  - The prompt asks for the path itself, not just the distance.
+relatedSlugs:
+  - breadth-first-search
+  - shortest-path-in-a-binary-maze
+  - dijkstra
+provenance:
+  - title: GeeksforGeeks - Shortest path in an unweighted graph
+    href: https://www.geeksforgeeks.org/dsa/shortest-path-unweighted-graph/
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the version of BFS interviewers use when they want more than a reachability check. The search still relies on breadth-first layering, but the twist is that you also preserve parent links so the final route can be reconstructed backward from the destination.
+
+## Worked Example
+
+If BFS reaches node `7` from source `0` through parent chain `7 <- 3 <- 0`, then the shortest path is `0 -> 3 -> 7`. Because BFS discovered `7` at the earliest possible layer, that reconstructed route has the minimum number of edges.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function shortestPathInAnUnweightedGraph(nodeCount, edges, source, destination) {
+  const graph = Array.from({ length: nodeCount }, () => []);
+  for (const [from, to] of edges) {
+    graph[from].push(to);
+    graph[to].push(from);
+  }
+
+  const distance = new Array(nodeCount).fill(Number.POSITIVE_INFINITY);
+  const parent = new Array(nodeCount).fill(-1);
+  const queue = [source];
+  distance[source] = 0;
+
+  for (let head = 0; head < queue.length; head += 1) {
+    const node = queue[head];
+    if (node === destination) {
+      break;
+    }
+
+    for (const neighbor of graph[node]) {
+      if (distance[neighbor] !== Number.POSITIVE_INFINITY) {
+        continue;
+      }
+
+      distance[neighbor] = distance[node] + 1;
+      parent[neighbor] = node;
+      queue.push(neighbor);
+    }
+  }
+
+  if (distance[destination] === Number.POSITIVE_INFINITY) {
+    return [];
+  }
+
+  const path = [];
+  for (let node = destination; node !== -1; node = parent[node]) {
+    path.push(node);
+  }
+
+  path.reverse();
+  return path;
+}
+```
+
+```ts
+export function shortestPathInAnUnweightedGraph(
+  nodeCount: number,
+  edges: Array<[number, number]>,
+  source: number,
+  destination: number,
+): number[] {
+  const graph = Array.from({ length: nodeCount }, () => [] as number[]);
+  for (const [from, to] of edges) {
+    graph[from].push(to);
+    graph[to].push(from);
+  }
+
+  const distance = new Array<number>(nodeCount).fill(Number.POSITIVE_INFINITY);
+  const parent = new Array<number>(nodeCount).fill(-1);
+  const queue: number[] = [source];
+  distance[source] = 0;
+
+  for (let head = 0; head < queue.length; head += 1) {
+    const node = queue[head];
+    if (node === destination) {
+      break;
+    }
+
+    for (const neighbor of graph[node]) {
+      if (distance[neighbor] !== Number.POSITIVE_INFINITY) {
+        continue;
+      }
+
+      distance[neighbor] = distance[node] + 1;
+      parent[neighbor] = node;
+      queue.push(neighbor);
+    }
+  }
+
+  if (distance[destination] === Number.POSITIVE_INFINITY) {
+    return [];
+  }
+
+  const path: number[] = [];
+  for (let node = destination; node !== -1; node = parent[node]) {
+    path.push(node);
+  }
+
+  path.reverse();
+  return path;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return both the shortest distance and the path.
+- How would the solution change for a directed graph?
+- Why does BFS fail once edge weights are no longer uniform?
+
+## Common Pitfalls
+
+- Using DFS and hoping the first found route is shortest.
+- Forgetting to store parents while traversing.
+- Treating the problem like weighted shortest path when every edge cost is one.

@@ -1,0 +1,155 @@
+---
+title: Karp's minimum mean (or average) weight cycle algorithm
+slug: karps-minimum-mean-average-weight-cycle-algorithm
+category: Graphs
+summary: Use dynamic programming by edge count and Karp's min-max formula to find the directed cycle with the smallest average edge weight.
+description: Karp's minimum mean (or average) weight cycle algorithm solves the minimum-average-cycle problem in a directed graph with edge-count dynamic programming.
+dataStructures:
+  - Graph
+  - Matrix
+  - Array
+techniques:
+  - Dynamic Programming
+  - Cycle Analysis
+  - Shortest Paths
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - Karp minimum mean cycle
+  - minimum average weight cycle
+useCases:
+  - Optimizing for average edge cost instead of total path cost
+  - Analyzing cyclic systems where repeated steady-state cost matters
+  - Studying DP formulations over exact edge counts
+complexity:
+  time: O(V * E)
+  space: O(V^2)
+  notes: On dense graphs this reaches O(V^3), which matches the common matrix-based presentation of the algorithm.
+interviewSignals:
+  - The objective is the mean weight of a cycle, not the total weight.
+  - The graph is directed and cycle quality is measured over repeated traversal.
+relatedSlugs:
+  - johnsons-algorithm
+  - bellman-ford
+  - floyd-warshall
+provenance:
+  - title: GeeksforGeeks - Karp's minimum mean (or average) weight cycle algorithm
+    href: https://www.geeksforgeeks.org/dsa/karps-minimum-mean-average-weight-cycle-algorithm/
+    kind: Implementation
+  - title: free-programming-books - Algorithm Design
+    href: https://jeffe.cs.illinois.edu/teaching/algorithms/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem is useful because it changes the optimization target. Standard shortest-path thinking minimizes total weight, but here the right answer is the cycle with the smallest average weight per edge, which requires a different dynamic-programming view.
+
+## Worked Example
+
+If a cycle has total weight `5` over `3` edges, its mean weight is `5 / 3`. Karp's algorithm compares exact-edge-count path costs and uses a min-max expression to infer which vertex lies on the best average-weight cycle.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function karpsMinimumMeanAverageWeightCycleAlgorithm(nodeCount, edges) {
+  const inf = Number.POSITIVE_INFINITY;
+  const dp = Array.from({ length: nodeCount + 1 }, () => new Array(nodeCount).fill(inf));
+  dp[0][0] = 0;
+
+  for (let edgeCount = 1; edgeCount <= nodeCount; edgeCount += 1) {
+    for (const [from, to, weight] of edges) {
+      if (dp[edgeCount - 1][from] === inf) {
+        continue;
+      }
+
+      dp[edgeCount][to] = Math.min(dp[edgeCount][to], dp[edgeCount - 1][from] + weight);
+    }
+  }
+
+  let answer = inf;
+
+  for (let node = 0; node < nodeCount; node += 1) {
+    if (dp[nodeCount][node] === inf) {
+      continue;
+    }
+
+    let candidate = Number.NEGATIVE_INFINITY;
+    for (let edgeCount = 0; edgeCount < nodeCount; edgeCount += 1) {
+      if (dp[edgeCount][node] === inf) {
+        continue;
+      }
+
+      candidate = Math.max(
+        candidate,
+        (dp[nodeCount][node] - dp[edgeCount][node]) / (nodeCount - edgeCount),
+      );
+    }
+
+    answer = Math.min(answer, candidate);
+  }
+
+  return Number.isFinite(answer) ? answer : null;
+}
+```
+
+```ts
+export function karpsMinimumMeanAverageWeightCycleAlgorithm(
+  nodeCount: number,
+  edges: Array<[number, number, number]>,
+): number | null {
+  const inf = Number.POSITIVE_INFINITY;
+  const dp = Array.from({ length: nodeCount + 1 }, () => new Array<number>(nodeCount).fill(inf));
+  dp[0][0] = 0;
+
+  for (let edgeCount = 1; edgeCount <= nodeCount; edgeCount += 1) {
+    for (const [from, to, weight] of edges) {
+      if (dp[edgeCount - 1][from] === inf) {
+        continue;
+      }
+
+      dp[edgeCount][to] = Math.min(dp[edgeCount][to], dp[edgeCount - 1][from] + weight);
+    }
+  }
+
+  let answer = inf;
+
+  for (let node = 0; node < nodeCount; node += 1) {
+    if (dp[nodeCount][node] === inf) {
+      continue;
+    }
+
+    let candidate = Number.NEGATIVE_INFINITY;
+    for (let edgeCount = 0; edgeCount < nodeCount; edgeCount += 1) {
+      if (dp[edgeCount][node] === inf) {
+        continue;
+      }
+
+      candidate = Math.max(
+        candidate,
+        (dp[nodeCount][node] - dp[edgeCount][node]) / (nodeCount - edgeCount),
+      );
+    }
+
+    answer = Math.min(answer, candidate);
+  }
+
+  return Number.isFinite(answer) ? answer : null;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why does minimizing total cycle weight not solve the mean-weight version?
+- How does this compare with Bellman-Ford-style relaxations?
+- What assumptions about graph connectivity make the result meaningful?
+
+## Common Pitfalls
+
+- Optimizing for total cycle weight when the prompt asks for average weight.
+- Forgetting that the algorithm reasons over exact numbers of edges.
+- Losing track of the outer `min` and inner `max` roles in Karp's formula.

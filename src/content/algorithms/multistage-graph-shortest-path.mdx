@@ -1,0 +1,154 @@
+---
+title: Multistage Graph (Shortest Path)
+slug: multistage-graph-shortest-path
+category: Graphs
+summary: Work backward from the sink and use dynamic programming over stage-ordered nodes to recover the minimum-cost route.
+description: Multistage Graph (Shortest Path) is the stage-structured shortest-path problem solved by backward dynamic programming on a directed acyclic graph.
+dataStructures:
+  - Graph
+  - Matrix
+  - Array
+techniques:
+  - Dynamic Programming
+  - Shortest Path
+  - Stage Decomposition
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - multistage shortest path
+  - stage graph shortest path
+useCases:
+  - Finding the cheapest route through layered decision graphs
+  - Exploiting stage structure instead of running a generic shortest-path algorithm
+  - Practicing backward dynamic programming on DAG-like graphs
+complexity:
+  time: O(N^2)
+  space: O(N)
+  notes: This matrix-based formulation assumes nodes are already ordered by stage and the sink is the final node.
+interviewSignals:
+  - Vertices are grouped into stages and every edge points only to the next stage or later.
+  - The prompt emphasizes source-to-sink optimization in a layered graph.
+relatedSlugs:
+  - shortest-path-in-directed-acyclic-graph
+  - dijkstra
+  - johnsons-algorithm
+provenance:
+  - title: GeeksforGeeks - Multistage Graph (Shortest Path)
+    href: https://www.geeksforgeeks.org/dsa/multistage-graph-shortest-path/
+    kind: Implementation
+  - title: free-programming-books - Algorithm Design
+    href: https://jeffe.cs.illinois.edu/teaching/algorithms/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem matters because it looks like a shortest-path question, but the real win comes from the graph's stage structure. Once nodes are ordered by stage, the best cost from any node depends only on already-solved costs in later stages.
+
+## Worked Example
+
+If node `0` can go to `1`, `2`, or `3`, and each of those can only move to later stages, then the shortest distance from `0` is the minimum of its outgoing edge cost plus the already-computed distance from the chosen next node to the sink. That makes a backward pass from the sink enough.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function multistageGraphShortestPath(cost, source = 0, target = cost.length - 1) {
+  const size = cost.length;
+  if (size === 0) {
+    return { distance: 0, path: [] };
+  }
+
+  const distance = new Array(size).fill(Number.POSITIVE_INFINITY);
+  const nextNode = new Array(size).fill(-1);
+  distance[target] = 0;
+
+  for (let node = target - 1; node >= source; node -= 1) {
+    for (let neighbor = node + 1; neighbor <= target; neighbor += 1) {
+      if (!Number.isFinite(cost[node][neighbor]) || distance[neighbor] === Number.POSITIVE_INFINITY) {
+        continue;
+      }
+
+      const candidate = cost[node][neighbor] + distance[neighbor];
+      if (candidate < distance[node]) {
+        distance[node] = candidate;
+        nextNode[node] = neighbor;
+      }
+    }
+  }
+
+  if (distance[source] === Number.POSITIVE_INFINITY) {
+    return { distance: -1, path: [] };
+  }
+
+  const path = [];
+  for (let node = source; node !== -1; node = nextNode[node]) {
+    path.push(node);
+    if (node === target) {
+      break;
+    }
+  }
+
+  return { distance: distance[source], path };
+}
+```
+
+```ts
+export function multistageGraphShortestPath(
+  cost: number[][],
+  source = 0,
+  target = cost.length - 1,
+): { distance: number; path: number[] } {
+  const size = cost.length;
+  if (size === 0) {
+    return { distance: 0, path: [] };
+  }
+
+  const distance = new Array<number>(size).fill(Number.POSITIVE_INFINITY);
+  const nextNode = new Array<number>(size).fill(-1);
+  distance[target] = 0;
+
+  for (let node = target - 1; node >= source; node -= 1) {
+    for (let neighbor = node + 1; neighbor <= target; neighbor += 1) {
+      if (!Number.isFinite(cost[node][neighbor]) || distance[neighbor] === Number.POSITIVE_INFINITY) {
+        continue;
+      }
+
+      const candidate = cost[node][neighbor] + distance[neighbor];
+      if (candidate < distance[node]) {
+        distance[node] = candidate;
+        nextNode[node] = neighbor;
+      }
+    }
+  }
+
+  if (distance[source] === Number.POSITIVE_INFINITY) {
+    return { distance: -1, path: [] };
+  }
+
+  const path: number[] = [];
+  for (let node = source; node !== -1; node = nextNode[node]) {
+    path.push(node);
+    if (node === target) {
+      break;
+    }
+  }
+
+  return { distance: distance[source], path };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you rewrite this using an adjacency list instead of an adjacency matrix?
+- Why is greedy choice on the smallest outgoing edge not sufficient?
+- How is this related to shortest path in a DAG?
+
+## Common Pitfalls
+
+- Ignoring the stage structure and reaching for a heavier generic algorithm immediately.
+- Assuming the locally cheapest outgoing edge must lie on the best global route.
+- Forgetting that the backward DP depends on nodes being ordered consistently with stages.
