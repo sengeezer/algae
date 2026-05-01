@@ -1,0 +1,130 @@
+---
+title: Find Min Iterator
+slug: find-min-iterator
+category: Mathematics
+summary: Traverse an iterable once to compute the smallest value, or the smallest projected value when a selector is supplied.
+description: Find Min Iterator is the iterator-based minimum helper that works without converting the input into an array first.
+dataStructures:
+  - Iterable
+  - Number
+techniques:
+  - Iterator Traversal
+  - Running Minimum
+  - Optional Projection
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - iterable minimum
+  - projected minimum scan
+useCases:
+  - Computing minima from generators or other streaming sources
+  - Avoiding array materialization for large iterables
+  - Applying a numeric selector while scanning object collections
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The helper visits each yielded item once and stores only the current minimum.
+interviewSignals:
+  - The prompt uses an iterable or generator rather than a plain array.
+  - The expected solution consumes the iterator incrementally instead of spreading it eagerly.
+relatedSlugs:
+  - find-min
+  - average-median
+  - priority-queue
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/FindMinIterator.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/FindMinIterator.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This version matters when the input is not already an array. It checks whether you can consume an iterator safely, handle the empty case, and optionally project each value before comparing.
+
+## Worked Example
+
+If an iterable yields `10`, `7`, `12`, and `4`, the running minimum ends at `4`. If a selector maps objects to scores, the helper returns the smallest score it sees.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function findMinIterator(iterable, selector) {
+  if (iterable == null || typeof iterable[Symbol.iterator] !== 'function') {
+    throw new TypeError('Expected an iterable value');
+  }
+
+  if (selector !== undefined && typeof selector !== 'function') {
+    throw new TypeError('Selector must be a function when provided');
+  }
+
+  const iterator = iterable[Symbol.iterator]();
+  let current = iterator.next();
+
+  if (current.done) {
+    return undefined;
+  }
+
+  let min = selector ? selector(current.value) : current.value;
+  current = iterator.next();
+
+  while (!current.done) {
+    const candidate = selector ? selector(current.value) : current.value;
+    if (candidate < min) {
+      min = candidate;
+    }
+    current = iterator.next();
+  }
+
+  return min;
+}
+```
+
+```ts
+export function findMinIterator<T extends number | string>(
+  iterable: Iterable<T>,
+  selector?: (value: T) => number,
+): number | T | undefined {
+  if (selector !== undefined && typeof selector !== 'function') {
+    throw new TypeError('Selector must be a function when provided');
+  }
+
+  const iterator = iterable[Symbol.iterator]();
+  let current = iterator.next();
+
+  if (current.done) {
+    return undefined;
+  }
+
+  let min: number | T = selector ? selector(current.value) : current.value;
+  current = iterator.next();
+
+  while (!current.done) {
+    const candidate: number | T = selector ? selector(current.value) : current.value;
+    if (candidate < min) {
+      min = candidate;
+    }
+    current = iterator.next();
+  }
+
+  return min;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the original item associated with the minimum projected value instead of the projected value itself.
+- Compare consuming an iterator lazily with spreading it into an array and using `Math.min`.
+- Support custom comparators instead of only numeric or lexical ordering.
+
+## Common Pitfalls
+
+- Assuming the iterable is non-empty.
+- Forgetting that the selector-based version returns the minimum projected value, not the original element.
+- Materializing the entire iterable when a single streaming pass is enough.

@@ -1,0 +1,157 @@
+---
+title: Euler Method
+slug: euler-method
+category: Mathematics
+summary: Advance an initial-value differential equation one explicit step at a time using the local slope.
+description: Euler Method is the forward-integration routine that approximates an ODE solution by repeatedly applying `y[n+1] = y[n] + h * f(x[n], y[n])`.
+dataStructures:
+  - Function
+  - Array
+  - Number
+techniques:
+  - Numerical Integration
+  - Explicit Euler Step
+  - Iterative Approximation
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - forward Euler method
+  - explicit Euler integration
+useCases:
+  - Approximating initial-value ODE solutions when an exact form is unavailable
+  - Teaching how local slope estimates evolve a continuous system
+  - Building simple physics or simulation prototypes from derivative rules
+complexity:
+  time: O(k)
+  space: O(k)
+  notes: The full solver stores one point per step, so both work and storage scale with the number of integration steps.
+interviewSignals:
+  - The prompt gives an initial value problem and a derivative function.
+  - The expected solution advances the approximation by repeated slope-based updates.
+relatedSlugs:
+  - arithmetic-geometric-mean
+  - bisection-method
+  - exponential-function
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/EulerMethod.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/EulerMethod.js
+    kind: Implementation
+  - title: free-programming-books - Algorithm Design
+    href: https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Euler's method is the entry-level numerical ODE solver. It is small enough for interviews, but still checks whether you can turn a recurrence formula into a careful step-by-step approximation.
+
+## Worked Example
+
+If `y' = x + y`, `y(0) = 1`, and the step size is `0.5`, the first Euler step is `1 + 0.5 * (0 + 1) = 1.5`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function eulerStep(xCurrent, stepSize, yCurrent, differentialEquation) {
+  if (![xCurrent, stepSize, yCurrent].every((value) => typeof value === 'number' && Number.isFinite(value))) {
+    throw new TypeError('State values and step size must be finite numbers');
+  }
+
+  if (stepSize <= 0) {
+    throw new RangeError('Step size must be positive');
+  }
+
+  if (typeof differentialEquation !== 'function') {
+    throw new TypeError('Expected a differential equation callback');
+  }
+
+  return yCurrent + stepSize * differentialEquation(xCurrent, yCurrent);
+}
+
+function eulerFull(xStart, xEnd, stepSize, yStart, differentialEquation) {
+  if (![xStart, xEnd, stepSize, yStart].every((value) => typeof value === 'number' && Number.isFinite(value))) {
+    throw new TypeError('Bounds, step size, and initial value must be finite numbers');
+  }
+
+  if (xEnd < xStart) {
+    throw new RangeError('End x must be greater than or equal to start x');
+  }
+
+  const points = [{ x: xStart, y: yStart }];
+  let xCurrent = xStart;
+  let yCurrent = yStart;
+
+  while (xCurrent < xEnd) {
+    yCurrent = eulerStep(xCurrent, stepSize, yCurrent, differentialEquation);
+    xCurrent += stepSize;
+    points.push({ x: xCurrent, y: yCurrent });
+  }
+
+  return points;
+}
+```
+
+```ts
+type EulerPoint = { x: number; y: number };
+
+export function eulerStep(
+  xCurrent: number,
+  stepSize: number,
+  yCurrent: number,
+  differentialEquation: (x: number, y: number) => number,
+): number {
+  if (![xCurrent, stepSize, yCurrent].every((value) => Number.isFinite(value))) {
+    throw new TypeError('State values and step size must be finite numbers');
+  }
+
+  if (stepSize <= 0) {
+    throw new RangeError('Step size must be positive');
+  }
+
+  return yCurrent + stepSize * differentialEquation(xCurrent, yCurrent);
+}
+
+export function eulerFull(
+  xStart: number,
+  xEnd: number,
+  stepSize: number,
+  yStart: number,
+  differentialEquation: (x: number, y: number) => number,
+): EulerPoint[] {
+  if (![xStart, xEnd, stepSize, yStart].every((value) => Number.isFinite(value))) {
+    throw new TypeError('Bounds, step size, and initial value must be finite numbers');
+  }
+
+  if (xEnd < xStart) {
+    throw new RangeError('End x must be greater than or equal to start x');
+  }
+
+  const points: EulerPoint[] = [{ x: xStart, y: yStart }];
+  let xCurrent = xStart;
+  let yCurrent = yStart;
+
+  while (xCurrent < xEnd) {
+    yCurrent = eulerStep(xCurrent, stepSize, yCurrent, differentialEquation);
+    xCurrent += stepSize;
+    points.push({ x: xCurrent, y: yCurrent });
+  }
+
+  return points;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain how smaller step sizes trade runtime for accuracy.
+- Compare Euler's method with higher-order schemes such as Runge-Kutta.
+- Stop once `xCurrent + stepSize` would overshoot the target and handle the final fractional step separately.
+
+## Common Pitfalls
+
+- Using a zero or negative step size.
+- Forgetting to keep both `x` and `y` in sync during each step.
+- Treating Euler's method as exact instead of an approximation whose error depends on the step size.

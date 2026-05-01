@@ -449,9 +449,20 @@ This thirty-eighth expansion slice lifts the catalog from 260 to 266 entries.
 - Count Numbers Divisible
 - Determinant
 
+## Batch 39 added
+
+This thirty-ninth expansion slice lifts the catalog from 266 to 272 entries.
+
+- Euler Method
+- Euler's Totient Function
+- Exponential Function
+- Farey Approximation
+- Find Min
+- Find Min Iterator
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 38 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 39 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -460,9 +471,9 @@ All expansion entries from batch 1 through batch 38 now carry explicit per-entry
 ## Why this batch
 
 - It fills obvious interview-core gaps from TheAlgorithms/JavaScript without duplicating material already present in Algae.
-- It follows the next verified math queue directly, adding digit-factorial checks, arc geometry, integer sequences, coordinate metrics, range divisibility counting, and recursive determinant expansion.
-- It broadens the catalog across discrete math, geometry, and linear algebra instead of staying inside the previous divisor-and-root-finding slice.
-- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially direct formulas, recurrence-style iteration, and matrix reasoning that still reward precise validation.
+- It follows the next verified math queue directly, adding numerical integration, totient counting, Taylor-series approximation, rational approximation, and two minimum-selection helpers.
+- It broadens the catalog across numerical methods, elementary number theory, and iterator utilities instead of staying inside the previous geometry-and-matrix slice.
+- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially approximation methods, arithmetic functions, and small reusable helpers that still reward precise validation.
 
 ## Supporting study references from the algorithms list
 
@@ -472,9 +483,9 @@ All expansion entries from batch 1 through batch 38 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- Euler Method
-- Euler's Totient Function
-- Exponential Function
-- Farey Approximation
-- Find Min
-- Find Min Iterator
+- Friendly Numbers
+- Get Euclid GCD
+- Grid Get
+- Hexagonal Number
+- Int To Base
+- Is Divisible

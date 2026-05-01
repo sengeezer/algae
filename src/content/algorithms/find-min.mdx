@@ -1,0 +1,110 @@
+---
+title: Find Min
+slug: find-min
+category: Mathematics
+summary: Scan a list of numeric inputs once to return the smallest value.
+description: Find Min is the linear-selection helper that keeps the current smallest value while traversing a list of numbers.
+dataStructures:
+  - Array
+  - Number
+techniques:
+  - Linear Scan
+  - Running Minimum
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - minimum of values
+  - running minimum scan
+useCases:
+  - Extracting the smallest value from a list without sorting
+  - Teaching how one-pass aggregation works
+  - Building a base helper for more complex selection routines
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The loop inspects each value once and maintains only the current minimum.
+interviewSignals:
+  - The prompt asks for the minimum element of a list.
+  - The expected solution avoids sorting when only the minimum is needed.
+relatedSlugs:
+  - average-median
+  - find-min-iterator
+  - quickselect
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/FindMin.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/FindMin.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a deliberately small helper, but it still tests whether you reach for the simplest correct approach instead of sorting or overcomplicating the problem.
+
+## Worked Example
+
+For the values `9`, `4`, `11`, and `2`, the running minimum moves from `9` to `4`, then stays there until it updates to `2`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function findMin(...values) {
+  if (values.length === 0) {
+    throw new TypeError('At least one value is required');
+  }
+
+  if (!values.every((value) => typeof value === 'number' && Number.isFinite(value))) {
+    throw new TypeError('Values must be finite numbers');
+  }
+
+  let min = values[0];
+
+  for (let index = 1; index < values.length; index += 1) {
+    if (values[index] < min) {
+      min = values[index];
+    }
+  }
+
+  return min;
+}
+```
+
+```ts
+export function findMin(...values: number[]): number {
+  if (values.length === 0) {
+    throw new TypeError('At least one value is required');
+  }
+
+  if (!values.every((value) => Number.isFinite(value))) {
+    throw new TypeError('Values must be finite numbers');
+  }
+
+  let min = values[0];
+
+  for (let index = 1; index < values.length; index += 1) {
+    if (values[index] < min) {
+      min = values[index];
+    }
+  }
+
+  return min;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return both the minimum value and its index.
+- Compare this one-pass scan with sorting the whole array.
+- Extend the helper to support a selector over objects.
+
+## Common Pitfalls
+
+- Sorting the full input when only the minimum is needed.
+- Forgetting to reject an empty argument list.
+- Ignoring non-finite numeric values if the caller expects strict validation.

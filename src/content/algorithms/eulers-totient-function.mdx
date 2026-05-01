@@ -1,0 +1,128 @@
+---
+title: Euler's Totient Function
+slug: eulers-totient-function
+category: Mathematics
+summary: Count how many integers from `1` through `n` are relatively prime to `n`.
+description: Euler's Totient Function is the arithmetic-counting routine that measures how many positive integers up to `n` share no common factor greater than `1` with `n`.
+dataStructures:
+  - Number
+techniques:
+  - Greatest Common Divisor
+  - Coprimality Counting
+  - Number Theory
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - phi function
+  - totient function
+useCases:
+  - Counting coprime residues in modular arithmetic
+  - Teaching how GCD checks encode relative primality
+  - Building number-theory tools used in RSA and related topics
+complexity:
+  time: O(n log n)
+  space: O(1)
+  notes: The naive form checks every candidate from `1` to `n` and computes a GCD each time.
+interviewSignals:
+  - The prompt asks for the number of integers up to `n` that are coprime with `n`.
+  - The expected solution uses a GCD-based test or a factorization-based shortcut.
+relatedSlugs:
+  - co-prime-check
+  - prime-factors
+  - signum
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/EulersTotientFunction.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/EulersTotientFunction.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Totient is a classic number-theory helper. Even the direct implementation checks whether you can combine a clean Euclidean GCD routine with a counting loop over candidates.
+
+## Worked Example
+
+For `n = 9`, the coprime values in `1..9` are `1`, `2`, `4`, `5`, `7`, and `8`, so `phi(9) = 6`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function gcd(left, right) {
+  let a = Math.abs(left);
+  let b = Math.abs(right);
+
+  while (b !== 0) {
+    const remainder = a % b;
+    a = b;
+    b = remainder;
+  }
+
+  return a;
+}
+
+function eulersTotientFunction(value) {
+  if (!Number.isInteger(value) || value <= 0) {
+    throw new RangeError('Value must be a positive integer');
+  }
+
+  let count = 0;
+
+  for (let candidate = 1; candidate <= value; candidate += 1) {
+    if (gcd(candidate, value) === 1) {
+      count += 1;
+    }
+  }
+
+  return count;
+}
+```
+
+```ts
+function gcd(left: number, right: number): number {
+  let a = Math.abs(left);
+  let b = Math.abs(right);
+
+  while (b !== 0) {
+    const remainder = a % b;
+    a = b;
+    b = remainder;
+  }
+
+  return a;
+}
+
+export function eulersTotientFunction(value: number): number {
+  if (!Number.isInteger(value) || value <= 0) {
+    throw new RangeError('Value must be a positive integer');
+  }
+
+  let count = 0;
+
+  for (let candidate = 1; candidate <= value; candidate += 1) {
+    if (gcd(candidate, value) === 1) {
+      count += 1;
+    }
+  }
+
+  return count;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Derive the faster multiplicative formula from the prime factors of `n`.
+- Explain why `phi(p) = p - 1` for prime `p`.
+- Reuse the totient values for all numbers up to a limit with a sieve-like approach.
+
+## Common Pitfalls
+
+- Forgetting that `1` is coprime with every positive integer.
+- Confusing divisibility with coprimality.
+- Using a brute-force factor test when the Euclidean algorithm is simpler and safer.

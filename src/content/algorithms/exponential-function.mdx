@@ -1,0 +1,124 @@
+---
+title: Exponential Function
+slug: exponential-function
+category: Mathematics
+summary: Approximate `e^x` by summing a finite Taylor series term by term.
+description: Exponential Function is the series-approximation routine that builds `e^x` from successive powers of `x` divided by factorials.
+dataStructures:
+  - Number
+techniques:
+  - Taylor Series
+  - Factorial Accumulation
+  - Numerical Approximation
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - e to the x approximation
+  - Taylor exponential approximation
+useCases:
+  - Teaching how infinite series become practical numerical approximations
+  - Approximating exponential growth without calling a library routine
+  - Comparing approximation accuracy as the term count increases
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: Each additional term requires one more power contribution and factorial update.
+interviewSignals:
+  - The prompt asks for an approximation to `e^x` rather than an exact symbolic form.
+  - The expected solution accumulates terms iteratively instead of recomputing factorials from scratch.
+relatedSlugs:
+  - euler-method
+  - arithmetic-geometric-mean
+  - factorial
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/ExponentialFunction.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/ExponentialFunction.js
+    kind: Implementation
+  - title: free-programming-books - Algorithm Design
+    href: https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a compact series-approximation problem. It checks whether you can accumulate terms efficiently and reason about how truncating an infinite series affects accuracy.
+
+## Worked Example
+
+For `x = 1`, the first few Taylor terms are `1`, `1`, `1 / 2`, `1 / 6`, and `1 / 24`, which quickly approach the value of `e`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function exponentialFunction(power, terms) {
+  if (![power, terms].every((value) => typeof value === 'number' && Number.isFinite(value))) {
+    throw new TypeError('Power and term count must be finite numbers');
+  }
+
+  if (!Number.isInteger(terms) || terms < 0) {
+    throw new RangeError('Term count must be a non-negative integer');
+  }
+
+  if (terms === 0) {
+    return 1;
+  }
+
+  let total = 0;
+  let factorial = 1;
+
+  for (let index = 0; index < terms; index += 1) {
+    if (index > 0) {
+      factorial *= index;
+    }
+
+    total += power ** index / factorial;
+  }
+
+  return total;
+}
+```
+
+```ts
+export function exponentialFunction(power: number, terms: number): number {
+  if (![power, terms].every((value) => Number.isFinite(value))) {
+    throw new TypeError('Power and term count must be finite numbers');
+  }
+
+  if (!Number.isInteger(terms) || terms < 0) {
+    throw new RangeError('Term count must be a non-negative integer');
+  }
+
+  if (terms === 0) {
+    return 1;
+  }
+
+  let total = 0;
+  let factorial = 1;
+
+  for (let index = 0; index < terms; index += 1) {
+    if (index > 0) {
+      factorial *= index;
+    }
+
+    total += power ** index / factorial;
+  }
+
+  return total;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Reuse each term to derive the next one without recomputing `power ** index` from scratch.
+- Measure how many terms are needed for a chosen error tolerance.
+- Compare this series approximation with directly calling `Math.exp`.
+
+## Common Pitfalls
+
+- Treating the term count as a real number instead of an integer.
+- Recomputing factorials from scratch inside the loop.
+- Forgetting that the result is an approximation whose quality improves with more terms.
