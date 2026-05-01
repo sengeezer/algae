@@ -1,0 +1,162 @@
+---
+title: Traveling Salesman Problem
+slug: traveling-salesman-problem
+category: Graphs
+summary: Use bitmask dynamic programming to visit every city exactly once and return to the start with minimum total cost.
+description: Traveling Salesman Problem is the classic tour-optimization problem often taught through Held-Karp dynamic programming on subsets.
+dataStructures:
+  - Graph
+  - Array
+  - Bitmask
+techniques:
+  - Dynamic Programming
+  - Bitmask DP
+  - Graph Optimization
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - tsp
+  - held-karp algorithm
+useCases:
+  - Route planning that must visit every stop exactly once
+  - Teaching exponential-state dynamic programming on subsets
+  - Contrasting exact NP-hard search with approximation or heuristics
+complexity:
+  time: O(n^2 * 2^n)
+  space: O(n * 2^n)
+  notes: The Held-Karp recurrence stores the cheapest way to reach each subset-ending pair, which cuts repeated work but does not change the problem's exponential nature.
+interviewSignals:
+  - The prompt asks for the cheapest Hamiltonian cycle through all cities.
+  - Brute-force permutation search is too slow, but the instance is still small enough for subset DP.
+relatedSlugs:
+  - bitmask-dp
+  - hamiltonian-cycle
+  - memoization-dp
+provenance:
+  - title: GeeksforGeeks - Traveling Salesman Problem (TSP) Implementation
+    href: https://www.geeksforgeeks.org/dsa/traveling-salesman-problem-tsp-implementation/
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+TSP is the interview benchmark for subset dynamic programming on graphs. The useful mental shift is to stop thinking about whole tours and instead ask for the cheapest partial tour that has visited a specific subset and currently ends at one specific city.
+
+## Worked Example
+
+For four cities, the subproblem `dp[1011][3]` means: among all tours that start at city `0`, visit cities `{0, 1, 3}`, and end at city `3`, what is the cheapest cost? Once those subset-ending costs are known, closing the final cycle is just one more edge back to the start.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function travelingSalesmanProblem(graph) {
+  const cityCount = graph.length;
+  if (cityCount <= 1) {
+    return 0;
+  }
+
+  const fullMask = 1 << cityCount;
+  const dp = Array.from({ length: fullMask }, () => new Array(cityCount).fill(Number.POSITIVE_INFINITY));
+  dp[1][0] = 0;
+
+  for (let mask = 1; mask < fullMask; mask += 1) {
+    if ((mask & 1) === 0) {
+      continue;
+    }
+
+    for (let last = 0; last < cityCount; last += 1) {
+      const current = dp[mask][last];
+      if (current === Number.POSITIVE_INFINITY) {
+        continue;
+      }
+
+      for (let next = 0; next < cityCount; next += 1) {
+        if ((mask & (1 << next)) !== 0) {
+          continue;
+        }
+
+        const candidate = current + graph[last][next];
+        const nextMask = mask | (1 << next);
+        if (candidate < dp[nextMask][next]) {
+          dp[nextMask][next] = candidate;
+        }
+      }
+    }
+  }
+
+  const visitedAll = fullMask - 1;
+  let best = Number.POSITIVE_INFINITY;
+
+  for (let last = 1; last < cityCount; last += 1) {
+    best = Math.min(best, dp[visitedAll][last] + graph[last][0]);
+  }
+
+  return best;
+}
+```
+
+```ts
+export function travelingSalesmanProblem(graph: number[][]): number {
+  const cityCount = graph.length;
+  if (cityCount <= 1) {
+    return 0;
+  }
+
+  const fullMask = 1 << cityCount;
+  const dp = Array.from({ length: fullMask }, () => new Array<number>(cityCount).fill(Number.POSITIVE_INFINITY));
+  dp[1][0] = 0;
+
+  for (let mask = 1; mask < fullMask; mask += 1) {
+    if ((mask & 1) === 0) {
+      continue;
+    }
+
+    for (let last = 0; last < cityCount; last += 1) {
+      const current = dp[mask][last];
+      if (current === Number.POSITIVE_INFINITY) {
+        continue;
+      }
+
+      for (let next = 0; next < cityCount; next += 1) {
+        if ((mask & (1 << next)) !== 0) {
+          continue;
+        }
+
+        const candidate = current + graph[last][next];
+        const nextMask = mask | (1 << next);
+        if (candidate < dp[nextMask][next]) {
+          dp[nextMask][next] = candidate;
+        }
+      }
+    }
+  }
+
+  const visitedAll = fullMask - 1;
+  let best = Number.POSITIVE_INFINITY;
+
+  for (let last = 1; last < cityCount; last += 1) {
+    best = Math.min(best, dp[visitedAll][last] + graph[last][0]);
+  }
+
+  return best;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Recover the actual tour, not just its minimum cost.
+- Compare Held-Karp with brute-force permutation search and with heuristic approximations.
+- Explain why the state must track both the visited subset and the current ending city.
+
+## Common Pitfalls
+
+- Forgetting to force the subset to include the starting city.
+- Returning the best path that visits every city but never closes the tour back to the start.
+- Treating Held-Karp as polynomial-time just because it uses dynamic programming.

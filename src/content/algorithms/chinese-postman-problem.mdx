@@ -1,0 +1,219 @@
+---
+title: Chinese Postman Problem
+slug: chinese-postman-problem
+category: Graphs
+summary: Pair the odd-degree vertices with minimum extra cost so the graph can be traversed in one cheapest closed route.
+description: Chinese Postman Problem is the route-inspection optimization problem of finding the shortest closed walk that covers every edge of a weighted graph at least once.
+dataStructures:
+  - Graph
+  - Matrix
+  - Array
+techniques:
+  - Eulerian Graphs
+  - All-Pairs Shortest Paths
+  - Bitmask DP
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - route inspection problem
+  - postman tour
+useCases:
+  - Planning minimum-cost inspection or delivery routes that must traverse every road
+  - Extending Eulerian graph ideas to weighted non-Eulerian networks
+  - Combining odd-degree pairing with shortest-path preprocessing
+complexity:
+  time: O(V^3 + 2^k * k^2)
+  space: O(V^2 + 2^k)
+  notes: The total route cost equals the sum of all edge weights plus the cheapest additional pairing cost needed to make every odd-degree vertex even.
+interviewSignals:
+  - Every edge must be covered, not every vertex.
+  - The graph is weighted and may not already be Eulerian, so duplicate traversal is allowed when it reduces total cost.
+relatedSlugs:
+  - euler-path-and-euler-circuit
+  - floyd-warshall
+  - bitmask-dp
+provenance:
+  - title: GeeksforGeeks - Chinese Postman or Route Inspection | Set 1 (Introduction)
+    href: https://www.geeksforgeeks.org/dsa/chinese-postman-route-inspection-set-1-introduction/
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Chinese Postman appears when Eulerian thinking is almost right but the graph is weighted and not quite Eulerian yet. The optimization insight is that you do not choose an entirely new route from scratch; you add just enough duplicated travel to make a closed Eulerian walk possible at minimum extra cost.
+
+## Worked Example
+
+If a weighted graph has four odd-degree vertices, an Eulerian tour is impossible until they are paired up. After computing shortest paths between those odd vertices, the problem becomes: which pairing adds the least extra distance to the total sum of all original edge weights?
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function chinesePostmanProblem(graph) {
+  const nodeCount = graph.length;
+  if (nodeCount === 0) {
+    return 0;
+  }
+
+  const distances = Array.from({ length: nodeCount }, (_, from) =>
+    Array.from({ length: nodeCount }, (_, to) => (from === to ? 0 : graph[from][to])),
+  );
+  const degree = new Array(nodeCount).fill(0);
+  let totalWeight = 0;
+
+  for (let from = 0; from < nodeCount; from += 1) {
+    for (let to = from + 1; to < nodeCount; to += 1) {
+      if (Number.isFinite(graph[from][to])) {
+        totalWeight += graph[from][to];
+        degree[from] += 1;
+        degree[to] += 1;
+      }
+    }
+  }
+
+  for (let via = 0; via < nodeCount; via += 1) {
+    for (let from = 0; from < nodeCount; from += 1) {
+      for (let to = 0; to < nodeCount; to += 1) {
+        const candidate = distances[from][via] + distances[via][to];
+        if (candidate < distances[from][to]) {
+          distances[from][to] = candidate;
+        }
+      }
+    }
+  }
+
+  const oddVertices = degree.flatMap((value, node) => (value % 2 === 1 ? [node] : []));
+  if (oddVertices.length === 0) {
+    return totalWeight;
+  }
+
+  const memo = new Map();
+
+  function pairOddVertices(mask) {
+    if (mask === 0) {
+      return 0;
+    }
+
+    if (memo.has(mask)) {
+      return memo.get(mask);
+    }
+
+    let first = 0;
+    while (((mask >> first) & 1) === 0) {
+      first += 1;
+    }
+
+    let best = Number.POSITIVE_INFINITY;
+    for (let second = first + 1; second < oddVertices.length; second += 1) {
+      if ((mask & (1 << second)) === 0) {
+        continue;
+      }
+
+      const candidate =
+        distances[oddVertices[first]][oddVertices[second]]
+        + pairOddVertices(mask ^ (1 << first) ^ (1 << second));
+      best = Math.min(best, candidate);
+    }
+
+    memo.set(mask, best);
+    return best;
+  }
+
+  return totalWeight + pairOddVertices((1 << oddVertices.length) - 1);
+}
+```
+
+```ts
+export function chinesePostmanProblem(graph: number[][]): number {
+  const nodeCount = graph.length;
+  if (nodeCount === 0) {
+    return 0;
+  }
+
+  const distances = Array.from({ length: nodeCount }, (_, from) =>
+    Array.from({ length: nodeCount }, (_, to) => (from === to ? 0 : graph[from][to])),
+  );
+  const degree = new Array<number>(nodeCount).fill(0);
+  let totalWeight = 0;
+
+  for (let from = 0; from < nodeCount; from += 1) {
+    for (let to = from + 1; to < nodeCount; to += 1) {
+      if (Number.isFinite(graph[from][to])) {
+        totalWeight += graph[from][to];
+        degree[from] += 1;
+        degree[to] += 1;
+      }
+    }
+  }
+
+  for (let via = 0; via < nodeCount; via += 1) {
+    for (let from = 0; from < nodeCount; from += 1) {
+      for (let to = 0; to < nodeCount; to += 1) {
+        const candidate = distances[from][via] + distances[via][to];
+        if (candidate < distances[from][to]) {
+          distances[from][to] = candidate;
+        }
+      }
+    }
+  }
+
+  const oddVertices = degree.flatMap((value, node) => (value % 2 === 1 ? [node] : []));
+  if (oddVertices.length === 0) {
+    return totalWeight;
+  }
+
+  const memo = new Map<number, number>();
+
+  function pairOddVertices(mask: number): number {
+    if (mask === 0) {
+      return 0;
+    }
+
+    const cached = memo.get(mask);
+    if (cached !== undefined) {
+      return cached;
+    }
+
+    let first = 0;
+    while (((mask >> first) & 1) === 0) {
+      first += 1;
+    }
+
+    let best = Number.POSITIVE_INFINITY;
+    for (let second = first + 1; second < oddVertices.length; second += 1) {
+      if ((mask & (1 << second)) === 0) {
+        continue;
+      }
+
+      const candidate =
+        distances[oddVertices[first]][oddVertices[second]]
+        + pairOddVertices(mask ^ (1 << first) ^ (1 << second));
+      best = Math.min(best, candidate);
+    }
+
+    memo.set(mask, best);
+    return best;
+  }
+
+  return totalWeight + pairOddVertices((1 << oddVertices.length) - 1);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Reconstruct the actual duplicated edges, not just the minimum route cost.
+- Compare Chinese Postman with Eulerian classification and with Hamiltonian tour problems.
+- Explain why only odd-degree vertices matter when fixing an undirected graph for a closed tour.
+
+## Common Pitfalls
+
+- Confusing "cover every edge" with "visit every vertex once."
+- Forgetting to add the original sum of edge weights before the odd-vertex pairing cost.
+- Using shortest paths between odd vertices without first making sure the graph is connected enough for the route to exist.

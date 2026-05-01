@@ -1,0 +1,202 @@
+---
+title: Biconnected Components
+slug: biconnected-components
+category: Graphs
+summary: Use low-link values plus an edge stack to split an undirected graph into maximal subgraphs with no articulation-point break inside them.
+description: Biconnected Components is the Tarjan-style decomposition problem that groups edges and vertices into maximal blocks separated by articulation points.
+dataStructures:
+  - Graph
+  - Array
+  - Stack
+techniques:
+  - Tarjan Low-Link
+  - Depth-First Search
+  - Graph Decomposition
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - bi-connected components
+  - block decomposition
+useCases:
+  - Breaking a graph into robust connectivity blocks
+  - Extending articulation-point analysis into full component decomposition
+  - Understanding how low-link values partition undirected graphs
+complexity:
+  time: O(V + E)
+  space: O(V + E)
+  notes: The edge stack is what turns cut-vertex detection into full component output, because every DFS tree/back edge can be assigned to exactly one biconnected block.
+interviewSignals:
+  - The prompt asks for maximal subgraphs that remain connected after removing any single internal vertex.
+  - Listing articulation points alone is not enough; you must output the blocks themselves.
+relatedSlugs:
+  - articulation-points
+  - bridges-in-a-graph
+  - connected-components
+provenance:
+  - title: GeeksforGeeks - Biconnected Components
+    href: https://www.geeksforgeeks.org/dsa/biconnected-components/
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Biconnected components are the next step after articulation points. Instead of asking which vertices are critical, you ask which whole regions of the graph stay internally robust and how articulation points act as boundaries between those regions.
+
+## Worked Example
+
+During DFS, every tree edge and qualifying back edge is pushed onto a stack. When a child subtree can no longer reconnect above a vertex, popping edges back to that boundary edge reveals one complete biconnected component.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function biconnectedComponents(graph) {
+  const nodeCount = graph.length;
+  const disc = new Array(nodeCount).fill(-1);
+  const low = new Array(nodeCount).fill(0);
+  const edgeStack = [];
+  const components = [];
+  let time = 0;
+
+  function recordComponent(stopEdge = null) {
+    const vertices = new Set();
+
+    while (edgeStack.length > 0) {
+      const [from, to] = edgeStack.pop();
+      vertices.add(from);
+      vertices.add(to);
+
+      if (
+        stopEdge !== null
+        && ((from === stopEdge[0] && to === stopEdge[1]) || (from === stopEdge[1] && to === stopEdge[0]))
+      ) {
+        break;
+      }
+    }
+
+    if (vertices.size > 0) {
+      components.push([...vertices].sort((left, right) => left - right));
+    }
+  }
+
+  function dfs(node, parent) {
+    disc[node] = time;
+    low[node] = time;
+    time += 1;
+    let childCount = 0;
+
+    for (const neighbor of graph[node]) {
+      if (disc[neighbor] === -1) {
+        childCount += 1;
+        edgeStack.push([node, neighbor]);
+        dfs(neighbor, node);
+        low[node] = Math.min(low[node], low[neighbor]);
+
+        if ((parent === -1 && childCount > 1) || (parent !== -1 && low[neighbor] >= disc[node])) {
+          recordComponent([node, neighbor]);
+        }
+      } else if (neighbor !== parent && disc[neighbor] < disc[node]) {
+        low[node] = Math.min(low[node], disc[neighbor]);
+        edgeStack.push([node, neighbor]);
+      }
+    }
+  }
+
+  for (let node = 0; node < nodeCount; node += 1) {
+    if (disc[node] === -1) {
+      dfs(node, -1);
+
+      if (edgeStack.length > 0) {
+        recordComponent();
+      }
+    }
+  }
+
+  return components;
+}
+```
+
+```ts
+export function biconnectedComponents(graph: number[][]): number[][] {
+  const nodeCount = graph.length;
+  const disc = new Array<number>(nodeCount).fill(-1);
+  const low = new Array<number>(nodeCount).fill(0);
+  const edgeStack: Array<[number, number]> = [];
+  const components: number[][] = [];
+  let time = 0;
+
+  function recordComponent(stopEdge: [number, number] | null = null): void {
+    const vertices = new Set<number>();
+
+    while (edgeStack.length > 0) {
+      const [from, to] = edgeStack.pop()!;
+      vertices.add(from);
+      vertices.add(to);
+
+      if (
+        stopEdge !== null
+        && ((from === stopEdge[0] && to === stopEdge[1]) || (from === stopEdge[1] && to === stopEdge[0]))
+      ) {
+        break;
+      }
+    }
+
+    if (vertices.size > 0) {
+      components.push([...vertices].sort((left, right) => left - right));
+    }
+  }
+
+  function dfs(node: number, parent: number): void {
+    disc[node] = time;
+    low[node] = time;
+    time += 1;
+    let childCount = 0;
+
+    for (const neighbor of graph[node]) {
+      if (disc[neighbor] === -1) {
+        childCount += 1;
+        edgeStack.push([node, neighbor]);
+        dfs(neighbor, node);
+        low[node] = Math.min(low[node], low[neighbor]);
+
+        if ((parent === -1 && childCount > 1) || (parent !== -1 && low[neighbor] >= disc[node])) {
+          recordComponent([node, neighbor]);
+        }
+      } else if (neighbor !== parent && disc[neighbor] < disc[node]) {
+        low[node] = Math.min(low[node], disc[neighbor]);
+        edgeStack.push([node, neighbor]);
+      }
+    }
+  }
+
+  for (let node = 0; node < nodeCount; node += 1) {
+    if (disc[node] === -1) {
+      dfs(node, -1);
+
+      if (edgeStack.length > 0) {
+        recordComponent();
+      }
+    }
+  }
+
+  return components;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the articulation points alongside the component list.
+- Explain why bridges form one-edge biconnected components under this decomposition.
+- Adapt the same low-link machinery to articulation points and bridges in one DFS.
+
+## Common Pitfalls
+
+- Forgetting to keep an edge stack, which makes it impossible to reconstruct the components themselves.
+- Pushing both directions of the same undirected back edge.
+- Returning only articulation points when the problem asks for full block decomposition.

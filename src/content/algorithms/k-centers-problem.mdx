@@ -1,0 +1,148 @@
+---
+title: K Centers Problem
+slug: k-centers-problem
+category: Graphs
+summary: Repeatedly place the next center at the farthest point from the current centers to get a practical 2-approximation in metric spaces.
+description: K Centers Problem is the facility-location style optimization problem of choosing `k` centers that minimize the maximum distance from any point to its nearest chosen center.
+dataStructures:
+  - Graph
+  - Array
+  - Matrix
+techniques:
+  - Approximation Algorithms
+  - Greedy
+  - Facility Location
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - k-center problem
+  - facility placement
+useCases:
+  - Choosing warehouse or server locations under worst-case distance constraints
+  - Teaching farthest-first traversal and metric approximation guarantees
+  - Comparing min-max placement with route and covering problems
+complexity:
+  time: O(k * n^2)
+  space: O(n)
+  notes: The farthest-first greedy rule is a 2-approximation in metric spaces because every new center is forced to address the current worst-served point.
+interviewSignals:
+  - You must place exactly `k` facilities.
+  - The objective is to minimize the farthest client's distance to a chosen center.
+relatedSlugs:
+  - vertex-cover-problem
+  - traveling-salesman-problem
+  - dijkstra
+provenance:
+  - title: GeeksforGeeks - Greedy Approximate Algorithm for K Centers Problem
+    href: https://www.geeksforgeeks.org/dsa/greedy-approximate-algorithm-for-k-centers-problem/
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+K centers shows up when shortest paths and MSTs stop being the right objective. The goal is no longer total cost or pairwise optimality, but the worst-case distance any point must travel to its nearest chosen center.
+
+## Worked Example
+
+Start by choosing an arbitrary first center. Then repeatedly measure each point's distance to its nearest chosen center and add whichever point is currently farthest away; that greedy rule keeps attacking the maximum uncovered radius directly.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function kCentersProblem(distances, centerCount) {
+  const nodeCount = distances.length;
+  if (nodeCount === 0 || centerCount <= 0) {
+    return [];
+  }
+
+  const centers = [0];
+  const chosen = new Array(nodeCount).fill(false);
+  const bestDistance = distances[0].slice();
+  chosen[0] = true;
+  bestDistance[0] = 0;
+
+  while (centers.length < Math.min(centerCount, nodeCount)) {
+    let candidate = -1;
+    let farthestDistance = -1;
+
+    for (let node = 0; node < nodeCount; node += 1) {
+      if (!chosen[node] && bestDistance[node] > farthestDistance) {
+        farthestDistance = bestDistance[node];
+        candidate = node;
+      }
+    }
+
+    if (candidate === -1) {
+      break;
+    }
+
+    chosen[candidate] = true;
+    centers.push(candidate);
+
+    for (let node = 0; node < nodeCount; node += 1) {
+      bestDistance[node] = Math.min(bestDistance[node], distances[candidate][node]);
+    }
+  }
+
+  return centers;
+}
+```
+
+```ts
+export function kCentersProblem(distances: number[][], centerCount: number): number[] {
+  const nodeCount = distances.length;
+  if (nodeCount === 0 || centerCount <= 0) {
+    return [];
+  }
+
+  const centers = [0];
+  const chosen = new Array<boolean>(nodeCount).fill(false);
+  const bestDistance = distances[0].slice();
+  chosen[0] = true;
+  bestDistance[0] = 0;
+
+  while (centers.length < Math.min(centerCount, nodeCount)) {
+    let candidate = -1;
+    let farthestDistance = -1;
+
+    for (let node = 0; node < nodeCount; node += 1) {
+      if (!chosen[node] && bestDistance[node] > farthestDistance) {
+        farthestDistance = bestDistance[node];
+        candidate = node;
+      }
+    }
+
+    if (candidate === -1) {
+      break;
+    }
+
+    chosen[candidate] = true;
+    centers.push(candidate);
+
+    for (let node = 0; node < nodeCount; node += 1) {
+      bestDistance[node] = Math.min(bestDistance[node], distances[candidate][node]);
+    }
+  }
+
+  return centers;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why farthest-first traversal gives a 2-approximation under the triangle inequality.
+- Compare the min-max objective here with the min-sum objective behind TSP.
+- Adapt the input from a distance matrix to coordinates or graph shortest-path distances.
+
+## Common Pitfalls
+
+- Optimizing total distance instead of the maximum nearest-center distance.
+- Using the greedy rule on non-metric data and still claiming the same guarantee.
+- Forgetting to update each point's nearest-center distance after adding a new center.

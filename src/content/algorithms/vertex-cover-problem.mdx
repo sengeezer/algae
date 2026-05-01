@@ -1,0 +1,139 @@
+---
+title: Vertex Cover Problem
+slug: vertex-cover-problem
+category: Graphs
+summary: Repeatedly pick both endpoints of an uncovered edge to build a fast 2-approximation to a minimum vertex cover.
+description: Vertex Cover Problem is the classic NP-hard edge-covering problem often introduced with a simple greedy 2-approximation.
+dataStructures:
+  - Graph
+  - Array
+  - Set
+techniques:
+  - Approximation Algorithms
+  - Greedy
+  - Graph Covering
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - minimum vertex cover
+  - edge-covering vertices
+useCases:
+  - Selecting the smallest set of monitors that touches every network link
+  - Introducing approximation guarantees for NP-hard problems
+  - Contrasting edge-covering with independent-set and matching ideas
+complexity:
+  time: O(V + E)
+  space: O(V + E)
+  notes: "The standard edge-picking approximation is easy to prove: every chosen uncovered edge forces at least one of its endpoints into any valid cover, so taking both endpoints stays within a factor of two."
+interviewSignals:
+  - Every edge must be incident to at least one selected vertex.
+  - The exact optimum is hard, but the prompt allows or hints at an approximation.
+relatedSlugs:
+  - hopcroft-karp-algorithm
+  - bipartite-matching
+  - m-coloring-problem
+provenance:
+  - title: GeeksforGeeks - Introduction and Approximate Solution for Vertex Cover Problem
+    href: https://www.geeksforgeeks.org/dsa/introduction-and-approximate-solution-for-vertex-cover-problem/
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Vertex cover is one of the cleanest ways to show that interview graph problems do not always want exact optimization. The usual teaching version is not "solve the NP-hard problem perfectly," but "state a fast approximation with a defensible guarantee and explain why it works."
+
+## Worked Example
+
+If edge `(u, v)` is still uncovered, any valid cover must contain `u` or `v`. The greedy approximation takes both endpoints, deletes every incident edge from consideration, and repeats; that may overshoot the optimum, but it never overshoots by more than a factor of two.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function approximateVertexCover(nodeCount, edges) {
+  const incidentEdges = Array.from({ length: nodeCount }, () => []);
+
+  edges.forEach(([from, to], index) => {
+    incidentEdges[from].push(index);
+    incidentEdges[to].push(index);
+  });
+
+  const active = new Array(edges.length).fill(true);
+  const chosen = new Array(nodeCount).fill(false);
+
+  for (let index = 0; index < edges.length; index += 1) {
+    if (!active[index]) {
+      continue;
+    }
+
+    const [from, to] = edges[index];
+    chosen[from] = true;
+    chosen[to] = true;
+
+    for (const edgeIndex of incidentEdges[from]) {
+      active[edgeIndex] = false;
+    }
+
+    for (const edgeIndex of incidentEdges[to]) {
+      active[edgeIndex] = false;
+    }
+  }
+
+  return chosen.flatMap((take, node) => (take ? [node] : []));
+}
+```
+
+```ts
+export function approximateVertexCover(
+  nodeCount: number,
+  edges: Array<[number, number]>,
+): number[] {
+  const incidentEdges = Array.from({ length: nodeCount }, () => [] as number[]);
+
+  edges.forEach(([from, to], index) => {
+    incidentEdges[from].push(index);
+    incidentEdges[to].push(index);
+  });
+
+  const active = new Array<boolean>(edges.length).fill(true);
+  const chosen = new Array<boolean>(nodeCount).fill(false);
+
+  for (let index = 0; index < edges.length; index += 1) {
+    if (!active[index]) {
+      continue;
+    }
+
+    const [from, to] = edges[index];
+    chosen[from] = true;
+    chosen[to] = true;
+
+    for (const edgeIndex of incidentEdges[from]) {
+      active[edgeIndex] = false;
+    }
+
+    for (const edgeIndex of incidentEdges[to]) {
+      active[edgeIndex] = false;
+    }
+  }
+
+  return chosen.flatMap((take, node) => (take ? [node] : []));
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why this greedy routine is a 2-approximation.
+- Contrast general vertex cover with the bipartite case, where matching gives stronger structure.
+- Discuss what changes if vertices have weights instead of uniform cost.
+
+## Common Pitfalls
+
+- Confusing vertex cover with selecting vertices that reach every other vertex.
+- Claiming the greedy 2-approximation is always optimal.
+- Forgetting that covering edges, not vertices, is the actual requirement.

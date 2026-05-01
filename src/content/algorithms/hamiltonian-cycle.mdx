@@ -1,0 +1,166 @@
+---
+title: Hamiltonian Cycle
+slug: hamiltonian-cycle
+category: Graphs
+summary: Backtrack through the graph while enforcing adjacency and no-revisit rules until a cycle visits every vertex exactly once.
+description: Hamiltonian Cycle is the graph-search problem of finding a closed tour that visits each vertex exactly once.
+dataStructures:
+  - Graph
+  - Array
+  - Recursion Stack
+techniques:
+  - Backtracking
+  - Graph Traversal
+  - Constraint Search
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - hamiltonian circuit
+  - exact graph tour
+useCases:
+  - Searching for exact tours through graph vertices
+  - Comparing Hamiltonian constraints with Eulerian traversal rules
+  - Practicing recursive state construction with graph feasibility checks
+complexity:
+  time: O(n!)
+  space: O(n)
+  notes: The branching factor stays high because feasibility only rules out locally invalid choices; unlike Eulerian traversal, no degree-count shortcut solves the general problem.
+interviewSignals:
+  - The path must visit every vertex exactly once and return to the start.
+  - The prompt sounds like TSP without edge weights or costs.
+relatedSlugs:
+  - traveling-salesman-problem
+  - knight-tour
+  - backtracking-search
+provenance:
+  - title: GeeksforGeeks - Hamiltonian Cycle
+    href: https://www.geeksforgeeks.org/dsa/hamiltonian-cycle/
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Hamiltonian cycle questions test whether you can build a global tour from tight local constraints. The hard part is that visiting every vertex exactly once gives you very little reusable structure, so the usual interview solution is careful backtracking with aggressive feasibility checks.
+
+## Worked Example
+
+If the current path is `[0, 2, 1]`, the next candidate vertex must be adjacent to `1` and must not already appear earlier in the path. Once the path length reaches `n`, one final edge back to `0` determines whether you found a cycle or just a dead end.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function hamiltonianCycle(graph) {
+  const nodeCount = graph.length;
+  if (nodeCount === 0) {
+    return [];
+  }
+
+  const path = new Array(nodeCount).fill(-1);
+  path[0] = 0;
+
+  function isSafe(vertex, position) {
+    if (graph[path[position - 1]][vertex] === 0) {
+      return false;
+    }
+
+    for (let index = 0; index < position; index += 1) {
+      if (path[index] === vertex) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  function search(position) {
+    if (position === nodeCount) {
+      return graph[path[nodeCount - 1]][path[0]] === 1;
+    }
+
+    for (let vertex = 1; vertex < nodeCount; vertex += 1) {
+      if (!isSafe(vertex, position)) {
+        continue;
+      }
+
+      path[position] = vertex;
+      if (search(position + 1)) {
+        return true;
+      }
+
+      path[position] = -1;
+    }
+
+    return false;
+  }
+
+  return search(1) ? [...path, path[0]] : [];
+}
+```
+
+```ts
+export function hamiltonianCycle(graph: number[][]): number[] {
+  const nodeCount = graph.length;
+  if (nodeCount === 0) {
+    return [];
+  }
+
+  const path = new Array<number>(nodeCount).fill(-1);
+  path[0] = 0;
+
+  function isSafe(vertex: number, position: number): boolean {
+    if (graph[path[position - 1]][vertex] === 0) {
+      return false;
+    }
+
+    for (let index = 0; index < position; index += 1) {
+      if (path[index] === vertex) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  function search(position: number): boolean {
+    if (position === nodeCount) {
+      return graph[path[nodeCount - 1]][path[0]] === 1;
+    }
+
+    for (let vertex = 1; vertex < nodeCount; vertex += 1) {
+      if (!isSafe(vertex, position)) {
+        continue;
+      }
+
+      path[position] = vertex;
+      if (search(position + 1)) {
+        return true;
+      }
+
+      path[position] = -1;
+    }
+
+    return false;
+  }
+
+  return search(1) ? [...path, path[0]] : [];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare Hamiltonian cycle with Eulerian path, where the constraints apply to edges instead of vertices.
+- Add pruning heuristics such as choosing the next vertex by degree.
+- Explain why adding weights turns the problem into TSP.
+
+## Common Pitfalls
+
+- Forgetting that a Hamiltonian cycle must return to the starting vertex.
+- Confusing "visit every vertex once" with "use every edge once."
+- Treating degree counts as a complete correctness test the way they are for Eulerian graphs.

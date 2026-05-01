@@ -636,9 +636,20 @@ This fifty-fifth expansion slice lifts the catalog from 360 to 366 entries.
 - Dial's Algorithm
 - Reverse-Delete Algorithm
 
+## Batch 56 added
+
+This fifty-sixth expansion slice lifts the catalog from 366 to 372 entries.
+
+- Traveling Salesman Problem
+- Vertex Cover Problem
+- K Centers Problem
+- Hamiltonian Cycle
+- Biconnected Components
+- Chinese Postman Problem
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 55 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 56 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -646,10 +657,10 @@ All expansion entries from batch 1 through batch 55 now carry explicit per-entry
 
 ## Why this batch
 
-- It stays inside the GeeksforGeeks DSA progression while explicitly skipping semantic duplicates such as generic SCC coverage that the catalog already covers through Kosaraju.
-- It broadens the catalog across optimized bipartite matching, implication-graph satisfiability, component-wise MST growth, sparse-graph APSP reweighting, bounded-weight shortest paths, and MST construction by safe edge deletion.
-- It adds interview-relevant refinements rather than surface renames: layered augmentation, literal-negation contradictions, parallel cheapest-edge merges, Johnson reweighting, bucket queues, and reverse greedy cut reasoning.
-- It leaves the next frontier ready to pivot from graph-optimization mechanics into harder combinatorial optimization and approximation topics.
+- It stays inside the GeeksforGeeks hard-graph sequence while skipping semantic overlaps such as Tarjan SCC coverage and the generic graph-coloring introduction that the catalog already covers through Kosaraju and M Coloring.
+- It broadens the catalog across exact Hamiltonian-style tour search, approximation algorithms for covers and facility placement, low-link component decomposition, and route-inspection optimization on weighted graphs.
+- It adds techniques that were not previously surfaced as first-class entries: Held-Karp bitmask DP, 2-approx edge picking, farthest-first center selection, Hamiltonian backtracking, edge-stack biconnected decomposition, and odd-vertex pairing for route inspection.
+- It leaves the next frontier inside the same GFG track, with construction-oriented Eulerian traversal and word-search backtracking still available for the next slice.
 
 ## Supporting study references from the algorithms list
 
@@ -659,4 +670,4 @@ All expansion entries from batch 1 through batch 55 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- The next clean GeeksforGeeks frontier after this batch starts with `Traveling Salesman Problem (TSP) Implementation`, `Vertex Cover Problem`, and `K Centers Problem`; the raw source order then revisits SCCs via `Tarjan's Algorithm`, which overlaps semantically with the existing Kosaraju entry.
+- The next clean GeeksforGeeks frontier after this batch starts with `Hierholzer's Algorithm for Directed Graph` and `Boggle`; nearby skipped items include the generic `Graph Coloring` introduction, which overlaps with `M Coloring Problem`, and the SCC-focused `Tarjan's Algorithm`, which overlaps with `Kosaraju`.
