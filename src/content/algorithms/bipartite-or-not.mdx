@@ -1,0 +1,134 @@
+---
+title: Bipartite or Not
+slug: bipartite-or-not
+category: Graphs
+summary: Two-color each connected component so every edge crosses between opposite colors or report the odd-cycle conflict that makes that impossible.
+description: Bipartite or Not is the graph-validation problem of checking whether a graph can be split into two independent sets with BFS or DFS coloring.
+dataStructures:
+  - Graph
+  - Queue
+  - Array
+techniques:
+  - Graph Coloring
+  - Breadth-First Search
+  - Graph Validation
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - bipartite graph check
+  - two-coloring
+useCases:
+  - Validating a graph before running bipartite matching routines
+  - Detecting odd cycles through coloring conflicts
+  - Splitting users, tasks, or states into two non-conflicting sides
+complexity:
+  time: O(V + E)
+  space: O(V)
+  notes: The algorithm works because a graph is bipartite exactly when every cycle has even length, which a consistent two-coloring captures automatically.
+interviewSignals:
+  - The graph should separate into two groups with no internal edges.
+  - Matching or partition logic is present but the bipartite guarantee is not given for free.
+relatedSlugs:
+  - bipartite-matching
+  - hopcroft-karp-algorithm
+  - breadth-first-search
+provenance:
+  - title: GeeksforGeeks - Check whether a given graph is Bipartite or not
+    href: https://www.geeksforgeeks.org/dsa/bipartite-graph/
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Bipartite detection is the guardrail that often appears just before matching or two-group assignment problems. The interview move is simple: color each component with two colors, and the first edge whose endpoints demand the same color proves the graph is not bipartite.
+
+## Worked Example
+
+Start with any uncolored vertex and assign it color `0`. Its neighbors must take color `1`, their uncolored neighbors must take color `0`, and so on; if you ever reach an edge connecting two vertices with the same assigned color, you found an odd-cycle contradiction.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function bipartiteOrNot(graph) {
+  const colors = new Array(graph.length).fill(-1);
+
+  for (let start = 0; start < graph.length; start += 1) {
+    if (colors[start] !== -1) {
+      continue;
+    }
+
+    const queue = [start];
+    colors[start] = 0;
+
+    for (let head = 0; head < queue.length; head += 1) {
+      const node = queue[head];
+
+      for (const neighbor of graph[node]) {
+        if (colors[neighbor] === -1) {
+          colors[neighbor] = 1 - colors[node];
+          queue.push(neighbor);
+          continue;
+        }
+
+        if (colors[neighbor] === colors[node]) {
+          return false;
+        }
+      }
+    }
+  }
+
+  return true;
+}
+```
+
+```ts
+export function bipartiteOrNot(graph: number[][]): boolean {
+  const colors = new Array<number>(graph.length).fill(-1);
+
+  for (let start = 0; start < graph.length; start += 1) {
+    if (colors[start] !== -1) {
+      continue;
+    }
+
+    const queue: number[] = [start];
+    colors[start] = 0;
+
+    for (let head = 0; head < queue.length; head += 1) {
+      const node = queue[head];
+
+      for (const neighbor of graph[node]) {
+        if (colors[neighbor] === -1) {
+          colors[neighbor] = 1 - colors[node];
+          queue.push(neighbor);
+          continue;
+        }
+
+        if (colors[neighbor] === colors[node]) {
+          return false;
+        }
+      }
+    }
+  }
+
+  return true;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the actual two partitions, not just a boolean answer.
+- Explain why odd cycles are exactly what break bipartiteness.
+- Compare this validation step with the later matching algorithms that assume a bipartite input.
+
+## Common Pitfalls
+
+- Assuming a disconnected graph can be checked from only one starting node.
+- Forgetting to color vertices when they are enqueued, which can duplicate work.
+- Confusing bipartite detection with finding a maximum bipartite matching.

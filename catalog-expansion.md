@@ -647,9 +647,20 @@ This fifty-sixth expansion slice lifts the catalog from 366 to 372 entries.
 - Biconnected Components
 - Chinese Postman Problem
 
+## Batch 57 added
+
+This fifty-seventh expansion slice lifts the catalog from 372 to 378 entries.
+
+- Hierholzer's Algorithm for Directed Graph
+- Bipartite or Not
+- Snake and Ladder Problem
+- Boggle
+- Construct Graph from Given Degree Sequence
+- Universal Sink in Directed Graph
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 56 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 57 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -657,10 +668,10 @@ All expansion entries from batch 1 through batch 56 now carry explicit per-entry
 
 ## Why this batch
 
-- It stays inside the GeeksforGeeks hard-graph sequence while skipping semantic overlaps such as Tarjan SCC coverage and the generic graph-coloring introduction that the catalog already covers through Kosaraju and M Coloring.
-- It broadens the catalog across exact Hamiltonian-style tour search, approximation algorithms for covers and facility placement, low-link component decomposition, and route-inspection optimization on weighted graphs.
-- It adds techniques that were not previously surfaced as first-class entries: Held-Karp bitmask DP, 2-approx edge picking, farthest-first center selection, Hamiltonian backtracking, edge-stack biconnected decomposition, and odd-vertex pairing for route inspection.
-- It leaves the next frontier inside the same GFG track, with construction-oriented Eulerian traversal and word-search backtracking still available for the next slice.
+- It stays inside the same GeeksforGeeks graph sequence while turning theory-only mentions into first-class implementation entries and skipping weak or duplicate detours.
+- It broadens the catalog across directed Eulerian construction, bipartite validation, implicit-board BFS, trie-assisted board search, graphical degree-sequence realization, and adjacency-matrix sink detection.
+- It adds several interview patterns that were previously only implied by nearby entries: explicit Hierholzer traversal, two-color feasibility checks before matching, shortest-path modeling on game boards, Boggle-style DFS with prefix pruning, Havel-Hakimi style graph construction, and O(n) candidate elimination on directed graphs.
+- It leaves the next frontier poised to move into graph partitioning and flow-adjacent applications after one weak source-order detour that is not worth promoting to a standalone entry.
 
 ## Supporting study references from the algorithms list
 
@@ -670,4 +681,4 @@ All expansion entries from batch 1 through batch 56 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- The next clean GeeksforGeeks frontier after this batch starts with `Hierholzer's Algorithm for Directed Graph` and `Boggle`; nearby skipped items include the generic `Graph Coloring` introduction, which overlaps with `M Coloring Problem`, and the SCC-focused `Tarjan's Algorithm`, which overlaps with `Kosaraju`.
+- The next clean GeeksforGeeks frontier after this batch starts with `Two Clique Problem`, `Channel Assignment Problem`, `Minimum s-t Cut in a Flow Network`, and `Maximum Edge Disjoint Paths`; the nearby `Number of sinks in a graph` detour is source-ordered but too weak to prioritize as a standalone entry.

@@ -1,0 +1,128 @@
+---
+title: Snake and Ladder Problem
+slug: snake-and-ladder-problem
+category: Graphs
+summary: Treat each board square as a state and use BFS to find the fewest dice throws once snakes and ladders redirect each move.
+description: Snake and Ladder Problem is the shortest-path state-space problem of reaching the last board cell in minimum dice throws.
+dataStructures:
+  - Graph
+  - Queue
+  - Array
+techniques:
+  - Breadth-First Search
+  - Shortest Path
+  - State Space Search
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - snakes and ladders shortest path
+  - minimum dice throws
+useCases:
+  - Modeling board games as shortest-path state spaces
+  - Recognizing BFS on an implicit graph instead of an explicit adjacency list
+  - Mapping teleports or redirects into one-step moves
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: Each board square is processed at most once, so the branching from the six dice outcomes still leads to linear total work.
+interviewSignals:
+  - The task asks for the fewest dice throws, not the number of distinct paths.
+  - Snakes or ladders redirect a move immediately after landing on a square.
+relatedSlugs:
+  - breadth-first-search
+  - dijkstra
+  - memoization-dp
+provenance:
+  - title: GeeksforGeeks - Snake and Ladder Problem
+    href: https://www.geeksforgeeks.org/dsa/snake-ladder-problem-2/
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Snake and Ladder is a clean example of BFS on an implicit graph. The board is not given as adjacency lists, but each square still has outgoing edges to the next six dice outcomes after accounting for any snake or ladder jump.
+
+## Worked Example
+
+If square `3` contains a ladder to `14`, then from square `1` a roll of `2` really reaches `14` in one move, not `3`. BFS handles that naturally by enqueuing the redirected destination with one more dice throw.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function snakeAndLadderProblem(board) {
+  const target = board.length - 1;
+  const visited = new Array(board.length).fill(false);
+  const queue = [[0, 0]];
+  visited[0] = true;
+
+  for (let head = 0; head < queue.length; head += 1) {
+    const [cell, throwsUsed] = queue[head];
+    if (cell === target) {
+      return throwsUsed;
+    }
+
+    for (let move = 1; move <= 6 && cell + move < board.length; move += 1) {
+      let next = cell + move;
+      if (board[next] !== -1) {
+        next = board[next];
+      }
+
+      if (!visited[next]) {
+        visited[next] = true;
+        queue.push([next, throwsUsed + 1]);
+      }
+    }
+  }
+
+  return -1;
+}
+```
+
+```ts
+export function snakeAndLadderProblem(board: number[]): number {
+  const target = board.length - 1;
+  const visited = new Array<boolean>(board.length).fill(false);
+  const queue: Array<[number, number]> = [[0, 0]];
+  visited[0] = true;
+
+  for (let head = 0; head < queue.length; head += 1) {
+    const [cell, throwsUsed] = queue[head];
+    if (cell === target) {
+      return throwsUsed;
+    }
+
+    for (let move = 1; move <= 6 && cell + move < board.length; move += 1) {
+      let next = cell + move;
+      if (board[next] !== -1) {
+        next = board[next];
+      }
+
+      if (!visited[next]) {
+        visited[next] = true;
+        queue.push([next, throwsUsed + 1]);
+      }
+    }
+  }
+
+  return -1;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Reconstruct one optimal sequence of dice throws and redirects.
+- Explain why BFS is sufficient and Dijkstra is unnecessary here.
+- Generalize the state graph to other board games with portals or penalties.
+
+## Common Pitfalls
+
+- Marking the pre-redirect square visited instead of the actual destination square.
+- Counting a snake or ladder jump as an extra move when it is part of the same dice throw.
+- Using DFS or brute force when the prompt asks for a minimum number of throws.

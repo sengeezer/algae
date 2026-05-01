@@ -1,0 +1,134 @@
+---
+title: Universal Sink in Directed Graph
+slug: universal-sink-in-directed-graph
+category: Graphs
+summary: Eliminate impossible candidates in one adjacency-matrix scan, then verify the survivor has out-degree zero and in-degree n minus one.
+description: Universal Sink in Directed Graph is the candidate-elimination problem of finding a vertex that every other vertex points to while it points to nobody.
+dataStructures:
+  - Graph
+  - Matrix
+  - Array
+techniques:
+  - Candidate Elimination
+  - Adjacency Matrix
+  - Graph Properties
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - universal sink
+  - directed celebrity problem
+useCases:
+  - Finding a sink vertex in a relation matrix
+  - Practicing linear-time elimination on dense graph representations
+  - Recognizing when degree conditions can be checked without exploring the whole graph repeatedly
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The elimination phase works because one matrix entry always rules out either the current row candidate or the current column candidate immediately.
+interviewSignals:
+  - The graph is given as an adjacency matrix.
+  - One special vertex must receive every edge and emit none.
+relatedSlugs:
+  - breadth-first-search
+  - connected-components
+  - construct-graph-from-degree-sequence
+provenance:
+  - title: GeeksforGeeks - Determine whether universal sink exists in a directed graph
+    href: https://www.geeksforgeeks.org/dsa/determine-whether-universal-sink-exists-directed-graph/
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Universal sink problems are interesting because they look like they require checking every row and column, but they do not. One adjacency-matrix comparison at a time is enough to eliminate impossible candidates until only one vertex can still qualify.
+
+## Worked Example
+
+If `matrix[i][j] === 1`, then vertex `i` cannot be a universal sink because it has an outgoing edge. If `matrix[i][j] === 0`, then vertex `j` cannot be a universal sink because some other vertex does not point to it. After one scan, the survivor is verified by checking its full row and column.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function universalSinkInDirectedGraph(matrix) {
+  const size = matrix.length;
+  let row = 0;
+  let column = 0;
+
+  while (row < size && column < size) {
+    if (matrix[row][column] === 1) {
+      row += 1;
+    } else {
+      column += 1;
+    }
+  }
+
+  const candidate = row;
+  if (candidate >= size) {
+    return -1;
+  }
+
+  for (let index = 0; index < size; index += 1) {
+    if (index === candidate) {
+      continue;
+    }
+
+    if (matrix[candidate][index] !== 0 || matrix[index][candidate] !== 1) {
+      return -1;
+    }
+  }
+
+  return candidate;
+}
+```
+
+```ts
+export function universalSinkInDirectedGraph(matrix: number[][]): number {
+  const size = matrix.length;
+  let row = 0;
+  let column = 0;
+
+  while (row < size && column < size) {
+    if (matrix[row][column] === 1) {
+      row += 1;
+    } else {
+      column += 1;
+    }
+  }
+
+  const candidate = row;
+  if (candidate >= size) {
+    return -1;
+  }
+
+  for (let index = 0; index < size; index += 1) {
+    if (index === candidate) {
+      continue;
+    }
+
+    if (matrix[candidate][index] !== 0 || matrix[index][candidate] !== 1) {
+      return -1;
+    }
+  }
+
+  return candidate;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why the elimination phase is linear even though the input is a matrix.
+- Compare this with the celebrity problem, which uses the same core idea.
+- Modify the routine to return all sinks if the definition changes to out-degree zero only.
+
+## Common Pitfalls
+
+- Returning the surviving candidate without verifying its full row and column.
+- Assuming a sink may point to itself in a matrix that is defined with zeros on the diagonal.
+- Reverting to an O(n^2) full scan before using the elimination observation.

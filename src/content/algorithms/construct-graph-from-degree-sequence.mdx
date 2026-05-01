@@ -1,0 +1,134 @@
+---
+title: Construct Graph from Given Degree Sequence
+slug: construct-graph-from-degree-sequence
+category: Graphs
+summary: Repeatedly connect the highest remaining degree vertex to other high-demand vertices until the sequence is realized or proven impossible.
+description: Construct Graph from Given Degree Sequence is the graph-realization problem commonly solved with a Havel-Hakimi style greedy reduction.
+dataStructures:
+  - Graph
+  - Array
+  - Priority Queue
+techniques:
+  - Greedy
+  - Graph Construction
+  - Degree Sequence
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - degree sequence realization
+  - Havel-Hakimi construction
+useCases:
+  - Building a graph that satisfies degree constraints
+  - Testing whether a degree sequence is graphical
+  - Reversing the usual graph-analysis direction into graph synthesis
+complexity:
+  time: O(n^2 log n)
+  space: O(n + m)
+  notes: The greedy reduction works by repeatedly satisfying the largest remaining degree first, and any negative or impossible remainder proves the sequence cannot describe a simple graph.
+interviewSignals:
+  - The graph itself is missing, but every vertex degree is known.
+  - The prompt asks to construct a valid simple graph or determine that none exists.
+relatedSlugs:
+  - topological-sort
+  - connected-components
+  - priority-queue
+provenance:
+  - title: GeeksforGeeks - Construct graph from given degrees of all vertices
+    href: https://www.geeksforgeeks.org/dsa/construct-graph-given-degrees-vertices/
+    kind: Implementation
+  - title: free-programming-books - Algorithm Design
+    href: https://jeffe.cs.illinois.edu/teaching/algorithms/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Most graph interview questions analyze a graph that is already given. Degree-sequence construction flips that around and asks whether the constraints themselves can be realized as a simple graph, which is why Havel-Hakimi style greedy reasoning is the natural fit.
+
+## Worked Example
+
+If the current largest remaining degree is `3`, that vertex must connect to three other vertices with positive remaining degree. After making those edges, all four affected degrees drop, the sequence is resorted, and any negative value or shortage of available partners proves the construction is impossible.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function constructGraphFromDegreeSequence(degrees) {
+  const remaining = degrees.map((degree, vertex) => ({ degree, vertex }));
+  const edges = [];
+
+  while (true) {
+    remaining.sort((left, right) => right.degree - left.degree || left.vertex - right.vertex);
+
+    if (remaining[0].degree === 0) {
+      return edges;
+    }
+
+    const current = remaining.shift();
+    if (current.degree < 0 || current.degree > remaining.length) {
+      return [];
+    }
+
+    for (let index = 0; index < current.degree; index += 1) {
+      if (remaining[index].degree === 0) {
+        return [];
+      }
+
+      remaining[index].degree -= 1;
+      if (remaining[index].degree < 0) {
+        return [];
+      }
+
+      edges.push([current.vertex, remaining[index].vertex]);
+    }
+  }
+}
+```
+
+```ts
+export function constructGraphFromDegreeSequence(degrees: number[]): Array<[number, number]> {
+  const remaining = degrees.map((degree, vertex) => ({ degree, vertex }));
+  const edges: Array<[number, number]> = [];
+
+  while (true) {
+    remaining.sort((left, right) => right.degree - left.degree || left.vertex - right.vertex);
+
+    if (remaining[0].degree === 0) {
+      return edges;
+    }
+
+    const current = remaining.shift()!;
+    if (current.degree < 0 || current.degree > remaining.length) {
+      return [];
+    }
+
+    for (let index = 0; index < current.degree; index += 1) {
+      if (remaining[index].degree === 0) {
+        return [];
+      }
+
+      remaining[index].degree -= 1;
+      if (remaining[index].degree < 0) {
+        return [];
+      }
+
+      edges.push([current.vertex, remaining[index].vertex]);
+    }
+  }
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return an explicit failure reason when the sequence is not graphical.
+- Compare this construction with the purely decision version of Havel-Hakimi.
+- Explain why self-loops and parallel edges are excluded in this formulation.
+
+## Common Pitfalls
+
+- Connecting a vertex to itself or reusing the same neighbor twice in one reduction step.
+- Forgetting to resort after each degree update.
+- Treating any degree sequence as realizable without checking for impossible remainders.

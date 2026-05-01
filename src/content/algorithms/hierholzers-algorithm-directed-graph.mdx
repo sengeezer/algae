@@ -1,0 +1,113 @@
+---
+title: Hierholzer's Algorithm for Directed Graph
+slug: hierholzers-algorithm-directed-graph
+category: Graphs
+summary: Consume outgoing edges with a stack and splice directed cycles together until every edge appears exactly once in the final traversal.
+description: Hierholzer's Algorithm for Directed Graph constructs an Eulerian circuit or path by walking unused directed edges and backtracking when a partial tour gets stuck.
+dataStructures:
+  - Graph
+  - Stack
+  - Array
+techniques:
+  - Eulerian Traversal
+  - Graph Traversal
+  - Stack Backtracking
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - directed Hierholzer
+  - Eulerian circuit construction
+useCases:
+  - Constructing the actual directed Eulerian traversal after feasibility is known
+  - Reconstructing itineraries that must use each directed edge once
+  - Converting Eulerian theory into a concrete linear-time output routine
+complexity:
+  time: O(V + E)
+  space: O(V + E)
+  notes: The algorithm stays linear because each directed edge is consumed exactly once and each vertex only enters or leaves the stack as needed for splicing.
+interviewSignals:
+  - The prompt asks for the actual edge order, not just whether a traversal exists.
+  - Every directed edge must be used exactly once.
+relatedSlugs:
+  - euler-path-and-euler-circuit
+  - chinese-postman-problem
+  - depth-first-search
+provenance:
+  - title: GeeksforGeeks - Hierholzer's Algorithm for Directed Graph
+    href: https://www.geeksforgeeks.org/dsa/hierholzers-algorithm-directed-graph/
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Eulerian classification tells you whether a traversal is possible, but Hierholzer is what you use when the interviewer wants the traversal itself. The core move is to keep following unused edges until you get stuck, then backtrack and splice those local cycles into one global route.
+
+## Worked Example
+
+Suppose a directed graph has an Eulerian circuit starting at `0`. Hierholzer follows one outgoing edge after another until it reaches a vertex with no remaining unused edge, adds that vertex to the answer, and backtracks through the stack until every consumed edge has been placed into the final route.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function hierholzersAlgorithmDirectedGraph(graph, start = 0) {
+  const remaining = graph.map((neighbors) => [...neighbors].reverse());
+  const stack = [start];
+  const route = [];
+
+  while (stack.length > 0) {
+    const node = stack[stack.length - 1];
+
+    if (remaining[node].length === 0) {
+      route.push(stack.pop());
+      continue;
+    }
+
+    stack.push(remaining[node].pop());
+  }
+
+  return route.reverse();
+}
+```
+
+```ts
+export function hierholzersAlgorithmDirectedGraph(
+  graph: number[][],
+  start = 0,
+): number[] {
+  const remaining = graph.map((neighbors) => [...neighbors].reverse());
+  const stack: number[] = [start];
+  const route: number[] = [];
+
+  while (stack.length > 0) {
+    const node = stack[stack.length - 1];
+
+    if (remaining[node].length === 0) {
+      route.push(stack.pop()!);
+      continue;
+    }
+
+    stack.push(remaining[node].pop()!);
+  }
+
+  return route.reverse();
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Add the in-degree and out-degree feasibility checks for directed Eulerian paths and circuits.
+- Explain why the route is built in reverse while unwinding the stack.
+- Compare Hierholzer with Fleury's algorithm and explain why Hierholzer is preferred in practice.
+
+## Common Pitfalls
+
+- Running the construction before checking that the directed graph is Eulerian.
+- Forgetting that edges, not vertices, are consumed exactly once.
+- Mutating the original adjacency lists when the caller still needs them later.

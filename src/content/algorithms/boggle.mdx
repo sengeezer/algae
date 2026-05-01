@@ -1,0 +1,217 @@
+---
+title: Boggle
+slug: boggle
+category: Backtracking
+summary: Explore every board cell in eight directions while using dictionary checks or trie pruning to collect all valid words without reusing a cell in one path.
+description: Boggle is the board-word search problem that combines DFS backtracking with dictionary lookup and optional trie-based prefix pruning.
+dataStructures:
+  - Matrix
+  - Trie
+  - Set
+techniques:
+  - Backtracking
+  - Depth-First Search
+  - Trie
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - board word search
+  - all words in a board
+useCases:
+  - Finding dictionary words on a character board with adjacency constraints
+  - Combining prefix pruning with DFS on a grid
+  - Turning trie knowledge into a concrete search problem
+complexity:
+  time: O(rows * cols * 8^L) in the worst case without strong prefix pruning
+  space: O(rows * cols + total trie size)
+  notes: The practical speedup comes from rejecting prefixes early, which is why trie-backed implementations are much faster on large dictionaries.
+interviewSignals:
+  - The prompt asks for all valid words, not just whether one target word exists.
+  - Board cells may be reused across different words but not twice in the same path.
+relatedSlugs:
+  - trie
+  - depth-first-search
+  - backtracking-search
+provenance:
+  - title: GeeksforGeeks - Boggle (Find all possible words in a board of characters)
+    href: https://www.geeksforgeeks.org/dsa/boggle-find-possible-words-board-characters/
+    kind: Implementation
+  - title: free-programming-books - Algorithm Design
+    href: https://jeffe.cs.illinois.edu/teaching/algorithms/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Boggle is where trie theory becomes a concrete search problem. The challenge is not just storing words by prefix, but navigating a board in eight directions, forbidding cell reuse within one candidate word, and pruning dead prefixes before they explode combinatorially.
+
+## Worked Example
+
+Starting from one cell, the search appends that character to the current prefix, checks whether any dictionary word still matches, and then recursively explores all eight neighboring cells that are still unused in the current path. Whenever the trie marks the current prefix as a full word, that word is added to the answer set.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function boggle(board, words) {
+  class TrieNode {
+    constructor() {
+      this.children = new Map();
+      this.word = null;
+    }
+  }
+
+  const root = new TrieNode();
+  for (const word of words) {
+    let node = root;
+    for (const char of word) {
+      if (!node.children.has(char)) {
+        node.children.set(char, new TrieNode());
+      }
+      node = node.children.get(char);
+    }
+    node.word = word;
+  }
+
+  const rows = board.length;
+  const cols = rows === 0 ? 0 : board[0].length;
+  const found = new Set();
+  const visited = Array.from({ length: rows }, () => new Array(cols).fill(false));
+  const directions = [-1, 0, 1];
+
+  function dfs(row, col, node) {
+    const char = board[row][col];
+    const nextNode = node.children.get(char);
+    if (!nextNode) {
+      return;
+    }
+
+    if (nextNode.word !== null) {
+      found.add(nextNode.word);
+    }
+
+    visited[row][col] = true;
+
+    for (const dr of directions) {
+      for (const dc of directions) {
+        if (dr === 0 && dc === 0) {
+          continue;
+        }
+
+        const nextRow = row + dr;
+        const nextCol = col + dc;
+        if (
+          nextRow < 0 ||
+          nextRow >= rows ||
+          nextCol < 0 ||
+          nextCol >= cols ||
+          visited[nextRow][nextCol]
+        ) {
+          continue;
+        }
+
+        dfs(nextRow, nextCol, nextNode);
+      }
+    }
+
+    visited[row][col] = false;
+  }
+
+  for (let row = 0; row < rows; row += 1) {
+    for (let col = 0; col < cols; col += 1) {
+      dfs(row, col, root);
+    }
+  }
+
+  return [...found].sort();
+}
+```
+
+```ts
+class TrieNode {
+  children = new Map<string, TrieNode>();
+  word: string | null = null;
+}
+
+export function boggle(board: string[][], words: string[]): string[] {
+  const root = new TrieNode();
+
+  for (const word of words) {
+    let node = root;
+    for (const char of word) {
+      if (!node.children.has(char)) {
+        node.children.set(char, new TrieNode());
+      }
+      node = node.children.get(char)!;
+    }
+    node.word = word;
+  }
+
+  const rows = board.length;
+  const cols = rows === 0 ? 0 : board[0].length;
+  const found = new Set<string>();
+  const visited = Array.from({ length: rows }, () => new Array<boolean>(cols).fill(false));
+  const directions = [-1, 0, 1];
+
+  function dfs(row: number, col: number, node: TrieNode): void {
+    const char = board[row][col];
+    const nextNode = node.children.get(char);
+    if (!nextNode) {
+      return;
+    }
+
+    if (nextNode.word !== null) {
+      found.add(nextNode.word);
+    }
+
+    visited[row][col] = true;
+
+    for (const dr of directions) {
+      for (const dc of directions) {
+        if (dr === 0 && dc === 0) {
+          continue;
+        }
+
+        const nextRow = row + dr;
+        const nextCol = col + dc;
+        if (
+          nextRow < 0 ||
+          nextRow >= rows ||
+          nextCol < 0 ||
+          nextCol >= cols ||
+          visited[nextRow][nextCol]
+        ) {
+          continue;
+        }
+
+        dfs(nextRow, nextCol, nextNode);
+      }
+    }
+
+    visited[row][col] = false;
+  }
+
+  for (let row = 0; row < rows; row += 1) {
+    for (let col = 0; col < cols; col += 1) {
+      dfs(row, col, root);
+    }
+  }
+
+  return [...found].sort();
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare Boggle with searching for one fixed word on a board.
+- Remove the trie and explain how the runtime changes when dictionary lookups are done naively.
+- Adapt the search to four-directional movement or to different board alphabets.
+
+## Common Pitfalls
+
+- Reusing a board cell twice within the same candidate word.
+- Treating prefix matches as complete words when the trie has not marked an end-of-word node.
+- Forgetting that diagonal neighbors are allowed in the classic Boggle problem.
