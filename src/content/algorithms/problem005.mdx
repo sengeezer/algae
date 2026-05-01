@@ -1,0 +1,126 @@
+---
+title: Problem 005
+slug: problem005
+category: Project Euler
+summary: Find the smallest positive number divisible by every integer from `1` through a limit.
+description: Problem 005 is the cumulative least-common-multiple problem that collapses a divisibility range into repeated gcd/lcm updates.
+dataStructures:
+  - Number
+techniques:
+  - Least Common Multiple
+  - Euclidean Algorithm
+  - Range Folding
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - smallest multiple
+  - project euler 5
+useCases:
+  - Aggregating divisibility constraints over a whole interval
+  - Reusing gcd/lcm identities in range problems
+  - Replacing brute-force trial search with arithmetic structure
+complexity:
+  time: O(n log n)
+  space: O(1)
+  notes: Folding lcm across the range `1..n` is much cheaper than testing candidate multiples one by one.
+interviewSignals:
+  - The prompt asks for one number divisible by an entire range.
+  - The intended solution reduces the problem to repeated lcm computation.
+relatedSlugs:
+  - find-lcm
+  - get-euclid-gcd
+  - problem001
+provenance:
+  - title: TheAlgorithms/JavaScript - Project-Euler/Problem005.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Project-Euler/Problem005.js
+    kind: Implementation
+  - title: Project Euler - Problem 5
+    href: https://projecteuler.net/problem=5
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the point where brute-force divisibility checking becomes obviously wasteful. The useful insight is that the answer is just the lcm of all integers from `1` to `n`.
+
+## Worked Example
+
+For `10`, the smallest number divisible by every integer from `1` through `10` is `2520`. You can reach it by folding `lcm` from left to right across the range.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function gcd(left, right) {
+  let a = left;
+  let b = right;
+
+  while (b !== 0) {
+    [a, b] = [b, a % b];
+  }
+
+  return a;
+}
+
+function lcm(left, right) {
+  return (left / gcd(left, right)) * right;
+}
+
+function problem005(limit) {
+  if (!Number.isInteger(limit) || limit < 1) {
+    throw new RangeError('Limit must be a positive integer');
+  }
+
+  let result = 1;
+  for (let value = 2; value <= limit; value += 1) {
+    result = lcm(result, value);
+  }
+
+  return result;
+}
+```
+
+```ts
+function gcd(left: number, right: number): number {
+  let a = left;
+  let b = right;
+
+  while (b !== 0) {
+    [a, b] = [b, a % b];
+  }
+
+  return a;
+}
+
+function lcm(left: number, right: number): number {
+  return (left / gcd(left, right)) * right;
+}
+
+export function problem005(limit: number): number {
+  if (!Number.isInteger(limit) || limit < 1) {
+    throw new RangeError('Limit must be a positive integer');
+  }
+
+  let result = 1;
+  for (let value = 2; value <= limit; value += 1) {
+    result = lcm(result, value);
+  }
+
+  return result;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare the lcm fold with a brute-force incrementing search.
+- Explain why dividing before multiplying is safer in the lcm formula.
+- Extend the same idea to a custom array of divisors.
+
+## Common Pitfalls
+
+- Testing candidate numbers one by one instead of folding lcm.
+- Forgetting that every earlier divisor is already covered once the lcm is updated.
+- Multiplying before dividing and inflating intermediate values unnecessarily.

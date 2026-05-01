@@ -537,9 +537,20 @@ This forty-sixth expansion slice lifts the catalog from 308 to 314 entries.
 - Problem 003
 - Problem 004
 
+## Batch 47 added
+
+This forty-seventh expansion slice lifts the catalog from 314 to 320 entries.
+
+- Problem 005
+- Problem 006
+- Problem 007
+- Problem 008
+- Problem 009
+- Problem 010
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 46 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 47 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -548,9 +559,9 @@ All expansion entries from batch 1 through batch 46 now carry explicit per-entry
 ## Why this batch
 
 - It fills obvious interview-core gaps from TheAlgorithms/JavaScript without duplicating material already present in Algae.
-- It follows the next verified queue directly, finishing the remaining Maths tail, stepping into Navigation, and then opening the Project Euler track with the first four foundational problems.
-- It broadens the catalog across iterative numeric helpers, geodesic distance, arithmetic series reasoning, Fibonacci constraints, prime factorization, and palindrome search instead of staying inside the previous linear-algebra and geometry slice.
-- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially compact challenge-style routines that still reward careful formulation, integer validation, and search pruning.
+- It follows the next verified queue directly, continuing the Project Euler track with least-common-multiple reasoning, square-sum identities, nth-prime search, digit-window products, Pythagorean search, and prime summation.
+- It broadens the catalog across number theory, closed-form arithmetic, sliding-window products, and sieve-based preprocessing instead of staying inside the previous navigation-and-warmup challenge slice.
+- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially compact challenge-style routines that still reward careful formulas, search bounds, and preprocessing choices.
 
 ## Supporting study references from the algorithms list
 
@@ -560,9 +571,9 @@ All expansion entries from batch 1 through batch 46 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- Problem 005
-- Problem 006
-- Problem 007
-- Problem 008
-- Problem 009
-- Problem 010
+- Problem 011
+- Problem 012
+- Problem 013
+- Problem 014
+- Problem 015
+- Problem 016

@@ -1,0 +1,133 @@
+---
+title: Problem 008
+slug: problem008
+category: Project Euler
+summary: Find the largest product of a fixed-length run of adjacent digits in a long numeric string.
+description: Problem 008 is the digit-window optimization problem that searches for the most profitable contiguous slice of a numeric series.
+dataStructures:
+  - String
+  - Array
+techniques:
+  - Sliding Window
+  - Product Accumulation
+  - String Parsing
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - largest product in a series
+  - project euler 8
+useCases:
+  - Practicing fixed-window scans over digit streams
+  - Teaching when zeros can reset product-based searches
+  - Comparing brute-force recomputation with maintained-window products
+complexity:
+  time: O(n * k)
+  space: O(k)
+  notes: A direct window product is easy to reason about, though more optimized zero-aware rolling approaches are possible.
+interviewSignals:
+  - The prompt gives a long string of digits and asks for the best contiguous run of length `k`.
+  - The intended solution scans windows rather than trying every unordered subset.
+relatedSlugs:
+  - sliding-window
+  - problem004
+  - max-product-of-three
+provenance:
+  - title: TheAlgorithms/JavaScript - Project-Euler/Problem008.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Project-Euler/Problem008.js
+    kind: Implementation
+  - title: Project Euler - Problem 8
+    href: https://projecteuler.net/problem=8
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a fixed-window scan over digits. The useful insight is that only contiguous runs matter, and zeros can cheaply eliminate whole windows from consideration.
+
+## Worked Example
+
+If the digit string is `1234512345` and the window size is `3`, the products are `1*2*3`, `2*3*4`, `3*4*5`, and so on. The best window is the one with the largest adjacent product, not just the globally largest digits in any order.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function problem008(series, span) {
+  if (typeof series !== 'string' || series.trim() === '') {
+    throw new TypeError('Series must be a non-empty digit string');
+  }
+
+  if (!Number.isInteger(span) || span < 1 || span > series.length) {
+    throw new RangeError('Span must be a positive integer within the series length');
+  }
+
+  const digits = series.replace(/\s+/g, '').split('').map((character) => {
+    const digit = Number(character);
+    if (!Number.isInteger(digit) || digit < 0 || digit > 9) {
+      throw new TypeError('Series must contain only digits and whitespace');
+    }
+    return digit;
+  });
+
+  let best = 0;
+  for (let start = 0; start <= digits.length - span; start += 1) {
+    let product = 1;
+    for (let offset = 0; offset < span; offset += 1) {
+      product *= digits[start + offset];
+    }
+    if (product > best) {
+      best = product;
+    }
+  }
+
+  return best;
+}
+```
+
+```ts
+export function problem008(series: string, span: number): number {
+  if (series.trim() === '') {
+    throw new TypeError('Series must be a non-empty digit string');
+  }
+
+  if (!Number.isInteger(span) || span < 1 || span > series.length) {
+    throw new RangeError('Span must be a positive integer within the series length');
+  }
+
+  const digits = series.replace(/\s+/g, '').split('').map((character) => {
+    const digit = Number(character);
+    if (!Number.isInteger(digit) || digit < 0 || digit > 9) {
+      throw new TypeError('Series must contain only digits and whitespace');
+    }
+    return digit;
+  });
+
+  let best = 0;
+  for (let start = 0; start <= digits.length - span; start += 1) {
+    let product = 1;
+    for (let offset = 0; offset < span; offset += 1) {
+      product *= digits[start + offset];
+    }
+    if (product > best) {
+      best = product;
+    }
+  }
+
+  return best;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Add a zero-aware rolling window to skip unnecessary multiplications.
+- Return the winning digit slice along with its product.
+- Explain why unordered digit selection would solve a different problem entirely.
+
+## Common Pitfalls
+
+- Forgetting to strip newlines or spaces from the input digit block.
+- Treating the problem as a combination search instead of a contiguous window scan.
+- Allowing non-digit characters through the parser.

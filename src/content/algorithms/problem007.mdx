@@ -1,0 +1,150 @@
+---
+title: Problem 007
+slug: problem007
+category: Project Euler
+summary: Find the `n`th prime number by testing candidates until the prime count reaches the requested index.
+description: Problem 007 is the prime-enumeration problem that turns primality checks into an indexed search for the next prime.
+dataStructures:
+  - Number
+techniques:
+  - Prime Enumeration
+  - Trial Division
+  - Counting
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - nth prime
+  - project euler 7
+useCases:
+  - Practicing indexed searches over primes
+  - Comparing repeated primality tests with sieve-based preprocessing
+  - Teaching how to stop once a target count is reached
+complexity:
+  time: O(n sqrt(p_n))
+  space: O(1)
+  notes: A direct incremental search is simple, though a sieve with an upper-bound estimate can be faster for large `n`.
+interviewSignals:
+  - The prompt asks for the `n`th prime rather than all primes below a limit.
+  - The intended solution counts discovered primes until the target index is reached.
+relatedSlugs:
+  - prime-check
+  - sieve-of-eratosthenes
+  - problem010
+provenance:
+  - title: TheAlgorithms/JavaScript - Project-Euler/Problem007.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Project-Euler/Problem007.js
+    kind: Implementation
+  - title: Project Euler - Problem 7
+    href: https://projecteuler.net/problem=7
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a simple indexed search layered on top of primality testing. It is useful because it forces a choice between direct trial division and a more precomputed sieve-style approach.
+
+## Worked Example
+
+The first six primes are `2`, `3`, `5`, `7`, `11`, and `13`, so the `6`th prime is `13`. The search continues until exactly `n` primes have been counted.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function isPrime(value) {
+  if (value < 2) {
+    return false;
+  }
+
+  if (value === 2) {
+    return true;
+  }
+
+  if (value % 2 === 0) {
+    return false;
+  }
+
+  for (let divisor = 3; divisor * divisor <= value; divisor += 2) {
+    if (value % divisor === 0) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function problem007(index) {
+  if (!Number.isInteger(index) || index < 1) {
+    throw new RangeError('Index must be a positive integer');
+  }
+
+  let count = 0;
+  let candidate = 1;
+
+  while (count < index) {
+    candidate += 1;
+    if (isPrime(candidate)) {
+      count += 1;
+    }
+  }
+
+  return candidate;
+}
+```
+
+```ts
+function isPrime(value: number): boolean {
+  if (value < 2) {
+    return false;
+  }
+
+  if (value === 2) {
+    return true;
+  }
+
+  if (value % 2 === 0) {
+    return false;
+  }
+
+  for (let divisor = 3; divisor * divisor <= value; divisor += 2) {
+    if (value % divisor === 0) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+export function problem007(index: number): number {
+  if (!Number.isInteger(index) || index < 1) {
+    throw new RangeError('Index must be a positive integer');
+  }
+
+  let count = 0;
+  let candidate = 1;
+
+  while (count < index) {
+    candidate += 1;
+    if (isPrime(candidate)) {
+      count += 1;
+    }
+  }
+
+  return candidate;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Replace repeated trial division with a sieve and an upper-bound estimate.
+- Explain why even candidates after `2` can be skipped.
+- Compare this indexed search with summing primes below a limit.
+
+## Common Pitfalls
+
+- Counting `1` as prime.
+- Forgetting to validate that the requested index is positive.
+- Checking every divisor instead of only odd divisors up to the square root.

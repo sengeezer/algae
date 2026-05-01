@@ -1,0 +1,129 @@
+---
+title: Problem 010
+slug: problem010
+category: Project Euler
+summary: Sum all prime numbers below a limit with a prime sieve instead of repeated one-off primality tests.
+description: Problem 010 is the prime-accumulation problem that turns a large range sum into a sieve-based preprocessing pass.
+dataStructures:
+  - Array
+  - Number
+techniques:
+  - Prime Sieve
+  - Preprocessing
+  - Range Summation
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - summation of primes
+  - project euler 10
+useCases:
+  - Summing all primes below a large threshold efficiently
+  - Comparing sieve preprocessing with repeated primality checks
+  - Reusing prime tables for multiple range queries
+complexity:
+  time: O(n log log n)
+  space: O(n)
+  notes: A sieve pays off because the prompt asks about every prime below a limit, not a single isolated primality query.
+interviewSignals:
+  - The prompt asks for the sum of all primes below a bound.
+  - The intended solution uses a sieve rather than trial division for each candidate.
+relatedSlugs:
+  - sieve-of-eratosthenes
+  - prime-check
+  - problem007
+provenance:
+  - title: TheAlgorithms/JavaScript - Project-Euler/Problem010.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Project-Euler/Problem010.js
+    kind: Implementation
+  - title: Project Euler - Problem 10
+    href: https://projecteuler.net/problem=10
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is where repeated primality checks stop scaling well. If the goal is to sum every prime below a limit, sieve preprocessing is the natural tool.
+
+## Worked Example
+
+Below `10`, the primes are `2`, `3`, `5`, and `7`, so the answer is `17`. A sieve marks composites in bulk and then sums the indices that remain prime.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function problem010(limit) {
+  if (!Number.isInteger(limit) || limit < 2) {
+    throw new RangeError('Limit must be an integer at least 2');
+  }
+
+  const isPrime = new Array(limit).fill(true);
+  isPrime[0] = false;
+  isPrime[1] = false;
+
+  for (let value = 2; value * value < limit; value += 1) {
+    if (!isPrime[value]) {
+      continue;
+    }
+
+    for (let multiple = value * value; multiple < limit; multiple += value) {
+      isPrime[multiple] = false;
+    }
+  }
+
+  let sum = 0;
+  for (let value = 2; value < limit; value += 1) {
+    if (isPrime[value]) {
+      sum += value;
+    }
+  }
+
+  return sum;
+}
+```
+
+```ts
+export function problem010(limit: number): number {
+  if (!Number.isInteger(limit) || limit < 2) {
+    throw new RangeError('Limit must be an integer at least 2');
+  }
+
+  const isPrime = new Array<boolean>(limit).fill(true);
+  isPrime[0] = false;
+  isPrime[1] = false;
+
+  for (let value = 2; value * value < limit; value += 1) {
+    if (!isPrime[value]) {
+      continue;
+    }
+
+    for (let multiple = value * value; multiple < limit; multiple += value) {
+      isPrime[multiple] = false;
+    }
+  }
+
+  let sum = 0;
+  for (let value = 2; value < limit; value += 1) {
+    if (isPrime[value]) {
+      sum += value;
+    }
+  }
+
+  return sum;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Reuse the same sieve to answer multiple prime-sum queries.
+- Explain why the marking pass starts at `p^2`.
+- Compare the sieve solution with repeated calls to a primality tester.
+
+## Common Pitfalls
+
+- Using trial division for every number in the range.
+- Forgetting that the prompt says “below” the limit, not “up to and including”.
+- Starting sieve marking at `2 * p` instead of `p * p`.

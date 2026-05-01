@@ -1,0 +1,90 @@
+---
+title: Problem 006
+slug: problem006
+category: Project Euler
+summary: Compute the difference between the square of the sum and the sum of the squares for the first `n` natural numbers.
+description: Problem 006 is the formula-based arithmetic identity problem that contrasts two related aggregates over the same prefix of integers.
+dataStructures:
+  - Number
+techniques:
+  - Closed-Form Summation
+  - Arithmetic Series
+  - Algebraic Simplification
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - sum square difference
+  - project euler 6
+useCases:
+  - Practicing common closed-form summation identities
+  - Comparing direct formulas with loop-based aggregation
+  - Teaching how similar-looking aggregates can diverge sharply
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: Both required quantities have direct formulas, so no iteration is necessary.
+interviewSignals:
+  - The prompt contrasts a sum of squares with a square of a sum.
+  - The intended solution uses arithmetic identities instead of a loop.
+relatedSlugs:
+  - problem001
+  - pow
+  - sum-of-geometric-progression
+provenance:
+  - title: TheAlgorithms/JavaScript - Project-Euler/Problem006.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Project-Euler/Problem006.js
+    kind: Implementation
+  - title: Project Euler - Problem 6
+    href: https://projecteuler.net/problem=6
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a formula recall problem disguised as arithmetic work. The real win is recognizing that both quantities have closed forms and can be computed in constant time.
+
+## Worked Example
+
+For `10`, the square of the sum is `(1 + ... + 10)^2 = 55^2 = 3025`, and the sum of the squares is `1^2 + ... + 10^2 = 385`, so the difference is `2640`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function problem006(limit = 100) {
+  if (!Number.isInteger(limit) || limit < 1) {
+    throw new RangeError('Limit must be a positive integer');
+  }
+
+  const sum = (limit * (limit + 1)) / 2;
+  const sumOfSquares = (limit * (limit + 1) * (2 * limit + 1)) / 6;
+  return sum ** 2 - sumOfSquares;
+}
+```
+
+```ts
+export function problem006(limit = 100): number {
+  if (!Number.isInteger(limit) || limit < 1) {
+    throw new RangeError('Limit must be a positive integer');
+  }
+
+  const sum = (limit * (limit + 1)) / 2;
+  const sumOfSquares = (limit * (limit + 1) * (2 * limit + 1)) / 6;
+  return sum ** 2 - sumOfSquares;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare the formula solution with a loop-based baseline.
+- Derive the sum-of-squares identity algebraically.
+- Generalize the idea to cubes or higher powers.
+
+## Common Pitfalls
+
+- Mixing up the square of the sum with the sum of the squares.
+- Using loops when the prompt is meant to test formula recall.
+- Forgetting to validate that the input is a positive integer.

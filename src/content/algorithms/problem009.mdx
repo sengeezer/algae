@@ -1,0 +1,104 @@
+---
+title: Problem 009
+slug: problem009
+category: Project Euler
+summary: Find the product `abc` for the unique Pythagorean triplet whose elements sum to a target value.
+description: Problem 009 is the constrained triplet search that combines the Pythagorean equation with a fixed perimeter.
+dataStructures:
+  - Number
+techniques:
+  - Nested Search
+  - Pythagorean Triplet Check
+  - Constraint Pruning
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - special pythagorean triplet
+  - project euler 9
+useCases:
+  - Practicing search under multiple numeric constraints
+  - Teaching how a perimeter equation prunes a brute-force triplet search
+  - Reusing Pythagorean checks in geometry-style coding problems
+complexity:
+  time: O(s^2)
+  space: O(1)
+  notes: Once `a` and `b` are chosen, `c` is fixed by the target sum, so the search can avoid a full cubic scan.
+interviewSignals:
+  - The prompt gives both a Pythagorean condition and a fixed total sum.
+  - The intended solution uses the sum constraint to reduce the search dimension.
+relatedSlugs:
+  - euclidean-distance
+  - perfect-square
+  - problem004
+provenance:
+  - title: TheAlgorithms/JavaScript - Project-Euler/Problem009.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Project-Euler/Problem009.js
+    kind: Implementation
+  - title: Project Euler - Problem 9
+    href: https://projecteuler.net/problem=9
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a constraint-combination search problem. The important step is noticing that once the total sum is fixed, the third value is determined by the first two, which removes one whole loop.
+
+## Worked Example
+
+For target sum `1000`, search values `a < b < c` with `c = 1000 - a - b`. The one triple that satisfies `a^2 + b^2 = c^2` gives the desired product `abc`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function problem009(target = 1000) {
+  if (!Number.isInteger(target) || target < 3) {
+    throw new RangeError('Target sum must be an integer at least 3');
+  }
+
+  for (let a = 1; a < target / 3; a += 1) {
+    for (let b = a + 1; b < target / 2; b += 1) {
+      const c = target - a - b;
+      if (a * a + b * b === c * c) {
+        return a * b * c;
+      }
+    }
+  }
+
+  return null;
+}
+```
+
+```ts
+export function problem009(target = 1000): number | null {
+  if (!Number.isInteger(target) || target < 3) {
+    throw new RangeError('Target sum must be an integer at least 3');
+  }
+
+  for (let a = 1; a < target / 3; a += 1) {
+    for (let b = a + 1; b < target / 2; b += 1) {
+      const c = target - a - b;
+      if (a * a + b * b === c * c) {
+        return a * b * c;
+      }
+    }
+  }
+
+  return null;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the triplet itself instead of only the product.
+- Compare the constrained search with Euclid's formula for generating triplets.
+- Explain why `c` can be derived directly once `a` and `b` are known.
+
+## Common Pitfalls
+
+- Using three full loops even though the target sum already determines `c`.
+- Forgetting the ordering constraint `a < b < c`.
+- Returning `0` or `NaN` when no triplet exists instead of a clear sentinel value.
