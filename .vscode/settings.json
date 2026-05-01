@@ -12,6 +12,9 @@
     "git ls-remote": true,
     "npx vercel": true,
     "npx playwright": true,
-    "git remote": true
+    "git remote": true,
+    "git add": true,
+    "git commit": true,
+    "git push": true
   }
 }
