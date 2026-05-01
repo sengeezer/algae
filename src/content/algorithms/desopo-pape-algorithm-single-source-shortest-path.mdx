@@ -64,12 +64,21 @@ function desopoPapeAlgorithmSingleSourceShortestPath(nodeCount, edges, source) {
   const distance = new Array(nodeCount).fill(Number.POSITIVE_INFINITY);
   const inQueue = new Array(nodeCount).fill(false);
   const wasPopped = new Array(nodeCount).fill(false);
-  const deque = [source];
+  const deque = new Map([[0, source]]);
+  let front = 0;
+  let back = 1;
   distance[source] = 0;
   inQueue[source] = true;
 
-  while (deque.length > 0) {
-    const node = deque.shift();
+  while (front < back) {
+    const node = deque.get(front);
+    deque.delete(front);
+    front += 1;
+
+    if (node === undefined) {
+      continue;
+    }
+
     inQueue[node] = false;
     wasPopped[node] = true;
 
@@ -85,9 +94,11 @@ function desopoPapeAlgorithmSingleSourceShortestPath(nodeCount, edges, source) {
       }
 
       if (wasPopped[neighbor]) {
-        deque.unshift(neighbor);
+        front -= 1;
+        deque.set(front, neighbor);
       } else {
-        deque.push(neighbor);
+        deque.set(back, neighbor);
+        back += 1;
       }
       inQueue[neighbor] = true;
     }
@@ -112,12 +123,21 @@ export function desopoPapeAlgorithmSingleSourceShortestPath(
   const distance = new Array<number>(nodeCount).fill(Number.POSITIVE_INFINITY);
   const inQueue = new Array<boolean>(nodeCount).fill(false);
   const wasPopped = new Array<boolean>(nodeCount).fill(false);
-  const deque: number[] = [source];
+  const deque = new Map<number, number>([[0, source]]);
+  let front = 0;
+  let back = 1;
   distance[source] = 0;
   inQueue[source] = true;
 
-  while (deque.length > 0) {
-    const node = deque.shift()!;
+  while (front < back) {
+    const node = deque.get(front);
+    deque.delete(front);
+    front += 1;
+
+    if (node === undefined) {
+      continue;
+    }
+
     inQueue[node] = false;
     wasPopped[node] = true;
 
@@ -133,9 +153,11 @@ export function desopoPapeAlgorithmSingleSourceShortestPath(
       }
 
       if (wasPopped[neighbor]) {
-        deque.unshift(neighbor);
+        front -= 1;
+        deque.set(front, neighbor);
       } else {
-        deque.push(neighbor);
+        deque.set(back, neighbor);
+        back += 1;
       }
       inQueue[neighbor] = true;
     }

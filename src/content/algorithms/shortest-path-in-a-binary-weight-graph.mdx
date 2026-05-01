@@ -62,11 +62,19 @@ function shortestPathInABinaryWeightGraph(nodeCount, edges, source) {
   }
 
   const distance = new Array(nodeCount).fill(Number.POSITIVE_INFINITY);
-  const deque = [source];
+  const deque = new Map([[0, source]]);
+  let front = 0;
+  let back = 1;
   distance[source] = 0;
 
-  while (deque.length > 0) {
-    const node = deque.shift();
+  while (front < back) {
+    const node = deque.get(front);
+    deque.delete(front);
+    front += 1;
+
+    if (node === undefined) {
+      continue;
+    }
 
     for (const [neighbor, weight] of graph[node]) {
       if (weight !== 0 && weight !== 1) {
@@ -80,9 +88,11 @@ function shortestPathInABinaryWeightGraph(nodeCount, edges, source) {
 
       distance[neighbor] = candidate;
       if (weight === 0) {
-        deque.unshift(neighbor);
+        front -= 1;
+        deque.set(front, neighbor);
       } else {
-        deque.push(neighbor);
+        deque.set(back, neighbor);
+        back += 1;
       }
     }
   }
@@ -104,11 +114,19 @@ export function shortestPathInABinaryWeightGraph(
   }
 
   const distance = new Array<number>(nodeCount).fill(Number.POSITIVE_INFINITY);
-  const deque: number[] = [source];
+  const deque = new Map<number, number>([[0, source]]);
+  let front = 0;
+  let back = 1;
   distance[source] = 0;
 
-  while (deque.length > 0) {
-    const node = deque.shift()!;
+  while (front < back) {
+    const node = deque.get(front);
+    deque.delete(front);
+    front += 1;
+
+    if (node === undefined) {
+      continue;
+    }
 
     for (const [neighbor, weight] of graph[node]) {
       const candidate = distance[node] + weight;
@@ -118,9 +136,11 @@ export function shortestPathInABinaryWeightGraph(
 
       distance[neighbor] = candidate;
       if (weight === 0) {
-        deque.unshift(neighbor);
+        front -= 1;
+        deque.set(front, neighbor);
       } else {
-        deque.push(neighbor);
+        deque.set(back, neighbor);
+        back += 1;
       }
     }
   }
