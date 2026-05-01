@@ -1,0 +1,167 @@
+---
+title: Minimum Weight Cycle in a Graph
+slug: minimum-weight-cycle-in-a-graph
+category: Graphs
+summary: Remove each edge in turn, find the shortest remaining path between its endpoints, and add the removed edge back to measure the best cycle.
+description: Minimum Weight Cycle in a Graph is the weighted undirected cycle problem solved by repeated shortest-path searches with one edge excluded at a time.
+dataStructures:
+  - Graph
+  - Priority Queue
+  - Array
+techniques:
+  - Dijkstra
+  - Cycle Optimization
+  - Edge Exclusion
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - shortest cycle in weighted graph
+  - minimum cycle weight
+useCases:
+  - Finding the cheapest simple cycle in an undirected weighted graph
+  - Reusing a shortest-path routine inside a larger graph optimization loop
+  - Comparing cycle existence with cycle quality optimization
+complexity:
+  time: O(E * (V + E) log V)
+  space: O(V + E)
+  notes: Each edge is tested as the potential closing edge of the optimal cycle, which is why Dijkstra is rerun repeatedly.
+interviewSignals:
+  - The graph is weighted and the prompt asks for the lightest cycle rather than mere detection.
+  - Removing one edge and reconnecting its endpoints is the natural reduction.
+relatedSlugs:
+  - dijkstra
+  - cycles-of-length-n-in-an-undirected-and-connected-graph
+  - johnsons-algorithm
+provenance:
+  - title: GeeksforGeeks - Minimum Weight Cycle in a Graph
+    href: https://www.geeksforgeeks.org/dsa/find-minimum-weight-cycle-undirected-graph/
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+The problem looks like generic cycle analysis, but the weighted objective changes the right approach. Instead of enumerating cycles directly, treat every edge as a candidate closing edge and ask for the shortest way to reconnect its two endpoints without using that edge.
+
+## Worked Example
+
+If edge `(0, 4)` has weight `3`, and the cheapest remaining path from `0` to `4` is `0 -> 1 -> 4` with total cost `3`, then that edge closes a cycle of weight `6`. Repeating that check for every edge reveals the minimum-weight cycle.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function minimumWeightCycleInAGraph(nodeCount, edges) {
+  const graph = Array.from({ length: nodeCount }, () => []);
+  edges.forEach(([from, to, weight], index) => {
+    graph[from].push([to, weight, index]);
+    graph[to].push([from, weight, index]);
+  });
+
+  function shortestPath(source, destination, blockedEdgeIndex) {
+    const distance = new Array(nodeCount).fill(Number.POSITIVE_INFINITY);
+    const queue = [[0, source]];
+    distance[source] = 0;
+
+    while (queue.length > 0) {
+      queue.sort((left, right) => left[0] - right[0]);
+      const [cost, node] = queue.shift();
+      if (cost > distance[node]) {
+        continue;
+      }
+
+      for (const [neighbor, weight, edgeIndex] of graph[node]) {
+        if (edgeIndex === blockedEdgeIndex) {
+          continue;
+        }
+
+        const candidate = cost + weight;
+        if (candidate < distance[neighbor]) {
+          distance[neighbor] = candidate;
+          queue.push([candidate, neighbor]);
+        }
+      }
+    }
+
+    return distance[destination];
+  }
+
+  let bestCycle = Number.POSITIVE_INFINITY;
+  edges.forEach(([from, to, weight], edgeIndex) => {
+    const pathCost = shortestPath(from, to, edgeIndex);
+    if (pathCost !== Number.POSITIVE_INFINITY) {
+      bestCycle = Math.min(bestCycle, pathCost + weight);
+    }
+  });
+
+  return bestCycle === Number.POSITIVE_INFINITY ? -1 : bestCycle;
+}
+```
+
+```ts
+export function minimumWeightCycleInAGraph(
+  nodeCount: number,
+  edges: Array<[number, number, number]>,
+): number {
+  const graph = Array.from({ length: nodeCount }, () => [] as Array<[number, number, number]>);
+  edges.forEach(([from, to, weight], index) => {
+    graph[from].push([to, weight, index]);
+    graph[to].push([from, weight, index]);
+  });
+
+  function shortestPath(source: number, destination: number, blockedEdgeIndex: number): number {
+    const distance = new Array<number>(nodeCount).fill(Number.POSITIVE_INFINITY);
+    const queue: Array<[number, number]> = [[0, source]];
+    distance[source] = 0;
+
+    while (queue.length > 0) {
+      queue.sort((left, right) => left[0] - right[0]);
+      const [cost, node] = queue.shift()!;
+      if (cost > distance[node]) {
+        continue;
+      }
+
+      for (const [neighbor, weight, edgeIndex] of graph[node]) {
+        if (edgeIndex === blockedEdgeIndex) {
+          continue;
+        }
+
+        const candidate = cost + weight;
+        if (candidate < distance[neighbor]) {
+          distance[neighbor] = candidate;
+          queue.push([candidate, neighbor]);
+        }
+      }
+    }
+
+    return distance[destination];
+  }
+
+  let bestCycle = Number.POSITIVE_INFINITY;
+  edges.forEach(([from, to, weight], edgeIndex) => {
+    const pathCost = shortestPath(from, to, edgeIndex);
+    if (pathCost !== Number.POSITIVE_INFINITY) {
+      bestCycle = Math.min(bestCycle, pathCost + weight);
+    }
+  });
+
+  return bestCycle === Number.POSITIVE_INFINITY ? -1 : bestCycle;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would this change for directed graphs?
+- Why is plain cycle detection insufficient for the weighted version?
+- Can you improve the repeated-queue implementation while keeping the same reduction?
+
+## Common Pitfalls
+
+- Looking only for any cycle instead of the lightest one.
+- Forgetting to exclude the candidate edge while computing the reconnecting path.
+- Assuming the locally lightest edge must belong to the globally lightest cycle.

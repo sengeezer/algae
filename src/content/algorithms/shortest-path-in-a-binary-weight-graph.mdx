@@ -1,0 +1,144 @@
+---
+title: Shortest Path in a Binary Weight Graph
+slug: shortest-path-in-a-binary-weight-graph
+category: Graphs
+summary: Use 0-1 BFS with a deque so zero-weight edges go to the front and one-weight edges go to the back.
+description: Shortest Path in a Binary Weight Graph is the 0-1 BFS shortest-path problem where edge weights are restricted to 0 or 1.
+dataStructures:
+  - Graph
+  - Deque
+  - Array
+techniques:
+  - 0-1 BFS
+  - Shortest Path
+  - Deque Processing
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - 0-1 BFS shortest path
+  - binary weight shortest path
+useCases:
+  - Computing shortest paths when every edge weight is either 0 or 1
+  - Replacing Dijkstra's heap with deque operations under tight weight constraints
+  - Modeling state transitions with free and paid moves
+complexity:
+  time: O(V + E)
+  space: O(V + E)
+  notes: The deque keeps vertices ordered by current distance because 0-weight relaxations jump to the front and 1-weight relaxations go to the back.
+interviewSignals:
+  - Edge weights are limited to 0 and 1.
+  - The prompt asks for shortest distances from one source to all nodes.
+relatedSlugs:
+  - breadth-first-search
+  - dials-algorithm
+  - shortest-path-in-an-unweighted-graph
+provenance:
+  - title: GeeksforGeeks - Shortest Path in a Binary Weight Graph
+    href: https://www.geeksforgeeks.org/dsa/0-1-bfs-shortest-path-binary-graph/
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem is the classic follow-up to ordinary BFS and Dijkstra. Uniform weights make plain BFS enough, arbitrary nonnegative weights suggest Dijkstra, and the special 0-or-1 case lands in the middle where a deque gives you the right ordering without heap overhead.
+
+## Worked Example
+
+If relaxing an edge of weight `0` improves a neighbor, that neighbor should be processed as soon as possible because its distance is no larger than the current node's distance. If the edge weight is `1`, the neighbor belongs one layer later, so it goes to the back of the deque.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function shortestPathInABinaryWeightGraph(nodeCount, edges, source) {
+  const graph = Array.from({ length: nodeCount }, () => []);
+  for (const [from, to, weight] of edges) {
+    graph[from].push([to, weight]);
+    graph[to].push([from, weight]);
+  }
+
+  const distance = new Array(nodeCount).fill(Number.POSITIVE_INFINITY);
+  const deque = [source];
+  distance[source] = 0;
+
+  while (deque.length > 0) {
+    const node = deque.shift();
+
+    for (const [neighbor, weight] of graph[node]) {
+      if (weight !== 0 && weight !== 1) {
+        throw new RangeError('Edge weights must be either 0 or 1');
+      }
+
+      const candidate = distance[node] + weight;
+      if (candidate >= distance[neighbor]) {
+        continue;
+      }
+
+      distance[neighbor] = candidate;
+      if (weight === 0) {
+        deque.unshift(neighbor);
+      } else {
+        deque.push(neighbor);
+      }
+    }
+  }
+
+  return distance;
+}
+```
+
+```ts
+export function shortestPathInABinaryWeightGraph(
+  nodeCount: number,
+  edges: Array<[number, number, 0 | 1]>,
+  source: number,
+): number[] {
+  const graph = Array.from({ length: nodeCount }, () => [] as Array<[number, 0 | 1]>);
+  for (const [from, to, weight] of edges) {
+    graph[from].push([to, weight]);
+    graph[to].push([from, weight]);
+  }
+
+  const distance = new Array<number>(nodeCount).fill(Number.POSITIVE_INFINITY);
+  const deque: number[] = [source];
+  distance[source] = 0;
+
+  while (deque.length > 0) {
+    const node = deque.shift()!;
+
+    for (const [neighbor, weight] of graph[node]) {
+      const candidate = distance[node] + weight;
+      if (candidate >= distance[neighbor]) {
+        continue;
+      }
+
+      distance[neighbor] = candidate;
+      if (weight === 0) {
+        deque.unshift(neighbor);
+      } else {
+        deque.push(neighbor);
+      }
+    }
+  }
+
+  return distance;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why is this faster than Dijkstra when weights are only 0 and 1?
+- How does the method change if weights range from 0 to `W` instead?
+- Can you reconstruct the actual shortest path tree, not just the distances?
+
+## Common Pitfalls
+
+- Treating the graph like a plain unweighted BFS problem.
+- Using a heap even though the deque ordering is sufficient.
+- Forgetting to push 0-weight relaxations to the front.

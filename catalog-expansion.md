@@ -712,9 +712,17 @@ This sixty-third expansion slice lifts the catalog from 399 to 402 entries.
 - Shortest path in an unweighted graph
 - Karp's minimum mean (or average) weight cycle algorithm
 
+## Batch 64 added
+
+This sixty-fourth expansion slice lifts the catalog from 402 to 405 entries.
+
+- Shortest Path in a Binary Weight Graph
+- Minimum Weight Cycle in a Graph
+- D'Esopo-Pape Algorithm : Single Source Shortest Path
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 63 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 64 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -722,10 +730,10 @@ All expansion entries from batch 1 through batch 63 now carry explicit per-entry
 
 ## Why this batch
 
-- It advances the source-ordered GeeksforGeeks shortest-path frontier after the DAG section without reopening already represented staples such as Johnson's and Dial's algorithms.
-- It broadens the catalog across backward dynamic programming on stage-ordered graphs, BFS path reconstruction on unweighted graphs, and Karp's min-max dynamic programming for minimum mean directed cycles.
-- It adds several interview patterns that were not previously first-class entries: recovering an explicit shortest route in an unweighted graph, exploiting stage boundaries instead of generic shortest-path machinery, and optimizing cycle quality by average weight rather than total weight.
-- It leaves the next continuation point at the next clean trio of shortest-path and weighted-cycle entries already confirmed as local absences.
+- It completes the next clean shortest-path trio from the GeeksforGeeks graph index without reopening already represented items such as Johnson's Algorithm and Dial's Algorithm.
+- It broadens the catalog across deque-based 0-1 BFS, repeated-edge-removal cycle minimization with Dijkstra, and the practical deque heuristic behind D'Esopo-Pape shortest paths.
+- It adds several interview patterns that were not previously first-class entries: exploiting binary edge weights without a heap, turning minimum cycle search into repeated shortest-path checks, and using queue-front promotion to accelerate relaxations in sparse weighted graphs.
+- It leaves the next continuation point at the first remaining clean minimum-spanning-tree and topological-order absences after the shortest-path section is exhausted.
 
 ## Supporting study references from the algorithms list
 
@@ -735,4 +743,4 @@ All expansion entries from batch 1 through batch 63 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- The current GeeksforGeeks backfill frontier now continues with `Shortest Path in a Binary Weight Graph`, `Minimum Weight Cycle in a Graph`, and `D'Esopo-Pape Algorithm : Single Source Shortest Path`; nearby items like `Johnson's Algorithm` and `Dial's Algorithm` are already represented.
+- The current GeeksforGeeks backfill frontier now continues with `Minimum cost to connect all cities`, `Minimum Product Spanning Tree`, and `All topological sorts of a Directed Acyclic Graph`; nearby entries like `Prim's vs Kruskal's algorithm for MST` and `Applications of Minimum Spanning Tree` remain comparison/theory detours, while `Prim's Minimum Spanning Tree (MST)` and `Kruskal's Minimum Spanning Tree` are already represented.

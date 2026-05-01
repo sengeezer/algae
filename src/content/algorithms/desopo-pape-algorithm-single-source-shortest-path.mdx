@@ -1,0 +1,160 @@
+---
+title: "D'Esopo-Pape Algorithm : Single Source Shortest Path"
+slug: desopo-pape-algorithm-single-source-shortest-path
+category: Graphs
+summary: Relax edges with a deque, pushing improved first-time vertices to the back and revisited ones to the front to prioritize promising updates.
+description: "D'Esopo-Pape Algorithm : Single Source Shortest Path is the deque-driven shortest-path heuristic that often performs well on sparse nonnegative graphs."
+dataStructures:
+  - Graph
+  - Deque
+  - Array
+techniques:
+  - Shortest Path
+  - Deque Processing
+  - Relaxation Heuristic
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - Desopo-Pape shortest path
+  - Pape algorithm
+useCases:
+  - Single-source shortest paths on sparse weighted graphs with nonnegative edges
+  - Exploring practical alternatives to Dijkstra in performance-oriented settings
+  - Studying deque-based relaxation orders beyond plain BFS and 0-1 BFS
+complexity:
+  time: Often near O(E) in practice
+  space: O(V + E)
+  notes: The deque ordering heuristic can degrade badly on adversarial inputs, so this is not a universal asymptotic improvement over Dijkstra.
+interviewSignals:
+  - The graph has nonnegative weights, but the prompt emphasizes a deque-based optimization rather than a heap.
+  - Vertices that improve again should be revisited sooner than untouched frontier nodes.
+relatedSlugs:
+  - dijkstra
+  - shortest-path-in-a-binary-weight-graph
+  - dials-algorithm
+provenance:
+  - title: "GeeksforGeeks - D'Esopo-Pape Algorithm : Single Source Shortest Path"
+    href: https://www.geeksforgeeks.org/dsa/desopo-pape-algorithm-single-source-shortest-path/
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This algorithm shows up as a practical engineering alternative once you already know Dijkstra. The core idea is to use a deque and a more aggressive revisit policy so nodes with newly improved distances can jump ahead of the ordinary processing order.
+
+## Worked Example
+
+Suppose vertex `b` was already seen once, but a relaxation through vertex `a` improves its distance again. Instead of waiting at the back like a fresh discovery, `b` moves to the front so its better distance can propagate quickly through the graph.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function desopoPapeAlgorithmSingleSourceShortestPath(nodeCount, edges, source) {
+  const graph = Array.from({ length: nodeCount }, () => []);
+  for (const [from, to, weight] of edges) {
+    graph[from].push([to, weight]);
+    graph[to].push([from, weight]);
+  }
+
+  const distance = new Array(nodeCount).fill(Number.POSITIVE_INFINITY);
+  const inQueue = new Array(nodeCount).fill(false);
+  const wasPopped = new Array(nodeCount).fill(false);
+  const deque = [source];
+  distance[source] = 0;
+  inQueue[source] = true;
+
+  while (deque.length > 0) {
+    const node = deque.shift();
+    inQueue[node] = false;
+    wasPopped[node] = true;
+
+    for (const [neighbor, weight] of graph[node]) {
+      const candidate = distance[node] + weight;
+      if (candidate >= distance[neighbor]) {
+        continue;
+      }
+
+      distance[neighbor] = candidate;
+      if (inQueue[neighbor]) {
+        continue;
+      }
+
+      if (wasPopped[neighbor]) {
+        deque.unshift(neighbor);
+      } else {
+        deque.push(neighbor);
+      }
+      inQueue[neighbor] = true;
+    }
+  }
+
+  return distance;
+}
+```
+
+```ts
+export function desopoPapeAlgorithmSingleSourceShortestPath(
+  nodeCount: number,
+  edges: Array<[number, number, number]>,
+  source: number,
+): number[] {
+  const graph = Array.from({ length: nodeCount }, () => [] as Array<[number, number]>);
+  for (const [from, to, weight] of edges) {
+    graph[from].push([to, weight]);
+    graph[to].push([from, weight]);
+  }
+
+  const distance = new Array<number>(nodeCount).fill(Number.POSITIVE_INFINITY);
+  const inQueue = new Array<boolean>(nodeCount).fill(false);
+  const wasPopped = new Array<boolean>(nodeCount).fill(false);
+  const deque: number[] = [source];
+  distance[source] = 0;
+  inQueue[source] = true;
+
+  while (deque.length > 0) {
+    const node = deque.shift()!;
+    inQueue[node] = false;
+    wasPopped[node] = true;
+
+    for (const [neighbor, weight] of graph[node]) {
+      const candidate = distance[node] + weight;
+      if (candidate >= distance[neighbor]) {
+        continue;
+      }
+
+      distance[neighbor] = candidate;
+      if (inQueue[neighbor]) {
+        continue;
+      }
+
+      if (wasPopped[neighbor]) {
+        deque.unshift(neighbor);
+      } else {
+        deque.push(neighbor);
+      }
+      inQueue[neighbor] = true;
+    }
+  }
+
+  return distance;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why can this outperform Dijkstra in practice on some sparse graphs?
+- What graph structures make its performance deteriorate badly?
+- How does this relate to 0-1 BFS and SPFA-style queue heuristics?
+
+## Common Pitfalls
+
+- Assuming the deque heuristic gives a strict worst-case improvement over Dijkstra.
+- Re-enqueuing vertices blindly without tracking queue membership.
+- Applying the method without understanding the graph's weight assumptions.
