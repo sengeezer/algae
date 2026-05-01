@@ -515,9 +515,20 @@ This forty-fourth expansion slice lifts the catalog from 296 to 302 entries.
 - Quadratic Roots
 - Reverse Polish Notation
 
+## Batch 45 added
+
+This forty-fifth expansion slice lifts the catalog from 302 to 308 entries.
+
+- Row Echelon
+- Shors Algorithm
+- Simpson Integration
+- Softmax
+- Sum Of Geometric Progression
+- Volume
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 44 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 45 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -526,9 +537,9 @@ All expansion entries from batch 1 through batch 44 now carry explicit per-entry
 ## Why this batch
 
 - It fills obvious interview-core gaps from TheAlgorithms/JavaScript without duplicating material already present in Algae.
-- It follows the next verified math queue directly, adding stochastic approximation, symbolic polynomial handling, two power routines, quadratic solving, and postfix-expression evaluation.
-- It broadens the catalog across numerical methods, algebraic manipulation, and expression evaluation instead of staying inside the previous divisor-and-parity slice.
-- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially math-heavy helpers that still reward careful handling of randomness, exponent rules, discriminants, and stack discipline.
+- It follows the next verified queue directly, adding matrix reduction, a randomized factor-finding analogue, higher-accuracy integration, probability normalization, geometric-series summation, and multi-shape volume formulas.
+- It broadens the catalog across linear algebra, numerical analysis, probabilistic modeling, and geometry instead of staying inside the previous algebra-and-expression slice.
+- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially mathematically varied helpers that still reward careful input validation, numerical stability, and formula selection.
 
 ## Supporting study references from the algorithms list
 
@@ -538,9 +549,9 @@ All expansion entries from batch 1 through batch 44 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- Row Echelon
-- Shors Algorithm
-- Simpson Integration
-- Softmax
-- Sum Of Geometric Progression
-- Volume
+- While Loop Factorial
+- Haversine
+- Problem 001
+- Problem 002
+- Problem 003
+- Problem 004

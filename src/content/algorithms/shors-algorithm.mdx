@@ -1,0 +1,209 @@
+---
+title: Shors Algorithm
+slug: shors-algorithm
+category: Mathematics
+summary: Use a classical randomized analogue inspired by Shor's period-finding idea to hunt for a non-trivial factor of a composite integer.
+description: Shors Algorithm is the educational factor-finding routine that mirrors the algebra behind Shor's quantum method without delivering the same quantum speedup.
+dataStructures:
+  - Number
+  - BigInt
+techniques:
+  - Randomized Search
+  - Greatest Common Divisor
+  - Order Finding
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - classical shor analogue
+  - randomized integer factor finder
+useCases:
+  - Demonstrating the arithmetic structure behind Shor-inspired factorization
+  - Exploring how order finding can expose non-trivial factors
+  - Teaching the gap between a mathematically inspired toy model and a real quantum algorithm
+complexity:
+  time: Heuristic randomized
+  space: O(1)
+  notes: A bounded classical analogue has no practical polynomial-time guarantee and depends heavily on random guesses and search limits.
+interviewSignals:
+  - The prompt mentions Shor's algorithm or order-based factorization.
+  - The expected discussion distinguishes the real quantum algorithm from a classical teaching analogue.
+relatedSlugs:
+  - get-euclid-gcd
+  - modular-binary-exponentiation-recursive
+  - prime-check
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/ShorsAlgorithm.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/ShorsAlgorithm.js
+    kind: Implementation
+  - title: Scott Aaronson - Shor, I'll Do It
+    href: https://www.scottaaronson.com/democritus/lec9.html
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This topic is usually about conceptual clarity more than production code. The important part is understanding how a useful order can reveal a factor, and why the classical brute-force analogue is only a teaching tool.
+
+## Worked Example
+
+For `15`, a random guess like `g = 2` is coprime to `15`. If you find an even order `p` such that `2^p mod 15 = 1`, then values derived from `2^(p/2) - 1` and `2^(p/2) + 1` can share a non-trivial gcd with `15`, revealing `3` or `5`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function gcdBigInt(left, right) {
+  let a = left < 0n ? -left : left;
+  let b = right < 0n ? -right : right;
+
+  while (b !== 0n) {
+    [a, b] = [b, a % b];
+  }
+
+  return a;
+}
+
+function modPow(base, exponent, modulus) {
+  let result = 1n;
+  let factor = ((base % modulus) + modulus) % modulus;
+  let power = exponent;
+
+  while (power > 0n) {
+    if (power % 2n === 1n) {
+      result = (result * factor) % modulus;
+    }
+
+    factor = (factor * factor) % modulus;
+    power /= 2n;
+  }
+
+  return result;
+}
+
+function shorsAlgorithm(value, maxAttempts = 32, maxPeriod = 10_000n) {
+  if (!Number.isSafeInteger(value) || value < 4) {
+    throw new RangeError('Value must be a composite integer at least 4');
+  }
+
+  if (value % 2 === 0) {
+    return 2;
+  }
+
+  const target = BigInt(value);
+
+  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+    const guess = BigInt(Math.floor(Math.random() * (value - 3)) + 2);
+    const shared = gcdBigInt(guess, target);
+    if (shared !== 1n && shared !== target) {
+      return Number(shared);
+    }
+
+    let period = 1n;
+    while (period <= maxPeriod && modPow(guess, period, target) !== 1n) {
+      period += 1n;
+    }
+
+    if (period > maxPeriod || period % 2n === 1n) {
+      continue;
+    }
+
+    const halfPower = modPow(guess, period / 2n, target);
+    if (halfPower === target - 1n || halfPower === 1n) {
+      continue;
+    }
+
+    const factor = gcdBigInt(halfPower - 1n, target);
+    if (factor !== 1n && factor !== target) {
+      return Number(factor);
+    }
+  }
+
+  throw new Error('Failed to find a non-trivial factor within the search limits');
+}
+```
+
+```ts
+function gcdBigInt(left: bigint, right: bigint): bigint {
+  let a = left < 0n ? -left : left;
+  let b = right < 0n ? -right : right;
+
+  while (b !== 0n) {
+    [a, b] = [b, a % b];
+  }
+
+  return a;
+}
+
+function modPow(base: bigint, exponent: bigint, modulus: bigint): bigint {
+  let result = 1n;
+  let factor = ((base % modulus) + modulus) % modulus;
+  let power = exponent;
+
+  while (power > 0n) {
+    if (power % 2n === 1n) {
+      result = (result * factor) % modulus;
+    }
+
+    factor = (factor * factor) % modulus;
+    power /= 2n;
+  }
+
+  return result;
+}
+
+export function shorsAlgorithm(value: number, maxAttempts = 32, maxPeriod = 10_000n): number {
+  if (!Number.isSafeInteger(value) || value < 4) {
+    throw new RangeError('Value must be a composite integer at least 4');
+  }
+
+  if (value % 2 === 0) {
+    return 2;
+  }
+
+  const target = BigInt(value);
+
+  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+    const guess = BigInt(Math.floor(Math.random() * (value - 3)) + 2);
+    const shared = gcdBigInt(guess, target);
+    if (shared !== 1n && shared !== target) {
+      return Number(shared);
+    }
+
+    let period = 1n;
+    while (period <= maxPeriod && modPow(guess, period, target) !== 1n) {
+      period += 1n;
+    }
+
+    if (period > maxPeriod || period % 2n === 1n) {
+      continue;
+    }
+
+    const halfPower = modPow(guess, period / 2n, target);
+    if (halfPower === target - 1n || halfPower === 1n) {
+      continue;
+    }
+
+    const factor = gcdBigInt(halfPower - 1n, target);
+    if (factor !== 1n && factor !== target) {
+      return Number(factor);
+    }
+  }
+
+  throw new Error('Failed to find a non-trivial factor within the search limits');
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain what the real quantum version changes compared with this classical analogue.
+- Replace the naive period search with a more structured modular-order routine.
+- Discuss why prime inputs or unlucky guesses need explicit failure handling.
+
+## Common Pitfalls
+
+- Presenting the classical brute-force version as if it had quantum speedups.
+- Letting prime inputs or unbounded period search create infinite loops.
+- Mixing `number` and `BigInt` arithmetic without explicit conversion.

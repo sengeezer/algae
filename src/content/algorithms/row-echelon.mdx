@@ -1,0 +1,185 @@
+---
+title: Row Echelon
+slug: row-echelon
+category: Mathematics
+summary: Transform a matrix into row echelon form with pivot selection, row swaps, scaling, and elimination below each pivot.
+description: Row Echelon is the forward-elimination matrix routine that normalizes pivots and clears entries beneath them to reveal an upper staircase form.
+dataStructures:
+  - Matrix
+  - Number
+techniques:
+  - Gaussian Elimination
+  - Pivot Selection
+  - Row Operations
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - row echelon form
+  - forward elimination
+useCases:
+  - Preparing linear systems for back substitution
+  - Detecting matrix rank and dependence structure
+  - Teaching how row operations reshape a matrix without changing the represented system
+complexity:
+  time: O(rows * cols * min(rows, cols))
+  space: O(rows * cols)
+  notes: The algorithm performs elimination work for each pivot column and usually works on a copied matrix to avoid mutating the input.
+interviewSignals:
+  - The prompt asks for row echelon form rather than only a determinant or a single scalar.
+  - The expected solution uses row swaps and elimination, not recursive minor expansion.
+relatedSlugs:
+  - determinant
+  - matrix-multiplication
+  - matrix-exponentiation-recursive
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/RowEchelon.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/RowEchelon.js
+    kind: Implementation
+  - title: MIT OpenCourseWare - Linear Algebra
+    href: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Row-echelon questions test whether you can manage matrix-wide state carefully: choose pivots, swap rows when needed, and keep the elimination numerically sane.
+
+## Worked Example
+
+Starting from a rectangular or square matrix, choose the first nonzero pivot in the current column, move it into place, scale the row so the pivot becomes `1`, and subtract multiples of that row from the rows below until everything under the pivot is `0`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function validateMatrix(matrix) {
+  if (!Array.isArray(matrix) || matrix.length === 0 || !matrix.every((row) => Array.isArray(row))) {
+    throw new TypeError('Expected a non-empty 2D matrix');
+  }
+
+  const width = matrix[0].length;
+  if (width === 0 || !matrix.every((row) => row.length === width && row.every((value) => Number.isFinite(value)))) {
+    throw new TypeError('Matrix rows must have equal length and contain only finite numbers');
+  }
+}
+
+function rowEchelon(matrix) {
+  validateMatrix(matrix);
+
+  const result = matrix.map((row) => row.slice());
+  const rows = result.length;
+  const cols = result[0].length;
+  const tolerance = 1e-9;
+
+  let pivotRow = 0;
+  for (let pivotCol = 0; pivotRow < rows && pivotCol < cols; pivotCol += 1) {
+    let bestRow = pivotRow;
+    while (bestRow < rows && Math.abs(result[bestRow][pivotCol]) <= tolerance) {
+      bestRow += 1;
+    }
+
+    if (bestRow === rows) {
+      continue;
+    }
+
+    [result[pivotRow], result[bestRow]] = [result[bestRow], result[pivotRow]];
+
+    const pivotValue = result[pivotRow][pivotCol];
+    for (let col = pivotCol; col < cols; col += 1) {
+      result[pivotRow][col] /= pivotValue;
+    }
+
+    for (let row = pivotRow + 1; row < rows; row += 1) {
+      const factor = result[row][pivotCol];
+      if (Math.abs(factor) <= tolerance) {
+        continue;
+      }
+
+      for (let col = pivotCol; col < cols; col += 1) {
+        result[row][col] -= factor * result[pivotRow][col];
+        if (Math.abs(result[row][col]) <= tolerance) {
+          result[row][col] = 0;
+        }
+      }
+    }
+
+    pivotRow += 1;
+  }
+
+  return result;
+}
+```
+
+```ts
+function validateMatrix(matrix: number[][]): void {
+  if (!Array.isArray(matrix) || matrix.length === 0 || !matrix.every((row) => Array.isArray(row))) {
+    throw new TypeError('Expected a non-empty 2D matrix');
+  }
+
+  const width = matrix[0].length;
+  if (width === 0 || !matrix.every((row) => row.length === width && row.every((value) => Number.isFinite(value)))) {
+    throw new TypeError('Matrix rows must have equal length and contain only finite numbers');
+  }
+}
+
+export function rowEchelon(matrix: number[][]): number[][] {
+  validateMatrix(matrix);
+
+  const result = matrix.map((row) => row.slice());
+  const rows = result.length;
+  const cols = result[0].length;
+  const tolerance = 1e-9;
+
+  let pivotRow = 0;
+  for (let pivotCol = 0; pivotRow < rows && pivotCol < cols; pivotCol += 1) {
+    let bestRow = pivotRow;
+    while (bestRow < rows && Math.abs(result[bestRow][pivotCol]) <= tolerance) {
+      bestRow += 1;
+    }
+
+    if (bestRow === rows) {
+      continue;
+    }
+
+    [result[pivotRow], result[bestRow]] = [result[bestRow], result[pivotRow]];
+
+    const pivotValue = result[pivotRow][pivotCol];
+    for (let col = pivotCol; col < cols; col += 1) {
+      result[pivotRow][col] /= pivotValue;
+    }
+
+    for (let row = pivotRow + 1; row < rows; row += 1) {
+      const factor = result[row][pivotCol];
+      if (Math.abs(factor) <= tolerance) {
+        continue;
+      }
+
+      for (let col = pivotCol; col < cols; col += 1) {
+        result[row][col] -= factor * result[pivotRow][col];
+        if (Math.abs(result[row][col]) <= tolerance) {
+          result[row][col] = 0;
+        }
+      }
+    }
+
+    pivotRow += 1;
+  }
+
+  return result;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Continue from row echelon form to reduced row echelon form.
+- Use the elimination process to solve a linear system.
+- Explain why row swaps matter when the current pivot candidate is zero.
+
+## Common Pitfalls
+
+- Assuming the matrix is square when the routine only needs a rectangular 2D array.
+- Dividing by a near-zero pivot instead of swapping rows first.
+- Mutating the input matrix when the caller expects a pure transformation.

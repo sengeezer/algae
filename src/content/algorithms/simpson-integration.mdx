@@ -1,0 +1,149 @@
+---
+title: Simpson Integration
+slug: simpson-integration
+category: Mathematics
+summary: Approximate a definite integral with composite Simpson's rule by weighting endpoint, odd-index, and even-index samples differently.
+description: Simpson Integration is the composite Simpson-rule approximation that improves on simpler rectangle methods by combining parabolic interpolation with alternating weights.
+dataStructures:
+  - Number
+techniques:
+  - Numerical Integration
+  - Simpson's Rule
+  - Weighted Summation
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - composite Simpson rule
+  - Simpson's rule integration
+useCases:
+  - Approximating definite integrals more accurately than midpoint or endpoint rules
+  - Comparing numerical integration schemes over the same interval
+  - Teaching why even subdivision counts matter in composite Simpson's rule
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The algorithm evaluates the function once at each grid point and combines those values with a fixed weight pattern.
+interviewSignals:
+  - The prompt asks for Simpson's rule or a weighted numerical integral approximation.
+  - The expected solution enforces an even number of subintervals.
+relatedSlugs:
+  - midpoint-integration
+  - euler-method
+  - bisection-method
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/SimpsonIntegration.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/SimpsonIntegration.js
+    kind: Implementation
+  - title: OpenStax - Calculus Volume 2
+    href: https://openstax.org/details/books/calculus-volume-2
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Simpson's rule is the next step after midpoint or trapezoid approximations. The key interview detail is the weight pattern and the requirement that the interval count be even.
+
+## Worked Example
+
+To approximate `integral from 0 to 2 of x^2 dx` with `4` subintervals, compute the samples at `0`, `0.5`, `1`, `1.5`, and `2`, then combine them as `h / 3 * (f(x0) + 4f(x1) + 2f(x2) + 4f(x3) + f(x4))` where `h = 0.5`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function simpsonIntegration(segments, left, right, fn) {
+  if (!Number.isInteger(segments) || segments <= 0 || segments % 2 !== 0) {
+    throw new RangeError('Segment count must be a positive even integer');
+  }
+
+  if (!Number.isFinite(left) || !Number.isFinite(right)) {
+    throw new TypeError('Bounds must be finite numbers');
+  }
+
+  if (typeof fn !== 'function') {
+    throw new TypeError('Expected a function to integrate');
+  }
+
+  if (left > right) {
+    throw new RangeError('Left bound must not exceed right bound');
+  }
+
+  if (left === right) {
+    return 0;
+  }
+
+  const width = (right - left) / segments;
+  let total = 0;
+
+  for (let index = 0; index <= segments; index += 1) {
+    const x = left + index * width;
+    const value = fn(x);
+
+    if (!Number.isFinite(value)) {
+      throw new RangeError('Function must return a finite number inside the interval');
+    }
+
+    const weight = index === 0 || index === segments ? 1 : index % 2 === 0 ? 2 : 4;
+    total += weight * value;
+  }
+
+  return (width / 3) * total;
+}
+```
+
+```ts
+export function simpsonIntegration(
+  segments: number,
+  left: number,
+  right: number,
+  fn: (value: number) => number,
+): number {
+  if (!Number.isInteger(segments) || segments <= 0 || segments % 2 !== 0) {
+    throw new RangeError('Segment count must be a positive even integer');
+  }
+
+  if (!Number.isFinite(left) || !Number.isFinite(right)) {
+    throw new TypeError('Bounds must be finite numbers');
+  }
+
+  if (left > right) {
+    throw new RangeError('Left bound must not exceed right bound');
+  }
+
+  if (left === right) {
+    return 0;
+  }
+
+  const width = (right - left) / segments;
+  let total = 0;
+
+  for (let index = 0; index <= segments; index += 1) {
+    const x = left + index * width;
+    const value = fn(x);
+
+    if (!Number.isFinite(value)) {
+      throw new RangeError('Function must return a finite number inside the interval');
+    }
+
+    const weight = index === 0 || index === segments ? 1 : index % 2 === 0 ? 2 : 4;
+    total += weight * value;
+  }
+
+  return (width / 3) * total;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare the same integral under midpoint and Simpson approximations.
+- Increase the segment count until the absolute error drops below a threshold.
+- Explain why composite Simpson's rule requires an even number of subintervals.
+
+## Common Pitfalls
+
+- Forgetting the `1, 4, 2, 4, ..., 2, 4, 1` weighting pattern.
+- Allowing an odd number of subintervals.
+- Ignoring non-finite function values inside the integration interval.

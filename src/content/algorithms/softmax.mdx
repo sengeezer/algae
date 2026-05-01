@@ -1,0 +1,101 @@
+---
+title: Softmax
+slug: softmax
+category: Mathematics
+summary: Convert a list of scores into a probability distribution by exponentiating and normalizing them.
+description: Softmax is the normalization transform that turns arbitrary real-valued scores into non-negative probabilities that sum to `1`.
+dataStructures:
+  - Array
+  - Number
+techniques:
+  - Normalization
+  - Exponential Scaling
+  - Numerical Stability
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - probability normalization
+  - softmax function
+useCases:
+  - Turning model logits into class probabilities
+  - Comparing categorical likelihoods across competing scores
+  - Teaching why subtracting the maximum input improves numerical stability
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: A stable implementation makes one pass to find the maximum and one pass to normalize the shifted exponentials.
+interviewSignals:
+  - The prompt asks for a probability vector derived from raw scores.
+  - The expected answer explains why the outputs are non-negative and sum to `1`.
+relatedSlugs:
+  - exponential-function
+  - average-mean
+  - mean-square-error
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/Softmax.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/Softmax.js
+    kind: Implementation
+  - title: Deep Learning Book
+    href: https://www.deeplearningbook.org/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Softmax is simple mathematically, but the real implementation detail is stability. Good answers explain why subtracting the maximum score preserves the output distribution while reducing overflow risk.
+
+## Worked Example
+
+For scores `[1, 2, 3]`, first shift by the maximum to get `[-2, -1, 0]`, exponentiate those values, and then divide each by their sum. The resulting probabilities are positive and sum to `1`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function softmax(values) {
+  if (!Array.isArray(values) || values.length === 0) {
+    throw new TypeError('Expected a non-empty array');
+  }
+
+  if (!values.every((value) => typeof value === 'number' && Number.isFinite(value))) {
+    throw new TypeError('Values must be finite numbers');
+  }
+
+  const maxValue = Math.max(...values);
+  const exponentials = values.map((value) => Math.exp(value - maxValue));
+  const total = exponentials.reduce((sum, value) => sum + value, 0);
+  return exponentials.map((value) => value / total);
+}
+```
+
+```ts
+export function softmax(values: number[]): number[] {
+  if (!Array.isArray(values) || values.length === 0) {
+    throw new TypeError('Expected a non-empty array');
+  }
+
+  if (!values.every((value) => Number.isFinite(value))) {
+    throw new TypeError('Values must be finite numbers');
+  }
+
+  const maxValue = Math.max(...values);
+  const exponentials = values.map((value) => Math.exp(value - maxValue));
+  const total = exponentials.reduce((sum, value) => sum + value, 0);
+  return exponentials.map((value) => value / total);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compute the log-softmax instead and explain why it is useful.
+- Compare softmax with min-max normalization.
+- Show why subtracting the maximum score does not change the final probabilities.
+
+## Common Pitfalls
+
+- Exponentiating large raw scores directly and risking overflow.
+- Forgetting that the output probabilities must sum to `1`.
+- Accepting empty arrays or non-finite values without defining the behavior.
