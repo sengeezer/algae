@@ -1,0 +1,104 @@
+---
+title: Problem 001
+slug: problem001
+category: Project Euler
+summary: Sum all natural numbers below a limit that are divisible by `3` or `5` without double-counting shared multiples.
+description: Problem 001 is the arithmetic-series warm-up that uses inclusion-exclusion over multiples of `3`, `5`, and `15`.
+dataStructures:
+  - Number
+techniques:
+  - Arithmetic Series
+  - Inclusion-Exclusion
+  - Closed-Form Summation
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - multiples of 3 and 5
+  - project euler 1
+useCases:
+  - Practicing constant-time summation over regular multiples
+  - Teaching how to avoid double-counting overlapping sets
+  - Building intuition for arithmetic progression formulas
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The optimized approach uses three arithmetic-series sums instead of scanning every integer below the limit.
+interviewSignals:
+  - The prompt asks for a sum of multiples below a bound.
+  - The intended solution uses inclusion-exclusion instead of brute-force iteration.
+relatedSlugs:
+  - modular-arithmetic
+  - sum-of-digits
+  - find-lcm
+provenance:
+  - title: TheAlgorithms/JavaScript - Project-Euler/Problem001.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Project-Euler/Problem001.js
+    kind: Implementation
+  - title: Project Euler - Problem 1
+    href: https://projecteuler.net/problem=1
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a classic warm-up for converting a brute-force sum into a constant-time formula. The important step is subtracting the multiples of `15` once because they were counted twice.
+
+## Worked Example
+
+Below `10`, the valid numbers are `3`, `5`, `6`, and `9`, which sum to `23`. The optimized version gets the same result by summing the multiples of `3` and `5` separately and subtracting the multiples of `15`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function arithmeticMultipleSum(step, limit) {
+  const count = Math.floor((limit - 1) / step);
+  return (step * count * (count + 1)) / 2;
+}
+
+function problem001(limit) {
+  if (!Number.isInteger(limit) || limit < 1) {
+    throw new RangeError('Limit must be a positive integer');
+  }
+
+  return (
+    arithmeticMultipleSum(3, limit) +
+    arithmeticMultipleSum(5, limit) -
+    arithmeticMultipleSum(15, limit)
+  );
+}
+```
+
+```ts
+function arithmeticMultipleSum(step: number, limit: number): number {
+  const count = Math.floor((limit - 1) / step);
+  return (step * count * (count + 1)) / 2;
+}
+
+export function problem001(limit: number): number {
+  if (!Number.isInteger(limit) || limit < 1) {
+    throw new RangeError('Limit must be a positive integer');
+  }
+
+  return (
+    arithmeticMultipleSum(3, limit) +
+    arithmeticMultipleSum(5, limit) -
+    arithmeticMultipleSum(15, limit)
+  );
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare the constant-time formula with a simple loop.
+- Generalize the idea to any two divisors.
+- Explain why the multiples of `15` need to be subtracted exactly once.
+
+## Common Pitfalls
+
+- Double-counting numbers divisible by both `3` and `5`.
+- Summing up to and including the limit when the prompt says “below”.
+- Using a loop when the closed-form progression formula is expected.

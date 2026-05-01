@@ -526,9 +526,20 @@ This forty-fifth expansion slice lifts the catalog from 302 to 308 entries.
 - Sum Of Geometric Progression
 - Volume
 
+## Batch 46 added
+
+This forty-sixth expansion slice lifts the catalog from 308 to 314 entries.
+
+- While Loop Factorial
+- Haversine
+- Problem 001
+- Problem 002
+- Problem 003
+- Problem 004
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 45 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 46 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -537,9 +548,9 @@ All expansion entries from batch 1 through batch 45 now carry explicit per-entry
 ## Why this batch
 
 - It fills obvious interview-core gaps from TheAlgorithms/JavaScript without duplicating material already present in Algae.
-- It follows the next verified queue directly, adding matrix reduction, a randomized factor-finding analogue, higher-accuracy integration, probability normalization, geometric-series summation, and multi-shape volume formulas.
-- It broadens the catalog across linear algebra, numerical analysis, probabilistic modeling, and geometry instead of staying inside the previous algebra-and-expression slice.
-- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially mathematically varied helpers that still reward careful input validation, numerical stability, and formula selection.
+- It follows the next verified queue directly, finishing the remaining Maths tail, stepping into Navigation, and then opening the Project Euler track with the first four foundational problems.
+- It broadens the catalog across iterative numeric helpers, geodesic distance, arithmetic series reasoning, Fibonacci constraints, prime factorization, and palindrome search instead of staying inside the previous linear-algebra and geometry slice.
+- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially compact challenge-style routines that still reward careful formulation, integer validation, and search pruning.
 
 ## Supporting study references from the algorithms list
 
@@ -549,9 +560,9 @@ All expansion entries from batch 1 through batch 45 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- While Loop Factorial
-- Haversine
-- Problem 001
-- Problem 002
-- Problem 003
-- Problem 004
+- Problem 005
+- Problem 006
+- Problem 007
+- Problem 008
+- Problem 009
+- Problem 010

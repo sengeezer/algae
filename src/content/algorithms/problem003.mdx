@@ -1,0 +1,108 @@
+---
+title: Problem 003
+slug: problem003
+category: Project Euler
+summary: Find the largest prime factor of a positive integer by dividing out smaller factors as they are discovered.
+description: Problem 003 is the trial-division factorization problem that shrinks the search space whenever a factor is removed.
+dataStructures:
+  - Number
+techniques:
+  - Trial Division
+  - Prime Factorization
+  - Search Space Reduction
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - largest prime factor
+  - project euler 3
+useCases:
+  - Practicing factor stripping instead of storing every divisor
+  - Teaching why dividing out a found factor shortens the remaining search
+  - Supporting number-theory exercises on large composite values
+complexity:
+  time: O(sqrt(n))
+  space: O(1)
+  notes: Dividing out discovered factors reduces the remaining value, so the loop only needs to continue while the trial factor squared stays below that remainder.
+interviewSignals:
+  - The prompt asks for the largest prime factor rather than the full factorization.
+  - The expected solution keeps shrinking the input instead of testing every integer up to the original value.
+relatedSlugs:
+  - prime-factors
+  - prime-check
+  - get-euclid-gcd
+provenance:
+  - title: TheAlgorithms/JavaScript - Project-Euler/Problem003.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Project-Euler/Problem003.js
+    kind: Implementation
+  - title: Project Euler - Problem 3
+    href: https://projecteuler.net/problem=3
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a good example of turning factorization into a shrinking search problem. Once a small factor is removed, the remaining value becomes smaller and can eventually be the largest prime factor itself.
+
+## Worked Example
+
+For `13195`, the prime factors are `5`, `7`, `13`, and `29`, so the answer is `29`. The shrinking version repeatedly divides out small factors until only the largest prime factor remains.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function problem003(value = 600851475143) {
+  if (!Number.isInteger(value) || value < 2) {
+    throw new RangeError('Value must be an integer at least 2');
+  }
+
+  let remaining = value;
+  let divisor = 2;
+
+  while (divisor * divisor <= remaining) {
+    if (remaining % divisor === 0) {
+      remaining /= divisor;
+    } else {
+      divisor += 1;
+    }
+  }
+
+  return remaining;
+}
+```
+
+```ts
+export function problem003(value = 600851475143): number {
+  if (!Number.isInteger(value) || value < 2) {
+    throw new RangeError('Value must be an integer at least 2');
+  }
+
+  let remaining = value;
+  let divisor = 2;
+
+  while (divisor * divisor <= remaining) {
+    if (remaining % divisor === 0) {
+      remaining /= divisor;
+    } else {
+      divisor += 1;
+    }
+  }
+
+  return remaining;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the full list of prime factors instead of only the largest one.
+- Skip even divisors after handling `2`.
+- Explain why the leftover remainder is prime when the loop ends.
+
+## Common Pitfalls
+
+- Continuing to test divisors against the original input after the remainder has shrunk.
+- Treating `1` as a prime factor.
+- Using an upper bound that does not update as factors are removed.

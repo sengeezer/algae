@@ -1,0 +1,148 @@
+---
+title: Problem 004
+slug: problem004
+category: Project Euler
+summary: Find the largest palindrome that can be written as the product of two numbers with a fixed digit count.
+description: Problem 004 is the palindrome-product search that combines descending traversal with factor checks bounded by the target digit range.
+dataStructures:
+  - Number
+techniques:
+  - Brute-Force Search
+  - Palindrome Check
+  - Search Pruning
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - largest palindrome product
+  - project euler 4
+useCases:
+  - Practicing search pruning in a large product space
+  - Reusing integer palindrome checks in optimization problems
+  - Teaching how descending search can stop on the first valid optimum
+complexity:
+  time: O(10^(2d))
+  space: O(1)
+  notes: The search still explores a large product space, but descending order and divisor bounds prune many impossible checks.
+interviewSignals:
+  - The prompt asks for the largest palindrome produced by factors of a given digit length.
+  - The expected solution combines palindrome testing with bounded divisor search.
+relatedSlugs:
+  - is-palindrome-integer-number
+  - reverse-number
+  - problem003
+provenance:
+  - title: TheAlgorithms/JavaScript - Project-Euler/Problem004.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Project-Euler/Problem004.js
+    kind: Implementation
+  - title: Project Euler - Problem 4
+    href: https://projecteuler.net/problem=4
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a structured brute-force search. The question is not only how to test palindromes, but how to avoid scanning the full factor space in an arbitrary order when you only need the largest result.
+
+## Worked Example
+
+For `2` digits, the largest palindrome product is `9009 = 91 * 99`. For `3` digits, the same strategy scales up by searching products from the top down and returning the first palindrome that still factors into two `3`-digit numbers.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function isPalindromeInteger(value) {
+  let remaining = value;
+  let reversed = 0;
+
+  while (remaining > 0) {
+    reversed = reversed * 10 + (remaining % 10);
+    remaining = Math.floor(remaining / 10);
+  }
+
+  return reversed === value;
+}
+
+function problem004(digits) {
+  if (!Number.isInteger(digits) || digits < 1) {
+    throw new RangeError('Digit count must be a positive integer');
+  }
+
+  const upper = 10 ** digits - 1;
+  const lower = 10 ** (digits - 1);
+
+  for (let product = upper * upper; product >= lower * lower; product -= 1) {
+    if (!isPalindromeInteger(product)) {
+      continue;
+    }
+
+    const limit = Math.ceil(Math.sqrt(product));
+    for (let factor = upper; factor >= limit; factor -= 1) {
+      if (product % factor === 0) {
+        const partner = product / factor;
+        if (partner >= lower && partner <= upper) {
+          return product;
+        }
+      }
+    }
+  }
+
+  return NaN;
+}
+```
+
+```ts
+function isPalindromeInteger(value: number): boolean {
+  let remaining = value;
+  let reversed = 0;
+
+  while (remaining > 0) {
+    reversed = reversed * 10 + (remaining % 10);
+    remaining = Math.floor(remaining / 10);
+  }
+
+  return reversed === value;
+}
+
+export function problem004(digits: number): number {
+  if (!Number.isInteger(digits) || digits < 1) {
+    throw new RangeError('Digit count must be a positive integer');
+  }
+
+  const upper = 10 ** digits - 1;
+  const lower = 10 ** (digits - 1);
+
+  for (let product = upper * upper; product >= lower * lower; product -= 1) {
+    if (!isPalindromeInteger(product)) {
+      continue;
+    }
+
+    const limit = Math.ceil(Math.sqrt(product));
+    for (let factor = upper; factor >= limit; factor -= 1) {
+      if (product % factor === 0) {
+        const partner = product / factor;
+        if (partner >= lower && partner <= upper) {
+          return product;
+        }
+      }
+    }
+  }
+
+  return Number.NaN;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Search factor pairs directly instead of descending over every possible product.
+- Explain why checking factors down to the square root is enough.
+- Reuse the palindrome helper for string and integer variants.
+
+## Common Pitfalls
+
+- Searching in ascending order and missing the chance to stop early at the optimum.
+- Failing to enforce that both factors have the requested digit count.
+- Reversing the whole search space without bounding the factor check by the square root.

@@ -1,0 +1,102 @@
+---
+title: While Loop Factorial
+slug: while-loop-factorial
+category: Mathematics
+summary: Compute a factorial by multiplying downward in a `while` loop until the factor reaches `1`.
+description: While Loop Factorial is the loop-structure variant of factorial computation that emphasizes decrementing control flow instead of a `for` range.
+dataStructures:
+  - Number
+techniques:
+  - Iterative Multiplication
+  - While Loop
+  - Combinatorics
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - factorial with while loop
+  - decrementing factorial
+useCases:
+  - Demonstrating equivalent iterative control-flow shapes for factorial
+  - Teaching how loop invariants work with a decreasing counter
+  - Supporting combinatorics formulas without recursion
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The countdown loop performs one multiplication per integer from `n` down to `2`.
+interviewSignals:
+  - The prompt asks specifically for a `while`-loop implementation.
+  - The intended answer keeps a running product while decrementing the input or a local counter.
+relatedSlugs:
+  - factorial
+  - binomial-coefficient
+  - permutation-and-combination
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/WhileLoopFactorial.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/WhileLoopFactorial.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the same core factorial problem in a slightly different control-flow costume. It is useful when the interviewer wants to see whether you can express the same invariant without relying on a counted `for` loop.
+
+## Worked Example
+
+For `5`, start with `result = 1` and keep multiplying by `5`, `4`, `3`, and `2` while decrementing the counter. The final result is `120`. For `0`, the loop body never runs, so the result stays `1`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function whileLoopFactorial(value) {
+  if (!Number.isInteger(value) || value < 0) {
+    throw new RangeError('Value must be a non-negative integer');
+  }
+
+  let result = 1;
+  let current = value;
+
+  while (current > 1) {
+    result *= current;
+    current -= 1;
+  }
+
+  return result;
+}
+```
+
+```ts
+export function whileLoopFactorial(value: number): number {
+  if (!Number.isInteger(value) || value < 0) {
+    throw new RangeError('Value must be a non-negative integer');
+  }
+
+  let result = 1;
+  let current = value;
+
+  while (current > 1) {
+    result *= current;
+    current -= 1;
+  }
+
+  return result;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare this version with the `for`-loop and recursive implementations.
+- Switch to `bigint` once ordinary numbers overflow.
+- Explain why `0!` still returns `1` even though the loop does no work.
+
+## Common Pitfalls
+
+- Forgetting that `0! = 1`.
+- Mutating the input value when the caller expects it to remain unchanged.
+- Accepting negative inputs even though factorial is defined here only for non-negative integers.

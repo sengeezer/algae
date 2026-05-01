@@ -1,0 +1,128 @@
+---
+title: Haversine
+slug: haversine
+category: Navigation
+summary: Compute the great-circle distance between two latitude-longitude points on Earth with the haversine formula.
+description: Haversine is the spherical-distance routine that converts coordinate differences into an arc length over the Earth's surface.
+dataStructures:
+  - Number
+techniques:
+  - Spherical Geometry
+  - Coordinate Conversion
+  - Trigonometry
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - haversine distance
+  - great-circle distance
+useCases:
+  - Estimating travel distance between GPS coordinates
+  - Supporting mapping and navigation features
+  - Teaching why straight-line Euclidean distance is not enough on a sphere
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The haversine formula uses a fixed number of trigonometric operations after converting degrees to radians.
+interviewSignals:
+  - The prompt gives latitude-longitude pairs rather than flat Cartesian coordinates.
+  - The expected solution uses spherical distance instead of planar approximation.
+relatedSlugs:
+  - euclidean-distance
+  - coordinate
+  - degree-to-radian
+provenance:
+  - title: TheAlgorithms/JavaScript - Navigation/Haversine.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Navigation/Haversine.js
+    kind: Implementation
+  - title: free-programming-books - Geodesy and GPS
+    href: https://www.e-education.psu.edu/geog862/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Haversine is the standard correction when geographic coordinates are involved. The key interview distinction is recognizing that the Earth is not a flat plane for this calculation.
+
+## Worked Example
+
+Given two latitude-longitude pairs in degrees, first convert the coordinate differences to radians, then use the haversine expression to compute the central angle. Multiplying that angle by Earth's radius gives the surface distance.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function toRadians(degrees) {
+  return (degrees * Math.PI) / 180;
+}
+
+function validateCoordinate(value, label, min, max) {
+  if (typeof value !== 'number' || !Number.isFinite(value) || value < min || value > max) {
+    throw new RangeError(`${label} must be a finite number between ${min} and ${max}`);
+  }
+}
+
+function haversine(lat1, lon1, lat2, lon2) {
+  validateCoordinate(lat1, 'Latitude 1', -90, 90);
+  validateCoordinate(lat2, 'Latitude 2', -90, 90);
+  validateCoordinate(lon1, 'Longitude 1', -180, 180);
+  validateCoordinate(lon2, 'Longitude 2', -180, 180);
+
+  const earthRadius = 6_371_000;
+  const phi1 = toRadians(lat1);
+  const phi2 = toRadians(lat2);
+  const deltaPhi = toRadians(lat2 - lat1);
+  const deltaLambda = toRadians(lon2 - lon1);
+
+  const a =
+    Math.sin(deltaPhi / 2) ** 2 +
+    Math.cos(phi1) * Math.cos(phi2) * Math.sin(deltaLambda / 2) ** 2;
+
+  return 2 * earthRadius * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+```
+
+```ts
+function toRadians(degrees: number): number {
+  return (degrees * Math.PI) / 180;
+}
+
+function validateCoordinate(value: number, label: string, min: number, max: number): void {
+  if (!Number.isFinite(value) || value < min || value > max) {
+    throw new RangeError(`${label} must be a finite number between ${min} and ${max}`);
+  }
+}
+
+export function haversine(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  validateCoordinate(lat1, 'Latitude 1', -90, 90);
+  validateCoordinate(lat2, 'Latitude 2', -90, 90);
+  validateCoordinate(lon1, 'Longitude 1', -180, 180);
+  validateCoordinate(lon2, 'Longitude 2', -180, 180);
+
+  const earthRadius = 6_371_000;
+  const phi1 = toRadians(lat1);
+  const phi2 = toRadians(lat2);
+  const deltaPhi = toRadians(lat2 - lat1);
+  const deltaLambda = toRadians(lon2 - lon1);
+
+  const a =
+    Math.sin(deltaPhi / 2) ** 2 +
+    Math.cos(phi1) * Math.cos(phi2) * Math.sin(deltaLambda / 2) ** 2;
+
+  return 2 * earthRadius * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the result in kilometers or miles instead of meters.
+- Compare haversine distance with a planar approximation over short ranges.
+- Explain why degree input must be converted to radians before applying trig functions.
+
+## Common Pitfalls
+
+- Treating latitude and longitude as if they were flat Cartesian coordinates.
+- Forgetting to convert degrees to radians.
+- Accepting out-of-range latitude or longitude values.

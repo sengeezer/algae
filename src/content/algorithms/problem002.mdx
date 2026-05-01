@@ -1,0 +1,110 @@
+---
+title: Problem 002
+slug: problem002
+category: Project Euler
+summary: Sum the even Fibonacci numbers that do not exceed a limit.
+description: Problem 002 is the Fibonacci-constraint problem that accumulates only the even-valued terms under a numeric cap.
+dataStructures:
+  - Number
+techniques:
+  - Fibonacci Sequence
+  - Iteration
+  - Parity Filtering
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - even fibonacci sum
+  - project euler 2
+useCases:
+  - Practicing recurrence generation under a stopping threshold
+  - Filtering sequence terms by parity while streaming them
+  - Comparing closed-form and iterative Fibonacci approaches
+complexity:
+  time: O(log limit)
+  space: O(1)
+  notes: Fibonacci values grow exponentially, so the number of generated terms is logarithmic in the numeric limit.
+interviewSignals:
+  - The prompt asks for Fibonacci values under a bound rather than by index.
+  - The intended solution stops early once the next term exceeds the limit.
+relatedSlugs:
+  - fibonacci
+  - is-even
+  - juggler-sequence
+provenance:
+  - title: TheAlgorithms/JavaScript - Project-Euler/Problem002.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Project-Euler/Problem002.js
+    kind: Implementation
+  - title: Project Euler - Problem 2
+    href: https://projecteuler.net/problem=2
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a recurrence-and-filtering question: generate the Fibonacci stream, keep only even terms, and stop as soon as the next number would exceed the bound.
+
+## Worked Example
+
+The Fibonacci numbers below `100` are `1, 2, 3, 5, 8, 13, 21, 34, 55, 89`. The even ones are `2, 8, 34`, so the answer is `44`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function problem002(limit) {
+  if (!Number.isInteger(limit) || limit < 1) {
+    throw new RangeError('Limit must be a positive integer');
+  }
+
+  let previous = 1;
+  let current = 2;
+  let sum = 0;
+
+  while (current <= limit) {
+    if (current % 2 === 0) {
+      sum += current;
+    }
+
+    [previous, current] = [current, previous + current];
+  }
+
+  return sum;
+}
+```
+
+```ts
+export function problem002(limit: number): number {
+  if (!Number.isInteger(limit) || limit < 1) {
+    throw new RangeError('Limit must be a positive integer');
+  }
+
+  let previous = 1;
+  let current = 2;
+  let sum = 0;
+
+  while (current <= limit) {
+    if (current % 2 === 0) {
+      sum += current;
+    }
+
+    [previous, current] = [current, previous + current];
+  }
+
+  return sum;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Skip odd Fibonacci terms entirely by generating only the even subsequence.
+- Compare the iterative solution with a closed-form approach.
+- Explain why the number of generated terms is small even for large limits.
+
+## Common Pitfalls
+
+- Treating the limit as an index instead of a numeric ceiling.
+- Forgetting to filter by parity before summing.
+- Generating the whole sequence up front instead of streaming it.
