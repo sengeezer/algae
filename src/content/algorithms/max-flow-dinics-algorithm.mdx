@@ -1,0 +1,228 @@
+---
+title: Max Flow (Dinic's Algorithm)
+slug: max-flow-dinics-algorithm
+category: Graphs
+summary: Build a BFS level graph and send repeated blocking flows through it so max flow grows faster than one augmenting path at a time.
+description: Max Flow (Dinic's Algorithm) is the residual-network algorithm that combines level graphs and DFS blocking flows to compute maximum s-t flow efficiently.
+dataStructures:
+  - Graph
+  - Queue
+  - Array
+techniques:
+  - Network Flow
+  - Residual Graph
+  - Blocking Flow
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - Dinic's algorithm
+  - max flow
+  - blocking flow
+useCases:
+  - Resource allocation and capacity planning
+  - Flow-based reductions such as matching or cut problems
+  - Faster max-flow computation than plain Ford-Fulkerson on larger graphs
+complexity:
+  time: O(V^2 * E) general bound
+  space: O(V + E)
+  notes: The practical gain comes from sending many DFS augmentations inside one BFS-built level graph instead of rebuilding after every single path.
+interviewSignals:
+  - The prompt involves capacities and asks for the maximum transferable flow.
+  - A residual network with repeated shortest-layer augmentation is a natural fit.
+relatedSlugs:
+  - bipartite-matching
+  - breadth-first-search
+  - connected-components
+provenance:
+  - title: GeeksforGeeks - Dinic's Algorithm for Maximum Flow
+    href: https://www.geeksforgeeks.org/dinics-algorithm-maximum-flow/
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Dinic's algorithm is a strong interview upgrade over plain augmenting-path max flow because it separates the work into two layers: BFS decides which edges are currently “forward enough,” and DFS pushes as much blocking flow as possible before the next BFS rebuild.
+
+## Worked Example
+
+After one BFS from source to sink, only edges that move from level `k` to `k + 1` remain usable. DFS then pushes flow through that level graph until every source-to-sink route in it is blocked, after which a new BFS rebuilds levels in the updated residual network.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class Dinic {
+  constructor(size) {
+    this.size = size;
+    this.graph = Array.from({ length: size }, () => []);
+  }
+
+  addEdge(from, to, capacity) {
+    const forward = { to, rev: this.graph[to].length, capacity };
+    const backward = { to: from, rev: this.graph[from].length, capacity: 0 };
+    this.graph[from].push(forward);
+    this.graph[to].push(backward);
+  }
+
+  buildLevels(source, sink) {
+    this.level = new Array(this.size).fill(-1);
+    const queue = [source];
+    this.level[source] = 0;
+
+    for (let head = 0; head < queue.length; head += 1) {
+      const node = queue[head];
+
+      for (const edge of this.graph[node]) {
+        if (edge.capacity > 0 && this.level[edge.to] === -1) {
+          this.level[edge.to] = this.level[node] + 1;
+          queue.push(edge.to);
+        }
+      }
+    }
+
+    return this.level[sink] !== -1;
+  }
+
+  sendFlow(node, sink, pushed) {
+    if (node === sink || pushed === 0) {
+      return pushed;
+    }
+
+    for (; this.nextEdge[node] < this.graph[node].length; this.nextEdge[node] += 1) {
+      const edge = this.graph[node][this.nextEdge[node]];
+      if (edge.capacity === 0 || this.level[edge.to] !== this.level[node] + 1) {
+        continue;
+      }
+
+      const flow = this.sendFlow(edge.to, sink, Math.min(pushed, edge.capacity));
+      if (flow === 0) {
+        continue;
+      }
+
+      edge.capacity -= flow;
+      this.graph[edge.to][edge.rev].capacity += flow;
+      return flow;
+    }
+
+    return 0;
+  }
+
+  maxFlow(source, sink) {
+    let total = 0;
+
+    while (this.buildLevels(source, sink)) {
+      this.nextEdge = new Array(this.size).fill(0);
+      let flow = this.sendFlow(source, sink, Number.POSITIVE_INFINITY);
+
+      while (flow > 0) {
+        total += flow;
+        flow = this.sendFlow(source, sink, Number.POSITIVE_INFINITY);
+      }
+    }
+
+    return total;
+  }
+}
+```
+
+```ts
+type Edge = {
+  to: number;
+  rev: number;
+  capacity: number;
+};
+
+export class Dinic {
+  private readonly graph: Edge[][];
+  private level: number[] = [];
+  private nextEdge: number[] = [];
+
+  constructor(private readonly size: number) {
+    this.graph = Array.from({ length: size }, () => []);
+  }
+
+  addEdge(from: number, to: number, capacity: number): void {
+    const forward: Edge = { to, rev: this.graph[to].length, capacity };
+    const backward: Edge = { to: from, rev: this.graph[from].length, capacity: 0 };
+    this.graph[from].push(forward);
+    this.graph[to].push(backward);
+  }
+
+  private buildLevels(source: number, sink: number): boolean {
+    this.level = new Array<number>(this.size).fill(-1);
+    const queue: number[] = [source];
+    this.level[source] = 0;
+
+    for (let head = 0; head < queue.length; head += 1) {
+      const node = queue[head];
+
+      for (const edge of this.graph[node]) {
+        if (edge.capacity > 0 && this.level[edge.to] === -1) {
+          this.level[edge.to] = this.level[node] + 1;
+          queue.push(edge.to);
+        }
+      }
+    }
+
+    return this.level[sink] !== -1;
+  }
+
+  private sendFlow(node: number, sink: number, pushed: number): number {
+    if (node === sink || pushed === 0) {
+      return pushed;
+    }
+
+    for (; this.nextEdge[node] < this.graph[node].length; this.nextEdge[node] += 1) {
+      const edge = this.graph[node][this.nextEdge[node]];
+      if (edge.capacity === 0 || this.level[edge.to] !== this.level[node] + 1) {
+        continue;
+      }
+
+      const flow = this.sendFlow(edge.to, sink, Math.min(pushed, edge.capacity));
+      if (flow === 0) {
+        continue;
+      }
+
+      edge.capacity -= flow;
+      this.graph[edge.to][edge.rev].capacity += flow;
+      return flow;
+    }
+
+    return 0;
+  }
+
+  maxFlow(source: number, sink: number): number {
+    let total = 0;
+
+    while (this.buildLevels(source, sink)) {
+      this.nextEdge = new Array<number>(this.size).fill(0);
+      let flow = this.sendFlow(source, sink, Number.POSITIVE_INFINITY);
+
+      while (flow > 0) {
+        total += flow;
+        flow = this.sendFlow(source, sink, Number.POSITIVE_INFINITY);
+      }
+    }
+
+    return total;
+  }
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why Dinic is usually faster than Ford-Fulkerson in practice.
+- Use max-flow reduction to solve bipartite matching.
+- Extract the minimum cut after computing the flow.
+
+## Common Pitfalls
+
+- Breaking reverse-edge bookkeeping in the residual graph.
+- Letting DFS ignore the BFS level ordering.
+- Forgetting that capacities must be updated in both forward and reverse directions.

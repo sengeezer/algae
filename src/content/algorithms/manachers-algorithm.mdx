@@ -1,0 +1,161 @@
+---
+title: Manacher's Algorithm
+slug: manachers-algorithm
+category: Strings
+summary: Reuse palindrome symmetry around the current rightmost center so the longest palindromic substring can be found in linear time.
+description: Manacher's Algorithm is the linear-time longest-palindromic-substring technique that preprocesses separators and mirrors previously known radii to avoid redundant expansion.
+dataStructures:
+  - String
+  - Array
+techniques:
+  - String Processing
+  - Symmetry Reuse
+  - Center Expansion
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - longest palindromic substring linear time
+  - palindrome radii
+useCases:
+  - Finding the longest palindromic substring in O(n)
+  - Precomputing palindrome radii for repeated range checks
+  - Comparing naive center expansion with symmetry-aware preprocessing
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: The sentinels and separators unify odd and even palindromes so every palindrome becomes centered at one transformed index.
+interviewSignals:
+  - The prompt asks for the longest palindromic substring and pushes beyond quadratic center expansion.
+  - You need repeated palindrome-radius information around every center.
+relatedSlugs:
+  - longest-palindromic-subsequence
+  - is-palindrome
+  - z-function
+provenance:
+  - title: GeeksforGeeks - Manacher's Algorithm for Longest Palindromic Substring
+    href: https://www.geeksforgeeks.org/manachers-algorithm-linear-time-longest-palindromic-substring-part-1/
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Manacher's algorithm is what you reach for when center expansion is conceptually right but still too slow. Its real trick is not “expand faster,” but “reuse what a mirrored center already proved” while the current palindrome boundary still covers you.
+
+## Worked Example
+
+For `abba`, transform the text into `^#a#b#b#a#$`. The separators make even and odd palindromes look the same, so the algorithm can store one radius per center and mirror known values across the current best palindrome.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function manachersAlgorithm(text) {
+  if (typeof text !== 'string') {
+    throw new TypeError('Expected a string');
+  }
+
+  if (text.length === 0) {
+    return '';
+  }
+
+  const transformed = ['^'];
+  for (const char of text) {
+    transformed.push('#', char);
+  }
+  transformed.push('#', '$');
+
+  const radius = new Array(transformed.length).fill(0);
+  let center = 0;
+  let right = 0;
+
+  for (let index = 1; index < transformed.length - 1; index += 1) {
+    const mirror = 2 * center - index;
+
+    if (index < right) {
+      radius[index] = Math.min(right - index, radius[mirror]);
+    }
+
+    while (transformed[index + radius[index] + 1] === transformed[index - radius[index] - 1]) {
+      radius[index] += 1;
+    }
+
+    if (index + radius[index] > right) {
+      center = index;
+      right = index + radius[index];
+    }
+  }
+
+  let bestCenter = 0;
+  for (let index = 1; index < radius.length - 1; index += 1) {
+    if (radius[index] > radius[bestCenter]) {
+      bestCenter = index;
+    }
+  }
+
+  const start = Math.floor((bestCenter - radius[bestCenter]) / 2);
+  return text.slice(start, start + radius[bestCenter]);
+}
+```
+
+```ts
+export function manachersAlgorithm(text: string): string {
+  if (text.length === 0) {
+    return '';
+  }
+
+  const transformed: string[] = ['^'];
+  for (const char of text) {
+    transformed.push('#', char);
+  }
+  transformed.push('#', '$');
+
+  const radius = new Array<number>(transformed.length).fill(0);
+  let center = 0;
+  let right = 0;
+
+  for (let index = 1; index < transformed.length - 1; index += 1) {
+    const mirror = 2 * center - index;
+
+    if (index < right) {
+      radius[index] = Math.min(right - index, radius[mirror]);
+    }
+
+    while (transformed[index + radius[index] + 1] === transformed[index - radius[index] - 1]) {
+      radius[index] += 1;
+    }
+
+    if (index + radius[index] > right) {
+      center = index;
+      right = index + radius[index];
+    }
+  }
+
+  let bestCenter = 0;
+  for (let index = 1; index < radius.length - 1; index += 1) {
+    if (radius[index] > radius[bestCenter]) {
+      bestCenter = index;
+    }
+  }
+
+  const start = Math.floor((bestCenter - radius[bestCenter]) / 2);
+  return text.slice(start, start + radius[bestCenter]);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the palindrome radii for every center instead of only the longest substring.
+- Explain why the transformed string removes the odd-versus-even case split.
+- Compare the algorithm with ordinary center expansion and dynamic programming.
+
+## Common Pitfalls
+
+- Forgetting the sentinels that prevent bounds checks from becoming messy.
+- Mixing transformed-string indices with original-string indices.
+- Re-expanding work that the mirror case already proved unnecessary.

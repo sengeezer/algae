@@ -1,0 +1,213 @@
+---
+title: Heavy-Light Decomposition
+slug: heavy-light-decomposition
+category: Trees
+summary: Split a rooted tree into heavy chains so path queries become a small number of contiguous segment queries.
+description: Heavy-Light Decomposition is the tree-query technique that linearizes root-to-node structure into chains, letting repeated path operations piggyback on a segment tree or Fenwick tree.
+dataStructures:
+  - Tree
+  - Array
+techniques:
+  - Tree Decomposition
+  - Heavy-Light Decomposition
+  - Tree Preprocessing
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - HLD
+  - heavy chains
+useCases:
+  - Path sum or path maximum queries on static trees
+  - Turning tree paths into interval queries
+  - Combining tree structure with segment-tree style range operations
+complexity:
+  time: O(n) decomposition, O(log n) chain jumps, O(log^2 n) path query with a segment tree
+  space: O(n)
+  notes: The benefit comes from the fact that every light edge cuts subtree size sharply, so a root-to-node climb changes chains only logarithmically many times.
+interviewSignals:
+  - The prompt asks many path queries on one fixed tree.
+  - A simple DFS per query is correct but too slow.
+relatedSlugs:
+  - binary-lifting
+  - segment-tree
+  - lowest-common-ancestor
+provenance:
+  - title: GeeksforGeeks - Heavy Light Decomposition Introduction
+    href: https://www.geeksforgeeks.org/heavy-light-decomposition-set-1-introduction/
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Heavy-light decomposition matters when a tree stays fixed but the number of path queries is large. The core move is to break the tree into chains so the path from one node to another crosses only a logarithmic number of chain boundaries.
+
+## Worked Example
+
+If every node links its largest child as heavy, then the path from a node to the root mostly stays inside one chain and only occasionally crosses a light edge. Each light-edge jump cuts the remaining subtree size enough that there can only be a few of them.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function buildHeavyLight(tree, root = 0) {
+  const size = tree.length;
+  const parent = new Array(size).fill(-1);
+  const depth = new Array(size).fill(0);
+  const subtree = new Array(size).fill(0);
+  const heavy = new Array(size).fill(-1);
+  const head = new Array(size).fill(0);
+  const position = new Array(size).fill(0);
+  const order = [];
+
+  function dfs(node, prev) {
+    parent[node] = prev;
+    subtree[node] = 1;
+    let bestChild = -1;
+    let bestSize = 0;
+
+    for (const neighbor of tree[node]) {
+      if (neighbor === prev) {
+        continue;
+      }
+
+      depth[neighbor] = depth[node] + 1;
+      dfs(neighbor, node);
+      subtree[node] += subtree[neighbor];
+
+      if (subtree[neighbor] > bestSize) {
+        bestSize = subtree[neighbor];
+        bestChild = neighbor;
+      }
+    }
+
+    heavy[node] = bestChild;
+  }
+
+  function decompose(node, chainHead) {
+    head[node] = chainHead;
+    position[node] = order.length;
+    order.push(node);
+
+    if (heavy[node] !== -1) {
+      decompose(heavy[node], chainHead);
+    }
+
+    for (const neighbor of tree[node]) {
+      if (neighbor !== parent[node] && neighbor !== heavy[node]) {
+        decompose(neighbor, neighbor);
+      }
+    }
+  }
+
+  dfs(root, -1);
+  decompose(root, root);
+  return { parent, depth, head, position, order };
+}
+```
+
+```ts
+type HldState = {
+  parent: number[];
+  depth: number[];
+  head: number[];
+  position: number[];
+};
+
+export function pathSegments(
+  tree: number[][],
+  root: number,
+  leftNode: number,
+  rightNode: number,
+): Array<[number, number]> {
+  const size = tree.length;
+  const parent = new Array<number>(size).fill(-1);
+  const depth = new Array<number>(size).fill(0);
+  const subtree = new Array<number>(size).fill(0);
+  const heavy = new Array<number>(size).fill(-1);
+  const head = new Array<number>(size).fill(0);
+  const position = new Array<number>(size).fill(0);
+  let nextPosition = 0;
+
+  function dfs(node: number, prev: number): void {
+    parent[node] = prev;
+    subtree[node] = 1;
+    let bestChild = -1;
+    let bestSize = 0;
+
+    for (const neighbor of tree[node]) {
+      if (neighbor === prev) {
+        continue;
+      }
+
+      depth[neighbor] = depth[node] + 1;
+      dfs(neighbor, node);
+      subtree[node] += subtree[neighbor];
+
+      if (subtree[neighbor] > bestSize) {
+        bestSize = subtree[neighbor];
+        bestChild = neighbor;
+      }
+    }
+
+    heavy[node] = bestChild;
+  }
+
+  function decompose(node: number, chainHead: number): void {
+    head[node] = chainHead;
+    position[node] = nextPosition;
+    nextPosition += 1;
+
+    if (heavy[node] !== -1) {
+      decompose(heavy[node], chainHead);
+    }
+
+    for (const neighbor of tree[node]) {
+      if (neighbor !== parent[node] && neighbor !== heavy[node]) {
+        decompose(neighbor, neighbor);
+      }
+    }
+  }
+
+  dfs(root, -1);
+  decompose(root, root);
+
+  const state: HldState = { parent, depth, head, position };
+  const segments: Array<[number, number]> = [];
+  let u = leftNode;
+  let v = rightNode;
+
+  while (state.head[u] !== state.head[v]) {
+    if (state.depth[state.head[u]] < state.depth[state.head[v]]) {
+      [u, v] = [v, u];
+    }
+
+    segments.push([state.position[state.head[u]], state.position[u]]);
+    u = state.parent[state.head[u]];
+  }
+
+  if (state.depth[u] > state.depth[v]) {
+    [u, v] = [v, u];
+  }
+
+  segments.push([state.position[u], state.position[v]]);
+  return segments;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Pair the decomposition with a segment tree for path sums or maximums.
+- Compare HLD with binary lifting for pure ancestor queries.
+- Explain why each root-to-node path crosses only O(log n) light edges.
+
+## Common Pitfalls
+
+- Forgetting to compute subtree sizes before deciding heavy children.
+- Treating every child of a node as heavy.
+- Misordering the flattening step so chain ranges stop being contiguous.

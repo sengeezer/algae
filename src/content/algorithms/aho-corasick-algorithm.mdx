@@ -1,0 +1,235 @@
+---
+title: Aho-Corasick Algorithm
+slug: aho-corasick-algorithm
+category: Strings
+summary: Build a trie with failure links so many patterns can be searched across one text in a single linear scan.
+description: Aho-Corasick Algorithm is the multi-pattern matching automaton that combines trie transitions, BFS-built failure links, and output propagation to find all occurrences efficiently.
+dataStructures:
+  - Trie
+  - Queue
+  - String
+techniques:
+  - Multi-Pattern Matching
+  - Failure Links
+  - Automaton Construction
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - AC automaton
+  - multi-pattern string matching
+useCases:
+  - Scanning text against many keywords at once
+  - Spam or keyword filtering
+  - Replacing repeated single-pattern scans with one automaton walk
+complexity:
+  time: O(total pattern length + text length + matches)
+  space: O(total pattern length)
+  notes: The failure-link BFS is what turns a plain trie into a reusable search automaton instead of forcing every mismatch back to the root.
+interviewSignals:
+  - The prompt asks to search many patterns in one pass over the text.
+  - Running KMP or a naive search separately for every pattern would be too expensive.
+relatedSlugs:
+  - trie
+  - kmp-string-search
+  - z-function
+provenance:
+  - title: GeeksforGeeks - Aho-Corasick Algorithm for Pattern Searching
+    href: https://www.geeksforgeeks.org/aho-corasick-algorithm-pattern-searching/
+    kind: Implementation
+  - title: free-programming-books - Text Algorithms
+    href: http://igm.univ-mlv.fr/~mac/REC/text-algorithms.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Aho-Corasick matters when one text must be checked against many patterns. The trie handles prefix sharing, and the failure links preserve progress after mismatches so the scan stays linear instead of restarting from scratch per pattern.
+
+## Worked Example
+
+If the patterns are `he`, `she`, `his`, and `hers`, the trie stores shared prefixes and the failure links connect suffix-compatible states. Scanning `ushers` can then report several matches during one left-to-right pass.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class AhoCorasick {
+  constructor(patterns) {
+    this.nodes = [{ next: new Map(), fail: 0, output: [] }];
+
+    patterns.forEach((pattern, index) => this.addPattern(pattern, index));
+    this.buildFailures();
+    this.patterns = patterns;
+  }
+
+  addPattern(pattern, index) {
+    let state = 0;
+
+    for (const char of pattern) {
+      if (!this.nodes[state].next.has(char)) {
+        this.nodes[state].next.set(char, this.nodes.length);
+        this.nodes.push({ next: new Map(), fail: 0, output: [] });
+      }
+
+      state = this.nodes[state].next.get(char);
+    }
+
+    this.nodes[state].output.push(index);
+  }
+
+  buildFailures() {
+    const queue = [];
+
+    for (const nextState of this.nodes[0].next.values()) {
+      queue.push(nextState);
+    }
+
+    for (let head = 0; head < queue.length; head += 1) {
+      const state = queue[head];
+
+      for (const [char, nextState] of this.nodes[state].next.entries()) {
+        let fail = this.nodes[state].fail;
+
+        while (fail !== 0 && !this.nodes[fail].next.has(char)) {
+          fail = this.nodes[fail].fail;
+        }
+
+        if (this.nodes[fail].next.has(char)) {
+          fail = this.nodes[fail].next.get(char);
+        }
+
+        this.nodes[nextState].fail = fail;
+        this.nodes[nextState].output.push(...this.nodes[fail].output);
+        queue.push(nextState);
+      }
+    }
+  }
+
+  search(text) {
+    const matches = [];
+    let state = 0;
+
+    for (let index = 0; index < text.length; index += 1) {
+      const char = text[index];
+
+      while (state !== 0 && !this.nodes[state].next.has(char)) {
+        state = this.nodes[state].fail;
+      }
+
+      if (this.nodes[state].next.has(char)) {
+        state = this.nodes[state].next.get(char);
+      }
+
+      for (const patternIndex of this.nodes[state].output) {
+        matches.push({
+          pattern: this.patterns[patternIndex],
+          index: index - this.patterns[patternIndex].length + 1,
+        });
+      }
+    }
+
+    return matches;
+  }
+}
+```
+
+```ts
+type Node = {
+  next: Map<string, number>;
+  fail: number;
+  output: number[];
+};
+
+export class AhoCorasick {
+  private readonly nodes: Node[] = [{ next: new Map(), fail: 0, output: [] }];
+
+  constructor(private readonly patterns: string[]) {
+    patterns.forEach((pattern, index) => this.addPattern(pattern, index));
+    this.buildFailures();
+  }
+
+  private addPattern(pattern: string, index: number): void {
+    let state = 0;
+
+    for (const char of pattern) {
+      if (!this.nodes[state].next.has(char)) {
+        this.nodes[state].next.set(char, this.nodes.length);
+        this.nodes.push({ next: new Map(), fail: 0, output: [] });
+      }
+
+      state = this.nodes[state].next.get(char)!;
+    }
+
+    this.nodes[state].output.push(index);
+  }
+
+  private buildFailures(): void {
+    const queue: number[] = [];
+
+    for (const nextState of this.nodes[0].next.values()) {
+      queue.push(nextState);
+    }
+
+    for (let head = 0; head < queue.length; head += 1) {
+      const state = queue[head];
+
+      for (const [char, nextState] of this.nodes[state].next.entries()) {
+        let fail = this.nodes[state].fail;
+
+        while (fail !== 0 && !this.nodes[fail].next.has(char)) {
+          fail = this.nodes[fail].fail;
+        }
+
+        if (this.nodes[fail].next.has(char)) {
+          fail = this.nodes[fail].next.get(char)!;
+        }
+
+        this.nodes[nextState].fail = fail;
+        this.nodes[nextState].output.push(...this.nodes[fail].output);
+        queue.push(nextState);
+      }
+    }
+  }
+
+  search(text: string): Array<{ pattern: string; index: number }> {
+    const matches: Array<{ pattern: string; index: number }> = [];
+    let state = 0;
+
+    for (let index = 0; index < text.length; index += 1) {
+      const char = text[index];
+
+      while (state !== 0 && !this.nodes[state].next.has(char)) {
+        state = this.nodes[state].fail;
+      }
+
+      if (this.nodes[state].next.has(char)) {
+        state = this.nodes[state].next.get(char)!;
+      }
+
+      for (const patternIndex of this.nodes[state].output) {
+        matches.push({
+          pattern: this.patterns[patternIndex],
+          index: index - this.patterns[patternIndex].length + 1,
+        });
+      }
+    }
+
+    return matches;
+  }
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Switch the output encoding from arrays to bitsets or linked lists for larger pattern sets.
+- Compare Aho-Corasick with running KMP separately for each pattern.
+- Handle a large alphabet without dense transition tables.
+
+## Common Pitfalls
+
+- Forgetting to propagate output through failure links.
+- Restarting mismatches at the root instead of following failure edges.
+- Using a dense alphabet table when sparse maps are more practical.

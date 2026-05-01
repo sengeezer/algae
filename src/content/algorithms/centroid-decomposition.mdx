@@ -1,0 +1,166 @@
+---
+title: Centroid Decomposition
+slug: centroid-decomposition
+category: Trees
+summary: Repeatedly remove a tree centroid so the decomposition depth stays logarithmic and subtree queries can climb a balanced centroid tree.
+description: Centroid Decomposition is the recursive tree-partitioning technique that chooses balanced centroids, builds a centroid parent tree, and supports many path-based optimizations.
+dataStructures:
+  - Tree
+  - Array
+techniques:
+  - Tree Decomposition
+  - Recursive Partitioning
+  - Balanced Recursion
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - centroid tree
+  - balanced tree decomposition
+useCases:
+  - Repeated distance queries on static trees
+  - Tree problems that aggregate information around centroids
+  - Building balanced recursive structure over an arbitrary tree
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: Every decomposition step removes one centroid whose largest remaining component is at most half the current subtree, which keeps centroid-tree depth logarithmic.
+interviewSignals:
+  - The prompt needs many tree queries where subtree balance matters more than root depth.
+  - A naive per-query DFS is too slow, but the tree itself is static.
+relatedSlugs:
+  - heavy-light-decomposition
+  - binary-lifting
+  - tree-diameter
+provenance:
+  - title: GeeksforGeeks - Centroid Decomposition of Tree
+    href: https://www.geeksforgeeks.org/centroid-decomposition-of-tree/
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Centroid decomposition is useful when a static tree needs repeated global queries but no single root provides a balanced view. By recentering recursively around centroids, the tree turns into a shallower centroid tree that is easier to climb for aggregate updates and queries.
+
+## Worked Example
+
+If a 9-node tree has a centroid whose removal leaves components of sizes 4, 3, and 1, that centroid becomes the new decomposition root. Each component is then decomposed independently, and the recursion depth stays small because no child component exceeds half the current size.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function centroidDecomposition(tree) {
+  const size = tree.length;
+  const removed = new Array(size).fill(false);
+  const subtree = new Array(size).fill(0);
+  const centroidParent = new Array(size).fill(-1);
+
+  function computeSize(node, parent) {
+    subtree[node] = 1;
+
+    for (const neighbor of tree[node]) {
+      if (neighbor !== parent && !removed[neighbor]) {
+        computeSize(neighbor, node);
+        subtree[node] += subtree[neighbor];
+      }
+    }
+  }
+
+  function findCentroid(node, parent, totalSize) {
+    for (const neighbor of tree[node]) {
+      if (neighbor !== parent && !removed[neighbor] && subtree[neighbor] > totalSize / 2) {
+        return findCentroid(neighbor, node, totalSize);
+      }
+    }
+
+    return node;
+  }
+
+  function decompose(entry, parent) {
+    computeSize(entry, -1);
+    const centroid = findCentroid(entry, -1, subtree[entry]);
+    removed[centroid] = true;
+    centroidParent[centroid] = parent;
+
+    for (const neighbor of tree[centroid]) {
+      if (!removed[neighbor]) {
+        decompose(neighbor, centroid);
+      }
+    }
+
+    return centroid;
+  }
+
+  const root = decompose(0, -1);
+  return { root, centroidParent };
+}
+```
+
+```ts
+export function centroidDecomposition(tree: number[][]): {
+  root: number;
+  centroidParent: number[];
+} {
+  const size = tree.length;
+  const removed = new Array<boolean>(size).fill(false);
+  const subtree = new Array<number>(size).fill(0);
+  const centroidParent = new Array<number>(size).fill(-1);
+
+  function computeSize(node: number, parent: number): void {
+    subtree[node] = 1;
+
+    for (const neighbor of tree[node]) {
+      if (neighbor !== parent && !removed[neighbor]) {
+        computeSize(neighbor, node);
+        subtree[node] += subtree[neighbor];
+      }
+    }
+  }
+
+  function findCentroid(node: number, parent: number, totalSize: number): number {
+    for (const neighbor of tree[node]) {
+      if (neighbor !== parent && !removed[neighbor] && subtree[neighbor] > totalSize / 2) {
+        return findCentroid(neighbor, node, totalSize);
+      }
+    }
+
+    return node;
+  }
+
+  function decompose(entry: number, parent: number): number {
+    computeSize(entry, -1);
+    const centroid = findCentroid(entry, -1, subtree[entry]);
+    removed[centroid] = true;
+    centroidParent[centroid] = parent;
+
+    for (const neighbor of tree[centroid]) {
+      if (!removed[neighbor]) {
+        decompose(neighbor, centroid);
+      }
+    }
+
+    return centroid;
+  }
+
+  const root = decompose(0, -1);
+  return { root, centroidParent };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Use the centroid tree for nearest red-node queries or distance updates.
+- Compare centroid decomposition with heavy-light decomposition.
+- Explain why centroid-tree depth is O(log n).
+
+## Common Pitfalls
+
+- Forgetting to mark centroids as removed before recursing.
+- Reusing stale subtree sizes after the tree is partitioned.
+- Confusing centroid decomposition with binary-tree balancing.

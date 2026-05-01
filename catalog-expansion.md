@@ -614,9 +614,20 @@ This fifty-third expansion slice lifts the catalog from 348 to 354 entries.
 - Suffix Array
 - Square Root Decomposition
 
+## Batch 54 added
+
+This fifty-fourth expansion slice lifts the catalog from 354 to 360 entries.
+
+- Manacher's Algorithm
+- Heavy-Light Decomposition
+- Aho-Corasick Algorithm
+- Centroid Decomposition
+- Max Flow (Dinic's Algorithm)
+- Bipartite Matching
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 53 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 54 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -625,10 +636,10 @@ All expansion entries from batch 1 through batch 53 now carry explicit per-entry
 ## Why this batch
 
 - It fills obvious interview-core gaps from TheAlgorithms/JavaScript without duplicating material already present in Algae.
-- It starts the GeeksforGeeks DSA expansion line after exhausting the two JavaScript-first implementation sources, using a defensible advanced-topic learning order rather than a grab bag of unrelated pages.
-- It broadens the catalog across bidirectional queue design, low-link graph analysis, Eulerian traversal classification, suffix-based string indexing, and block decomposition for range queries instead of staying in foundational data-structure territory.
-- It adds several interview-relevant ideas that are not just new names but genuinely new techniques: Tarjan low-link invariants, odd-degree Euler criteria, suffix ordering, and square-root block tradeoffs.
-- It keeps the next frontier inside the same GeeksforGeeks track, which means the next batch can stay source-consistent while moving into heavier specialized algorithms.
+- It continues the GeeksforGeeks DSA line in source-consistent order, moving from advanced foundational structures into heavier specialized algorithms instead of switching sources again too early.
+- It broadens the catalog across linear-time palindrome processing, tree path decomposition, multi-pattern string matching, balanced recursive tree decomposition, residual-network max flow, and matching in bipartite graphs.
+- It adds genuinely new interview techniques rather than surface variants: mirror-radius reuse, chain decomposition, failure-link automata, centroid recursion, blocking-flow level graphs, and augmenting-path reassignment.
+- It leaves the next frontier inside the same GFG track, but after this point the sequence becomes more specialized and more graph-heavy, so the next batch should stay deliberate about pedagogical value.
 
 ## Supporting study references from the algorithms list
 
@@ -638,4 +649,4 @@ All expansion entries from batch 1 through batch 53 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- The next exact GeeksforGeeks frontier after this batch is `Manacher's Algorithm`, `Heavy-Light Decomposition`, `Aho-Corasick Algorithm`, `Centroid Decomposition`, `Max Flow (Dinic's Algorithm)`, and `Bipartite Matching`.
+- The next GeeksforGeeks frontier after this batch starts with `Hopcroft-Karp Algorithm`, `Strongly Connected Components`, `2-SAT Algorithm`, and `Boruvka's Algorithm`.

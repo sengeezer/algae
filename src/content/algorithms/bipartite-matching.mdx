@@ -1,0 +1,140 @@
+---
+title: Bipartite Matching
+slug: bipartite-matching
+category: Graphs
+summary: Reassign matches through alternating augmenting paths until no unmatched left-side vertex can claim a new partner.
+description: Bipartite Matching is the maximum-matching problem on two disjoint vertex sets, commonly solved with augmenting-path DFS or reduced to flow.
+dataStructures:
+  - Graph
+  - Array
+techniques:
+  - Matching
+  - Augmenting Paths
+  - Graph Traversal
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - maximum bipartite matching
+  - job assignment matching
+useCases:
+  - Matching applicants to jobs or students to projects
+  - Assigning resources under one-to-one constraints
+  - Teaching augmenting-path reasoning before Hopcroft-Karp
+complexity:
+  time: O(L * E) DFS augmenting-path approach
+  space: O(R)
+  notes: The simple DFS solution is pedagogically useful, but denser or larger instances usually want Hopcroft-Karp.
+interviewSignals:
+  - The graph is split into two partitions and every match consumes one vertex from each side.
+  - You need the largest number of non-conflicting pairings, not just one feasible assignment.
+relatedSlugs:
+  - max-flow-dinics-algorithm
+  - connected-components
+  - breadth-first-search
+provenance:
+  - title: GeeksforGeeks - Maximum Bipartite Matching
+    href: https://www.geeksforgeeks.org/maximum-bipartite-matching/
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Bipartite matching is the classic “assign things to other things without conflicts” problem. The core interview insight is that an already-matched edge is not necessarily final if you can reroute it along an augmenting path and free room for another match.
+
+## Worked Example
+
+If applicant `A` wants job `1` and applicant `B` wants jobs `1` or `2`, a first greedy match might give `A -> 1`. When `B` arrives, an augmenting path can reroute `A` away from `1` only if `A` has some alternate route. If not, `B` may have to take `2` or stay unmatched.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function bipartiteMatching(graph, rightSize) {
+  const matchToLeft = new Array(rightSize).fill(-1);
+
+  function tryMatch(left, seen) {
+    for (const right of graph[left]) {
+      if (seen[right]) {
+        continue;
+      }
+
+      seen[right] = true;
+      if (matchToLeft[right] === -1 || tryMatch(matchToLeft[right], seen)) {
+        matchToLeft[right] = left;
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  let matches = 0;
+  for (let left = 0; left < graph.length; left += 1) {
+    const seen = new Array(rightSize).fill(false);
+    if (tryMatch(left, seen)) {
+      matches += 1;
+    }
+  }
+
+  return {
+    matches,
+    pairing: matchToLeft.flatMap((left, right) => (left === -1 ? [] : [[left, right]])),
+  };
+}
+```
+
+```ts
+export function bipartiteMatching(
+  graph: number[][],
+  rightSize: number,
+): { matches: number; pairing: Array<[number, number]> } {
+  const matchToLeft = new Array<number>(rightSize).fill(-1);
+
+  function tryMatch(left: number, seen: boolean[]): boolean {
+    for (const right of graph[left]) {
+      if (seen[right]) {
+        continue;
+      }
+
+      seen[right] = true;
+      if (matchToLeft[right] === -1 || tryMatch(matchToLeft[right], seen)) {
+        matchToLeft[right] = left;
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  let matches = 0;
+  for (let left = 0; left < graph.length; left += 1) {
+    const seen = new Array<boolean>(rightSize).fill(false);
+    if (tryMatch(left, seen)) {
+      matches += 1;
+    }
+  }
+
+  return {
+    matches,
+    pairing: matchToLeft.flatMap((left, right) => (left === -1 ? [] : [[left, right] as [number, number]])),
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Upgrade the approach to Hopcroft-Karp.
+- Reduce the problem to max flow and compare the two viewpoints.
+- Verify that the graph is bipartite with 2-coloring before matching.
+
+## Common Pitfalls
+
+- Forgetting to reset the visited-right array for each outer DFS.
+- Assuming a greedy first match can never be improved.
+- Applying the technique to a non-bipartite graph without validating the partition.
