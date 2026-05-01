@@ -1,0 +1,138 @@
+---
+title: Friendly Numbers
+slug: friendly-numbers
+category: Mathematics
+summary: Check whether two distinct positive integers share the same abundancy index, meaning the same divisor-sum-to-value ratio.
+description: Friendly Numbers is the number-theory predicate that compares the abundancy indices of two integers to see whether they belong to the same friendliness class.
+dataStructures:
+  - Number
+techniques:
+  - Divisor Summation
+  - Ratio Comparison
+  - Number Theory
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - abundancy index comparison
+  - friendly pair check
+useCases:
+  - Comparing numbers by divisor structure instead of only primality or parity
+  - Practicing divisor-pair scans with an equality check on ratios
+  - Teaching how exact ratio comparison can avoid floating-point drift
+complexity:
+  time: O(sqrt(max(a, b)))
+  space: O(1)
+  notes: Each divisor-sum computation only needs to scan up to the square root because divisors arrive in complementary pairs.
+interviewSignals:
+  - The prompt talks about abundancy index or divisor-sum ratios.
+  - The expected solution compares exact arithmetic quantities instead of floating-point approximations.
+relatedSlugs:
+  - aliquot-sum
+  - get-euclid-gcd
+  - is-divisible
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/FriendlyNumbers.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/FriendlyNumbers.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Friendly numbers are a neat number-theory exercise because they turn divisor sums into a comparison problem. The key implementation choice is whether you compare ratios directly or cross-multiply to stay exact.
+
+## Worked Example
+
+`6` and `28` are friendly because both are perfect numbers, so each has abundancy index `2`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function sumDivisors(value) {
+  if (value === 1) {
+    return 1;
+  }
+
+  let total = 1 + value;
+
+  for (let divisor = 2; divisor * divisor <= value; divisor += 1) {
+    if (value % divisor !== 0) {
+      continue;
+    }
+
+    total += divisor;
+    const paired = value / divisor;
+    if (paired !== divisor) {
+      total += paired;
+    }
+  }
+
+  return total;
+}
+
+function friendlyNumbers(first, second) {
+  if (![first, second].every((value) => Number.isInteger(value) && value > 0)) {
+    throw new RangeError('Values must be positive integers');
+  }
+
+  if (first === second) {
+    throw new RangeError('Values must be distinct');
+  }
+
+  return sumDivisors(first) * second === sumDivisors(second) * first;
+}
+```
+
+```ts
+function sumDivisors(value: number): number {
+  if (value === 1) {
+    return 1;
+  }
+
+  let total = 1 + value;
+
+  for (let divisor = 2; divisor * divisor <= value; divisor += 1) {
+    if (value % divisor !== 0) {
+      continue;
+    }
+
+    total += divisor;
+    const paired = value / divisor;
+    if (paired !== divisor) {
+      total += paired;
+    }
+  }
+
+  return total;
+}
+
+export function friendlyNumbers(first: number, second: number): boolean {
+  if (![first, second].every((value) => Number.isInteger(value) && value > 0)) {
+    throw new RangeError('Values must be positive integers');
+  }
+
+  if (first === second) {
+    throw new RangeError('Values must be distinct');
+  }
+
+  return sumDivisors(first) * second === sumDivisors(second) * first;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the abundancy index itself in reduced fractional form.
+- Compare friendly numbers with perfect and amicable numbers.
+- Precompute divisor sums when evaluating many pairs.
+
+## Common Pitfalls
+
+- Comparing divisor-sum ratios with floating-point equality.
+- Forgetting that the two values must be distinct.
+- Using an `O(n)` divisor scan when a square-root-bounded scan is enough.

@@ -1,0 +1,119 @@
+---
+title: Int To Base
+slug: int-to-base
+category: Mathematics
+summary: Convert an integer from decimal into a target base by repeatedly taking remainders and quotient updates.
+description: Int To Base is the repeated-division conversion routine that rewrites an integer as digits in another positional numeral system.
+dataStructures:
+  - Number
+  - String
+techniques:
+  - Base Conversion
+  - Repeated Division
+  - Positional Representation
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - decimal to base conversion
+  - repeated remainder conversion
+useCases:
+  - Converting integers to binary, octal, or other small bases
+  - Teaching how positional numeral systems are built from remainders
+  - Comparing library conversions with a manual algorithm
+complexity:
+  time: O(log_b |n|)
+  space: O(log_b |n|)
+  notes: The number of digits in the output determines both the loop count and the output size.
+interviewSignals:
+  - The prompt asks for a manual conversion from decimal into another base.
+  - The expected solution repeatedly divides by the base and prepends remainders.
+relatedSlugs:
+  - modular-arithmetic
+  - number-of-digits
+  - reverse-number
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/IntToBase.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/IntToBase.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Base conversion is a standard arithmetic interview helper. It checks whether you understand how remainders reveal the digits of a positional numeral system from least significant to most significant.
+
+## Worked Example
+
+`125` in base `2` becomes `1111101` because repeated division by `2` yields the binary digits in reverse remainder order.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function intToBase(value, base) {
+  if (![value, base].every((number) => Number.isInteger(number))) {
+    throw new TypeError('Value and base must be integers');
+  }
+
+  if (base < 2 || base > 10) {
+    throw new RangeError('Base must be between 2 and 10');
+  }
+
+  if (value === 0) {
+    return '0';
+  }
+
+  let remaining = Math.abs(value);
+  let converted = '';
+
+  while (remaining > 0) {
+    converted = String(remaining % base) + converted;
+    remaining = Math.trunc(remaining / base);
+  }
+
+  return value < 0 ? `-${converted}` : converted;
+}
+```
+
+```ts
+export function intToBase(value: number, base: number): string {
+  if (![value, base].every((number) => Number.isInteger(number))) {
+    throw new TypeError('Value and base must be integers');
+  }
+
+  if (base < 2 || base > 10) {
+    throw new RangeError('Base must be between 2 and 10');
+  }
+
+  if (value === 0) {
+    return '0';
+  }
+
+  let remaining = Math.abs(value);
+  let converted = '';
+
+  while (remaining > 0) {
+    converted = String(remaining % base) + converted;
+    remaining = Math.trunc(remaining / base);
+  }
+
+  return value < 0 ? `-${converted}` : converted;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Extend the converter to bases above `10` with alphabetic digits.
+- Convert from an arbitrary base back to decimal.
+- Compare repeated-division conversion with Horner-style evaluation in the reverse direction.
+
+## Common Pitfalls
+
+- Forgetting that the remainders arrive from least significant to most significant.
+- Accepting invalid base values like `1` or `16` when the implementation only supports digits `0` through `9`.
+- Dropping the sign when the input is negative.

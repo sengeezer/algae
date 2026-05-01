@@ -1,0 +1,136 @@
+---
+title: Get Euclid GCD
+slug: get-euclid-gcd
+category: Mathematics
+summary: Compute the greatest common divisor of two integers with the Euclidean algorithm, iteratively or recursively.
+description: Get Euclid GCD is the standard remainder-based gcd routine that repeatedly replaces a pair with the smaller value and the remainder until the remainder is zero.
+dataStructures:
+  - Number
+techniques:
+  - Euclidean Algorithm
+  - Recursion
+  - Number Theory
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - euclid gcd
+  - greatest common divisor
+useCases:
+  - Simplifying fractions and ratios
+  - Supporting coprime checks and modular arithmetic helpers
+  - Teaching how repeated remainders collapse large inputs quickly
+complexity:
+  time: O(log(min(a, b)))
+  space: O(1)
+  notes: The iterative version keeps reducing the pair via remainders, which shrinks the problem very quickly in practice.
+interviewSignals:
+  - The prompt asks for a gcd, common divisor, or repeated remainder process.
+  - The expected solution avoids factoring both numbers explicitly.
+relatedSlugs:
+  - co-prime-check
+  - eulers-totient-function
+  - modular-arithmetic
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/GetEuclidGCD.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/GetEuclidGCD.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is one of the highest-value short routines in interview math. It underpins coprimality, modular inverses, fraction reduction, and many other helpers.
+
+## Worked Example
+
+For `gcd(84, 30)`, the Euclidean sequence is `84 % 30 = 24`, `30 % 24 = 6`, and `24 % 6 = 0`, so the gcd is `6`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function validateIntegers(left, right) {
+  if (![left, right].every((value) => Number.isInteger(value))) {
+    throw new TypeError('Arguments must be integers');
+  }
+}
+
+function getEuclidGcd(left, right) {
+  validateIntegers(left, right);
+
+  let a = Math.abs(left);
+  let b = Math.abs(right);
+
+  while (b !== 0) {
+    const remainder = a % b;
+    a = b;
+    b = remainder;
+  }
+
+  return a;
+}
+
+function getEuclidGcdRecursive(left, right) {
+  validateIntegers(left, right);
+
+  const a = Math.abs(left);
+  const b = Math.abs(right);
+  if (b === 0) {
+    return a;
+  }
+
+  return getEuclidGcdRecursive(b, a % b);
+}
+```
+
+```ts
+function validateIntegers(left: number, right: number): void {
+  if (![left, right].every((value) => Number.isInteger(value))) {
+    throw new TypeError('Arguments must be integers');
+  }
+}
+
+export function getEuclidGcd(left: number, right: number): number {
+  validateIntegers(left, right);
+
+  let a = Math.abs(left);
+  let b = Math.abs(right);
+
+  while (b !== 0) {
+    const remainder = a % b;
+    a = b;
+    b = remainder;
+  }
+
+  return a;
+}
+
+export function getEuclidGcdRecursive(left: number, right: number): number {
+  validateIntegers(left, right);
+
+  const a = Math.abs(left);
+  const b = Math.abs(right);
+  if (b === 0) {
+    return a;
+  }
+
+  return getEuclidGcdRecursive(b, a % b);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Extend the routine to return Bézout coefficients with the extended Euclidean algorithm.
+- Explain the behavior of `gcd(0, n)` and `gcd(0, 0)`.
+- Compare the iterative and recursive forms.
+
+## Common Pitfalls
+
+- Factoring both numbers instead of using remainders.
+- Forgetting to normalize signs with absolute values.
+- Using the Euclidean algorithm on non-integer inputs without defining the behavior.

@@ -1,0 +1,93 @@
+---
+title: Is Divisible
+slug: is-divisible
+category: Mathematics
+summary: Check whether one finite number divides another exactly, returning `false` when the divisor is zero.
+description: Is Divisible is the direct modulo-based predicate that tests whether a candidate divisor leaves no remainder.
+dataStructures:
+  - Number
+techniques:
+  - Modulo Arithmetic
+  - Numeric Predicate
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - divisibility check
+  - zero remainder test
+useCases:
+  - Building quick predicates for arithmetic filters
+  - Supporting guard clauses before gcd or counting routines
+  - Teaching how modulo detects exact divisibility
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The result comes from one remainder check after basic validation.
+interviewSignals:
+  - The prompt asks whether one number divides another with no remainder.
+  - The expected solution handles division-by-zero input explicitly.
+relatedSlugs:
+  - count-numbers-divisible
+  - get-euclid-gcd
+  - modular-arithmetic
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/IsDivisible.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/IsDivisible.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is one of the simplest arithmetic predicates, but it still checks whether you define the divisor-zero edge case instead of letting the runtime decide for you implicitly.
+
+## Worked Example
+
+`10` is divisible by `5` because `10 % 5` is `0`, while `99` is not divisible by `5` because the remainder is `4`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function isDivisible(value, divisor) {
+  if (![value, divisor].every((number) => Number.isFinite(number))) {
+    throw new TypeError('Expected finite numbers');
+  }
+
+  if (divisor === 0) {
+    return false;
+  }
+
+  return value % divisor === 0;
+}
+```
+
+```ts
+export function isDivisible(value: number, divisor: number): boolean {
+  if (![value, divisor].every((number) => Number.isFinite(number))) {
+    throw new TypeError('Expected finite numbers');
+  }
+
+  if (divisor === 0) {
+    return false;
+  }
+
+  return value % divisor === 0;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Restrict the helper to integers only and explain the tradeoff.
+- Use divisibility rules for `2`, `3`, `5`, or `9` as fast prechecks.
+- Compose this predicate into a filter over an array or range.
+
+## Common Pitfalls
+
+- Forgetting to define the `divisor === 0` case.
+- Treating all non-integer inputs as invalid even when the implementation is intentionally written for finite numbers.
+- Confusing divisibility of one pair with counting divisible values across a range.

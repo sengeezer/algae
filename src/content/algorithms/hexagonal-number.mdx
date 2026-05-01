@@ -1,0 +1,86 @@
+---
+title: Hexagonal Number
+slug: hexagonal-number
+category: Mathematics
+summary: Compute the `n`th hexagonal number with the closed-form formula `n(2n - 1)`.
+description: Hexagonal Number is the figurate-number helper that returns how many dots appear in the `n`th centered hexagon outline growth pattern.
+dataStructures:
+  - Number
+techniques:
+  - Closed-Form Formula
+  - Figurate Numbers
+  - Constant-Time Arithmetic
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - nth hexagonal number
+  - polygonal number formula
+useCases:
+  - Generating figurate-number sequences quickly
+  - Teaching how sequence formulas replace iterative summation
+  - Comparing polygonal-number families in number theory problems
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The value comes from a direct formula with a fixed number of arithmetic operations.
+interviewSignals:
+  - The prompt asks for the `n`th value of a figurate-number sequence.
+  - The expected solution uses the formula directly instead of building the sequence iteratively.
+relatedSlugs:
+  - factors
+  - is-divisible
+  - perfect-square
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/HexagonalNumber.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/HexagonalNumber.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a simple closed-form sequence problem. It checks whether you recognize when a formula completely removes the need for iteration.
+
+## Worked Example
+
+The fourth hexagonal number is `4 * (2 * 4 - 1) = 28`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function hexagonalNumber(value) {
+  if (!Number.isInteger(value) || value <= 0) {
+    throw new RangeError('Value must be a positive integer');
+  }
+
+  return value * (2 * value - 1);
+}
+```
+
+```ts
+export function hexagonalNumber(value: number): number {
+  if (!Number.isInteger(value) || value <= 0) {
+    throw new RangeError('Value must be a positive integer');
+  }
+
+  return value * (2 * value - 1);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Derive the formula from the differences between consecutive terms.
+- Compare hexagonal numbers with triangular and square numbers.
+- Check whether a given number is hexagonal instead of generating one by index.
+
+## Common Pitfalls
+
+- Accepting zero or negative indices without defining a sequence convention.
+- Iterating through all previous terms when a closed form already exists.
+- Confusing hexagonal numbers with centered hexagonal numbers, which use a different formula.

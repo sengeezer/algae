@@ -1,0 +1,110 @@
+---
+title: Grid Get
+slug: grid-get
+category: Mathematics
+summary: Convert a zero-based flat-array index into one-based grid coordinates given the column count.
+description: Grid Get is the coordinate helper that maps a linear position in row-major storage to its horizontal and vertical grid coordinates.
+dataStructures:
+  - Number
+techniques:
+  - Row-Major Indexing
+  - Integer Division
+  - Coordinate Mapping
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - flat index to grid coordinate
+  - row major coordinate helper
+useCases:
+  - Mapping flattened arrays back onto 2D boards
+  - Building grid-based movement or distance utilities
+  - Teaching how modulo and division recover coordinates from linear storage
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: Both coordinates come from direct arithmetic on the index and column count.
+interviewSignals:
+  - The prompt gives a flat index and asks for grid coordinates.
+  - The expected solution uses division and modulo rather than repeated subtraction.
+relatedSlugs:
+  - coordinate
+  - euclidean-distance
+  - count-numbers-divisible
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/GridGet.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/GridGet.js
+    kind: Implementation
+  - title: free-programming-books - Algorithm Design
+    href: https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a compact coordinate-mapping helper. It matters because many grid problems flatten a 2D board into a 1D array and still expect you to recover row and column positions cleanly.
+
+## Worked Example
+
+With `10` columns, index `3` maps to `(4, 1)` in one-based coordinates, while index `49` maps to `(10, 5)`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function validateGridInput(columns, index) {
+  if (!Number.isInteger(columns) || columns <= 0) {
+    throw new RangeError('Columns must be a positive integer');
+  }
+
+  if (!Number.isInteger(index) || index < 0) {
+    throw new RangeError('Index must be a non-negative integer');
+  }
+}
+
+function gridGetX(columns, index) {
+  validateGridInput(columns, index);
+  return (index % columns) + 1;
+}
+
+function gridGetY(columns, index) {
+  validateGridInput(columns, index);
+  return Math.floor(index / columns) + 1;
+}
+```
+
+```ts
+function validateGridInput(columns: number, index: number): void {
+  if (!Number.isInteger(columns) || columns <= 0) {
+    throw new RangeError('Columns must be a positive integer');
+  }
+
+  if (!Number.isInteger(index) || index < 0) {
+    throw new RangeError('Index must be a non-negative integer');
+  }
+}
+
+export function gridGetX(columns: number, index: number): number {
+  validateGridInput(columns, index);
+  return (index % columns) + 1;
+}
+
+export function gridGetY(columns: number, index: number): number {
+  validateGridInput(columns, index);
+  return Math.floor(index / columns) + 1;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return zero-based coordinates instead of one-based ones.
+- Convert `(x, y)` back into a flat index.
+- Use the recovered coordinates to measure distance between two cells.
+
+## Common Pitfalls
+
+- Mixing zero-based and one-based coordinate systems.
+- Repeatedly subtracting `columns` when division and modulo already solve the problem.
+- Forgetting to validate that the column count is positive.

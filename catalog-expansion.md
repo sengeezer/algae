@@ -460,9 +460,20 @@ This thirty-ninth expansion slice lifts the catalog from 266 to 272 entries.
 - Find Min
 - Find Min Iterator
 
+## Batch 40 added
+
+This fortieth expansion slice lifts the catalog from 272 to 278 entries.
+
+- Friendly Numbers
+- Get Euclid GCD
+- Grid Get
+- Hexagonal Number
+- Int To Base
+- Is Divisible
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 39 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 40 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -471,9 +482,9 @@ All expansion entries from batch 1 through batch 39 now carry explicit per-entry
 ## Why this batch
 
 - It fills obvious interview-core gaps from TheAlgorithms/JavaScript without duplicating material already present in Algae.
-- It follows the next verified math queue directly, adding numerical integration, totient counting, Taylor-series approximation, rational approximation, and two minimum-selection helpers.
-- It broadens the catalog across numerical methods, elementary number theory, and iterator utilities instead of staying inside the previous geometry-and-matrix slice.
-- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially approximation methods, arithmetic functions, and small reusable helpers that still reward precise validation.
+- It follows the next verified math queue directly, adding abundancy-based comparison, gcd computation, flat-grid coordinate helpers, polygonal-number formulas, base conversion, and a direct divisibility predicate.
+- It broadens the catalog across arithmetic relations, coordinate utilities, and number-representation helpers instead of staying inside the previous approximation-and-iterator slice.
+- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially simple mathematical primitives and helper routines that still reward precise validation and careful edge-case handling.
 
 ## Supporting study references from the algorithms list
 
@@ -483,9 +494,9 @@ All expansion entries from batch 1 through batch 39 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- Friendly Numbers
-- Get Euclid GCD
-- Grid Get
-- Hexagonal Number
-- Int To Base
-- Is Divisible
+- Is Even
+- Is Odd
+- Is Palindrome Integer Number
+- Is Pronic
+- Is Square Free
+- Juggler Sequence
