@@ -1,0 +1,174 @@
+---
+title: Pow
+slug: pow
+category: Mathematics
+summary: Raise a number to an integer exponent with either repeated multiplication or exponentiation by squaring.
+description: Pow is the power-function comparison that contrasts the linear baseline with the logarithmic squaring strategy.
+dataStructures:
+  - Number
+techniques:
+  - Repeated Multiplication
+  - Exponentiation by Squaring
+  - Negative Exponent Handling
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - integer power
+  - x to the n
+useCases:
+  - Comparing baseline and optimized exponent routines
+  - Handling positive and negative integer exponents explicitly
+  - Teaching why exponentiation by squaring beats repeated multiplication
+complexity:
+  time: O(log |n|)
+  space: O(log |n|)
+  notes: The preferred fast routine is logarithmic, while the included linear baseline is useful for contrast and correctness checks.
+interviewSignals:
+  - The prompt asks for fast integer powers without relying on `Math.pow`.
+  - A follow-up asks why halving the exponent is better than multiplying `n` times.
+relatedSlugs:
+  - pow-logarithmic
+  - binary-exponentiation
+  - modular-binary-exponentiation-recursive
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/Pow.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/Pow.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the standard interview progression from brute force to divide and conquer. The point is not only getting the answer, but also explaining why the faster recurrence shrinks the work so aggressively.
+
+## Worked Example
+
+`powLinear(3, 4)` multiplies `3` by itself four times. `powFast(3, 4)` squares `3` into `9`, then squares `9` into `81`, so it does far less work. For `3^-2`, both approaches flip the base to `1 / 3` and compute `(1 / 3)^2`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function validateExponent(base, exponent) {
+  if (!Number.isFinite(base) || !Number.isInteger(exponent)) {
+    throw new TypeError('Base must be finite and exponent must be an integer');
+  }
+
+  if (base === 0 && exponent < 0) {
+    throw new RangeError('Zero cannot be raised to a negative exponent');
+  }
+}
+
+function powLinear(base, exponent) {
+  validateExponent(base, exponent);
+
+  let factor = base;
+  let remaining = exponent;
+
+  if (remaining < 0) {
+    factor = 1 / factor;
+    remaining = -remaining;
+  }
+
+  let result = 1;
+  while (remaining > 0) {
+    result *= factor;
+    remaining -= 1;
+  }
+
+  return result;
+}
+
+function powFast(base, exponent) {
+  validateExponent(base, exponent);
+
+  if (exponent < 0) {
+    return powFast(1 / base, -exponent);
+  }
+
+  if (exponent === 0) {
+    return 1;
+  }
+
+  if (exponent === 1) {
+    return base;
+  }
+
+  if (exponent % 2 === 1) {
+    return base * powFast(base * base, (exponent - 1) / 2);
+  }
+
+  return powFast(base * base, exponent / 2);
+}
+```
+
+```ts
+function validateExponent(base: number, exponent: number): void {
+  if (!Number.isFinite(base) || !Number.isInteger(exponent)) {
+    throw new TypeError('Base must be finite and exponent must be an integer');
+  }
+
+  if (base === 0 && exponent < 0) {
+    throw new RangeError('Zero cannot be raised to a negative exponent');
+  }
+}
+
+export function powLinear(base: number, exponent: number): number {
+  validateExponent(base, exponent);
+
+  let factor = base;
+  let remaining = exponent;
+
+  if (remaining < 0) {
+    factor = 1 / factor;
+    remaining = -remaining;
+  }
+
+  let result = 1;
+  while (remaining > 0) {
+    result *= factor;
+    remaining -= 1;
+  }
+
+  return result;
+}
+
+export function powFast(base: number, exponent: number): number {
+  validateExponent(base, exponent);
+
+  if (exponent < 0) {
+    return powFast(1 / base, -exponent);
+  }
+
+  if (exponent === 0) {
+    return 1;
+  }
+
+  if (exponent === 1) {
+    return base;
+  }
+
+  if (exponent % 2 === 1) {
+    return base * powFast(base * base, (exponent - 1) / 2);
+  }
+
+  return powFast(base * base, exponent / 2);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Rewrite the fast version iteratively to avoid recursion depth.
+- Explain why negative exponents turn into reciprocals.
+- Compare this entry with the modular version used in competitive programming.
+
+## Common Pitfalls
+
+- Multiplying linearly when the prompt expects logarithmic time.
+- Forgetting that `0` to a negative exponent is undefined.
+- Accepting fractional exponents even though the routine is designed for integer powers.

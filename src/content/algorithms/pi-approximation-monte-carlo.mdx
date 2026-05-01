@@ -1,0 +1,108 @@
+---
+title: Pi Approximation Monte Carlo
+slug: pi-approximation-monte-carlo
+category: Mathematics
+summary: Estimate pi by randomly sampling points in a unit square and measuring what fraction fall inside the quarter circle.
+description: Pi Approximation Monte Carlo is the random-sampling estimator that turns geometric probability into an approximation of pi.
+dataStructures:
+  - Number
+techniques:
+  - Monte Carlo Simulation
+  - Random Sampling
+  - Geometric Probability
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - monte carlo pi
+  - random pi estimation
+useCases:
+  - Demonstrating stochastic approximation on a simple geometric problem
+  - Comparing deterministic and randomized numerical methods
+  - Teaching convergence intuition through repeated sampling
+complexity:
+  time: O(iterations)
+  space: O(1)
+  notes: Each iteration samples one point and updates one counter, so the estimator scales linearly with the sample count.
+interviewSignals:
+  - The prompt asks for an approximate pi value using random points or dart throwing.
+  - The expected reasoning compares the area of a quarter circle to the area of its containing square.
+relatedSlugs:
+  - midpoint-integration
+  - coordinate
+  - mean-square-error
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/PiApproximationMonteCarlo.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/PiApproximationMonteCarlo.js
+    kind: Implementation
+  - title: OpenStax - Introductory Statistics
+    href: https://openstax.org/details/books/introductory-statistics
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a classic randomized algorithm question. The main interview signal is whether you can connect the geometry to the probability ratio instead of treating the random simulation as magic.
+
+## Worked Example
+
+Generate many points `(x, y)` uniformly inside the unit square `[0, 1] x [0, 1]`. A point lands inside the quarter circle when `x^2 + y^2 <= 1`. If that happens for about `78.5%` of the samples, then multiplying by `4` gives an estimate near `3.14`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function piApproximationMonteCarlo(iterations = 100_000) {
+  if (!Number.isInteger(iterations) || iterations <= 0) {
+    throw new RangeError('Iteration count must be a positive integer');
+  }
+
+  let insideCircle = 0;
+
+  for (let index = 0; index < iterations; index += 1) {
+    const x = Math.random();
+    const y = Math.random();
+
+    if (x * x + y * y <= 1) {
+      insideCircle += 1;
+    }
+  }
+
+  return (insideCircle / iterations) * 4;
+}
+```
+
+```ts
+export function piApproximationMonteCarlo(iterations = 100_000): number {
+  if (!Number.isInteger(iterations) || iterations <= 0) {
+    throw new RangeError('Iteration count must be a positive integer');
+  }
+
+  let insideCircle = 0;
+
+  for (let index = 0; index < iterations; index += 1) {
+    const x = Math.random();
+    const y = Math.random();
+
+    if (x * x + y * y <= 1) {
+      insideCircle += 1;
+    }
+  }
+
+  return (insideCircle / iterations) * 4;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Seed the randomness in a test harness so repeated runs become reproducible.
+- Measure how the estimate changes as the iteration count increases.
+- Compare this stochastic method with midpoint or Simpson-style deterministic approximations.
+
+## Common Pitfalls
+
+- Using too few samples and over-trusting a noisy estimate.
+- Forgetting why the quarter-circle hit ratio needs to be multiplied by `4`.
+- Treating the random estimate as exact instead of probabilistic.

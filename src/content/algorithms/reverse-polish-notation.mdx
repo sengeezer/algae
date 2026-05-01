@@ -1,0 +1,156 @@
+---
+title: Reverse Polish Notation
+slug: reverse-polish-notation
+category: Mathematics
+summary: Evaluate a space-separated postfix expression by pushing operands onto a stack and applying operators as soon as they appear.
+description: Reverse Polish Notation is the postfix-expression evaluator that uses stack discipline instead of parentheses or precedence rules.
+dataStructures:
+  - Stack
+  - Array
+  - String
+techniques:
+  - Stack Evaluation
+  - Tokenization
+  - Expression Parsing
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - postfix evaluation
+  - RPN calculator
+useCases:
+  - Evaluating postfix math expressions from compilers or calculators
+  - Teaching how operator placement changes parsing complexity
+  - Demonstrating a direct stack-based reduction algorithm
+complexity:
+  time: O(tokens)
+  space: O(tokens)
+  notes: Each token is processed once, and the stack holds at most the unfinished operands.
+interviewSignals:
+  - The prompt gives expressions like `3 4 + 2 *` instead of infix notation.
+  - The intended solution uses a stack rather than rebuilding precedence rules.
+relatedSlugs:
+  - polynomial
+  - pow
+  - modular-arithmetic
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/ReversePolishNotation.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/ReversePolishNotation.js
+    kind: Implementation
+  - title: The Imposter's Handbook
+    href: https://bigmachine.io/products/the-imposters-handbook/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Reverse Polish notation is the clean version of expression evaluation because precedence disappears. The main test is whether you keep operand order correct when an operator consumes the two most recent values.
+
+## Worked Example
+
+For `3 4 + 2 *`, push `3`, push `4`, apply `+` to get `7`, push `2`, then apply `*` to get `14`. For division, order matters: `8 2 /` means `8 / 2`, not `2 / 8`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function reversePolishNotation(expression) {
+  if (typeof expression !== 'string' || expression.trim() === '') {
+    throw new TypeError('Expected a non-empty postfix expression');
+  }
+
+  const operators = {
+    '+': (left, right) => left + right,
+    '-': (left, right) => left - right,
+    '*': (left, right) => left * right,
+    '/': (left, right) => left / right,
+  };
+
+  const stack = [];
+  for (const token of expression.trim().split(/\s+/)) {
+    const operation = operators[token];
+
+    if (operation) {
+      if (stack.length < 2) {
+        throw new RangeError('Expression does not have enough operands');
+      }
+
+      const right = stack.pop();
+      const left = stack.pop();
+      stack.push(operation(left, right));
+      continue;
+    }
+
+    const value = Number(token);
+    if (!Number.isFinite(value)) {
+      throw new TypeError(`Invalid token: ${token}`);
+    }
+
+    stack.push(value);
+  }
+
+  if (stack.length !== 1) {
+    throw new RangeError('Expression must reduce to exactly one result');
+  }
+
+  return stack[0];
+}
+```
+
+```ts
+export function reversePolishNotation(expression: string): number {
+  if (expression.trim() === '') {
+    throw new TypeError('Expected a non-empty postfix expression');
+  }
+
+  const operators: Record<string, (left: number, right: number) => number> = {
+    '+': (left, right) => left + right,
+    '-': (left, right) => left - right,
+    '*': (left, right) => left * right,
+    '/': (left, right) => left / right,
+  };
+
+  const stack: number[] = [];
+  for (const token of expression.trim().split(/\s+/)) {
+    const operation = operators[token];
+
+    if (operation) {
+      if (stack.length < 2) {
+        throw new RangeError('Expression does not have enough operands');
+      }
+
+      const right = stack.pop()!;
+      const left = stack.pop()!;
+      stack.push(operation(left, right));
+      continue;
+    }
+
+    const value = Number(token);
+    if (!Number.isFinite(value)) {
+      throw new TypeError(`Invalid token: ${token}`);
+    }
+
+    stack.push(value);
+  }
+
+  if (stack.length !== 1) {
+    throw new RangeError('Expression must reduce to exactly one result');
+  }
+
+  return stack[0];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Add exponentiation or unary operators to the evaluator.
+- Convert infix expressions to postfix before evaluation.
+- Explain why division and subtraction must preserve operand order.
+
+## Common Pitfalls
+
+- Reversing operand order for subtraction and division.
+- Ignoring malformed expressions with too many or too few operands.
+- Splitting only on single spaces instead of general whitespace.

@@ -1,0 +1,104 @@
+---
+title: Pow Logarithmic
+slug: pow-logarithmic
+category: Mathematics
+summary: Compute `x^n` for a non-negative integer `n` by recursively squaring the half-power.
+description: Pow Logarithmic is the focused divide-and-conquer exponent routine that halves the exponent on every recursive step.
+dataStructures:
+  - Number
+techniques:
+  - Divide and Conquer
+  - Exponentiation by Squaring
+  - Parity Test
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - logarithmic power
+  - recursive power by squaring
+useCases:
+  - Implementing integer powers without a linear loop
+  - Teaching how even and odd exponents split under squaring
+  - Serving as the base idea for modular and matrix exponentiation
+complexity:
+  time: O(log n)
+  space: O(log n)
+  notes: Each recursive call halves the exponent, so the recursion depth is logarithmic in the exponent value.
+interviewSignals:
+  - The prompt explicitly asks for a logarithmic-time power routine.
+  - The expected recurrence distinguishes even and odd exponents.
+relatedSlugs:
+  - pow
+  - binary-exponentiation
+  - modular-binary-exponentiation-recursive
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/PowLogarithmic.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/PowLogarithmic.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This version isolates the core recurrence behind fast power. It is useful when the interviewer wants the idea itself, without the extra edge-case handling shown in the more general `pow` entry.
+
+## Worked Example
+
+For `7^5`, first compute `7^2`, square that result to get `7^4`, then multiply by one extra `7` because the exponent was odd. For `7^4`, the extra multiply is not needed because the exponent is even.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function powLogarithmic(base, exponent) {
+  if (!Number.isFinite(base) || !Number.isInteger(exponent) || exponent < 0) {
+    throw new TypeError('Base must be finite and exponent must be a non-negative integer');
+  }
+
+  if (exponent === 0) {
+    return 1;
+  }
+
+  const half = powLogarithmic(base, Math.floor(exponent / 2));
+  if (exponent % 2 === 0) {
+    return half * half;
+  }
+
+  return half * half * base;
+}
+```
+
+```ts
+export function powLogarithmic(base: number, exponent: number): number {
+  if (!Number.isFinite(base) || !Number.isInteger(exponent) || exponent < 0) {
+    throw new TypeError('Base must be finite and exponent must be a non-negative integer');
+  }
+
+  if (exponent === 0) {
+    return 1;
+  }
+
+  const half = powLogarithmic(base, Math.floor(exponent / 2));
+  if (exponent % 2 === 0) {
+    return half * half;
+  }
+
+  return half * half * base;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Extend the routine to negative exponents and discuss the reciprocal step.
+- Apply the same pattern to modular or matrix exponentiation.
+- Explain why the recurrence works for both even and odd exponents.
+
+## Common Pitfalls
+
+- Recomputing the same half-power twice instead of storing it once.
+- Forgetting the extra multiplication by `base` when the exponent is odd.
+- Accepting negative exponents without defining reciprocal behavior.

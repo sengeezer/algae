@@ -1,0 +1,169 @@
+---
+title: Polynomial
+slug: polynomial
+category: Mathematics
+summary: Represent a polynomial with a coefficient array, render it as a readable expression, and evaluate it at a chosen input.
+description: Polynomial is the coefficient-array helper that builds a human-readable expression and computes its value for a supplied variable.
+dataStructures:
+  - Array
+  - String
+techniques:
+  - Coefficient Array
+  - Polynomial Evaluation
+  - String Construction
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - polynomial class
+  - coefficient-form polynomial
+useCases:
+  - Modeling algebraic expressions compactly from coefficient lists
+  - Evaluating polynomials at many input values
+  - Teaching how coefficient indices map to exponents
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: Displaying the expression needs a pass over the coefficients, and direct evaluation by powered terms is also linear in the coefficient count.
+interviewSignals:
+  - The prompt supplies coefficients rather than a fully parsed expression.
+  - The expected solution treats index `i` as the exponent of `x^i`.
+relatedSlugs:
+  - quadratic-roots
+  - pow
+  - binomial-coefficient
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/Polynomial.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/Polynomial.js
+    kind: Implementation
+  - title: OpenStax - College Algebra
+    href: https://openstax.org/details/books/college-algebra-2e
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the compact representation interviewers use before they ask you to add, multiply, or evaluate algebraic expressions programmatically.
+
+## Worked Example
+
+The coefficient array `[1, -3, 2]` means `1 - 3x + 2x^2`, because the array index is the exponent. Evaluating that polynomial at `x = 4` gives `1 - 12 + 32 = 21`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class Polynomial {
+  constructor(coefficients) {
+    if (!Array.isArray(coefficients) || coefficients.length === 0) {
+      throw new TypeError('Expected a non-empty coefficient array');
+    }
+
+    if (!coefficients.every((value) => typeof value === 'number' && Number.isFinite(value))) {
+      throw new TypeError('Coefficients must be finite numbers');
+    }
+
+    this.coefficients = [...coefficients];
+  }
+
+  display() {
+    const terms = this.coefficients
+      .map((coefficient, exponent) => {
+        if (coefficient === 0) {
+          return null;
+        }
+
+        if (exponent === 0) {
+          return `(${coefficient})`;
+        }
+
+        if (exponent === 1) {
+          return `(${coefficient}x)`;
+        }
+
+        return `(${coefficient}x^${exponent})`;
+      })
+      .filter(Boolean)
+      .reverse();
+
+    return terms.length > 0 ? terms.join(' + ') : '0';
+  }
+
+  evaluate(value) {
+    if (!Number.isFinite(value)) {
+      throw new TypeError('Evaluation point must be a finite number');
+    }
+
+    return this.coefficients.reduce(
+      (total, coefficient, exponent) => total + coefficient * value ** exponent,
+      0,
+    );
+  }
+}
+```
+
+```ts
+export class Polynomial {
+  private readonly coefficients: number[];
+
+  constructor(coefficients: number[]) {
+    if (!Array.isArray(coefficients) || coefficients.length === 0) {
+      throw new TypeError('Expected a non-empty coefficient array');
+    }
+
+    if (!coefficients.every((value) => Number.isFinite(value))) {
+      throw new TypeError('Coefficients must be finite numbers');
+    }
+
+    this.coefficients = [...coefficients];
+  }
+
+  display(): string {
+    const terms = this.coefficients
+      .map((coefficient, exponent) => {
+        if (coefficient === 0) {
+          return null;
+        }
+
+        if (exponent === 0) {
+          return `(${coefficient})`;
+        }
+
+        if (exponent === 1) {
+          return `(${coefficient}x)`;
+        }
+
+        return `(${coefficient}x^${exponent})`;
+      })
+      .filter((term): term is string => term !== null)
+      .reverse();
+
+    return terms.length > 0 ? terms.join(' + ') : '0';
+  }
+
+  evaluate(value: number): number {
+    if (!Number.isFinite(value)) {
+      throw new TypeError('Evaluation point must be a finite number');
+    }
+
+    return this.coefficients.reduce(
+      (total, coefficient, exponent) => total + coefficient * value ** exponent,
+      0,
+    );
+  }
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Replace direct powered evaluation with Horner's method.
+- Add polynomial addition or multiplication using the same coefficient representation.
+- Explain how trailing zero coefficients affect the displayed form.
+
+## Common Pitfalls
+
+- Forgetting that the array index is the exponent.
+- Leaving zero-coefficient terms in the rendered string.
+- Evaluating at non-finite inputs without defining the behavior.

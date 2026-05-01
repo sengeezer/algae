@@ -504,9 +504,20 @@ This forty-third expansion slice lifts the catalog from 290 to 296 entries.
 - Perfect Cube
 - Perfect Number
 
+## Batch 44 added
+
+This forty-fourth expansion slice lifts the catalog from 296 to 302 entries.
+
+- Pi Approximation Monte Carlo
+- Polynomial
+- Pow
+- Pow Logarithmic
+- Quadratic Roots
+- Reverse Polish Notation
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 43 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 44 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -515,9 +526,9 @@ All expansion entries from batch 1 through batch 43 now carry explicit per-entry
 ## Why this batch
 
 - It fills obvious interview-core gaps from TheAlgorithms/JavaScript without duplicating material already present in Algae.
-- It follows the next verified math queue directly, adding numerical integration, multiplicative number-theory classification, recursive modular exponentiation, parity detection, and perfect-power and divisor-sum predicates.
-- It broadens the catalog across approximation, modular arithmetic, and integer classification instead of staying inside the previous calendar-and-matrix slice.
-- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially compact mathematical helpers that still reward careful validation, square-free reasoning, and exact divisor handling.
+- It follows the next verified math queue directly, adding stochastic approximation, symbolic polynomial handling, two power routines, quadratic solving, and postfix-expression evaluation.
+- It broadens the catalog across numerical methods, algebraic manipulation, and expression evaluation instead of staying inside the previous divisor-and-parity slice.
+- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially math-heavy helpers that still reward careful handling of randomness, exponent rules, discriminants, and stack discipline.
 
 ## Supporting study references from the algorithms list
 
@@ -527,9 +538,9 @@ All expansion entries from batch 1 through batch 43 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- Pi Approximation Monte Carlo
-- Polynomial
-- Pow
-- Pow Logarithmic
-- Quadratic Roots
-- Reverse Polish Notation
+- Row Echelon
+- Shors Algorithm
+- Simpson Integration
+- Softmax
+- Sum Of Geometric Progression
+- Volume

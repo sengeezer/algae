@@ -1,0 +1,121 @@
+---
+title: Quadratic Roots
+slug: quadratic-roots
+category: Mathematics
+summary: Return the real roots of `ax^2 + bx + c = 0` by inspecting the discriminant.
+description: Quadratic Roots is the discriminant-based solver that distinguishes zero, one, and two real solutions for a quadratic equation.
+dataStructures:
+  - Array
+  - Number
+techniques:
+  - Discriminant Analysis
+  - Square Root
+  - Case Analysis
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - quadratic formula
+  - real roots of a quadratic
+useCases:
+  - Solving second-degree equations programmatically
+  - Teaching how the discriminant determines the number of real roots
+  - Building algebra helpers on top of a coefficient-form polynomial
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The quadratic formula needs only a constant amount of arithmetic once the coefficients are known.
+interviewSignals:
+  - The prompt gives coefficients `a`, `b`, and `c` for a quadratic equation.
+  - The expected answer splits on whether the discriminant is negative, zero, or positive.
+relatedSlugs:
+  - polynomial
+  - bisection-method
+  - square-root
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/QuadraticRoots.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/QuadraticRoots.js
+    kind: Implementation
+  - title: OpenStax - College Algebra
+    href: https://openstax.org/details/books/college-algebra-2e
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a compact algebra question that checks whether you remember to classify the discriminant before blindly applying the quadratic formula.
+
+## Worked Example
+
+For `2x^2 - 4x + 2 = 0`, the discriminant is `(-4)^2 - 4 * 2 * 2 = 0`, so there is one repeated real root: `x = 1`. If the discriminant were negative, the routine would return no real roots.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function quadraticRoots(a, b, c) {
+  if (![a, b, c].every((value) => typeof value === 'number' && Number.isFinite(value))) {
+    throw new TypeError('Coefficients must be finite numbers');
+  }
+
+  if (a === 0) {
+    throw new RangeError('Leading coefficient must be nonzero');
+  }
+
+  const discriminant = b * b - 4 * a * c;
+  if (discriminant < 0) {
+    return [];
+  }
+
+  if (discriminant === 0) {
+    return [-b / (2 * a)];
+  }
+
+  const sqrtDiscriminant = Math.sqrt(discriminant);
+  return [
+    (-b + sqrtDiscriminant) / (2 * a),
+    (-b - sqrtDiscriminant) / (2 * a),
+  ];
+}
+```
+
+```ts
+export function quadraticRoots(a: number, b: number, c: number): number[] {
+  if (![a, b, c].every((value) => Number.isFinite(value))) {
+    throw new TypeError('Coefficients must be finite numbers');
+  }
+
+  if (a === 0) {
+    throw new RangeError('Leading coefficient must be nonzero');
+  }
+
+  const discriminant = b * b - 4 * a * c;
+  if (discriminant < 0) {
+    return [];
+  }
+
+  if (discriminant === 0) {
+    return [-b / (2 * a)];
+  }
+
+  const sqrtDiscriminant = Math.sqrt(discriminant);
+  return [
+    (-b + sqrtDiscriminant) / (2 * a),
+    (-b - sqrtDiscriminant) / (2 * a),
+  ];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Extend the solver to return complex roots when the discriminant is negative.
+- Explain why `a = 0` is no longer a quadratic equation.
+- Connect the roots back to the factorization of the corresponding polynomial.
+
+## Common Pitfalls
+
+- Forgetting to reject `a = 0`.
+- Computing the square root before checking whether the discriminant is negative.
+- Returning two identical roots instead of a single repeated root when the discriminant is zero.
