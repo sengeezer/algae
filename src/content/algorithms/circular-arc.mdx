@@ -1,0 +1,110 @@
+---
+title: Circular Arc
+slug: circular-arc
+category: Mathematics
+summary: Compute arc length and sector area from a radius and central angle by converting degrees into radians first.
+description: Circular Arc is the geometry helper that derives arc length and sector area from radius-angle measurements.
+dataStructures:
+  - Number
+techniques:
+  - Unit Conversion
+  - Geometry Formula Application
+  - Constant-Time Arithmetic
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - arc length and sector area
+  - sector geometry
+useCases:
+  - Solving circle-geometry interview prompts
+  - Converting degree-based UI inputs into arc and sector measurements
+  - Teaching why radian conversion matters in continuous geometry formulas
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: Both formulas use a fixed number of arithmetic operations once the angle is in radians.
+interviewSignals:
+  - The prompt gives a radius and a central angle and asks for arc or sector measurements.
+  - The expected solution converts degrees to radians before applying the formulas.
+relatedSlugs:
+  - area
+  - degree-to-radian
+  - radian-to-degree
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/CircularArc.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/CircularArc.js
+    kind: Implementation
+  - title: free-programming-books - Algorithm Design
+    href: https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Circular-arc formulas are small, but they still test whether you remember that the clean formulas use radians, not degrees. That unit conversion is the main trap.
+
+## Worked Example
+
+With radius `3` and angle `45` degrees, the angle in radians is `pi / 4`, so the arc length is `3 * pi / 4`, or about `2.356`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function degreeToRadian(degrees) {
+  return degrees * (Math.PI / 180);
+}
+
+function circularArcLength(radius, degrees) {
+  if (![radius, degrees].every((value) => typeof value === 'number' && Number.isFinite(value) && value >= 0)) {
+    throw new RangeError('Radius and degrees must be non-negative finite numbers');
+  }
+
+  return radius * degreeToRadian(degrees);
+}
+
+function circularArcArea(radius, degrees) {
+  if (![radius, degrees].every((value) => typeof value === 'number' && Number.isFinite(value) && value >= 0)) {
+    throw new RangeError('Radius and degrees must be non-negative finite numbers');
+  }
+
+  return (radius * radius * degreeToRadian(degrees)) / 2;
+}
+```
+
+```ts
+function degreeToRadian(degrees: number): number {
+  return degrees * (Math.PI / 180);
+}
+
+export function circularArcLength(radius: number, degrees: number): number {
+  if (![radius, degrees].every((value) => Number.isFinite(value) && value >= 0)) {
+    throw new RangeError('Radius and degrees must be non-negative finite numbers');
+  }
+
+  return radius * degreeToRadian(degrees);
+}
+
+export function circularArcArea(radius: number, degrees: number): number {
+  if (![radius, degrees].every((value) => Number.isFinite(value) && value >= 0)) {
+    throw new RangeError('Radius and degrees must be non-negative finite numbers');
+  }
+
+  return (radius * radius * degreeToRadian(degrees)) / 2;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Accept radian input directly and skip the conversion step.
+- Explain why the full-circle case with `360` degrees reduces to circumference and full area.
+- Add chord length as another derived circle quantity.
+
+## Common Pitfalls
+
+- Applying the formulas directly to degree values.
+- Forgetting that radius and angle should be non-negative in this helper.
+- Mixing arc length and sector area even though they scale differently with radius.

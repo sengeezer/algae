@@ -1,0 +1,106 @@
+---
+title: Coordinate
+slug: coordinate
+category: Mathematics
+summary: Compute Euclidean and Manhattan distances between two points on a 2D plane from their coordinates.
+description: Coordinate is the point-metric helper that derives straight-line and grid-style distances from two-dimensional coordinates.
+dataStructures:
+  - Number
+techniques:
+  - Geometry
+  - Distance Metric
+  - Coordinate Arithmetic
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - 2D point distance
+  - coordinate distance helpers
+useCases:
+  - Comparing straight-line and Manhattan travel costs
+  - Teaching how distance metrics differ on the same inputs
+  - Building utilities for grid and plane geometry problems
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: Both distance formulas use a constant amount of arithmetic on four coordinates.
+interviewSignals:
+  - The prompt gives two 2D points and asks for one or more distances between them.
+  - The expected solution translates coordinate differences into metric-specific formulas.
+relatedSlugs:
+  - euclidean-distance
+  - circular-arc
+  - area
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/Coordinate.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/Coordinate.js
+    kind: Implementation
+  - title: free-programming-books - Algorithm Design
+    href: https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Coordinate-distance helpers are small, but they are a clean way to test whether you can translate geometry formulas into code and keep different metrics straight.
+
+## Worked Example
+
+For points `(2, 2)` and `(14, 11)`, the Euclidean distance is `15` because the coordinate differences are `12` and `9`, and `12^2 + 9^2 = 225`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function euclideanCoordinateDistance(x1, y1, x2, y2) {
+  if (![x1, y1, x2, y2].every((value) => typeof value === 'number' && Number.isFinite(value))) {
+    throw new TypeError('Coordinates must be finite numbers');
+  }
+
+  const width = x2 - x1;
+  const height = y2 - y1;
+  return Math.sqrt(width * width + height * height);
+}
+
+function manhattanCoordinateDistance(x1, y1, x2, y2) {
+  if (![x1, y1, x2, y2].every((value) => typeof value === 'number' && Number.isFinite(value))) {
+    throw new TypeError('Coordinates must be finite numbers');
+  }
+
+  return Math.abs(x2 - x1) + Math.abs(y2 - y1);
+}
+```
+
+```ts
+export function euclideanCoordinateDistance(x1: number, y1: number, x2: number, y2: number): number {
+  if (![x1, y1, x2, y2].every((value) => Number.isFinite(value))) {
+    throw new TypeError('Coordinates must be finite numbers');
+  }
+
+  const width = x2 - x1;
+  const height = y2 - y1;
+  return Math.sqrt(width * width + height * height);
+}
+
+export function manhattanCoordinateDistance(x1: number, y1: number, x2: number, y2: number): number {
+  if (![x1, y1, x2, y2].every((value) => Number.isFinite(value))) {
+    throw new TypeError('Coordinates must be finite numbers');
+  }
+
+  return Math.abs(x2 - x1) + Math.abs(y2 - y1);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Generalize the helpers to vectors of any dimension.
+- Explain where Manhattan distance is a better model than Euclidean distance.
+- Add Chebyshev distance as a third metric.
+
+## Common Pitfalls
+
+- Mixing Euclidean and Manhattan formulas in the same helper.
+- Forgetting to validate that all coordinates are numeric.
+- Squaring after taking the square root instead of before it.

@@ -438,9 +438,20 @@ This thirty-seventh expansion slice lifts the catalog from 254 to 260 entries.
 - Automorphic Number
 - Bisection Method
 
+## Batch 38 added
+
+This thirty-eighth expansion slice lifts the catalog from 260 to 266 entries.
+
+- Check Kishnamurthy Number
+- Circular Arc
+- Collatz Sequence
+- Coordinate
+- Count Numbers Divisible
+- Determinant
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 37 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 38 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -449,9 +460,9 @@ All expansion entries from batch 1 through batch 37 now carry explicit per-entry
 ## Why this batch
 
 - It fills obvious interview-core gaps from TheAlgorithms/JavaScript without duplicating material already present in Algae.
-- It follows the next verified math queue directly, adding divisor sums, geometry formulas, iterative mean convergence, digit-pattern checks, and a classic numerical root finder.
-- It broadens the catalog across number theory, geometry, and numerical analysis instead of staying inside the previous scalar-helper slice.
-- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially direct formulas, convergence reasoning, and digit-based predicates that still reward precise validation.
+- It follows the next verified math queue directly, adding digit-factorial checks, arc geometry, integer sequences, coordinate metrics, range divisibility counting, and recursive determinant expansion.
+- It broadens the catalog across discrete math, geometry, and linear algebra instead of staying inside the previous divisor-and-root-finding slice.
+- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially direct formulas, recurrence-style iteration, and matrix reasoning that still reward precise validation.
 
 ## Supporting study references from the algorithms list
 
@@ -461,9 +472,9 @@ All expansion entries from batch 1 through batch 37 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- Check Kishnamurthy Number
-- Circular Arc
-- Collatz Sequence
-- Coordinate
-- Count Numbers Divisible
-- Determinant
+- Euler Method
+- Euler's Totient Function
+- Exponential Function
+- Farey Approximation
+- Find Min
+- Find Min Iterator

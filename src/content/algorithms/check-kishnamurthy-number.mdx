@@ -1,0 +1,106 @@
+---
+title: Check Kishnamurthy Number
+slug: check-kishnamurthy-number
+category: Mathematics
+summary: Check whether a positive integer equals the sum of the factorials of its decimal digits.
+description: Check Kishnamurthy Number is the digit-factorial predicate that recognizes numbers equal to the factorial sum of their own digits.
+dataStructures:
+  - Number
+techniques:
+  - Digit Decomposition
+  - Factorial Table
+  - Numeric Predicate
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - krishnamurthy number check
+  - digit factorial sum check
+useCases:
+  - Building digit-based number-theory predicates
+  - Practicing repeated digit extraction with lookup-based accumulation
+  - Comparing arithmetic digit loops with string-based implementations
+complexity:
+  time: O(d)
+  space: O(1)
+  notes: The runtime scales with the number of digits because each digit contributes one factorial lookup.
+interviewSignals:
+  - The prompt asks whether a number equals a special factorial sum of its digits.
+  - The expected solution extracts digits and accumulates factorial values instead of recomputing huge factorials repeatedly.
+relatedSlugs:
+  - armstrong-number
+  - automorphic-number
+  - sum-of-digits
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/CheckKishnamurthyNumber.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/CheckKishnamurthyNumber.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Kishnamurthy-number checks are a good digit-manipulation exercise because they reward a clean digit loop and a small factorial cache instead of repeated expensive recomputation.
+
+## Worked Example
+
+`145` is a Kishnamurthy number because `1! + 4! + 5! = 1 + 24 + 120 = 145`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+const DIGIT_FACTORIALS = [1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880];
+
+function checkKishnamurthyNumber(value) {
+  if (!Number.isInteger(value) || value <= 0) {
+    return false;
+  }
+
+  let remaining = value;
+  let total = 0;
+
+  while (remaining > 0) {
+    total += DIGIT_FACTORIALS[remaining % 10];
+    remaining = Math.floor(remaining / 10);
+  }
+
+  return total === value;
+}
+```
+
+```ts
+const DIGIT_FACTORIALS = [1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880] as const;
+
+export function checkKishnamurthyNumber(value: number): boolean {
+  if (!Number.isInteger(value) || value <= 0) {
+    return false;
+  }
+
+  let remaining = value;
+  let total = 0;
+
+  while (remaining > 0) {
+    total += DIGIT_FACTORIALS[remaining % 10];
+    remaining = Math.floor(remaining / 10);
+  }
+
+  return total === value;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare Kishnamurthy numbers with Armstrong numbers and explain the changed digit transform.
+- Cache the factorial table once instead of recomputing it per digit.
+- Generalize the routine to other bases with a base-specific digit set.
+
+## Common Pitfalls
+
+- Recomputing factorials from scratch inside the digit loop.
+- Treating `0` or negative inputs as valid under this definition.
+- Forgetting to stop once the remaining number has no digits left.

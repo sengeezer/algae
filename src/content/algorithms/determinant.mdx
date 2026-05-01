@@ -1,0 +1,137 @@
+---
+title: Determinant
+slug: determinant
+category: Mathematics
+summary: Compute the determinant of a square matrix by recursively expanding minors along a row.
+description: Determinant is the matrix-scalar reduction routine that uses Laplace expansion to collapse a square matrix into a single signed value.
+dataStructures:
+  - Matrix
+  - Number
+techniques:
+  - Laplace Expansion
+  - Recursion
+  - Linear Algebra
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - matrix determinant
+  - Laplace expansion determinant
+useCases:
+  - Teaching how minors and cofactors work in linear algebra
+  - Building matrix inversion and linear-system tooling
+  - Practicing recursive decomposition on 2D arrays
+complexity:
+  time: O(n!)
+  space: O(n^2)
+  notes: Recursive Laplace expansion is conceptually clear but grows factorially with matrix size, so it is best suited to small matrices.
+interviewSignals:
+  - The prompt asks for a scalar computed from a square matrix.
+  - The expected solution validates that the input matrix is square before expanding minors.
+relatedSlugs:
+  - matrix-multiplication
+  - bisection-method
+  - coordinate
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/Determinant.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/Determinant.js
+    kind: Implementation
+  - title: free-programming-books - Algorithm Design
+    href: https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Determinant problems are a good test of whether you can decompose a matrix operation into recursive subproblems and keep the shape validation straight.
+
+## Worked Example
+
+For the matrix `[[1, 2], [3, 4]]`, the determinant is `1 * 4 - 2 * 3 = -2`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function validateSquareMatrix(matrix) {
+  if (!Array.isArray(matrix) || matrix.length === 0 || !matrix.every((row) => Array.isArray(row) && row.length === matrix.length)) {
+    throw new RangeError('Input must be a non-empty square matrix');
+  }
+}
+
+function minorMatrix(matrix, rowToSkip, colToSkip) {
+  return matrix
+    .filter((_, row) => row !== rowToSkip)
+    .map((row) => row.filter((_, col) => col !== colToSkip));
+}
+
+function determinant(matrix) {
+  validateSquareMatrix(matrix);
+
+  if (matrix.length === 1) {
+    return matrix[0][0];
+  }
+
+  if (matrix.length === 2) {
+    return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+  }
+
+  let total = 0;
+
+  for (let col = 0; col < matrix.length; col += 1) {
+    const sign = col % 2 === 0 ? 1 : -1;
+    total += sign * matrix[0][col] * determinant(minorMatrix(matrix, 0, col));
+  }
+
+  return total;
+}
+```
+
+```ts
+function validateSquareMatrix(matrix: number[][]): void {
+  if (!Array.isArray(matrix) || matrix.length === 0 || !matrix.every((row) => Array.isArray(row) && row.length === matrix.length)) {
+    throw new RangeError('Input must be a non-empty square matrix');
+  }
+}
+
+function minorMatrix(matrix: number[][], rowToSkip: number, colToSkip: number): number[][] {
+  return matrix
+    .filter((_, row) => row !== rowToSkip)
+    .map((row) => row.filter((_, col) => col !== colToSkip));
+}
+
+export function determinant(matrix: number[][]): number {
+  validateSquareMatrix(matrix);
+
+  if (matrix.length === 1) {
+    return matrix[0][0];
+  }
+
+  if (matrix.length === 2) {
+    return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+  }
+
+  let total = 0;
+
+  for (let col = 0; col < matrix.length; col += 1) {
+    const sign = col % 2 === 0 ? 1 : -1;
+    total += sign * matrix[0][col] * determinant(minorMatrix(matrix, 0, col));
+  }
+
+  return total;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare Laplace expansion with Gaussian elimination for larger matrices.
+- Explain how the determinant changes under row swaps and row scaling.
+- Use the determinant to test whether a matrix is singular.
+
+## Common Pitfalls
+
+- Forgetting to validate that the matrix is square.
+- Dropping the alternating cofactor sign during expansion.
+- Using Laplace expansion on large matrices without acknowledging the factorial growth.

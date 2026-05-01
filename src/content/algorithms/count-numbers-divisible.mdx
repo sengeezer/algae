@@ -1,0 +1,106 @@
+---
+title: Count Numbers Divisible
+slug: count-numbers-divisible
+category: Mathematics
+summary: Count how many integers in an inclusive range are divisible by a given positive divisor using floor arithmetic.
+description: Count Numbers Divisible is the range-counting helper that computes how many multiples of a divisor fall inside a closed interval.
+dataStructures:
+  - Number
+techniques:
+  - Integer Division
+  - Range Counting
+  - Arithmetic Simplification
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - count multiples in range
+  - divisible range count
+useCases:
+  - Counting evenly spaced hits in numeric ranges
+  - Replacing loops with arithmetic in interview prompts
+  - Teaching how inclusive interval counts can be derived from floors
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The count comes from two floor operations and a subtraction, so no iteration over the range is needed.
+interviewSignals:
+  - The prompt asks how many values in `[left, right]` are divisible by a number.
+  - The expected solution avoids scanning the whole interval element by element.
+relatedSlugs:
+  - collatz-sequence
+  - modular-arithmetic
+  - count-numbers-divisible
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/CountNumbersDivisible.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/CountNumbersDivisible.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem is a good check on whether you can replace an obvious loop with arithmetic. The main insight is that counting multiples up to a bound is a floor-division problem.
+
+## Worked Example
+
+In the range `[4, 19]`, the numbers divisible by `3` are `6`, `9`, `12`, `15`, and `18`, so the count is `5`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function countNumbersDivisible(left, right, divisor) {
+  if (![left, right, divisor].every((value) => Number.isInteger(value))) {
+    throw new RangeError('Bounds and divisor must be integers');
+  }
+
+  if (divisor <= 0) {
+    throw new RangeError('Divisor must be a positive integer');
+  }
+
+  if (left > right) {
+    throw new RangeError('Left bound must be less than or equal to right bound');
+  }
+
+  const multiplesUpToRight = Math.floor(right / divisor);
+  const multiplesBeforeLeft = Math.floor((left - 1) / divisor);
+  return multiplesUpToRight - multiplesBeforeLeft;
+}
+```
+
+```ts
+export function countNumbersDivisible(left: number, right: number, divisor: number): number {
+  if (![left, right, divisor].every((value) => Number.isInteger(value))) {
+    throw new RangeError('Bounds and divisor must be integers');
+  }
+
+  if (divisor <= 0) {
+    throw new RangeError('Divisor must be a positive integer');
+  }
+
+  if (left > right) {
+    throw new RangeError('Left bound must be less than or equal to right bound');
+  }
+
+  const multiplesUpToRight = Math.floor(right / divisor);
+  const multiplesBeforeLeft = Math.floor((left - 1) / divisor);
+  return multiplesUpToRight - multiplesBeforeLeft;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Extend the logic to exclude both endpoints explicitly.
+- Count values divisible by one number but not another.
+- Explain why arithmetic beats iteration for large intervals.
+
+## Common Pitfalls
+
+- Forgetting that the interval is inclusive.
+- Allowing a zero or negative divisor without defining the behavior.
+- Iterating across the full range instead of using floor arithmetic.
