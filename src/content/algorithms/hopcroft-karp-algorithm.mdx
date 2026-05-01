@@ -1,0 +1,225 @@
+---
+title: Hopcroft-Karp Algorithm
+slug: hopcroft-karp-algorithm
+category: Graphs
+summary: Layer unmatched left-side vertices with BFS so many shortest augmenting paths can be applied in one phase.
+description: Hopcroft-Karp Algorithm is the faster maximum bipartite matching technique that alternates BFS layering with DFS augmentation across the shortest alternating paths.
+dataStructures:
+  - Graph
+  - Queue
+  - Array
+techniques:
+  - Matching
+  - Breadth-First Search
+  - Augmenting Paths
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - hopcroft karp
+  - optimized bipartite matching
+useCases:
+  - Large bipartite assignment problems
+  - Faster matching than one-augmenting-path-at-a-time DFS
+  - Explaining why layering can speed up alternating-path search
+complexity:
+  time: O(E * sqrt(V))
+  space: O(V + E)
+  notes: The speedup comes from finding many vertex-disjoint shortest augmenting paths in one BFS/DFS phase instead of rebuilding after every single match.
+interviewSignals:
+  - The graph is bipartite, but the plain augmenting-path solution is too slow.
+  - The prompt asks for maximum matching and hints at an optimization beyond repeated DFS.
+relatedSlugs:
+  - bipartite-matching
+  - max-flow-dinics-algorithm
+  - breadth-first-search
+provenance:
+  - title: GeeksforGeeks - Hopcroft-Karp Algorithm for Maximum Matching
+    href: https://www.geeksforgeeks.org/dsa/hopcroft-karp-algorithm-for-maximum-matching-set-1-introduction/
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Hopcroft-Karp matters when ordinary bipartite matching is correct but too slow. Instead of finding one augmenting path and immediately restarting, it batches the work by discovering the current shortest alternating layers and then augmenting through many shortest paths before the next BFS.
+
+## Worked Example
+
+If several unmatched left-side vertices can all reach free right-side vertices through alternating paths of the same minimum length, Hopcroft-Karp uses one BFS to expose that layered structure. DFS can then claim multiple matches from that one phase rather than rebuilding the search tree after each individual improvement.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function hopcroftKarp(graph, rightSize) {
+  const leftSize = graph.length;
+  const pairLeft = new Array(leftSize).fill(-1);
+  const pairRight = new Array(rightSize).fill(-1);
+  const inf = Number.POSITIVE_INFINITY;
+
+  function bfs() {
+    const distance = new Array(leftSize).fill(inf);
+    const queue = [];
+    let foundAugmentingPath = false;
+
+    for (let left = 0; left < leftSize; left += 1) {
+      if (pairLeft[left] === -1) {
+        distance[left] = 0;
+        queue.push(left);
+      }
+    }
+
+    for (let head = 0; head < queue.length; head += 1) {
+      const left = queue[head];
+
+      for (const right of graph[left]) {
+        const matchedLeft = pairRight[right];
+
+        if (matchedLeft === -1) {
+          foundAugmentingPath = true;
+        } else if (distance[matchedLeft] === inf) {
+          distance[matchedLeft] = distance[left] + 1;
+          queue.push(matchedLeft);
+        }
+      }
+    }
+
+    return { distance, foundAugmentingPath };
+  }
+
+  function dfs(left, distance) {
+    for (const right of graph[left]) {
+      const matchedLeft = pairRight[right];
+
+      if (
+        matchedLeft === -1
+        || (distance[matchedLeft] === distance[left] + 1 && dfs(matchedLeft, distance))
+      ) {
+        pairLeft[left] = right;
+        pairRight[right] = left;
+        return true;
+      }
+    }
+
+    distance[left] = inf;
+    return false;
+  }
+
+  let matches = 0;
+
+  while (true) {
+    const { distance, foundAugmentingPath } = bfs();
+    if (!foundAugmentingPath) {
+      break;
+    }
+
+    for (let left = 0; left < leftSize; left += 1) {
+      if (pairLeft[left] === -1 && dfs(left, distance)) {
+        matches += 1;
+      }
+    }
+  }
+
+  return {
+    matches,
+    pairing: pairLeft.flatMap((right, left) => (right === -1 ? [] : [[left, right]])),
+  };
+}
+```
+
+```ts
+export function hopcroftKarp(
+  graph: number[][],
+  rightSize: number,
+): { matches: number; pairing: Array<[number, number]> } {
+  const leftSize = graph.length;
+  const pairLeft = new Array<number>(leftSize).fill(-1);
+  const pairRight = new Array<number>(rightSize).fill(-1);
+  const inf = Number.POSITIVE_INFINITY;
+
+  function bfs(): { distance: number[]; foundAugmentingPath: boolean } {
+    const distance = new Array<number>(leftSize).fill(inf);
+    const queue: number[] = [];
+    let foundAugmentingPath = false;
+
+    for (let left = 0; left < leftSize; left += 1) {
+      if (pairLeft[left] === -1) {
+        distance[left] = 0;
+        queue.push(left);
+      }
+    }
+
+    for (let head = 0; head < queue.length; head += 1) {
+      const left = queue[head];
+
+      for (const right of graph[left]) {
+        const matchedLeft = pairRight[right];
+
+        if (matchedLeft === -1) {
+          foundAugmentingPath = true;
+        } else if (distance[matchedLeft] === inf) {
+          distance[matchedLeft] = distance[left] + 1;
+          queue.push(matchedLeft);
+        }
+      }
+    }
+
+    return { distance, foundAugmentingPath };
+  }
+
+  function dfs(left: number, distance: number[]): boolean {
+    for (const right of graph[left]) {
+      const matchedLeft = pairRight[right];
+
+      if (
+        matchedLeft === -1
+        || (distance[matchedLeft] === distance[left] + 1 && dfs(matchedLeft, distance))
+      ) {
+        pairLeft[left] = right;
+        pairRight[right] = left;
+        return true;
+      }
+    }
+
+    distance[left] = inf;
+    return false;
+  }
+
+  let matches = 0;
+
+  while (true) {
+    const { distance, foundAugmentingPath } = bfs();
+    if (!foundAugmentingPath) {
+      break;
+    }
+
+    for (let left = 0; left < leftSize; left += 1) {
+      if (pairLeft[left] === -1 && dfs(left, distance)) {
+        matches += 1;
+      }
+    }
+  }
+
+  return {
+    matches,
+    pairing: pairLeft.flatMap((right, left) => (right === -1 ? [] : [[left, right] as [number, number]])),
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Contrast Hopcroft-Karp with the simpler augmenting-path DFS from maximum bipartite matching.
+- Reduce bipartite matching to flow and compare the asymptotic tradeoffs.
+- Explain why the BFS layers only care about shortest alternating paths in the current residual structure.
+
+## Common Pitfalls
+
+- Forgetting that the graph must already be partitioned into left and right sides.
+- Reusing DFS across phases without rebuilding the BFS layer distances.
+- Treating any augmenting path as good enough once you have already committed to the shortest-layer phase.

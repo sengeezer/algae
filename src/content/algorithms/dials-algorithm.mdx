@@ -1,0 +1,150 @@
+---
+title: Dial's Algorithm
+slug: dials-algorithm
+category: Graphs
+summary: Replace Dijkstra's priority queue with distance buckets when edge weights are small non-negative integers.
+description: Dial's Algorithm is the bounded-weight shortest-path optimization that stores nodes in buckets indexed by distance instead of using a heap.
+dataStructures:
+  - Graph
+  - Array
+  - Queue
+techniques:
+  - Shortest Paths
+  - Bucket Queue
+  - Greedy
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - bucketed Dijkstra
+  - Dial algorithm
+useCases:
+  - Shortest paths with small bounded integer weights
+  - Replacing a heap with buckets in routing or scheduling graphs
+  - Showing how problem constraints can beat a generic priority queue
+complexity:
+  time: O(E + W * V)
+  space: O(W * V)
+  notes: The bucket range depends on the maximum edge weight `W`, which is why the algorithm only helps when weights are small non-negative integers.
+interviewSignals:
+  - Dijkstra is correct, but the edge weights lie in a tiny integer range.
+  - The prompt hints at using counting-style buckets instead of a heap.
+relatedSlugs:
+  - dijkstra
+  - johnsons-algorithm
+  - breadth-first-search
+provenance:
+  - title: GeeksforGeeks - Dial's Algorithm (Optimized Dijkstra for Small Range Weights)
+    href: https://www.geeksforgeeks.org/dsa/dials-algorithm-optimized-dijkstra-for-small-range-weights/
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Dial's algorithm is the kind of follow-up that appears after you correctly propose Dijkstra and then notice extra structure in the input. If weights are small integers, a general-purpose priority queue is often more machinery than you need because distance buckets can process nodes in order directly.
+
+## Worked Example
+
+When every edge weight is between `0` and `W`, the shortest simple path to any node uses at most `V - 1` edges, so reachable distances stay inside a manageable bucket range. That lets the algorithm walk the buckets from smallest distance upward instead of paying heap costs on every push and pop.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function dialsAlgorithm(graph, source, maxWeight) {
+  if (graph.length === 0) {
+    return [];
+  }
+
+  const inf = Number.POSITIVE_INFINITY;
+  const maxDistance = maxWeight * Math.max(1, graph.length - 1);
+  const buckets = Array.from({ length: maxDistance + 1 }, () => []);
+  const distances = new Array(graph.length).fill(inf);
+  distances[source] = 0;
+  buckets[0].push(source);
+
+  for (let distance = 0; distance <= maxDistance; distance += 1) {
+    while (buckets[distance].length > 0) {
+      const node = buckets[distance].shift();
+
+      if (distance !== distances[node]) {
+        continue;
+      }
+
+      for (const [neighbor, weight] of graph[node]) {
+        if (!Number.isInteger(weight) || weight < 0 || weight > maxWeight) {
+          throw new RangeError('Edge weights must be integers in the declared range');
+        }
+
+        const candidate = distances[node] + weight;
+        if (candidate < distances[neighbor]) {
+          distances[neighbor] = candidate;
+          buckets[candidate].push(neighbor);
+        }
+      }
+    }
+  }
+
+  return distances;
+}
+```
+
+```ts
+export function dialsAlgorithm(
+  graph: Array<Array<[number, number]>>,
+  source: number,
+  maxWeight: number,
+): number[] {
+  if (graph.length === 0) {
+    return [];
+  }
+
+  const inf = Number.POSITIVE_INFINITY;
+  const maxDistance = maxWeight * Math.max(1, graph.length - 1);
+  const buckets = Array.from({ length: maxDistance + 1 }, () => [] as number[]);
+  const distances = new Array<number>(graph.length).fill(inf);
+  distances[source] = 0;
+  buckets[0].push(source);
+
+  for (let distance = 0; distance <= maxDistance; distance += 1) {
+    while (buckets[distance].length > 0) {
+      const node = buckets[distance].shift()!;
+
+      if (distance !== distances[node]) {
+        continue;
+      }
+
+      for (const [neighbor, weight] of graph[node]) {
+        if (!Number.isInteger(weight) || weight < 0 || weight > maxWeight) {
+          throw new RangeError('Edge weights must be integers in the declared range');
+        }
+
+        const candidate = distances[node] + weight;
+        if (candidate < distances[neighbor]) {
+          distances[neighbor] = candidate;
+          buckets[candidate].push(neighbor);
+        }
+      }
+    }
+  }
+
+  return distances;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- State exactly which weight constraints make Dial's algorithm worthwhile.
+- Compare bucket queues with a binary heap and with 0-1 BFS.
+- Show how to derive the bucket count bound from the maximum path length in a simple graph.
+
+## Common Pitfalls
+
+- Applying the algorithm to negative or non-integer edge weights.
+- Underestimating the distance range and allocating too few buckets.
+- Forgetting that stale bucket entries can still appear and must be skipped.

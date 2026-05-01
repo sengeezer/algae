@@ -1,0 +1,256 @@
+---
+title: Boruvka's Algorithm
+slug: boruvkas-algorithm
+category: Graphs
+summary: Repeatedly add each component's cheapest outgoing edge so the number of components collapses quickly toward an MST.
+description: Boruvka's Algorithm is the minimum-spanning-tree technique that grows many components in parallel by selecting one cheapest edge per component each round.
+dataStructures:
+  - Graph
+  - Array
+  - Union-Find
+techniques:
+  - Minimum Spanning Tree
+  - Greedy
+  - Union-Find
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - Sollin's algorithm
+  - Boruvka MST
+useCases:
+  - Comparing multiple MST construction strategies
+  - Parallel-friendly spanning tree construction
+  - Teaching why repeated component contraction shrinks the problem fast
+complexity:
+  time: O(E log V)
+  space: O(V)
+  notes: Each round selects one cheapest outgoing edge per current component, and that process reduces the component count aggressively.
+interviewSignals:
+  - The prompt asks for an MST but invites an alternative to Prim or Kruskal.
+  - Parallel or component-contraction language often points toward Boruvka.
+relatedSlugs:
+  - kruskal-mst
+  - union-find
+  - priority-queue
+provenance:
+  - title: GeeksforGeeks - Boruvka's Algorithm for Minimum Spanning Tree
+    href: https://www.geeksforgeeks.org/dsa/boruvkas-algorithm-greedy-algo-9/
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Boruvka is the MST algorithm that thinks in terms of components acting simultaneously. Instead of adding one globally light safe edge at a time, every component claims its own cheapest outgoing edge, and those claims can all merge in parallel.
+
+## Worked Example
+
+If four components each choose their cheapest edge to some other component, several merges can happen in the same round. That is the whole appeal of Boruvka: the graph shrinks quickly because each surviving component must have absorbed at least one other component whenever a valid outgoing edge exists.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function boruvkasAlgorithm(nodeCount, edges) {
+  const dsu = new UnionFind(nodeCount);
+  const mstEdges = [];
+  let totalWeight = 0;
+  let components = nodeCount;
+
+  while (components > 1) {
+    const cheapest = new Array(nodeCount).fill(-1);
+
+    for (let index = 0; index < edges.length; index += 1) {
+      const [from, to, weight] = edges[index];
+      const rootFrom = dsu.find(from);
+      const rootTo = dsu.find(to);
+
+      if (rootFrom === rootTo) {
+        continue;
+      }
+
+      if (cheapest[rootFrom] === -1 || edges[cheapest[rootFrom]][2] > weight) {
+        cheapest[rootFrom] = index;
+      }
+
+      if (cheapest[rootTo] === -1 || edges[cheapest[rootTo]][2] > weight) {
+        cheapest[rootTo] = index;
+      }
+    }
+
+    let mergedInRound = false;
+    const usedEdges = new Set();
+
+    for (const edgeIndex of cheapest) {
+      if (edgeIndex === -1 || usedEdges.has(edgeIndex)) {
+        continue;
+      }
+
+      usedEdges.add(edgeIndex);
+      const [from, to, weight] = edges[edgeIndex];
+
+      if (dsu.union(from, to)) {
+        mstEdges.push([from, to, weight]);
+        totalWeight += weight;
+        components -= 1;
+        mergedInRound = true;
+      }
+    }
+
+    if (!mergedInRound) {
+      break;
+    }
+  }
+
+  return { totalWeight, mstEdges };
+}
+
+class UnionFind {
+  constructor(size) {
+    this.parent = Array.from({ length: size }, (_, index) => index);
+    this.rank = new Array(size).fill(0);
+  }
+
+  find(node) {
+    if (this.parent[node] !== node) {
+      this.parent[node] = this.find(this.parent[node]);
+    }
+
+    return this.parent[node];
+  }
+
+  union(left, right) {
+    const rootLeft = this.find(left);
+    const rootRight = this.find(right);
+
+    if (rootLeft === rootRight) {
+      return false;
+    }
+
+    if (this.rank[rootLeft] < this.rank[rootRight]) {
+      this.parent[rootLeft] = rootRight;
+    } else if (this.rank[rootLeft] > this.rank[rootRight]) {
+      this.parent[rootRight] = rootLeft;
+    } else {
+      this.parent[rootRight] = rootLeft;
+      this.rank[rootLeft] += 1;
+    }
+
+    return true;
+  }
+}
+```
+
+```ts
+export function boruvkasAlgorithm(
+  nodeCount: number,
+  edges: Array<[number, number, number]>,
+): { totalWeight: number; mstEdges: Array<[number, number, number]> } {
+  const dsu = new UnionFind(nodeCount);
+  const mstEdges: Array<[number, number, number]> = [];
+  let totalWeight = 0;
+  let components = nodeCount;
+
+  while (components > 1) {
+    const cheapest = new Array<number>(nodeCount).fill(-1);
+
+    for (let index = 0; index < edges.length; index += 1) {
+      const [from, to, weight] = edges[index];
+      const rootFrom = dsu.find(from);
+      const rootTo = dsu.find(to);
+
+      if (rootFrom === rootTo) {
+        continue;
+      }
+
+      if (cheapest[rootFrom] === -1 || edges[cheapest[rootFrom]][2] > weight) {
+        cheapest[rootFrom] = index;
+      }
+
+      if (cheapest[rootTo] === -1 || edges[cheapest[rootTo]][2] > weight) {
+        cheapest[rootTo] = index;
+      }
+    }
+
+    let mergedInRound = false;
+    const usedEdges = new Set<number>();
+
+    for (const edgeIndex of cheapest) {
+      if (edgeIndex === -1 || usedEdges.has(edgeIndex)) {
+        continue;
+      }
+
+      usedEdges.add(edgeIndex);
+      const [from, to, weight] = edges[edgeIndex];
+
+      if (dsu.union(from, to)) {
+        mstEdges.push([from, to, weight]);
+        totalWeight += weight;
+        components -= 1;
+        mergedInRound = true;
+      }
+    }
+
+    if (!mergedInRound) {
+      break;
+    }
+  }
+
+  return { totalWeight, mstEdges };
+}
+
+class UnionFind {
+  private readonly parent: number[];
+  private readonly rank: number[];
+
+  constructor(size: number) {
+    this.parent = Array.from({ length: size }, (_, index) => index);
+    this.rank = new Array<number>(size).fill(0);
+  }
+
+  find(node: number): number {
+    if (this.parent[node] !== node) {
+      this.parent[node] = this.find(this.parent[node]);
+    }
+
+    return this.parent[node];
+  }
+
+  union(left: number, right: number): boolean {
+    const rootLeft = this.find(left);
+    const rootRight = this.find(right);
+
+    if (rootLeft === rootRight) {
+      return false;
+    }
+
+    if (this.rank[rootLeft] < this.rank[rootRight]) {
+      this.parent[rootLeft] = rootRight;
+    } else if (this.rank[rootLeft] > this.rank[rootRight]) {
+      this.parent[rootRight] = rootLeft;
+    } else {
+      this.parent[rootRight] = rootLeft;
+      this.rank[rootLeft] += 1;
+    }
+
+    return true;
+  }
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why Boruvka can merge many components in one round without violating MST correctness.
+- Compare it with Kruskal's globally sorted edge view and Prim's grow-from-one-tree view.
+- Discuss what the algorithm returns when the graph is disconnected.
+
+## Common Pitfalls
+
+- Forgetting to recompute each component's cheapest outgoing edge after unions change the component structure.
+- Adding an edge twice when both endpoints nominate the same cheapest edge.
+- Assuming the algorithm always returns a single tree even when the input graph is disconnected.

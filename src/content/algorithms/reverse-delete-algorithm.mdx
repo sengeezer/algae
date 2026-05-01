@@ -1,0 +1,189 @@
+---
+title: Reverse-Delete Algorithm
+slug: reverse-delete-algorithm
+category: Graphs
+summary: Remove heavy edges when the graph stays connected, leaving only the edges that an MST cannot discard.
+description: Reverse-Delete Algorithm is the minimum-spanning-tree method that processes edges from heaviest to lightest and deletes each one unless the removal disconnects the graph.
+dataStructures:
+  - Graph
+  - Array
+  - Set
+techniques:
+  - Minimum Spanning Tree
+  - Greedy
+  - Connectivity
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - reverse delete MST
+  - delete-if-safe MST
+useCases:
+  - Contrasting MST construction with Kruskal's add-if-safe view
+  - Teaching the cut property from an edge-removal angle
+  - Explaining why heavy edges can be discarded if an alternate connection remains
+complexity:
+  time: O(E * (V + E))
+  space: O(V + E)
+  notes: The naive version is easy to explain because every edge removal only needs a connectivity check, but that repeated checking makes it slower than Kruskal in practice.
+interviewSignals:
+  - The prompt asks for an MST and invites a delete-heavy greedy argument.
+  - You want to explain MST correctness from the perspective of removing unsafe heavy edges.
+relatedSlugs:
+  - kruskal-mst
+  - union-find
+  - depth-first-search
+provenance:
+  - title: GeeksforGeeks - Reverse Delete Algorithm for Minimum Spanning Tree
+    href: https://www.geeksforgeeks.org/dsa/reverse-delete-algorithm-minimum-spanning-tree/
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Reverse-Delete is useful when you want to reason about MSTs from the opposite direction of Kruskal. Instead of starting with nothing and adding safe light edges, it starts with everything and removes any heavy edge whose disappearance does not break connectivity.
+
+## Worked Example
+
+If the current graph still contains two different ways to connect the same regions, the heaviest edge on that cycle is a candidate for deletion. Repeating that argument from largest edge to smallest gradually strips the graph down to a spanning tree with minimum total weight.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function reverseDeleteAlgorithm(nodeCount, edges) {
+  const adjacency = Array.from({ length: nodeCount }, () => []);
+
+  edges.forEach(([from, to], index) => {
+    adjacency[from].push(index);
+    adjacency[to].push(index);
+  });
+
+  const active = new Array(edges.length).fill(true);
+
+  function canReach(start, target) {
+    const stack = [start];
+    const seen = new Array(nodeCount).fill(false);
+    seen[start] = true;
+
+    while (stack.length > 0) {
+      const node = stack.pop();
+      if (node === target) {
+        return true;
+      }
+
+      for (const edgeIndex of adjacency[node]) {
+        if (!active[edgeIndex]) {
+          continue;
+        }
+
+        const [from, to] = edges[edgeIndex];
+        const neighbor = from === node ? to : from;
+
+        if (!seen[neighbor]) {
+          seen[neighbor] = true;
+          stack.push(neighbor);
+        }
+      }
+    }
+
+    return false;
+  }
+
+  const order = edges
+    .map((edge, index) => [index, edge[2]])
+    .sort((left, right) => right[1] - left[1]);
+
+  for (const [edgeIndex] of order) {
+    const [from, to] = edges[edgeIndex];
+    active[edgeIndex] = false;
+
+    if (!canReach(from, to)) {
+      active[edgeIndex] = true;
+    }
+  }
+
+  const mstEdges = edges.filter((_, index) => active[index]);
+  const totalWeight = mstEdges.reduce((sum, [, , weight]) => sum + weight, 0);
+  return { totalWeight, mstEdges };
+}
+```
+
+```ts
+export function reverseDeleteAlgorithm(
+  nodeCount: number,
+  edges: Array<[number, number, number]>,
+): { totalWeight: number; mstEdges: Array<[number, number, number]> } {
+  const adjacency = Array.from({ length: nodeCount }, () => [] as number[]);
+
+  edges.forEach(([from, to], index) => {
+    adjacency[from].push(index);
+    adjacency[to].push(index);
+  });
+
+  const active = new Array<boolean>(edges.length).fill(true);
+
+  function canReach(start: number, target: number): boolean {
+    const stack: number[] = [start];
+    const seen = new Array<boolean>(nodeCount).fill(false);
+    seen[start] = true;
+
+    while (stack.length > 0) {
+      const node = stack.pop()!;
+      if (node === target) {
+        return true;
+      }
+
+      for (const edgeIndex of adjacency[node]) {
+        if (!active[edgeIndex]) {
+          continue;
+        }
+
+        const [from, to] = edges[edgeIndex];
+        const neighbor = from === node ? to : from;
+
+        if (!seen[neighbor]) {
+          seen[neighbor] = true;
+          stack.push(neighbor);
+        }
+      }
+    }
+
+    return false;
+  }
+
+  const order = edges
+    .map((edge, index) => [index, edge[2]] as const)
+    .sort((left, right) => right[1] - left[1]);
+
+  for (const [edgeIndex] of order) {
+    const [from, to] = edges[edgeIndex];
+    active[edgeIndex] = false;
+
+    if (!canReach(from, to)) {
+      active[edgeIndex] = true;
+    }
+  }
+
+  const mstEdges = edges.filter((_, index) => active[index]);
+  const totalWeight = mstEdges.reduce((sum, [, , weight]) => sum + weight, 0);
+  return { totalWeight, mstEdges };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Show why Reverse-Delete and Kruskal are dual ways to exploit the same MST cut and cycle properties.
+- Replace the repeated DFS connectivity checks with a more advanced dynamic-connectivity discussion.
+- Explain what the algorithm returns on a disconnected graph.
+
+## Common Pitfalls
+
+- Removing an edge permanently without checking whether its endpoints remain connected.
+- Assuming the heaviest edge can always be deleted even when it is the only bridge between two regions.
+- Treating the naive connectivity-check version as asymptotically competitive with Kruskal.

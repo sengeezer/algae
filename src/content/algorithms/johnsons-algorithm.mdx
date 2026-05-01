@@ -1,0 +1,242 @@
+---
+title: Johnson's Algorithm
+slug: johnsons-algorithm
+category: Graphs
+summary: Reweight edges with Bellman-Ford so Dijkstra can run from every source even when the original graph has negative edges.
+description: Johnson's Algorithm solves all-pairs shortest paths by combining one Bellman-Ford pass with repeated Dijkstra runs on a reweighted graph.
+dataStructures:
+  - Graph
+  - Array
+  - Priority Queue
+techniques:
+  - All-Pairs Shortest Paths
+  - Reweighting
+  - Shortest Paths
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - Johnson APSP
+  - reweighted all-pairs shortest paths
+useCases:
+  - Sparse all-pairs shortest paths with negative edges but no negative cycles
+  - Comparing sparse-graph APSP with Floyd-Warshall
+  - Reusing Bellman-Ford and Dijkstra as one combined pipeline
+complexity:
+  time: O(V * E log V)
+  space: O(V + E)
+  notes: One Bellman-Ford pass computes potentials that make every reweighted edge non-negative, which is what lets repeated Dijkstra runs stay correct.
+interviewSignals:
+  - You need all-pairs shortest paths on a sparse graph.
+  - Negative edges exist, but negative cycles do not.
+relatedSlugs:
+  - bellman-ford
+  - dijkstra
+  - floyd-warshall
+provenance:
+  - title: GeeksforGeeks - Johnson's Algorithm
+    href: https://www.geeksforgeeks.org/dsa/johnsons-algorithm/
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Johnson's algorithm is the sparse-graph APSP answer when Floyd-Warshall feels too dense and plain repeated Dijkstra fails because of negative edges. The whole trick is to reweight the graph so shortest-path ordering is preserved while every edge becomes safe for Dijkstra.
+
+## Worked Example
+
+Bellman-Ford computes a potential `h(v)` for every node. Replacing each edge weight `w(u, v)` with `w(u, v) + h(u) - h(v)` does not change which paths are shortest, but it does remove negative weights so Dijkstra can be reused from every source.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function johnsonsAlgorithm(nodeCount, edges) {
+  const inf = Number.POSITIVE_INFINITY;
+  const superSource = nodeCount;
+  const extendedEdges = [...edges];
+
+  for (let node = 0; node < nodeCount; node += 1) {
+    extendedEdges.push([superSource, node, 0]);
+  }
+
+  const potential = new Array(nodeCount + 1).fill(inf);
+  potential[superSource] = 0;
+
+  for (let pass = 0; pass < nodeCount; pass += 1) {
+    let changed = false;
+
+    for (const [from, to, weight] of extendedEdges) {
+      if (potential[from] === inf) {
+        continue;
+      }
+
+      const candidate = potential[from] + weight;
+      if (candidate < potential[to]) {
+        potential[to] = candidate;
+        changed = true;
+      }
+    }
+
+    if (!changed) {
+      break;
+    }
+  }
+
+  for (const [from, to, weight] of extendedEdges) {
+    if (potential[from] !== inf && potential[from] + weight < potential[to]) {
+      throw new Error('Negative cycle detected');
+    }
+  }
+
+  const graph = Array.from({ length: nodeCount }, () => []);
+  for (const [from, to, weight] of edges) {
+    graph[from].push([to, weight + potential[from] - potential[to]]);
+  }
+
+  function dijkstra(source) {
+    const distances = new Array(nodeCount).fill(inf);
+    distances[source] = 0;
+    const queue = [[0, source]];
+
+    while (queue.length > 0) {
+      queue.sort((left, right) => left[0] - right[0]);
+      const [distance, node] = queue.shift();
+
+      if (distance > distances[node]) {
+        continue;
+      }
+
+      for (const [neighbor, weight] of graph[node]) {
+        const candidate = distance + weight;
+
+        if (candidate < distances[neighbor]) {
+          distances[neighbor] = candidate;
+          queue.push([candidate, neighbor]);
+        }
+      }
+    }
+
+    return distances;
+  }
+
+  const result = Array.from({ length: nodeCount }, () => new Array(nodeCount).fill(inf));
+
+  for (let source = 0; source < nodeCount; source += 1) {
+    const distances = dijkstra(source);
+
+    for (let target = 0; target < nodeCount; target += 1) {
+      if (distances[target] !== inf) {
+        result[source][target] = distances[target] - potential[source] + potential[target];
+      }
+    }
+  }
+
+  return result;
+}
+```
+
+```ts
+type Edge = [from: number, to: number, weight: number];
+
+export function johnsonsAlgorithm(nodeCount: number, edges: Edge[]): number[][] {
+  const inf = Number.POSITIVE_INFINITY;
+  const superSource = nodeCount;
+  const extendedEdges: Edge[] = [...edges];
+
+  for (let node = 0; node < nodeCount; node += 1) {
+    extendedEdges.push([superSource, node, 0]);
+  }
+
+  const potential = new Array<number>(nodeCount + 1).fill(inf);
+  potential[superSource] = 0;
+
+  for (let pass = 0; pass < nodeCount; pass += 1) {
+    let changed = false;
+
+    for (const [from, to, weight] of extendedEdges) {
+      if (potential[from] === inf) {
+        continue;
+      }
+
+      const candidate = potential[from] + weight;
+      if (candidate < potential[to]) {
+        potential[to] = candidate;
+        changed = true;
+      }
+    }
+
+    if (!changed) {
+      break;
+    }
+  }
+
+  for (const [from, to, weight] of extendedEdges) {
+    if (potential[from] !== inf && potential[from] + weight < potential[to]) {
+      throw new Error('Negative cycle detected');
+    }
+  }
+
+  const graph = Array.from({ length: nodeCount }, () => [] as Array<[number, number]>);
+  for (const [from, to, weight] of edges) {
+    graph[from].push([to, weight + potential[from] - potential[to]]);
+  }
+
+  function dijkstra(source: number): number[] {
+    const distances = new Array<number>(nodeCount).fill(inf);
+    distances[source] = 0;
+    const queue: Array<[number, number]> = [[0, source]];
+
+    while (queue.length > 0) {
+      queue.sort((left, right) => left[0] - right[0]);
+      const [distance, node] = queue.shift()!;
+
+      if (distance > distances[node]) {
+        continue;
+      }
+
+      for (const [neighbor, weight] of graph[node]) {
+        const candidate = distance + weight;
+
+        if (candidate < distances[neighbor]) {
+          distances[neighbor] = candidate;
+          queue.push([candidate, neighbor]);
+        }
+      }
+    }
+
+    return distances;
+  }
+
+  const result = Array.from({ length: nodeCount }, () => new Array<number>(nodeCount).fill(inf));
+
+  for (let source = 0; source < nodeCount; source += 1) {
+    const distances = dijkstra(source);
+
+    for (let target = 0; target < nodeCount; target += 1) {
+      if (distances[target] !== inf) {
+        result[source][target] = distances[target] - potential[source] + potential[target];
+      }
+    }
+  }
+
+  return result;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare Johnson's algorithm with Floyd-Warshall on dense versus sparse graphs.
+- Explain why the reweighting preserves shortest-path ordering.
+- Show how a negative cycle breaks the entire APSP problem before any Dijkstra run starts.
+
+## Common Pitfalls
+
+- Forgetting to add the super-source edges before the Bellman-Ford phase.
+- Returning reweighted distances without converting them back to the original metric.
+- Using Johnson's algorithm when a negative cycle exists, which makes shortest paths undefined.

@@ -1,0 +1,231 @@
+---
+title: 2-SAT
+slug: 2-sat-problem
+category: Graphs
+summary: Turn each two-literal clause into implication edges and test whether any variable shares an SCC with its negation.
+description: 2-SAT is the tractable two-literal satisfiability problem solved by building an implication graph and analyzing strongly connected components.
+dataStructures:
+  - Graph
+  - Array
+  - Stack
+techniques:
+  - Strongly Connected Components
+  - Implication Graph
+  - Boolean Logic
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - 2 satisfiability
+  - 2-CNF satisfiability
+useCases:
+  - Scheduling with pairwise either-or constraints
+  - Feature flag compatibility rules
+  - Validating boolean systems that can be expressed as two-literal clauses
+complexity:
+  time: O(V + E)
+  space: O(V + E)
+  notes: The key theorem is that a 2-SAT instance is satisfiable exactly when no variable and its negation belong to the same strongly connected component.
+interviewSignals:
+  - Every clause has exactly two literals.
+  - The intended solution reduces logic constraints to graph implications and SCC checks.
+relatedSlugs:
+  - kosaraju
+  - connected-components
+  - topological-sort
+provenance:
+  - title: GeeksforGeeks - 2-Satisfiability (2-SAT) Problem
+    href: https://www.geeksforgeeks.org/dsa/2-satisfiability-2-sat-problem/
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+2-SAT is one of the best examples of turning a logic problem into a graph problem. Once each clause becomes a pair of implications, satisfiability stops looking like brute-force boolean search and becomes a question about whether any variable can force its own negation and vice versa.
+
+## Worked Example
+
+The clause `(x1 or not x2)` means `not x1 -> not x2` and `x2 -> x1`. If some chain of implications also leads from `x1` to `not x1` and back again, the formula becomes impossible because one truth choice would force both values for the same variable.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function solve2Sat(variableCount, clauses) {
+  const nodeCount = variableCount * 2;
+  const graph = Array.from({ length: nodeCount }, () => []);
+  const reversed = Array.from({ length: nodeCount }, () => []);
+
+  function literalNode(literal) {
+    const variable = Math.abs(literal) - 1;
+    return literal > 0 ? 2 * variable : 2 * variable + 1;
+  }
+
+  function addImplication(from, to) {
+    graph[from].push(to);
+    reversed[to].push(from);
+  }
+
+  for (const [left, right] of clauses) {
+    addImplication(literalNode(-left), literalNode(right));
+    addImplication(literalNode(-right), literalNode(left));
+  }
+
+  const order = [];
+  const seen = new Array(nodeCount).fill(false);
+
+  function dfs(node) {
+    seen[node] = true;
+
+    for (const neighbor of graph[node]) {
+      if (!seen[neighbor]) {
+        dfs(neighbor);
+      }
+    }
+
+    order.push(node);
+  }
+
+  for (let node = 0; node < nodeCount; node += 1) {
+    if (!seen[node]) {
+      dfs(node);
+    }
+  }
+
+  const component = new Array(nodeCount).fill(-1);
+
+  function assign(node, id) {
+    component[node] = id;
+
+    for (const neighbor of reversed[node]) {
+      if (component[neighbor] === -1) {
+        assign(neighbor, id);
+      }
+    }
+  }
+
+  let componentId = 0;
+  for (let index = order.length - 1; index >= 0; index -= 1) {
+    const node = order[index];
+    if (component[node] === -1) {
+      assign(node, componentId);
+      componentId += 1;
+    }
+  }
+
+  const assignment = new Array(variableCount).fill(false);
+
+  for (let variable = 0; variable < variableCount; variable += 1) {
+    const positive = 2 * variable;
+    const negative = positive + 1;
+
+    if (component[positive] === component[negative]) {
+      return { satisfiable: false, assignment: null };
+    }
+
+    assignment[variable] = component[positive] > component[negative];
+  }
+
+  return { satisfiable: true, assignment };
+}
+```
+
+```ts
+export function solve2Sat(
+  variableCount: number,
+  clauses: Array<[number, number]>,
+): { satisfiable: boolean; assignment: boolean[] | null } {
+  const nodeCount = variableCount * 2;
+  const graph = Array.from({ length: nodeCount }, () => [] as number[]);
+  const reversed = Array.from({ length: nodeCount }, () => [] as number[]);
+
+  function literalNode(literal: number): number {
+    const variable = Math.abs(literal) - 1;
+    return literal > 0 ? 2 * variable : 2 * variable + 1;
+  }
+
+  function addImplication(from: number, to: number): void {
+    graph[from].push(to);
+    reversed[to].push(from);
+  }
+
+  for (const [left, right] of clauses) {
+    addImplication(literalNode(-left), literalNode(right));
+    addImplication(literalNode(-right), literalNode(left));
+  }
+
+  const order: number[] = [];
+  const seen = new Array<boolean>(nodeCount).fill(false);
+
+  function dfs(node: number): void {
+    seen[node] = true;
+
+    for (const neighbor of graph[node]) {
+      if (!seen[neighbor]) {
+        dfs(neighbor);
+      }
+    }
+
+    order.push(node);
+  }
+
+  for (let node = 0; node < nodeCount; node += 1) {
+    if (!seen[node]) {
+      dfs(node);
+    }
+  }
+
+  const component = new Array<number>(nodeCount).fill(-1);
+
+  function assign(node: number, id: number): void {
+    component[node] = id;
+
+    for (const neighbor of reversed[node]) {
+      if (component[neighbor] === -1) {
+        assign(neighbor, id);
+      }
+    }
+  }
+
+  let componentId = 0;
+  for (let index = order.length - 1; index >= 0; index -= 1) {
+    const node = order[index];
+    if (component[node] === -1) {
+      assign(node, componentId);
+      componentId += 1;
+    }
+  }
+
+  const assignment = new Array<boolean>(variableCount).fill(false);
+
+  for (let variable = 0; variable < variableCount; variable += 1) {
+    const positive = 2 * variable;
+    const negative = positive + 1;
+
+    if (component[positive] === component[negative]) {
+      return { satisfiable: false, assignment: null };
+    }
+
+    assignment[variable] = component[positive] > component[negative];
+  }
+
+  return { satisfiable: true, assignment };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why a variable sharing an SCC with its negation makes the formula impossible.
+- Extend the representation from clauses to higher-level pairwise constraints such as `at most one` or `if-then` rules.
+- Compare the graph reduction with general SAT, where this SCC shortcut no longer works.
+
+## Common Pitfalls
+
+- Mixing literal numbering with node indexing when mapping `x` and `not x`.
+- Forgetting that each clause adds two implications, not one.
+- Returning an assignment before checking whether any variable conflicts with its negation in the same SCC.

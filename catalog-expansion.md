@@ -625,9 +625,20 @@ This fifty-fourth expansion slice lifts the catalog from 354 to 360 entries.
 - Max Flow (Dinic's Algorithm)
 - Bipartite Matching
 
+## Batch 55 added
+
+This fifty-fifth expansion slice lifts the catalog from 360 to 366 entries.
+
+- Hopcroft-Karp Algorithm
+- 2-SAT
+- Boruvka's Algorithm
+- Johnson's Algorithm
+- Dial's Algorithm
+- Reverse-Delete Algorithm
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 54 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 55 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -635,11 +646,10 @@ All expansion entries from batch 1 through batch 54 now carry explicit per-entry
 
 ## Why this batch
 
-- It fills obvious interview-core gaps from TheAlgorithms/JavaScript without duplicating material already present in Algae.
-- It continues the GeeksforGeeks DSA line in source-consistent order, moving from advanced foundational structures into heavier specialized algorithms instead of switching sources again too early.
-- It broadens the catalog across linear-time palindrome processing, tree path decomposition, multi-pattern string matching, balanced recursive tree decomposition, residual-network max flow, and matching in bipartite graphs.
-- It adds genuinely new interview techniques rather than surface variants: mirror-radius reuse, chain decomposition, failure-link automata, centroid recursion, blocking-flow level graphs, and augmenting-path reassignment.
-- It leaves the next frontier inside the same GFG track, but after this point the sequence becomes more specialized and more graph-heavy, so the next batch should stay deliberate about pedagogical value.
+- It stays inside the GeeksforGeeks DSA progression while explicitly skipping semantic duplicates such as generic SCC coverage that the catalog already covers through Kosaraju.
+- It broadens the catalog across optimized bipartite matching, implication-graph satisfiability, component-wise MST growth, sparse-graph APSP reweighting, bounded-weight shortest paths, and MST construction by safe edge deletion.
+- It adds interview-relevant refinements rather than surface renames: layered augmentation, literal-negation contradictions, parallel cheapest-edge merges, Johnson reweighting, bucket queues, and reverse greedy cut reasoning.
+- It leaves the next frontier ready to pivot from graph-optimization mechanics into harder combinatorial optimization and approximation topics.
 
 ## Supporting study references from the algorithms list
 
@@ -649,4 +659,4 @@ All expansion entries from batch 1 through batch 54 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- The next GeeksforGeeks frontier after this batch starts with `Hopcroft-Karp Algorithm`, `Strongly Connected Components`, `2-SAT Algorithm`, and `Boruvka's Algorithm`.
+- The next clean GeeksforGeeks frontier after this batch starts with `Traveling Salesman Problem (TSP) Implementation`, `Vertex Cover Problem`, and `K Centers Problem`; the raw source order then revisits SCCs via `Tarjan's Algorithm`, which overlaps semantically with the existing Kosaraju entry.
