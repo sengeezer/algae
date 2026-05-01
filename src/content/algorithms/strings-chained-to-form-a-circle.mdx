@@ -1,0 +1,182 @@
+---
+title: Strings Chained to Form a Circle
+slug: strings-chained-to-form-a-circle
+category: Graphs
+summary: Map each string to a directed edge from its first letter to its last and test whether the resulting graph has a directed Eulerian circuit.
+description: Strings Chained to Form a Circle is the reduction problem that turns word ordering into a directed Eulerian-cycle check.
+dataStructures:
+  - Graph
+  - Array
+  - String
+techniques:
+  - Eulerian Classification
+  - Graph Construction
+  - Strong Connectivity
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - circle of strings
+  - word chain circle
+useCases:
+  - Validating whether strings can be arranged in a circular chain
+  - Reducing a string problem to directed graph reasoning
+  - Reusing Eulerian-cycle conditions in a non-obvious setting
+complexity:
+  time: O(N + A)
+  space: O(A)
+  notes: The alphabet size is usually tiny compared with the number of words, so graph checks stay effectively linear in the input.
+interviewSignals:
+  - Each string must be used exactly once in a cycle.
+  - The first and last characters determine how items can connect.
+relatedSlugs:
+  - euler-circuit-in-a-directed-graph
+  - kosaraju
+  - hierholzers-algorithm-directed-graph
+provenance:
+  - title: GeeksforGeeks - Find if an array of strings can be chained to form a circle
+    href: https://www.geeksforgeeks.org/dsa/given-array-strings-find-strings-can-chained-form-circle/
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem is a strong interview reduction exercise because the input looks like string arrangement, but the real structure is graph-theoretic. Each word becomes one directed edge, and the question becomes whether those edges form a directed Eulerian circuit.
+
+## Worked Example
+
+The words `geek`, `king`, and `gale` create edges `g -> k`, `k -> g`, and `g -> e`. If every used letter has matching in-degree and out-degree and all active letters lie in one strongly connected region, then the words can be arranged in a circle that uses each string exactly once.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function stringsChainedToFormACircle(words) {
+  if (words.length === 0) {
+    return true;
+  }
+
+  const size = 26;
+  const graph = Array.from({ length: size }, () => []);
+  const reverse = Array.from({ length: size }, () => []);
+  const inDegree = new Array(size).fill(0);
+  const outDegree = new Array(size).fill(0);
+
+  for (const word of words) {
+    const from = word.charCodeAt(0) - 97;
+    const to = word.charCodeAt(word.length - 1) - 97;
+    graph[from].push(to);
+    reverse[to].push(from);
+    outDegree[from] += 1;
+    inDegree[to] += 1;
+  }
+
+  for (let node = 0; node < size; node += 1) {
+    if (inDegree[node] !== outDegree[node]) {
+      return false;
+    }
+  }
+
+  const start = graph.findIndex((neighbors, node) => neighbors.length > 0 || inDegree[node] > 0);
+  if (start === -1) {
+    return true;
+  }
+
+  function dfs(adjacency, node, seen) {
+    seen[node] = true;
+    for (const neighbor of adjacency[node]) {
+      if (!seen[neighbor]) {
+        dfs(adjacency, neighbor, seen);
+      }
+    }
+  }
+
+  const seenForward = new Array(size).fill(false);
+  dfs(graph, start, seenForward);
+  const seenBackward = new Array(size).fill(false);
+  dfs(reverse, start, seenBackward);
+
+  for (let node = 0; node < size; node += 1) {
+    const active = inDegree[node] > 0 || outDegree[node] > 0;
+    if (active && (!seenForward[node] || !seenBackward[node])) {
+      return false;
+    }
+  }
+
+  return true;
+}
+```
+
+```ts
+export function stringsChainedToFormACircle(words: string[]): boolean {
+  if (words.length === 0) {
+    return true;
+  }
+
+  const size = 26;
+  const graph = Array.from({ length: size }, () => [] as number[]);
+  const reverse = Array.from({ length: size }, () => [] as number[]);
+  const inDegree = new Array<number>(size).fill(0);
+  const outDegree = new Array<number>(size).fill(0);
+
+  for (const word of words) {
+    const from = word.charCodeAt(0) - 97;
+    const to = word.charCodeAt(word.length - 1) - 97;
+    graph[from].push(to);
+    reverse[to].push(from);
+    outDegree[from] += 1;
+    inDegree[to] += 1;
+  }
+
+  for (let node = 0; node < size; node += 1) {
+    if (inDegree[node] !== outDegree[node]) {
+      return false;
+    }
+  }
+
+  const start = graph.findIndex((neighbors, node) => neighbors.length > 0 || inDegree[node] > 0);
+  if (start === -1) {
+    return true;
+  }
+
+  function dfs(adjacency: number[][], node: number, seen: boolean[]): void {
+    seen[node] = true;
+    for (const neighbor of adjacency[node]) {
+      if (!seen[neighbor]) {
+        dfs(adjacency, neighbor, seen);
+      }
+    }
+  }
+
+  const seenForward = new Array<boolean>(size).fill(false);
+  dfs(graph, start, seenForward);
+  const seenBackward = new Array<boolean>(size).fill(false);
+  dfs(reverse, start, seenBackward);
+
+  for (let node = 0; node < size; node += 1) {
+    const active = inDegree[node] > 0 || outDegree[node] > 0;
+    if (active && (!seenForward[node] || !seenBackward[node])) {
+      return false;
+    }
+  }
+
+  return true;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return one valid circular ordering instead of just answering yes or no.
+- Explain why equal in-degree and out-degree alone is not sufficient.
+- Generalize the reduction to a larger character set or arbitrary tokens.
+
+## Common Pitfalls
+
+- Comparing only consecutive strings without modeling the full graph.
+- Forgetting that every active letter must belong to one strongly connected component.
+- Treating the problem like ordinary string matching instead of Eulerian-cycle feasibility.

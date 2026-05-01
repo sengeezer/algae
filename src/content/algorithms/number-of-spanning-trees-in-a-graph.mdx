@@ -1,0 +1,185 @@
+---
+title: Number of Spanning Trees in a Graph
+slug: number-of-spanning-trees-in-a-graph
+category: Graphs
+summary: Build the Laplacian matrix, delete one row and column, and take the determinant of the remaining cofactor to count all spanning trees.
+description: Number of Spanning Trees in a Graph is the matrix-tree theorem problem where Kirchhoff's theorem converts graph structure into a determinant.
+dataStructures:
+  - Graph
+  - Matrix
+  - Array
+techniques:
+  - Matrix-Tree Theorem
+  - Linear Algebra
+  - Graph Counting
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - total number of spanning trees
+  - Kirchhoff theorem
+  - matrix tree theorem
+useCases:
+  - Counting all legal spanning trees in a connected graph
+  - Contrasting spanning-tree counting with minimum spanning tree construction
+  - Applying Laplacian matrices to graph structure problems
+complexity:
+  time: O(V^3)
+  space: O(V^2)
+  notes: Kirchhoff's theorem says any cofactor of the Laplacian matrix equals the number of spanning trees.
+interviewSignals:
+  - The prompt asks for how many spanning trees exist, not which minimum-cost one to build.
+  - A matrix determinant or Laplacian transform is the intended leap.
+relatedSlugs:
+  - kruskal-mst
+  - boruvkas-algorithm
+  - reverse-delete-algorithm
+provenance:
+  - title: GeeksforGeeks - Total number of Spanning Trees in a Graph
+    href: https://www.geeksforgeeks.org/dsa/total-number-spanning-trees-graph/
+    kind: Implementation
+  - title: free-programming-books - Algorithm Design
+    href: https://jeffe.cs.illinois.edu/teaching/algorithms/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem is valuable because it looks like an MST question at first, but the real move is completely different. Instead of greedily constructing one tree, you count every valid spanning tree by converting the graph into a Laplacian matrix and taking one determinant.
+
+## Worked Example
+
+If a connected graph has one triangle hanging off a tail, the cycle contributes multiple valid ways to remove one edge while still staying connected. Kirchhoff's theorem captures all of those possibilities at once by using the cofactor of the Laplacian matrix.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function numberOfSpanningTreesInAGraph(graph) {
+  const size = graph.length;
+  if (size <= 1) {
+    return 1;
+  }
+
+  const laplacian = Array.from({ length: size }, () => new Array(size).fill(0));
+
+  for (let row = 0; row < size; row += 1) {
+    let degree = 0;
+    for (let column = 0; column < size; column += 1) {
+      if (graph[row][column] === 0) {
+        continue;
+      }
+
+      degree += graph[row][column];
+      if (row !== column) {
+        laplacian[row][column] = -graph[row][column];
+      }
+    }
+
+    laplacian[row][row] = degree;
+  }
+
+  const minor = laplacian.slice(1).map((row) => row.slice(1));
+  let determinant = 1;
+
+  for (let pivot = 0; pivot < minor.length; pivot += 1) {
+    let bestRow = pivot;
+    for (let row = pivot + 1; row < minor.length; row += 1) {
+      if (Math.abs(minor[row][pivot]) > Math.abs(minor[bestRow][pivot])) {
+        bestRow = row;
+      }
+    }
+
+    if (Math.abs(minor[bestRow][pivot]) < 1e-9) {
+      return 0;
+    }
+
+    if (bestRow !== pivot) {
+      [minor[pivot], minor[bestRow]] = [minor[bestRow], minor[pivot]];
+      determinant *= -1;
+    }
+
+    determinant *= minor[pivot][pivot];
+    for (let row = pivot + 1; row < minor.length; row += 1) {
+      const factor = minor[row][pivot] / minor[pivot][pivot];
+      for (let column = pivot; column < minor.length; column += 1) {
+        minor[row][column] -= factor * minor[pivot][column];
+      }
+    }
+  }
+
+  return Math.round(determinant);
+}
+```
+
+```ts
+export function numberOfSpanningTreesInAGraph(graph: number[][]): number {
+  const size = graph.length;
+  if (size <= 1) {
+    return 1;
+  }
+
+  const laplacian = Array.from({ length: size }, () => new Array<number>(size).fill(0));
+
+  for (let row = 0; row < size; row += 1) {
+    let degree = 0;
+    for (let column = 0; column < size; column += 1) {
+      if (graph[row][column] === 0) {
+        continue;
+      }
+
+      degree += graph[row][column];
+      if (row !== column) {
+        laplacian[row][column] = -graph[row][column];
+      }
+    }
+
+    laplacian[row][row] = degree;
+  }
+
+  const minor = laplacian.slice(1).map((row) => row.slice(1));
+  let determinant = 1;
+
+  for (let pivot = 0; pivot < minor.length; pivot += 1) {
+    let bestRow = pivot;
+    for (let row = pivot + 1; row < minor.length; row += 1) {
+      if (Math.abs(minor[row][pivot]) > Math.abs(minor[bestRow][pivot])) {
+        bestRow = row;
+      }
+    }
+
+    if (Math.abs(minor[bestRow][pivot]) < 1e-9) {
+      return 0;
+    }
+
+    if (bestRow !== pivot) {
+      [minor[pivot], minor[bestRow]] = [minor[bestRow], minor[pivot]];
+      determinant *= -1;
+    }
+
+    determinant *= minor[pivot][pivot];
+    for (let row = pivot + 1; row < minor.length; row += 1) {
+      const factor = minor[row][pivot] / minor[pivot][pivot];
+      for (let column = pivot; column < minor.length; column += 1) {
+        minor[row][column] -= factor * minor[pivot][column];
+      }
+    }
+  }
+
+  return Math.round(determinant);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why removing any one row and any one column yields the same count.
+- Extend the approach to weighted graphs with the weighted matrix-tree theorem.
+- Compare this counting problem with constructing a minimum spanning tree.
+
+## Common Pitfalls
+
+- Confusing spanning-tree counting with MST construction.
+- Building the adjacency matrix instead of the Laplacian before taking the determinant.
+- Forgetting that the theorem uses a cofactor, not the full Laplacian determinant.

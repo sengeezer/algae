@@ -680,9 +680,17 @@ This fifty-ninth expansion slice lifts the catalog from 384 to 390 entries.
 - Ford-Fulkerson Algorithm
 - Atlantic Pacific Water Flow
 
+## Batch 60 added
+
+This sixtieth expansion slice lifts the catalog from 390 to 393 entries.
+
+- Number of Spanning Trees in a Graph
+- Longest Path in a Directed Acyclic Graph
+- Find if an Array of Strings can Be Chained to Form a Circle
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 59 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 60 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -690,10 +698,10 @@ All expansion entries from batch 1 through batch 59 now carry explicit per-entry
 
 ## Why this batch
 
-- It closes several leftover GeeksforGeeks graph gaps without reopening broad duplicate territory such as plain SCC coverage or theory-only max-flow introductions.
-- It broadens the catalog across bridge-aware Euler construction, exact-length walk counting, directed Eulerian classification, online connectivity queries, augmenting-path max flow, and reverse-reachability on height grids.
-- It adds several interview patterns that were not previously first-class entries: avoiding bridges while constructing an Euler tour, dynamic programming on path length, in-degree and out-degree feasibility checks for directed Eulerian cycles, query-driven DSU maintenance, residual augmenting paths, and multi-source ocean reachability.
-- It leaves the next frontier ready to move deeper into hard-problem graph counting and Eulerian string reductions while continuing to skip weak or redundant detours.
+- It closes the last clean source-ordered absences remaining on the current GeeksforGeeks graph page after the `Atlantic Pacific Water Flow` boundary.
+- It broadens the catalog across matrix-tree counting, longest-path relaxation on DAGs, and Eulerian string chaining as a graph construction problem.
+- It adds several interview patterns that were not previously first-class entries: Laplacian determinant reasoning for spanning-tree counts, topological-order longest-path propagation, and reducing string-circle feasibility to a directed Eulerian-cycle test.
+- It leaves the next continuation point at a clean source hop, since the current graph page is now exhausted aside from duplicate or weak detours.
 
 ## Supporting study references from the algorithms list
 
@@ -703,4 +711,4 @@ All expansion entries from batch 1 through batch 59 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- The next clean GeeksforGeeks frontier after this batch starts with `Number of Spanning Trees in a Graph` and `Find if an array of strings can be chained to form a circle`; nearby skipped items include duplicate `Strongly Connected Components`, weak `Seven Bridges of Konigsberg`, weak `Max Flow Problem Introduction`, and the later SCC-focused `Tarjan's Algorithm`, which still overlaps semantically with the existing `Kosaraju` entry.
+- The current GeeksforGeeks graph page is now exhausted apart from duplicate or weak detours such as `Strongly Connected Components`, `Seven Bridges of Konigsberg`, `Max Flow Problem Introduction`, and the later SCC-focused `Tarjan's Algorithm`; the next defensible GFG backfill/frontier starts with `Shortest path in a Binary Maze`, `Clone an Undirected Graph`, and `Transitive Closure of a Graph using DFS`.
