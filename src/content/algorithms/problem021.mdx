@@ -1,0 +1,187 @@
+---
+title: Problem 021
+slug: problem021
+category: Project Euler
+summary: Sum all amicable numbers below a limit by comparing proper-divisor sums in pairs.
+description: Problem 021 is the amicable-numbers problem that reuses divisor-sum computations to detect mutually linked values.
+dataStructures:
+  - Map
+  - Number
+techniques:
+  - Divisor Summation
+  - Caching
+  - Pair Detection
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - amicable numbers
+  - project euler 21
+useCases:
+  - Reusing proper-divisor sums across many candidate checks
+  - Detecting symmetric relationships in derived numeric mappings
+  - Avoiding repeated expensive helper calls with memoization
+complexity:
+  time: O(n sqrt n)
+  space: O(n)
+  notes: Caching the proper-divisor sums avoids recomputing the same values repeatedly across pair checks.
+interviewSignals:
+  - The prompt defines a bidirectional numeric relationship using a helper function `d(n)`.
+  - The intended solution separates divisor-sum calculation from amicable-pair detection.
+relatedSlugs:
+  - aliquot-sum
+  - factors
+  - problem023
+provenance:
+  - title: TheAlgorithms/JavaScript - Project-Euler/Problem021.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Project-Euler/Problem021.js
+    kind: Implementation
+  - title: Project Euler - Problem 21
+    href: https://projecteuler.net/problem=21
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a good example of turning a definition into a reusable helper. Once `d(n)` is available, the actual task is just finding values whose helper outputs point back to each other.
+
+## Worked Example
+
+`d(220) = 284` and `d(284) = 220`, so `220` and `284` form an amicable pair. A range sum only includes the values that fall below the chosen limit.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function problem021(limit = 10000) {
+  if (!Number.isInteger(limit) || limit < 2) {
+    throw new RangeError('Limit must be an integer at least 2');
+  }
+
+  const divisorSums = new Map();
+  const seen = new Set();
+  let total = 0;
+
+  function sumProperDivisors(value) {
+    if (divisorSums.has(value)) {
+      return divisorSums.get(value);
+    }
+
+    if (value === 1) {
+      divisorSums.set(1, 0);
+      return 0;
+    }
+
+    let sum = 1;
+    const root = Math.floor(Math.sqrt(value));
+
+    for (let divisor = 2; divisor <= root; divisor += 1) {
+      if (value % divisor !== 0) {
+        continue;
+      }
+
+      const paired = value / divisor;
+      sum += divisor;
+      if (paired !== divisor) {
+        sum += paired;
+      }
+    }
+
+    divisorSums.set(value, sum);
+    return sum;
+  }
+
+  for (let a = 2; a < limit; a += 1) {
+    if (seen.has(a)) {
+      continue;
+    }
+
+    const b = sumProperDivisors(a);
+    if (b !== a && sumProperDivisors(b) === a) {
+      total += a;
+      seen.add(a);
+
+      if (b < limit) {
+        total += b;
+        seen.add(b);
+      }
+    }
+  }
+
+  return total;
+}
+```
+
+```ts
+export function problem021(limit = 10000): number {
+  if (!Number.isInteger(limit) || limit < 2) {
+    throw new RangeError('Limit must be an integer at least 2');
+  }
+
+  const divisorSums = new Map<number, number>();
+  const seen = new Set<number>();
+  let total = 0;
+
+  function sumProperDivisors(value: number): number {
+    if (divisorSums.has(value)) {
+      return divisorSums.get(value)!;
+    }
+
+    if (value === 1) {
+      divisorSums.set(1, 0);
+      return 0;
+    }
+
+    let sum = 1;
+    const root = Math.floor(Math.sqrt(value));
+
+    for (let divisor = 2; divisor <= root; divisor += 1) {
+      if (value % divisor !== 0) {
+        continue;
+      }
+
+      const paired = value / divisor;
+      sum += divisor;
+      if (paired !== divisor) {
+        sum += paired;
+      }
+    }
+
+    divisorSums.set(value, sum);
+    return sum;
+  }
+
+  for (let a = 2; a < limit; a += 1) {
+    if (seen.has(a)) {
+      continue;
+    }
+
+    const b = sumProperDivisors(a);
+    if (b !== a && sumProperDivisors(b) === a) {
+      total += a;
+      seen.add(a);
+
+      if (b < limit) {
+        total += b;
+        seen.add(b);
+      }
+    }
+  }
+
+  return total;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the amicable pairs themselves instead of only their sum.
+- Precompute all divisor sums up front with a sieve-style approach.
+- Explain why perfect numbers must be excluded from amicable pairs.
+
+## Common Pitfalls
+
+- Counting perfect numbers where `d(n) = n` as amicable.
+- Double-counting pairs like `(220, 284)` and `(284, 220)`.
+- Ignoring the fact that one partner can fall outside the limit while the other still qualifies.

@@ -1,0 +1,186 @@
+---
+title: Problem 023
+slug: problem023
+category: Project Euler
+summary: Sum the positive integers that cannot be expressed as the sum of two abundant numbers.
+description: Problem 023 is the non-abundant-sums problem that combines divisor-sum classification with pairwise reachability marking.
+dataStructures:
+  - Array
+  - Set
+  - Number
+techniques:
+  - Divisor Summation
+  - Preprocessing
+  - Pair Enumeration
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - non-abundant sums
+  - project euler 23
+useCases:
+  - Classifying integers by proper-divisor sums
+  - Marking reachable totals from a precomputed candidate set
+  - Comparing pairwise preprocessing with repeated on-demand checks
+complexity:
+  time: O(n sqrt n + a^2)
+  space: O(n + a)
+  notes: The main cost comes from enumerating abundant numbers and then marking all sums of two abundant values up to the limit.
+interviewSignals:
+  - The prompt defines perfect, deficient, and abundant numbers before asking about representability.
+  - The intended solution precomputes abundant numbers and then marks which totals are reachable.
+relatedSlugs:
+  - aliquot-sum
+  - problem021
+  - factors
+provenance:
+  - title: TheAlgorithms/JavaScript - Project-Euler/Problem023.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Project-Euler/Problem023.js
+    kind: Implementation
+  - title: Project Euler - Problem 23
+    href: https://projecteuler.net/problem=23
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem becomes manageable once the abundant numbers are known. After that, the task is just reachability: which totals can be formed as the sum of two members of that set?
+
+## Worked Example
+
+`12` is the smallest abundant number because its proper divisors sum to `16`. Once enough abundant numbers are collected, mark every achievable pair sum and add only the positive integers that remain unmarked.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function sumProperDivisors(value) {
+  if (value === 1) {
+    return 0;
+  }
+
+  let sum = 1;
+  const root = Math.floor(Math.sqrt(value));
+
+  for (let divisor = 2; divisor <= root; divisor += 1) {
+    if (value % divisor !== 0) {
+      continue;
+    }
+
+    const paired = value / divisor;
+    sum += divisor;
+    if (paired !== divisor) {
+      sum += paired;
+    }
+  }
+
+  return sum;
+}
+
+function problem023(limit = 28123) {
+  if (!Number.isInteger(limit) || limit < 1) {
+    throw new RangeError('Limit must be a positive integer');
+  }
+
+  const abundant = [];
+  for (let value = 1; value <= limit; value += 1) {
+    if (sumProperDivisors(value) > value) {
+      abundant.push(value);
+    }
+  }
+
+  const writable = new Array(limit + 1).fill(false);
+
+  for (let left = 0; left < abundant.length; left += 1) {
+    for (let right = left; right < abundant.length; right += 1) {
+      const sum = abundant[left] + abundant[right];
+      if (sum > limit) {
+        break;
+      }
+      writable[sum] = true;
+    }
+  }
+
+  let total = 0;
+  for (let value = 1; value <= limit; value += 1) {
+    if (!writable[value]) {
+      total += value;
+    }
+  }
+
+  return total;
+}
+```
+
+```ts
+function sumProperDivisors(value: number): number {
+  if (value === 1) {
+    return 0;
+  }
+
+  let sum = 1;
+  const root = Math.floor(Math.sqrt(value));
+
+  for (let divisor = 2; divisor <= root; divisor += 1) {
+    if (value % divisor !== 0) {
+      continue;
+    }
+
+    const paired = value / divisor;
+    sum += divisor;
+    if (paired !== divisor) {
+      sum += paired;
+    }
+  }
+
+  return sum;
+}
+
+export function problem023(limit = 28123): number {
+  if (!Number.isInteger(limit) || limit < 1) {
+    throw new RangeError('Limit must be a positive integer');
+  }
+
+  const abundant: number[] = [];
+  for (let value = 1; value <= limit; value += 1) {
+    if (sumProperDivisors(value) > value) {
+      abundant.push(value);
+    }
+  }
+
+  const writable = new Array<boolean>(limit + 1).fill(false);
+
+  for (let left = 0; left < abundant.length; left += 1) {
+    for (let right = left; right < abundant.length; right += 1) {
+      const sum = abundant[left] + abundant[right];
+      if (sum > limit) {
+        break;
+      }
+      writable[sum] = true;
+    }
+  }
+
+  let total = 0;
+  for (let value = 1; value <= limit; value += 1) {
+    if (!writable[value]) {
+      total += value;
+    }
+  }
+
+  return total;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Replace repeated divisor scans with a sieve that precomputes aliquot sums for all values up to the limit.
+- Return the non-representable values themselves, not only their sum.
+- Explain why the inner pair loop can break as soon as the sum exceeds the limit.
+
+## Common Pitfalls
+
+- Rechecking whether a value is abundant from scratch during every pair test.
+- Enumerating both `(a, b)` and `(b, a)` when one ordering is enough.
+- Forgetting that the proven upper bound is part of the problem setup.

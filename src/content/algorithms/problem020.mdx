@@ -1,0 +1,121 @@
+---
+title: Problem 020
+slug: problem020
+category: Project Euler
+summary: Sum the digits of `n!` by simulating exact decimal multiplication instead of relying on floating-point factorials.
+description: Problem 020 is the factorial-digit-sum problem that builds the factorial one multiplier at a time inside a digit array.
+dataStructures:
+  - Array
+  - Number
+techniques:
+  - Arbitrary Precision Arithmetic
+  - Carry Propagation
+  - Iterative Multiplication
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - factorial digit sum
+  - project euler 20
+useCases:
+  - Computing exact digit properties of huge factorials
+  - Reusing carry-based multiplication logic from other big-number tasks
+  - Comparing exact arithmetic with floating-point overflow behavior
+complexity:
+  time: O(n * digits)
+  space: O(digits)
+  notes: The digit array grows with the factorial size, but each multiplication pass stays exact.
+interviewSignals:
+  - The prompt asks for a digit property of a huge factorial, not the factorial value as a safe integer.
+  - The intended solution stores decimal digits explicitly during multiplication.
+relatedSlugs:
+  - factorial
+  - while-loop-factorial
+  - problem016
+provenance:
+  - title: TheAlgorithms/JavaScript - Project-Euler/Problem020.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Project-Euler/Problem020.js
+    kind: Implementation
+  - title: Project Euler - Problem 20
+    href: https://projecteuler.net/problem=20
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is another exact-arithmetic problem, but the multiplication factor changes on every step. The right structure is still a reversed digit array with carry propagation.
+
+## Worked Example
+
+`10! = 3628800`, so the digit sum is `3 + 6 + 2 + 8 + 8 + 0 + 0 = 27`. The computation never needs to form a floating-point approximation of the factorial.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function problem020(limit = 100) {
+  if (!Number.isInteger(limit) || limit < 0) {
+    throw new RangeError('Limit must be a non-negative integer');
+  }
+
+  const digits = [1];
+
+  for (let value = 2; value <= limit; value += 1) {
+    let carry = 0;
+
+    for (let index = 0; index < digits.length; index += 1) {
+      const product = digits[index] * value + carry;
+      digits[index] = product % 10;
+      carry = Math.floor(product / 10);
+    }
+
+    while (carry > 0) {
+      digits.push(carry % 10);
+      carry = Math.floor(carry / 10);
+    }
+  }
+
+  return digits.reduce((sum, digit) => sum + digit, 0);
+}
+```
+
+```ts
+export function problem020(limit = 100): number {
+  if (!Number.isInteger(limit) || limit < 0) {
+    throw new RangeError('Limit must be a non-negative integer');
+  }
+
+  const digits = [1];
+
+  for (let value = 2; value <= limit; value += 1) {
+    let carry = 0;
+
+    for (let index = 0; index < digits.length; index += 1) {
+      const product = digits[index] * value + carry;
+      digits[index] = product % 10;
+      carry = Math.floor(product / 10);
+    }
+
+    while (carry > 0) {
+      digits.push(carry % 10);
+      carry = Math.floor(carry / 10);
+    }
+  }
+
+  return digits.reduce((sum, digit) => sum + digit, 0);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the exact decimal digits of `n!` rather than just their sum.
+- Compare this digit-array approach with a `BigInt` implementation.
+- Reuse the same multiplication helper for exponentiation tasks like Problem 16.
+
+## Common Pitfalls
+
+- Computing the factorial in a native `Number` and losing exact digits.
+- Forgetting that `0! = 1`.
+- Dropping the remaining carry after each multiplication pass.

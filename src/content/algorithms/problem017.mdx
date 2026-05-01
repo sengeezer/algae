@@ -1,0 +1,151 @@
+---
+title: Problem 017
+slug: problem017
+category: Project Euler
+summary: Count how many letters are used when writing every integer in a range as English words.
+description: Problem 017 is the number-letter-count problem that converts arithmetic ranges into recursive word-length accounting without materializing full word strings.
+dataStructures:
+  - Number
+  - Array
+techniques:
+  - Recursion
+  - Lookup Tables
+  - Range Aggregation
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - number letter counts
+  - project euler 17
+useCases:
+  - Mapping numeric values to structured textual rules
+  - Reusing lookup tables for compact classification logic
+  - Summing a derived property across a contiguous range
+complexity:
+  time: O(n log n)
+  space: O(1)
+  notes: Each value is reduced through a small number of word-length rules, so the per-number work stays bounded by its digit structure.
+interviewSignals:
+  - The prompt asks for counts over number words, not the words themselves.
+  - The intended solution relies on lookup tables and recursive decomposition for hundreds and thousands.
+relatedSlugs:
+  - sum-of-digits
+  - problem019
+  - problem020
+provenance:
+  - title: TheAlgorithms/JavaScript - Project-Euler/Problem017.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Project-Euler/Problem017.js
+    kind: Implementation
+  - title: Project Euler - Problem 17
+    href: https://projecteuler.net/problem=17
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a rules engine disguised as arithmetic. The point is not to generate pretty strings, but to decompose each value into known word-length fragments and aggregate the result across a range.
+
+## Worked Example
+
+For `1` through `5`, the words are `one`, `two`, `three`, `four`, and `five`, which use `3 + 3 + 5 + 4 + 4 = 19` letters. The range answer is just the sum of each individual word-length count.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+const ones = [0, 3, 3, 5, 4, 4, 3, 5, 5, 4, 3, 6, 6, 8, 8, 7, 7, 9, 8, 8];
+const tens = [0, 0, 6, 6, 5, 5, 5, 7, 6, 6];
+const hundred = 7;
+const thousand = 8;
+const andLength = 3;
+
+function wordLength(value) {
+  if (!Number.isInteger(value) || value < 0 || value > 1000) {
+    throw new RangeError('Value must be an integer from 0 to 1000');
+  }
+
+  if (value < 20) {
+    return ones[value];
+  }
+
+  if (value < 100) {
+    return tens[Math.floor(value / 10)] + ones[value % 10];
+  }
+
+  if (value < 1000) {
+    const remainder = value % 100;
+    return ones[Math.floor(value / 100)] + hundred + (remainder === 0 ? 0 : andLength + wordLength(remainder));
+  }
+
+  return ones[1] + thousand;
+}
+
+function problem017(limit = 1000) {
+  if (!Number.isInteger(limit) || limit < 1 || limit > 1000) {
+    throw new RangeError('Limit must be an integer from 1 to 1000');
+  }
+
+  let total = 0;
+  for (let value = 1; value <= limit; value += 1) {
+    total += wordLength(value);
+  }
+
+  return total;
+}
+```
+
+```ts
+const ones = [0, 3, 3, 5, 4, 4, 3, 5, 5, 4, 3, 6, 6, 8, 8, 7, 7, 9, 8, 8] as const;
+const tens = [0, 0, 6, 6, 5, 5, 5, 7, 6, 6] as const;
+const hundred = 7;
+const thousand = 8;
+const andLength = 3;
+
+function wordLength(value: number): number {
+  if (!Number.isInteger(value) || value < 0 || value > 1000) {
+    throw new RangeError('Value must be an integer from 0 to 1000');
+  }
+
+  if (value < 20) {
+    return ones[value];
+  }
+
+  if (value < 100) {
+    return tens[Math.floor(value / 10)] + ones[value % 10];
+  }
+
+  if (value < 1000) {
+    const remainder = value % 100;
+    return ones[Math.floor(value / 100)] + hundred + (remainder === 0 ? 0 : andLength + wordLength(remainder));
+  }
+
+  return ones[1] + thousand;
+}
+
+export function problem017(limit = 1000): number {
+  if (!Number.isInteger(limit) || limit < 1 || limit > 1000) {
+    throw new RangeError('Limit must be an integer from 1 to 1000');
+  }
+
+  let total = 0;
+  for (let value = 1; value <= limit; value += 1) {
+    total += wordLength(value);
+  }
+
+  return total;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Generate the actual British-English words instead of only their lengths.
+- Extend the helper beyond `1000` while preserving the same decomposition strategy.
+- Explain why British usage inserts `and` in values like `342`.
+
+## Common Pitfalls
+
+- Forgetting that the prompt ignores spaces and hyphens.
+- Omitting the British `and` in numbers like `one hundred and one`.
+- Building full strings when the problem only asks for letter counts.

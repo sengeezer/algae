@@ -1,0 +1,156 @@
+---
+title: Problem 019
+slug: problem019
+category: Project Euler
+summary: Count how many Sundays fell on the first of the month across a year range.
+description: Problem 019 is the calendar-walk problem that advances month by month while preserving leap-year and day-of-week invariants.
+dataStructures:
+  - Number
+techniques:
+  - Date Arithmetic
+  - Simulation
+  - Modulo Tracking
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - counting sundays
+  - project euler 19
+useCases:
+  - Simulating calendars without a date library
+  - Reusing leap-year rules in month-length calculations
+  - Tracking cyclic state with modulo arithmetic
+complexity:
+  time: O(y * 12)
+  space: O(1)
+  notes: The simulation only advances one month at a time, so the cost is linear in the number of months examined.
+interviewSignals:
+  - The prompt gives an anchor date and asks for counts over a century span.
+  - The intended solution treats day-of-week as a rolling modulo state.
+relatedSlugs:
+  - leap-year
+  - get-month-days
+  - parse-date
+provenance:
+  - title: TheAlgorithms/JavaScript - Project-Euler/Problem019.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Project-Euler/Problem019.js
+    kind: Implementation
+  - title: Project Euler - Problem 19
+    href: https://projecteuler.net/problem=19
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a clean simulation problem with fixed rules and one evolving state variable. The useful reduction is to track only the weekday of the first day of each month.
+
+## Worked Example
+
+If `1 Jan 1901` is a Tuesday, then the weekday for the first of the next month is just `(currentWeekday + daysInMonth) mod 7`. Count each month whose starting weekday is Sunday.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function isLeapYear(year) {
+  return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+}
+
+function daysInMonth(year, month) {
+  if (month === 2) {
+    return isLeapYear(year) ? 29 : 28;
+  }
+
+  if ([4, 6, 9, 11].includes(month)) {
+    return 30;
+  }
+
+  return 31;
+}
+
+function problem019(startYear = 1901, endYear = 2000) {
+  if (!Number.isInteger(startYear) || !Number.isInteger(endYear) || startYear > endYear) {
+    throw new RangeError('Year range must be valid integers with startYear <= endYear');
+  }
+
+  let firstDayOfMonth = 2;
+  let sundays = 0;
+
+  for (let year = 1901; year < startYear; year += 1) {
+    for (let month = 1; month <= 12; month += 1) {
+      firstDayOfMonth = (firstDayOfMonth + daysInMonth(year, month)) % 7;
+    }
+  }
+
+  for (let year = startYear; year <= endYear; year += 1) {
+    for (let month = 1; month <= 12; month += 1) {
+      if (firstDayOfMonth === 0) {
+        sundays += 1;
+      }
+
+      firstDayOfMonth = (firstDayOfMonth + daysInMonth(year, month)) % 7;
+    }
+  }
+
+  return sundays;
+}
+```
+
+```ts
+function isLeapYear(year: number): boolean {
+  return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+}
+
+function daysInMonth(year: number, month: number): number {
+  if (month === 2) {
+    return isLeapYear(year) ? 29 : 28;
+  }
+
+  if ([4, 6, 9, 11].includes(month)) {
+    return 30;
+  }
+
+  return 31;
+}
+
+export function problem019(startYear = 1901, endYear = 2000): number {
+  if (!Number.isInteger(startYear) || !Number.isInteger(endYear) || startYear > endYear) {
+    throw new RangeError('Year range must be valid integers with startYear <= endYear');
+  }
+
+  let firstDayOfMonth = 2;
+  let sundays = 0;
+
+  for (let year = 1901; year < startYear; year += 1) {
+    for (let month = 1; month <= 12; month += 1) {
+      firstDayOfMonth = (firstDayOfMonth + daysInMonth(year, month)) % 7;
+    }
+  }
+
+  for (let year = startYear; year <= endYear; year += 1) {
+    for (let month = 1; month <= 12; month += 1) {
+      if (firstDayOfMonth === 0) {
+        sundays += 1;
+      }
+
+      firstDayOfMonth = (firstDayOfMonth + daysInMonth(year, month)) % 7;
+    }
+  }
+
+  return sundays;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Generalize the function to count any weekday on the first of the month.
+- Replace the simulation with a closed-form weekday formula and compare clarity.
+- Explain why the leap-year exception for centuries matters here.
+
+## Common Pitfalls
+
+- Misapplying the century leap-year rule.
+- Forgetting that the count is for first-of-month Sundays only.
+- Starting from the wrong weekday anchor for `1 Jan 1901`.

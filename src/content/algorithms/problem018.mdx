@@ -1,0 +1,125 @@
+---
+title: Problem 018
+slug: problem018
+category: Project Euler
+summary: Find the maximum top-to-bottom total in a numeric triangle with bottom-up dynamic programming.
+description: Problem 018 is the maximum-path-sum triangle problem that collapses each row into the best totals reachable from the row below.
+dataStructures:
+  - Matrix
+  - Array
+techniques:
+  - Dynamic Programming
+  - Bottom-Up Traversal
+  - In-Place Reduction
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - maximum path sum i
+  - project euler 18
+useCases:
+  - Reducing path-choice trees into local optimal subproblems
+  - Teaching why bottom-up DP outscales brute-force path enumeration
+  - Reusing triangle-shaped state reductions in interview problems
+complexity:
+  time: O(r^2)
+  space: O(r^2)
+  notes: Each entry is processed once, and each update depends only on the two adjacent values below it.
+interviewSignals:
+  - The prompt constrains each step to adjacent positions in the next row.
+  - The intended solution replaces exponential path exploration with bottom-up DP.
+relatedSlugs:
+  - memoization-dp
+  - pascal-triangle
+  - problem015
+provenance:
+  - title: TheAlgorithms/JavaScript - Project-Euler/Problem018.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Project-Euler/Problem018.js
+    kind: Implementation
+  - title: Project Euler - Problem 18
+    href: https://projecteuler.net/problem=18
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the classic case where local choices are not enough, but the problem still decomposes cleanly. The best sum at any position depends only on the best of the two positions directly below it.
+
+## Worked Example
+
+For the triangle `3 / 7 4 / 2 4 6 / 8 5 9 3`, the best route is `3 + 7 + 4 + 9 = 23`. A bottom-up pass turns the last row into reusable subproblem answers for the rows above it.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function parseTriangle(input) {
+  if (typeof input === 'string') {
+    return input
+      .trim()
+      .split(/\r?\n/)
+      .map((row) => row.trim().split(/\s+/).map(Number));
+  }
+
+  if (!Array.isArray(input) || input.length === 0) {
+    throw new TypeError('Triangle must be a non-empty string or matrix');
+  }
+
+  return input.map((row) => [...row]);
+}
+
+function problem018(triangle) {
+  const rows = parseTriangle(triangle);
+
+  for (let row = rows.length - 2; row >= 0; row -= 1) {
+    for (let column = 0; column < rows[row].length; column += 1) {
+      rows[row][column] += Math.max(rows[row + 1][column], rows[row + 1][column + 1]);
+    }
+  }
+
+  return rows[0][0];
+}
+```
+
+```ts
+function parseTriangle(input: string | number[][]): number[][] {
+  if (typeof input === 'string') {
+    return input
+      .trim()
+      .split(/\r?\n/)
+      .map((row) => row.trim().split(/\s+/).map(Number));
+  }
+
+  if (!Array.isArray(input) || input.length === 0) {
+    throw new TypeError('Triangle must be a non-empty string or matrix');
+  }
+
+  return input.map((row) => [...row]);
+}
+
+export function problem018(triangle: string | number[][]): number {
+  const rows = parseTriangle(triangle);
+
+  for (let row = rows.length - 2; row >= 0; row -= 1) {
+    for (let column = 0; column < rows[row].length; column += 1) {
+      rows[row][column] += Math.max(rows[row + 1][column], rows[row + 1][column + 1]);
+    }
+  }
+
+  return rows[0][0];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the winning path, not only its sum.
+- Compare the bottom-up solution with a top-down memoized recursion.
+- Scale the same approach to a much larger triangle like Problem 67.
+
+## Common Pitfalls
+
+- Trying greedy local choices from the top instead of solving subproblems from the bottom.
+- Mutating the original caller-owned triangle unexpectedly without copying it first.
+- Forgetting that each row is one element longer than the row above it.
