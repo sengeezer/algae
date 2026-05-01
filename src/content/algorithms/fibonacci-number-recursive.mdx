@@ -1,0 +1,100 @@
+---
+title: Fibonacci Number Recursive
+slug: fibonacci-number-recursive
+category: Recursion
+summary: Compute the nth Fibonacci number directly from the recurrence by branching into the previous two indices.
+description: Fibonacci Number Recursive is the textbook exponential-recursion baseline that makes overlapping subproblems obvious before memoization or bottom-up dynamic programming enters the picture.
+dataStructures:
+  - Number
+  - Recursion Stack
+techniques:
+  - Recursion
+  - Overlapping Subproblems
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - naive fibonacci
+  - recursive fibonacci
+useCases:
+  - Teaching why memoization helps when the same states repeat
+  - Comparing a clean recursive definition with an efficient iterative rewrite
+  - Explaining recursion trees and exponential blowups
+complexity:
+  time: O(2^n)
+  space: O(n) recursion depth
+  notes: The direct recurrence recomputes the same smaller indices many times, so it is mostly a teaching baseline rather than a production strategy.
+interviewSignals:
+  - The prompt asks for the simplest direct recurrence before optimization.
+  - You are expected to contrast brute-force recursion with memoization or tabulation.
+relatedSlugs:
+  - fibonacci-number
+  - fast-fibonacci-number
+  - climbing-stairs
+provenance:
+  - title: TheAlgorithms/JavaScript - Recursive/FibonacciNumberRecursive.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Recursive/FibonacciNumberRecursive.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Recursive Fibonacci is the smallest example of overlapping subproblems. The formula is easy to state, but the call tree duplicates work immediately, which makes it a clean setup for explaining memoization and dynamic programming.
+
+## Worked Example
+
+To compute `F(5)`, the recursion expands into `F(4) + F(3)`, then `F(4)` expands again into `F(3) + F(2)`. That repeated `F(3)` is the signal that the direct recursion is correct but inefficient.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function fibonacciNumberRecursive(index) {
+  if (!Number.isInteger(index) || index < 0) {
+    throw new RangeError('Index must be a non-negative integer');
+  }
+
+  if (index < 2) {
+    return index;
+  }
+
+  return (
+    fibonacciNumberRecursive(index - 1)
+    + fibonacciNumberRecursive(index - 2)
+  );
+}
+```
+
+```ts
+export function fibonacciNumberRecursive(index: number): number {
+  if (!Number.isInteger(index) || index < 0) {
+    throw new RangeError('Index must be a non-negative integer');
+  }
+
+  if (index < 2) {
+    return index;
+  }
+
+  return (
+    fibonacciNumberRecursive(index - 1)
+    + fibonacciNumberRecursive(index - 2)
+  );
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Add memoization and compare the new time complexity.
+- Rewrite the solution iteratively with only two rolling variables.
+- Estimate how fast the recursion tree grows as `n` increases.
+
+## Common Pitfalls
+
+- Using the naive recursion for large `n` and timing out.
+- Forgetting that the base cases are `0` and `1`.
+- Describing this as dynamic programming before any caching or tabulation is added.

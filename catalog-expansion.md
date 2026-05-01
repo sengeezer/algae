@@ -579,9 +579,20 @@ This fiftieth expansion slice lifts the catalog from 332 to 336 entries.
 - Problem 035
 - Problem 044
 
+## Batch 51 added
+
+This fifty-first expansion slice lifts the catalog from 336 to 342 entries.
+
+- Fibonacci Number Recursive
+- Koch Snowflake
+- Max Sum Subarray Fixed
+- Longest Subarray With Sum At Most
+- Pigeon Hole Sort
+- Swap Sort
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 50 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 51 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -590,9 +601,10 @@ All expansion entries from batch 1 through batch 50 now carry explicit per-entry
 ## Why this batch
 
 - It fills obvious interview-core gaps from TheAlgorithms/JavaScript without duplicating material already present in Algae.
-- It finishes the remaining upstream Project Euler tail directly, covering digit-threshold Fibonacci indexing, spiral diagonal sums, circular-prime rotation checks, and pentagonal-number pair search.
-- It broadens the catalog across BigInt recurrence stepping, layer-based closed-form accumulation, sieve-backed digit rotation filtering, and quadratic-form membership tests instead of staying inside the previous divisor-and-calendar slice.
-- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially compact challenge-style routines that still reward exact arithmetic, pattern derivation, and replacing naive search with reusable numeric tests.
+- It moves beyond the Project Euler tail into the next exact upstream absences that still add distinct teaching value: naive recursive recurrence, recursive fractal geometry, fixed and variable sliding windows, dense-range integer sorting, and minimum-swap permutation repair.
+- It broadens the catalog across recursion-tree cost, vector rotation, rolling-window invariants, dense counting-based sorting, and value-to-index remapping instead of staying inside challenge-style number theory routines.
+- It leaves the immediate next upstream frontier in a duplicate-heavy zone, which is useful context for the next pass because several remaining names are variants or relabelings of material Algae already covers.
+- It still lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially the parts that emphasize pattern selection, invariants, and when a simple direct implementation is intentionally worse but pedagogically important.
 
 ## Supporting study references from the algorithms list
 
@@ -602,4 +614,4 @@ All expansion entries from batch 1 through batch 50 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- No remaining exact absent upstream Project-Euler entries remain in the current TheAlgorithms/JavaScript `DIRECTORY.md` listing.
+- The next exact upstream frontier after this batch is `QuickSelectSearch`, `StringSearch`, `HeapSortV2`, `QuickSortRecursive`, `CheckPalindrome`, and `LengthofLongestSubstringWithoutRepetition`, but each overlaps existing Algae coverage and needs variant-level dedupe before another authoring slice.

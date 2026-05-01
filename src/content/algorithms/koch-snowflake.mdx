@@ -1,0 +1,182 @@
+---
+title: Koch Snowflake
+slug: koch-snowflake
+category: Geometry
+summary: Refine each line segment into four smaller segments by rotating the middle third into an outward equilateral bump.
+description: Koch Snowflake is the classic fractal-construction problem where recursive geometric subdivision turns a simple polygon into a jagged self-similar boundary.
+dataStructures:
+  - Array
+  - Coordinate
+techniques:
+  - Recursion
+  - Vector Rotation
+  - Fractal Construction
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - koch curve
+  - fractal snowflake
+useCases:
+  - Generating recursive fractal outlines
+  - Practicing geometric transforms on line segments
+  - Explaining self-similar refinement rules in procedural graphics
+complexity:
+  time: O(m * 4^steps)
+  space: O(m * 4^steps)
+  notes: Each iteration replaces every segment with four new ones, so both the point count and runtime grow exponentially with the number of steps.
+interviewSignals:
+  - The prompt repeatedly subdivides a segment and rotates the middle third by 60 degrees.
+  - You need to refine a polyline or polygon through self-similar geometric rules.
+relatedSlugs:
+  - coordinate
+  - euclidean-distance
+  - mandelbrot
+provenance:
+  - title: TheAlgorithms/JavaScript - Recursive/KochSnowflake.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Recursive/KochSnowflake.js
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Koch Snowflake is a good recursion problem because the rule is local and mechanical: every segment becomes four smaller segments. The interesting part is not traversal, but building the new geometry consistently from vector arithmetic.
+
+## Worked Example
+
+Starting with the segment from `(0, 0)` to `(3, 0)`, the first refinement inserts points at `(1, 0)` and `(2, 0)` and replaces the middle third with the apex of an equilateral triangle at approximately `(1.5, 0.866)`. One segment becomes four.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function iterateKoch(points, steps) {
+  if (!Number.isInteger(steps) || steps < 0) {
+    throw new RangeError('Steps must be a non-negative integer');
+  }
+
+  let current = points.map((point) => ({ ...point }));
+
+  for (let step = 0; step < steps; step += 1) {
+    current = kochStep(current);
+  }
+
+  return current;
+}
+
+function kochStep(points) {
+  const next = [];
+
+  for (let index = 0; index < points.length - 1; index += 1) {
+    const start = points[index];
+    const end = points[index + 1];
+    const delta = {
+      x: (end.x - start.x) / 3,
+      y: (end.y - start.y) / 3,
+    };
+    const firstThird = {
+      x: start.x + delta.x,
+      y: start.y + delta.y,
+    };
+    const rotated = rotate60(delta);
+    const peak = {
+      x: firstThird.x + rotated.x,
+      y: firstThird.y + rotated.y,
+    };
+    const secondThird = {
+      x: start.x + 2 * delta.x,
+      y: start.y + 2 * delta.y,
+    };
+
+    next.push(start, firstThird, peak, secondThird);
+  }
+
+  next.push(points[points.length - 1]);
+  return next;
+}
+
+function rotate60(vector) {
+  const radians = Math.PI / 3;
+  return {
+    x: vector.x * Math.cos(radians) - vector.y * Math.sin(radians),
+    y: vector.x * Math.sin(radians) + vector.y * Math.cos(radians),
+  };
+}
+```
+
+```ts
+type Point = {
+  x: number;
+  y: number;
+};
+
+export function iterateKoch(points: Point[], steps: number): Point[] {
+  if (!Number.isInteger(steps) || steps < 0) {
+    throw new RangeError('Steps must be a non-negative integer');
+  }
+
+  let current = points.map((point) => ({ ...point }));
+
+  for (let step = 0; step < steps; step += 1) {
+    current = kochStep(current);
+  }
+
+  return current;
+}
+
+function kochStep(points: Point[]): Point[] {
+  const next: Point[] = [];
+
+  for (let index = 0; index < points.length - 1; index += 1) {
+    const start = points[index];
+    const end = points[index + 1];
+    const delta = {
+      x: (end.x - start.x) / 3,
+      y: (end.y - start.y) / 3,
+    };
+    const firstThird = {
+      x: start.x + delta.x,
+      y: start.y + delta.y,
+    };
+    const rotated = rotate60(delta);
+    const peak = {
+      x: firstThird.x + rotated.x,
+      y: firstThird.y + rotated.y,
+    };
+    const secondThird = {
+      x: start.x + 2 * delta.x,
+      y: start.y + 2 * delta.y,
+    };
+
+    next.push(start, firstThird, peak, secondThird);
+  }
+
+  next.push(points[points.length - 1]);
+  return next;
+}
+
+function rotate60(vector: Point): Point {
+  const radians = Math.PI / 3;
+  return {
+    x: vector.x * Math.cos(radians) - vector.y * Math.sin(radians),
+    y: vector.x * Math.sin(radians) + vector.y * Math.cos(radians),
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Start from an equilateral triangle and generate the full closed snowflake boundary.
+- Explain why the segment count quadruples at each step.
+- Render the points to a canvas or SVG path.
+
+## Common Pitfalls
+
+- Forgetting that the input polyline should include adjacent endpoint pairs in order.
+- Rotating the wrong third of the segment or using the wrong sign for the angle.
+- Using too many iterations without accounting for exponential growth in the point list.

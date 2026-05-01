@@ -1,0 +1,119 @@
+---
+title: Longest Subarray With Sum At Most
+slug: longest-subarray-with-sum-at-most
+category: Array Patterns
+summary: Expand a window while its sum stays within a target and shrink from the left whenever the running total exceeds the budget.
+description: Longest Subarray With Sum At Most is the dynamic-window variant where the answer is the widest contiguous range whose non-negative values stay under a sum cap.
+dataStructures:
+  - Array
+  - Number
+techniques:
+  - Sliding Window
+  - Two Pointers
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - budgeted window
+  - longest window under target
+useCases:
+  - Finding the longest streak whose total cost stays within a budget
+  - Maintaining throughput limits over contiguous events
+  - Teaching when non-negative inputs make two-pointer windows valid
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The linear bound depends on non-negative values so the left pointer only needs to move forward.
+interviewSignals:
+  - The prompt asks for the longest contiguous segment with sum less than or equal to a limit.
+  - The values are non-negative, which makes shrinking the window monotonic.
+relatedSlugs:
+  - sliding-window
+  - two-pointers
+  - max-sum-subarray-fixed
+provenance:
+  - title: TheAlgorithms/JavaScript - Sliding-Windows/LongestSubarrayWithSumAtMost.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Sliding-Windows/LongestSubarrayWithSumAtMost.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the next step after fixed-size windows: the window size changes, but the invariant still comes from a running sum. The key interview caveat is that the usual two-pointer proof only works when the values are non-negative.
+
+## Worked Example
+
+For `[3, 1, 2, 1, 1]` with target `4`, the longest valid window has length `3`, such as `[1, 2, 1]`. As soon as the sum exceeds `4`, move the left edge until the budget is satisfied again.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function longestSubarrayWithSumAtMost(values, target) {
+  if (values.some((value) => value < 0)) {
+    throw new RangeError('Values must be non-negative for this sliding window');
+  }
+
+  let left = 0;
+  let windowSum = 0;
+  let best = 0;
+
+  for (let right = 0; right < values.length; right += 1) {
+    windowSum += values[right];
+
+    while (windowSum > target && left <= right) {
+      windowSum -= values[left];
+      left += 1;
+    }
+
+    best = Math.max(best, right - left + 1);
+  }
+
+  return best;
+}
+```
+
+```ts
+export function longestSubarrayWithSumAtMost(
+  values: number[],
+  target: number,
+): number {
+  if (values.some((value) => value < 0)) {
+    throw new RangeError('Values must be non-negative for this sliding window');
+  }
+
+  let left = 0;
+  let windowSum = 0;
+  let best = 0;
+
+  for (let right = 0; right < values.length; right += 1) {
+    windowSum += values[right];
+
+    while (windowSum > target && left <= right) {
+      windowSum -= values[left];
+      left += 1;
+    }
+
+    best = Math.max(best, right - left + 1);
+  }
+
+  return best;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the actual window bounds instead of only the length.
+- Explain why negative values break the usual shrinking rule.
+- Adapt the invariant to at most `k` distinct items or at most `k` zeros.
+
+## Common Pitfalls
+
+- Applying the simple two-pointer version to arrays with negative numbers.
+- Recording the answer before shrinking an invalid window.
+- Forgetting that the result can be `0` when even a single value exceeds a negative target.

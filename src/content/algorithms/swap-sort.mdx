@@ -1,0 +1,129 @@
+---
+title: Swap Sort
+slug: swap-sort
+category: Sorting
+summary: Count the minimum swaps needed to sort distinct values by repeatedly moving each value into the position it occupies in the sorted order.
+description: Swap Sort here is the minimum-swaps-to-sort routine that pairs a sorted target order with a value-to-index map so each swap fixes one position directly.
+dataStructures:
+  - Array
+  - Hash Map
+techniques:
+  - Sorting
+  - Index Mapping
+  - Greedy Swapping
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - minimum swaps to sort
+  - min swaps to sort array
+useCases:
+  - Measuring how far a permutation is from sorted order
+  - Reordering entities with the fewest direct swaps
+  - Teaching the link between sorting and cycle structure
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: The sort of the target order dominates runtime, and the simple value-to-index map assumes distinct input values.
+interviewSignals:
+  - The prompt asks for the number of swaps, not the sorted array itself.
+  - You can identify where each value belongs once the sorted target order is known.
+relatedSlugs:
+  - cycle-sort
+  - quick-sort
+  - pigeon-hole-sort
+provenance:
+  - title: TheAlgorithms/JavaScript - Sorts/SwapSort.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Sorts/SwapSort.js
+    kind: Implementation
+  - title: "free-programming-books - Open Data Structures: An Introduction"
+    href: https://opendatastructures.org/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem looks like sorting, but the output is really a count. The trick is to know where every value belongs in the sorted array and then swap each misplaced value directly into that destination.
+
+## Worked Example
+
+For `[4, 3, 2, 1]`, the sorted order is `[1, 2, 3, 4]`. Swap `4` with `1` to get `[1, 3, 2, 4]`, then swap `3` with `2` to get `[1, 2, 3, 4]`. The minimum swap count is `2`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function minSwapsToSort(values) {
+  if (new Set(values).size !== values.length) {
+    throw new RangeError('Values must be distinct for this swap-counting version');
+  }
+
+  const working = [...values];
+  const sorted = [...values].sort((left, right) => left - right);
+  const indexByValue = new Map(working.map((value, index) => [value, index]));
+  let swaps = 0;
+
+  for (let index = 0; index < working.length; index += 1) {
+    const desired = sorted[index];
+
+    if (working[index] === desired) {
+      continue;
+    }
+
+    const swapIndex = indexByValue.get(desired);
+    const current = working[index];
+    [working[index], working[swapIndex]] = [working[swapIndex], working[index]];
+    indexByValue.set(current, swapIndex);
+    indexByValue.set(desired, index);
+    swaps += 1;
+  }
+
+  return swaps;
+}
+```
+
+```ts
+export function minSwapsToSort(values: number[]): number {
+  if (new Set(values).size !== values.length) {
+    throw new RangeError('Values must be distinct for this swap-counting version');
+  }
+
+  const working = [...values];
+  const sorted = [...values].sort((left, right) => left - right);
+  const indexByValue = new Map<number, number>(
+    working.map((value, index) => [value, index]),
+  );
+  let swaps = 0;
+
+  for (let index = 0; index < working.length; index += 1) {
+    const desired = sorted[index];
+
+    if (working[index] === desired) {
+      continue;
+    }
+
+    const swapIndex = indexByValue.get(desired)!;
+    const current = working[index];
+    [working[index], working[swapIndex]] = [working[swapIndex], working[index]];
+    indexByValue.set(current, swapIndex);
+    indexByValue.set(desired, index);
+    swaps += 1;
+  }
+
+  return swaps;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Adapt the solution for duplicate values by sorting `(value, originalIndex)` pairs.
+- Explain how cycle decomposition gives the same swap count.
+- Return the actual swap operations instead of only the total.
+
+## Common Pitfalls
+
+- Using JavaScript's default lexical sort instead of a numeric comparator.
+- Forgetting that the simple index map breaks when duplicate values exist.
+- Mutating the caller's array when you only need the swap count.
