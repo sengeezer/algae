@@ -1,0 +1,142 @@
+---
+title: Mobius Function
+slug: mobius-function
+category: Mathematics
+summary: Return `1`, `-1`, or `0` depending on whether a positive integer is square-free and how many distinct prime factors it has.
+description: Mobius Function is the square-free factorization classifier that detects repeated prime factors and tracks the parity of distinct primes.
+dataStructures:
+  - Number
+techniques:
+  - Number Theory
+  - Prime Factorization
+  - Square-Free Check
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - mobius mu
+  - square-free sign function
+useCases:
+  - Classifying integers in multiplicative-function exercises
+  - Detecting whether a number has any squared prime factor
+  - Supporting inclusion-exclusion style number-theory reasoning
+complexity:
+  time: O(sqrt(n))
+  space: O(1)
+  notes: Trial division is enough because repeated prime factors show up by the time the divisor reaches the square root of the remaining value.
+interviewSignals:
+  - The prompt asks for `mu(n)` or for a sign that depends on square-free factorization.
+  - The expected solution distinguishes repeated prime factors from merely distinct ones.
+relatedSlugs:
+  - is-square-free
+  - liouville-function
+  - prime-factors
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/MobiusFunction.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/MobiusFunction.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+The Mobius function is a compact number-theory routine that forces you to separate square-free detection from the parity of distinct prime factors.
+
+## Worked Example
+
+`30 = 2 * 3 * 5` is square-free with `3` distinct prime factors, so `mu(30) = -1`. `12 = 2 * 2 * 3` has a squared prime factor, so `mu(12) = 0`. `1` is the empty-factorization base case, so `mu(1) = 1`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function mobiusFunction(value) {
+  if (!Number.isInteger(value) || value <= 0) {
+    throw new RangeError('Value must be a positive integer');
+  }
+
+  if (value === 1) {
+    return 1;
+  }
+
+  let remaining = value;
+  let distinctPrimeCount = 0;
+
+  for (let divisor = 2; divisor * divisor <= remaining; divisor += 1) {
+    let occurrences = 0;
+
+    while (remaining % divisor === 0) {
+      remaining /= divisor;
+      occurrences += 1;
+    }
+
+    if (occurrences > 1) {
+      return 0;
+    }
+
+    if (occurrences === 1) {
+      distinctPrimeCount += 1;
+    }
+  }
+
+  if (remaining > 1) {
+    distinctPrimeCount += 1;
+  }
+
+  return distinctPrimeCount % 2 === 0 ? 1 : -1;
+}
+```
+
+```ts
+export function mobiusFunction(value: number): -1 | 0 | 1 {
+  if (!Number.isInteger(value) || value <= 0) {
+    throw new RangeError('Value must be a positive integer');
+  }
+
+  if (value === 1) {
+    return 1;
+  }
+
+  let remaining = value;
+  let distinctPrimeCount = 0;
+
+  for (let divisor = 2; divisor * divisor <= remaining; divisor += 1) {
+    let occurrences = 0;
+
+    while (remaining % divisor === 0) {
+      remaining /= divisor;
+      occurrences += 1;
+    }
+
+    if (occurrences > 1) {
+      return 0;
+    }
+
+    if (occurrences === 1) {
+      distinctPrimeCount += 1;
+    }
+  }
+
+  if (remaining > 1) {
+    distinctPrimeCount += 1;
+  }
+
+  return distinctPrimeCount % 2 === 0 ? 1 : -1;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare `mu(n)` with the Liouville function on square-free and non-square-free inputs.
+- Precompute values for all `n <= limit` with a sieve-based approach.
+- Explain why `mu(n) = 0` as soon as any prime factor repeats.
+
+## Common Pitfalls
+
+- Counting repeated prime factors as if they were only distinct.
+- Forgetting that `mu(1)` is `1`.
+- Continuing unnecessary factor scans after you already found a squared prime factor.

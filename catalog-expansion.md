@@ -493,9 +493,20 @@ This forty-second expansion slice lifts the catalog from 284 to 290 entries.
 - Mean Absolute Deviation
 - Mean Square Error
 
+## Batch 43 added
+
+This forty-third expansion slice lifts the catalog from 290 to 296 entries.
+
+- Midpoint Integration
+- Mobius Function
+- Modular Binary Exponentiation Recursive
+- Parity Outlier
+- Perfect Cube
+- Perfect Number
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 42 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 43 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -504,9 +515,9 @@ All expansion entries from batch 1 through batch 42 now carry explicit per-entry
 ## Why this batch
 
 - It fills obvious interview-core gaps from TheAlgorithms/JavaScript without duplicating material already present in Algae.
-- It follows the next verified math queue directly, adding leap-year classification, prime-factor parity, fractal rendering, recursive matrix powering, and two statistical error metrics.
-- It broadens the catalog across calendar logic, analytical helpers, and linear-algebra acceleration instead of staying inside the previous arithmetic-classification slice.
-- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially mathematical utilities that still reward careful validation, recurrence handling, and exact numeric reasoning.
+- It follows the next verified math queue directly, adding numerical integration, multiplicative number-theory classification, recursive modular exponentiation, parity detection, and perfect-power and divisor-sum predicates.
+- It broadens the catalog across approximation, modular arithmetic, and integer classification instead of staying inside the previous calendar-and-matrix slice.
+- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially compact mathematical helpers that still reward careful validation, square-free reasoning, and exact divisor handling.
 
 ## Supporting study references from the algorithms list
 
@@ -516,9 +527,9 @@ All expansion entries from batch 1 through batch 42 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- Midpoint Integration
-- Mobius Function
-- Modular Binary Exponentiation Recursive
-- Parity Outlier
-- Perfect Cube
-- Perfect Number
+- Pi Approximation Monte Carlo
+- Polynomial
+- Pow
+- Pow Logarithmic
+- Quadratic Roots
+- Reverse Polish Notation

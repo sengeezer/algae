@@ -1,0 +1,147 @@
+---
+title: Midpoint Integration
+slug: midpoint-integration
+category: Mathematics
+summary: Approximate a definite integral by splitting the interval into equal pieces and sampling the function at each subinterval midpoint.
+description: Midpoint Integration is the midpoint-rule numerical approximation that estimates area under a curve more accurately than endpoint rectangle sums.
+dataStructures:
+  - Number
+techniques:
+  - Numerical Integration
+  - Midpoint Rule
+  - Interval Partitioning
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - midpoint rule
+  - rectangle-rule integration
+useCases:
+  - Approximating integrals when an antiderivative is inconvenient or unavailable
+  - Comparing numerical integration schemes on the same interval
+  - Teaching how precision improves as the partition count increases
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The midpoint rule evaluates the target function exactly once per subinterval.
+interviewSignals:
+  - The prompt asks for an approximate area under a curve over `[a, b]`.
+  - The expected solution improves as the number of equal subintervals increases.
+relatedSlugs:
+  - euler-method
+  - bisection-method
+  - farey-approximation
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/MidpointIntegration.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/MidpointIntegration.js
+    kind: Implementation
+  - title: OpenStax - Calculus Volume 2
+    href: https://openstax.org/details/books/calculus-volume-2
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a compact numerical-method question that checks whether you can translate an approximation formula into a loop without mixing up step size, endpoints, and sample locations.
+
+## Worked Example
+
+To approximate `integral from 0 to 2 of x^2 dx` with `4` subintervals, use width `0.5` and sample at `0.25`, `0.75`, `1.25`, and `1.75`. The midpoint rule gives `0.5 * (0.0625 + 0.5625 + 1.5625 + 3.0625) = 2.625`, which is close to the exact value `8 / 3`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function midpointIntegration(segments, left, right, fn) {
+  if (!Number.isInteger(segments) || segments <= 0) {
+    throw new RangeError('Segment count must be a positive integer');
+  }
+
+  if (!Number.isFinite(left) || !Number.isFinite(right)) {
+    throw new TypeError('Bounds must be finite numbers');
+  }
+
+  if (typeof fn !== 'function') {
+    throw new TypeError('Expected a function to integrate');
+  }
+
+  if (left > right) {
+    throw new RangeError('Left bound must not exceed right bound');
+  }
+
+  if (left === right) {
+    return 0;
+  }
+
+  const width = (right - left) / segments;
+  let total = 0;
+
+  for (let index = 0; index < segments; index += 1) {
+    const midpoint = left + (index + 0.5) * width;
+    const value = fn(midpoint);
+
+    if (!Number.isFinite(value)) {
+      throw new RangeError('Function must return a finite number inside the interval');
+    }
+
+    total += value;
+  }
+
+  return total * width;
+}
+```
+
+```ts
+export function midpointIntegration(
+  segments: number,
+  left: number,
+  right: number,
+  fn: (value: number) => number,
+): number {
+  if (!Number.isInteger(segments) || segments <= 0) {
+    throw new RangeError('Segment count must be a positive integer');
+  }
+
+  if (!Number.isFinite(left) || !Number.isFinite(right)) {
+    throw new TypeError('Bounds must be finite numbers');
+  }
+
+  if (left > right) {
+    throw new RangeError('Left bound must not exceed right bound');
+  }
+
+  if (left === right) {
+    return 0;
+  }
+
+  const width = (right - left) / segments;
+  let total = 0;
+
+  for (let index = 0; index < segments; index += 1) {
+    const midpoint = left + (index + 0.5) * width;
+    const value = fn(midpoint);
+
+    if (!Number.isFinite(value)) {
+      throw new RangeError('Function must return a finite number inside the interval');
+    }
+
+    total += value;
+  }
+
+  return total * width;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare midpoint integration with left-endpoint and trapezoidal approximations.
+- Increase the segment count until the approximation error drops below a target threshold.
+- Explain why a domain error inside the interval should fail fast instead of silently returning `NaN`.
+
+## Common Pitfalls
+
+- Sampling at the interval endpoints instead of the midpoints.
+- Forgetting that a zero-width interval integrates to `0`.
+- Letting a `NaN` function value propagate through the whole approximation silently.

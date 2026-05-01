@@ -1,0 +1,77 @@
+---
+title: Perfect Cube
+slug: perfect-cube
+category: Mathematics
+summary: Check whether a finite number is an exact cube by rounding its cube root and cubing back.
+description: Perfect Cube is the constant-time perfect-power predicate that verifies whether a value can be written as `k * k * k`.
+dataStructures:
+  - Number
+techniques:
+  - Cube Root
+  - Numerical Check
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - cube number test
+  - is perfect cube
+useCases:
+  - Extending perfect-square checks to another power family
+  - Short-circuiting geometry and number-theory conditions
+  - Validating whether a value matches an exact cubic construction
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: Rounding the cube root before cubing back helps absorb small floating-point noise in ordinary JavaScript number ranges.
+interviewSignals:
+  - The prompt asks whether a number can be expressed as the cube of an integer.
+  - A follow-up extends perfect-square logic to another exact power.
+relatedSlugs:
+  - perfect-square
+  - square-root
+  - volume
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/PerfectCube.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/PerfectCube.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Perfect-cube checks usually appear as a follow-up once a perfect-square helper is already on the table. The real question is whether you can make the numerical root check precise enough for ordinary inputs.
+
+## Worked Example
+
+`27` is a perfect cube because `Math.cbrt(27)` rounds to `3`, and `3 ** 3 = 27`. `-8` is also a perfect cube because `(-2) ** 3 = -8`. `26` is not, because the nearest integer cube root squares back to `27`, not `26`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function perfectCube(value) {
+  return Number.isFinite(value) && Math.round(Math.cbrt(value)) ** 3 === value;
+}
+```
+
+```ts
+export function perfectCube(value: number): boolean {
+  return Number.isFinite(value) && Math.round(Math.cbrt(value)) ** 3 === value;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare this check with an integer binary search over possible roots.
+- Explain why negative values can still be perfect cubes.
+- Generalize the pattern to perfect fourth powers or arbitrary integer powers.
+
+## Common Pitfalls
+
+- Rejecting negative perfect cubes even though odd powers preserve sign.
+- Using truncation instead of rounding and misclassifying values near floating-point boundaries.
+- Assuming the same floating-point check stays exact for arbitrarily large integers.

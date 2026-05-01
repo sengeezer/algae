@@ -1,0 +1,116 @@
+---
+title: Perfect Number
+slug: perfect-number
+category: Mathematics
+summary: Determine whether a positive integer equals the sum of all its proper divisors.
+description: Perfect Number is the divisor-sum predicate that compares a number against the sum of its positive divisors excluding itself.
+dataStructures:
+  - Number
+techniques:
+  - Divisor Pair Scan
+  - Number Theory
+  - Proper Divisor Sum
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - divisor sum equality
+  - aliquot equality check
+useCases:
+  - Classifying integers by their divisor structure
+  - Reusing divisor scans across amicable and abundant number questions
+  - Teaching how proper divisors come in complementary pairs
+complexity:
+  time: O(sqrt(n))
+  space: O(1)
+  notes: Proper divisors can be collected by scanning only up to the square root and adding complementary pairs when a divisor is found.
+interviewSignals:
+  - The prompt asks whether the sum of proper divisors equals the number itself.
+  - The intended solution avoids scanning every smaller integer once divisor pairing is recognized.
+relatedSlugs:
+  - aliquot-sum
+  - friendly-numbers
+  - prime-factors
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/PerfectNumber.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/PerfectNumber.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Perfect-number questions are mostly about divisor handling. The useful step is recognizing that proper divisors arrive in pairs, so a square-root scan replaces a full walk from `1` to `n - 1`.
+
+## Worked Example
+
+`28` has proper divisors `1`, `2`, `4`, `7`, and `14`. Their sum is `28`, so `28` is perfect. `12` is not, because its proper divisors sum to `16`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function perfectNumber(value) {
+  if (!Number.isInteger(value) || value <= 1) {
+    return false;
+  }
+
+  let divisorSum = 1;
+
+  for (let divisor = 2; divisor * divisor <= value; divisor += 1) {
+    if (value % divisor !== 0) {
+      continue;
+    }
+
+    divisorSum += divisor;
+    const pairedDivisor = value / divisor;
+
+    if (pairedDivisor !== divisor) {
+      divisorSum += pairedDivisor;
+    }
+  }
+
+  return divisorSum === value;
+}
+```
+
+```ts
+export function perfectNumber(value: number): boolean {
+  if (!Number.isInteger(value) || value <= 1) {
+    return false;
+  }
+
+  let divisorSum = 1;
+
+  for (let divisor = 2; divisor * divisor <= value; divisor += 1) {
+    if (value % divisor !== 0) {
+      continue;
+    }
+
+    divisorSum += divisor;
+    const pairedDivisor = value / divisor;
+
+    if (pairedDivisor !== divisor) {
+      divisorSum += pairedDivisor;
+    }
+  }
+
+  return divisorSum === value;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the proper divisors alongside the boolean answer.
+- Compare perfect numbers with abundant and deficient numbers.
+- Reuse the divisor sum inside amicable-pair detection.
+
+## Common Pitfalls
+
+- Including the number itself in the proper-divisor sum.
+- Double-counting a square root divisor on perfect squares.
+- Scanning all numbers up to `n - 1` when divisor pairing already gives a better bound.

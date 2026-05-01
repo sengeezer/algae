@@ -1,0 +1,140 @@
+---
+title: Modular Binary Exponentiation Recursive
+slug: modular-binary-exponentiation-recursive
+category: Mathematics
+summary: Compute `(base^exponent) mod modulus` recursively with exponentiation by squaring and reduction after each multiplication.
+description: Modular Binary Exponentiation Recursive is the recursive fast-power routine that keeps huge powers bounded inside a modulus ring.
+dataStructures:
+  - Number
+techniques:
+  - Exponentiation by Squaring
+  - Modular Arithmetic
+  - Recursion
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - recursive modular power
+  - fast power modulo m
+useCases:
+  - Evaluating large modular powers efficiently
+  - Supporting modular inverses and cryptography-style toy problems
+  - Reusing exponentiation by squaring in residue arithmetic
+complexity:
+  time: O(log n)
+  space: O(log n)
+  notes: The recursion depth is logarithmic in the exponent, and each level performs only constant-time arithmetic on ordinary JavaScript numbers.
+interviewSignals:
+  - The prompt asks for a huge power under a modulus and a linear loop is too slow.
+  - The expected solution reduces after every multiplication rather than computing the full power first.
+relatedSlugs:
+  - modular-arithmetic
+  - matrix-exponentiation-recursive
+  - prime-check
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/ModularBinaryExponentiationRecursive.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/ModularBinaryExponentiationRecursive.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the modular version of fast exponentiation. Interviewers use it to check whether you know the logarithmic recurrence and why reduction after each multiplication matters.
+
+## Worked Example
+
+To compute `7^13 mod 11`, recurse on smaller exponents, square the half result for even exponents, and multiply by one more `7` for odd exponents. The work grows with `log2(13)`, not `13`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function normalize(value, modulus) {
+  return ((value % modulus) + modulus) % modulus;
+}
+
+function modularBinaryExponentiationRecursive(base, exponent, modulus) {
+  if (!Number.isInteger(base) || !Number.isInteger(exponent) || !Number.isInteger(modulus)) {
+    throw new TypeError('Base, exponent, and modulus must be integers');
+  }
+
+  if (exponent < 0) {
+    throw new RangeError('Exponent must be non-negative');
+  }
+
+  if (modulus <= 0) {
+    throw new RangeError('Modulus must be a positive integer');
+  }
+
+  const normalizedBase = normalize(base, modulus);
+
+  if (exponent === 0) {
+    return 1 % modulus;
+  }
+
+  if (exponent % 2 === 1) {
+    return (
+      modularBinaryExponentiationRecursive(normalizedBase, exponent - 1, modulus) * normalizedBase
+    ) % modulus;
+  }
+
+  const half = modularBinaryExponentiationRecursive(normalizedBase, exponent / 2, modulus);
+  return (half * half) % modulus;
+}
+```
+
+```ts
+function normalize(value: number, modulus: number): number {
+  return ((value % modulus) + modulus) % modulus;
+}
+
+export function modularBinaryExponentiationRecursive(
+  base: number,
+  exponent: number,
+  modulus: number,
+): number {
+  if (!Number.isInteger(base) || !Number.isInteger(exponent) || !Number.isInteger(modulus)) {
+    throw new TypeError('Base, exponent, and modulus must be integers');
+  }
+
+  if (exponent < 0) {
+    throw new RangeError('Exponent must be non-negative');
+  }
+
+  if (modulus <= 0) {
+    throw new RangeError('Modulus must be a positive integer');
+  }
+
+  const normalizedBase = normalize(base, modulus);
+
+  if (exponent === 0) {
+    return 1 % modulus;
+  }
+
+  if (exponent % 2 === 1) {
+    return (
+      modularBinaryExponentiationRecursive(normalizedBase, exponent - 1, modulus) * normalizedBase
+    ) % modulus;
+  }
+
+  const half = modularBinaryExponentiationRecursive(normalizedBase, exponent / 2, modulus);
+  return (half * half) % modulus;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Replace the recursive version with an iterative loop.
+- Explain why the base should be normalized before the recursion starts.
+- Use the same idea to implement modular inverse when the modulus is prime.
+
+## Common Pitfalls
+
+- Computing `base^exponent` first and applying `% modulus` only at the end.
+- Forgetting that exponent `0` returns `1 mod modulus`.
+- Accepting a non-positive modulus and leaving the arithmetic undefined.
