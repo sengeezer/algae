@@ -669,9 +669,20 @@ This fifty-eighth expansion slice lifts the catalog from 378 to 384 entries.
 - Push Relabel Algorithm
 - Karger's Minimum Cut Algorithm
 
+## Batch 59 added
+
+This fifty-ninth expansion slice lifts the catalog from 384 to 390 entries.
+
+- Fleury's Algorithm
+- Count Walks with Exactly K Edges
+- Euler Circuit in a Directed Graph
+- Dynamic Connectivity
+- Ford-Fulkerson Algorithm
+- Atlantic Pacific Water Flow
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 58 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 59 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -679,10 +690,10 @@ All expansion entries from batch 1 through batch 58 now carry explicit per-entry
 
 ## Why this batch
 
-- It continues the GeeksforGeeks flow-and-partition line while still skipping weak source-order detours such as counting sink nodes.
-- It broadens the catalog across complement-graph clique partitioning, sender-receiver assignment via matching, explicit cut extraction from max flow, flow-based path packing, preflow-push optimization, and randomized global minimum cuts.
-- It adds several interview patterns that were not previously first-class entries: complement reduction to bipartite checking, channel scheduling as matching, residual min-cut recovery, edge-disjoint path packing, excess-flow relabeling, and randomized contraction.
-- It leaves the next frontier ready to revisit alternate Eulerian construction, SCC variants, and dynamic-connectivity problem contexts without forcing those variants into this slice prematurely.
+- It closes several leftover GeeksforGeeks graph gaps without reopening broad duplicate territory such as plain SCC coverage or theory-only max-flow introductions.
+- It broadens the catalog across bridge-aware Euler construction, exact-length walk counting, directed Eulerian classification, online connectivity queries, augmenting-path max flow, and reverse-reachability on height grids.
+- It adds several interview patterns that were not previously first-class entries: avoiding bridges while constructing an Euler tour, dynamic programming on path length, in-degree and out-degree feasibility checks for directed Eulerian cycles, query-driven DSU maintenance, residual augmenting paths, and multi-source ocean reachability.
+- It leaves the next frontier ready to move deeper into hard-problem graph counting and Eulerian string reductions while continuing to skip weak or redundant detours.
 
 ## Supporting study references from the algorithms list
 
@@ -692,4 +703,4 @@ All expansion entries from batch 1 through batch 58 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- The next clean GeeksforGeeks frontier after this batch starts with `Fleury's Algorithm for printing Eulerian Path or Circuit` and `Dynamic Connectivity | Set 1 (Incremental)`; nearby skipped items include the weak `Number of sinks in a graph` detour and the SCC-focused `Tarjan's Algorithm`, which still overlaps semantically with the existing `Kosaraju` entry.
+- The next clean GeeksforGeeks frontier after this batch starts with `Number of Spanning Trees in a Graph` and `Find if an array of strings can be chained to form a circle`; nearby skipped items include duplicate `Strongly Connected Components`, weak `Seven Bridges of Konigsberg`, weak `Max Flow Problem Introduction`, and the later SCC-focused `Tarjan's Algorithm`, which still overlaps semantically with the existing `Kosaraju` entry.

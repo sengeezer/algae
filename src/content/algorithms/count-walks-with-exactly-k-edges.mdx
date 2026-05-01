@@ -1,0 +1,131 @@
+---
+title: Count Walks with Exactly K Edges
+slug: count-walks-with-exactly-k-edges
+category: Graphs
+summary: Count directed walks by dynamic programming over edge count so every state knows how many ways it reaches a destination in exactly e steps.
+description: Count Walks with Exactly K Edges is the graph dynamic-programming problem of counting source to destination walks with one exact path length.
+dataStructures:
+  - Graph
+  - Matrix
+  - Array
+techniques:
+  - Dynamic Programming
+  - Graph DP
+  - Adjacency Matrix
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - count walks exactly k edges
+  - exact length path count
+useCases:
+  - Counting constrained-length routes in a directed graph
+  - Teaching DP over path length rather than shortest path distance
+  - Contrasting counting walks with deciding reachability
+complexity:
+  time: O(K * V^3)
+  space: O(K * V^2)
+  notes: The DP state stores how many walks reach every destination using an exact number of edges.
+interviewSignals:
+  - The path length is fixed exactly instead of at most or at least.
+  - The prompt asks for a count of walks and allows repeated vertices.
+relatedSlugs:
+  - memoization-dp
+  - floyd-warshall
+  - topological-sort
+provenance:
+  - title: GeeksforGeeks - Count all possible walks from a source to a destination with exactly k edges
+    href: https://www.geeksforgeeks.org/dsa/count-possible-paths-source-destination-exactly-k-edges/
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem is a good graph-DP checkpoint because plain traversal only tells you whether a destination is reachable, not how many fixed-length walks get there. The exact edge count turns path length into part of the state.
+
+## Worked Example
+
+If `0 -> 1 -> 3` and `0 -> 2 -> 3` are both valid and `k = 2`, the answer is `2` even though both walks end at the same destination. A DP table can accumulate those separate two-edge completions without exploring every recursive branch repeatedly.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function countWalksWithExactlyKEdges(graph, source, destination, edgeCount) {
+  const size = graph.length;
+  const dp = Array.from({ length: edgeCount + 1 }, () =>
+    Array.from({ length: size }, () => new Array(size).fill(0)),
+  );
+
+  for (let node = 0; node < size; node += 1) {
+    dp[0][node][node] = 1;
+  }
+
+  for (let used = 1; used <= edgeCount; used += 1) {
+    for (let from = 0; from < size; from += 1) {
+      for (let to = 0; to < size; to += 1) {
+        let total = 0;
+        for (let next = 0; next < size; next += 1) {
+          if (graph[from][next] > 0) {
+            total += graph[from][next] * dp[used - 1][next][to];
+          }
+        }
+        dp[used][from][to] = total;
+      }
+    }
+  }
+
+  return dp[edgeCount][source][destination];
+}
+```
+
+```ts
+export function countWalksWithExactlyKEdges(
+  graph: number[][],
+  source: number,
+  destination: number,
+  edgeCount: number,
+): number {
+  const size = graph.length;
+  const dp = Array.from({ length: edgeCount + 1 }, () =>
+    Array.from({ length: size }, () => new Array<number>(size).fill(0)),
+  );
+
+  for (let node = 0; node < size; node += 1) {
+    dp[0][node][node] = 1;
+  }
+
+  for (let used = 1; used <= edgeCount; used += 1) {
+    for (let from = 0; from < size; from += 1) {
+      for (let to = 0; to < size; to += 1) {
+        let total = 0;
+        for (let next = 0; next < size; next += 1) {
+          if (graph[from][next] > 0) {
+            total += graph[from][next] * dp[used - 1][next][to];
+          }
+        }
+        dp[used][from][to] = total;
+      }
+    }
+  }
+
+  return dp[edgeCount][source][destination];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Reduce the memory usage by keeping only the previous edge-count layer.
+- Explain the difference between counting walks and counting simple paths.
+- Rework the solution with matrix exponentiation for larger `k`.
+
+## Common Pitfalls
+
+- Treating repeated vertices as invalid when the problem counts walks rather than simple paths.
+- Forgetting the base case that a zero-edge walk exists from a node to itself.
+- Mixing exact length with shortest path logic.

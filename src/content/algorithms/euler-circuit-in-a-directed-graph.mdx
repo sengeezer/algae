@@ -1,0 +1,170 @@
+---
+title: Euler Circuit in a Directed Graph
+slug: euler-circuit-in-a-directed-graph
+category: Graphs
+summary: Check whether every nonzero-degree vertex lies in one strongly connected region and every vertex balances in-degree with out-degree.
+description: Euler Circuit in a Directed Graph is the directed feasibility problem that decides whether a closed all-edges traversal exists.
+dataStructures:
+  - Graph
+  - Array
+  - Stack
+techniques:
+  - Eulerian Classification
+  - Strong Connectivity
+  - Degree Counting
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - directed Euler circuit
+  - directed Eulerian cycle
+useCases:
+  - Checking feasibility before running a directed Euler tour construction
+  - Reusing SCC reasoning on edge-coverage questions
+  - Distinguishing directed Euler conditions from the undirected odd-degree rule
+complexity:
+  time: O(V + E)
+  space: O(V + E)
+  notes: A directed Eulerian cycle needs both strong connectivity on active vertices and exact in-degree out-degree balance.
+interviewSignals:
+  - The graph is directed and every edge must be used exactly once in a closed tour.
+  - The task asks whether a circuit exists rather than asking for the actual route.
+relatedSlugs:
+  - hierholzers-algorithm-directed-graph
+  - euler-path-and-euler-circuit
+  - kosaraju
+provenance:
+  - title: GeeksforGeeks - Euler Circuit in a Directed Graph
+    href: https://www.geeksforgeeks.org/dsa/euler-circuit-directed-graph/
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Directed Eulerian checks are a common follow-up once you already know the undirected rule. The trap is that odd-degree counting no longer works by itself, so you need both balance and strong connectivity among the vertices that actually participate in edges.
+
+## Worked Example
+
+If every active vertex has matching in-degree and out-degree but one active region cannot reach another, a directed Euler circuit is impossible. If both connectivity and degree balance hold, then a directed circuit exists and a construction method such as Hierholzer can recover it.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function eulerCircuitInADirectedGraph(graph) {
+  const size = graph.length;
+  const transpose = Array.from({ length: size }, () => []);
+  const inDegree = new Array(size).fill(0);
+  const outDegree = new Array(size).fill(0);
+
+  for (let from = 0; from < size; from += 1) {
+    outDegree[from] = graph[from].length;
+    for (const to of graph[from]) {
+      transpose[to].push(from);
+      inDegree[to] += 1;
+    }
+  }
+
+  for (let node = 0; node < size; node += 1) {
+    if (inDegree[node] !== outDegree[node]) {
+      return false;
+    }
+  }
+
+  const start = graph.findIndex((neighbors, node) => neighbors.length > 0 || inDegree[node] > 0);
+  if (start === -1) {
+    return true;
+  }
+
+  function dfs(adjacency, source, seen) {
+    seen[source] = true;
+    for (const neighbor of adjacency[source]) {
+      if (!seen[neighbor]) {
+        dfs(adjacency, neighbor, seen);
+      }
+    }
+  }
+
+  const seenForward = new Array(size).fill(false);
+  dfs(graph, start, seenForward);
+  const seenBackward = new Array(size).fill(false);
+  dfs(transpose, start, seenBackward);
+
+  for (let node = 0; node < size; node += 1) {
+    const active = inDegree[node] > 0 || outDegree[node] > 0;
+    if (active && (!seenForward[node] || !seenBackward[node])) {
+      return false;
+    }
+  }
+
+  return true;
+}
+```
+
+```ts
+export function eulerCircuitInADirectedGraph(graph: number[][]): boolean {
+  const size = graph.length;
+  const transpose = Array.from({ length: size }, () => [] as number[]);
+  const inDegree = new Array<number>(size).fill(0);
+  const outDegree = new Array<number>(size).fill(0);
+
+  for (let from = 0; from < size; from += 1) {
+    outDegree[from] = graph[from].length;
+    for (const to of graph[from]) {
+      transpose[to].push(from);
+      inDegree[to] += 1;
+    }
+  }
+
+  for (let node = 0; node < size; node += 1) {
+    if (inDegree[node] !== outDegree[node]) {
+      return false;
+    }
+  }
+
+  const start = graph.findIndex((neighbors, node) => neighbors.length > 0 || inDegree[node] > 0);
+  if (start === -1) {
+    return true;
+  }
+
+  function dfs(adjacency: number[][], source: number, seen: boolean[]): void {
+    seen[source] = true;
+    for (const neighbor of adjacency[source]) {
+      if (!seen[neighbor]) {
+        dfs(adjacency, neighbor, seen);
+      }
+    }
+  }
+
+  const seenForward = new Array<boolean>(size).fill(false);
+  dfs(graph, start, seenForward);
+  const seenBackward = new Array<boolean>(size).fill(false);
+  dfs(transpose, start, seenBackward);
+
+  for (let node = 0; node < size; node += 1) {
+    const active = inDegree[node] > 0 || outDegree[node] > 0;
+    if (active && (!seenForward[node] || !seenBackward[node])) {
+      return false;
+    }
+  }
+
+  return true;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Extend the feasibility check to directed Euler paths that do not end where they start.
+- Reuse the classification result to choose a start vertex for Hierholzer.
+- Explain why strong connectivity is checked only among nonzero-degree vertices.
+
+## Common Pitfalls
+
+- Applying the undirected odd-degree rule to a directed graph.
+- Checking only weak connectivity instead of strong connectivity on active vertices.
+- Forgetting to compare in-degree and out-degree for every active node.

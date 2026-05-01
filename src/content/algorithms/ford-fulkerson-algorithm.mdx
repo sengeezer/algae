@@ -1,0 +1,158 @@
+---
+title: Ford-Fulkerson Algorithm
+slug: ford-fulkerson-algorithm
+category: Graphs
+summary: Repeatedly find an augmenting path in the residual graph and push as much flow as possible through it.
+description: Ford-Fulkerson Algorithm is the classic max-flow routine based on augmenting paths and residual capacity updates.
+dataStructures:
+  - Graph
+  - Queue
+  - Matrix
+techniques:
+  - Network Flow
+  - Residual Graph
+  - Augmenting Paths
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - max flow augmenting path
+  - Edmonds-Karp style max flow
+useCases:
+  - Computing maximum source to sink flow before moving to faster specialized variants
+  - Teaching residual networks and reverse-edge updates explicitly
+  - Solving cut and matching reductions through a foundational max-flow method
+complexity:
+  time: O(V * E^2) for the BFS implementation below
+  space: O(V^2)
+  notes: The BFS specialization shown here is the Edmonds-Karp variant of Ford-Fulkerson.
+interviewSignals:
+  - The prompt is about maximum transferable flow under edge capacities.
+  - Residual capacity and augmenting paths are natural parts of the explanation.
+relatedSlugs:
+  - max-flow-dinics-algorithm
+  - push-relabel-algorithm
+  - minimum-s-t-cut-in-a-flow-network
+provenance:
+  - title: GeeksforGeeks - Ford-Fulkerson Algorithm for Maximum Flow Problem
+    href: https://www.geeksforgeeks.org/dsa/ford-fulkerson-algorithm-for-maximum-flow-problem/
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Ford-Fulkerson is still the cleanest way to explain max flow from first principles. It makes the residual graph, bottleneck edge, and reverse-capacity updates explicit before you move on to faster variants such as Dinic or Push Relabel.
+
+## Worked Example
+
+Start with zero flow. Each BFS finds one source-to-sink path in the residual graph, computes the smallest residual capacity along it, pushes that amount, and then adds reverse residual capacity so later augmentations can reroute previously chosen flow.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function fordFulkersonAlgorithm(capacity, source, sink) {
+  const size = capacity.length;
+  const residual = capacity.map((row) => [...row]);
+  const parent = new Array(size).fill(-1);
+  let maxFlow = 0;
+
+  function bfs() {
+    parent.fill(-1);
+    parent[source] = source;
+    const queue = [source];
+
+    for (let head = 0; head < queue.length; head += 1) {
+      const node = queue[head];
+      for (let neighbor = 0; neighbor < size; neighbor += 1) {
+        if (parent[neighbor] === -1 && residual[node][neighbor] > 0) {
+          parent[neighbor] = node;
+          queue.push(neighbor);
+        }
+      }
+    }
+
+    return parent[sink] !== -1;
+  }
+
+  while (bfs()) {
+    let pushed = Number.POSITIVE_INFINITY;
+    for (let node = sink; node !== source; node = parent[node]) {
+      pushed = Math.min(pushed, residual[parent[node]][node]);
+    }
+
+    for (let node = sink; node !== source; node = parent[node]) {
+      residual[parent[node]][node] -= pushed;
+      residual[node][parent[node]] += pushed;
+    }
+
+    maxFlow += pushed;
+  }
+
+  return maxFlow;
+}
+```
+
+```ts
+export function fordFulkersonAlgorithm(
+  capacity: number[][],
+  source: number,
+  sink: number,
+): number {
+  const size = capacity.length;
+  const residual = capacity.map((row) => [...row]);
+  const parent = new Array<number>(size).fill(-1);
+  let maxFlow = 0;
+
+  function bfs(): boolean {
+    parent.fill(-1);
+    parent[source] = source;
+    const queue: number[] = [source];
+
+    for (let head = 0; head < queue.length; head += 1) {
+      const node = queue[head];
+      for (let neighbor = 0; neighbor < size; neighbor += 1) {
+        if (parent[neighbor] === -1 && residual[node][neighbor] > 0) {
+          parent[neighbor] = node;
+          queue.push(neighbor);
+        }
+      }
+    }
+
+    return parent[sink] !== -1;
+  }
+
+  while (bfs()) {
+    let pushed = Number.POSITIVE_INFINITY;
+    for (let node = sink; node !== source; node = parent[node]) {
+      pushed = Math.min(pushed, residual[parent[node]][node]);
+    }
+
+    for (let node = sink; node !== source; node = parent[node]) {
+      residual[parent[node]][node] -= pushed;
+      residual[node][parent[node]] += pushed;
+    }
+
+    maxFlow += pushed;
+  }
+
+  return maxFlow;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Extract the minimum cut after the final augmentation finishes.
+- Compare the augmenting-path approach with Dinic and Push Relabel.
+- Explain why reverse residual edges are necessary.
+
+## Common Pitfalls
+
+- Forgetting to add reverse residual capacity after pushing flow.
+- Confusing residual capacity with original capacity.
+- Claiming the BFS implementation still has the generic Ford-Fulkerson worst-case bound.

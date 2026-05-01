@@ -1,0 +1,220 @@
+---
+title: Atlantic Pacific Water Flow
+slug: atlantic-pacific-water-flow
+category: Graphs
+summary: Traverse inward from both oceans and keep the cells that can be reached by both reverse-flow searches.
+description: Atlantic Pacific Water Flow is the grid reachability problem solved by running two reverse multi-source traversals from the ocean borders.
+dataStructures:
+  - Matrix
+  - Queue
+  - Array
+techniques:
+  - Breadth-First Search
+  - Multi-Source Traversal
+  - Matrix Reachability
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - pacific atlantic water flow
+  - dual ocean reachability
+useCases:
+  - Finding cells that satisfy two independent reachability constraints on a grid
+  - Reversing a flow condition to avoid starting a search from every cell
+  - Practicing multi-source BFS on matrix boundaries
+complexity:
+  time: O(R * C)
+  space: O(R * C)
+  notes: Reverse traversal from both oceans is the key optimization because each cell is processed at most once per ocean.
+interviewSignals:
+  - A grid cell must reach two different boundary regions under monotonic movement rules.
+  - Running one search per cell would be too expensive.
+relatedSlugs:
+  - breadth-first-search
+  - depth-first-search
+  - boggle
+provenance:
+  - title: GeeksforGeeks - Atlantic pacific water flow
+    href: https://www.geeksforgeeks.org/dsa/atlantic-pacific-water-flow/
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Atlantic Pacific is a common interview problem because the direct simulation looks expensive, but the reverse view is efficient. Instead of trying every cell and seeing where water can go, start from each ocean and walk uphill to discover which cells can flow back down to it.
+
+## Worked Example
+
+Every top-edge and left-edge cell is initially Pacific reachable, and every bottom-edge and right-edge cell is Atlantic reachable. A cell belongs in the answer if both reverse traversals can enter it by moving only to neighbors with height greater than or equal to the current one.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function atlanticPacificWaterFlow(heights) {
+  const rowCount = heights.length;
+  const columnCount = rowCount === 0 ? 0 : heights[0].length;
+  if (rowCount === 0 || columnCount === 0) {
+    return [];
+  }
+
+  const directions = [
+    [1, 0],
+    [-1, 0],
+    [0, 1],
+    [0, -1],
+  ];
+
+  function bfs(starts) {
+    const seen = Array.from({ length: rowCount }, () => new Array(columnCount).fill(false));
+    const queue = starts.map(([row, column]) => [row, column]);
+
+    for (const [row, column] of starts) {
+      seen[row][column] = true;
+    }
+
+    for (let head = 0; head < queue.length; head += 1) {
+      const [row, column] = queue[head];
+
+      for (const [rowDelta, columnDelta] of directions) {
+        const nextRow = row + rowDelta;
+        const nextColumn = column + columnDelta;
+
+        if (
+          nextRow < 0
+          || nextRow >= rowCount
+          || nextColumn < 0
+          || nextColumn >= columnCount
+          || seen[nextRow][nextColumn]
+          || heights[nextRow][nextColumn] < heights[row][column]
+        ) {
+          continue;
+        }
+
+        seen[nextRow][nextColumn] = true;
+        queue.push([nextRow, nextColumn]);
+      }
+    }
+
+    return seen;
+  }
+
+  const pacificStarts = [];
+  const atlanticStarts = [];
+  for (let row = 0; row < rowCount; row += 1) {
+    pacificStarts.push([row, 0]);
+    atlanticStarts.push([row, columnCount - 1]);
+  }
+  for (let column = 0; column < columnCount; column += 1) {
+    pacificStarts.push([0, column]);
+    atlanticStarts.push([rowCount - 1, column]);
+  }
+
+  const pacific = bfs(pacificStarts);
+  const atlantic = bfs(atlanticStarts);
+  const result = [];
+
+  for (let row = 0; row < rowCount; row += 1) {
+    for (let column = 0; column < columnCount; column += 1) {
+      if (pacific[row][column] && atlantic[row][column]) {
+        result.push([row, column]);
+      }
+    }
+  }
+
+  return result;
+}
+```
+
+```ts
+export function atlanticPacificWaterFlow(heights: number[][]): Array<[number, number]> {
+  const rowCount = heights.length;
+  const columnCount = rowCount === 0 ? 0 : heights[0].length;
+  if (rowCount === 0 || columnCount === 0) {
+    return [];
+  }
+
+  const directions: Array<[number, number]> = [
+    [1, 0],
+    [-1, 0],
+    [0, 1],
+    [0, -1],
+  ];
+
+  function bfs(starts: Array<[number, number]>): boolean[][] {
+    const seen = Array.from({ length: rowCount }, () => new Array<boolean>(columnCount).fill(false));
+    const queue = starts.map(([row, column]) => [row, column] as [number, number]);
+
+    for (const [row, column] of starts) {
+      seen[row][column] = true;
+    }
+
+    for (let head = 0; head < queue.length; head += 1) {
+      const [row, column] = queue[head];
+
+      for (const [rowDelta, columnDelta] of directions) {
+        const nextRow = row + rowDelta;
+        const nextColumn = column + columnDelta;
+
+        if (
+          nextRow < 0
+          || nextRow >= rowCount
+          || nextColumn < 0
+          || nextColumn >= columnCount
+          || seen[nextRow][nextColumn]
+          || heights[nextRow][nextColumn] < heights[row][column]
+        ) {
+          continue;
+        }
+
+        seen[nextRow][nextColumn] = true;
+        queue.push([nextRow, nextColumn]);
+      }
+    }
+
+    return seen;
+  }
+
+  const pacificStarts: Array<[number, number]> = [];
+  const atlanticStarts: Array<[number, number]> = [];
+  for (let row = 0; row < rowCount; row += 1) {
+    pacificStarts.push([row, 0]);
+    atlanticStarts.push([row, columnCount - 1]);
+  }
+  for (let column = 0; column < columnCount; column += 1) {
+    pacificStarts.push([0, column]);
+    atlanticStarts.push([rowCount - 1, column]);
+  }
+
+  const pacific = bfs(pacificStarts);
+  const atlantic = bfs(atlanticStarts);
+  const result: Array<[number, number]> = [];
+
+  for (let row = 0; row < rowCount; row += 1) {
+    for (let column = 0; column < columnCount; column += 1) {
+      if (pacific[row][column] && atlantic[row][column]) {
+        result.push([row, column]);
+      }
+    }
+  }
+
+  return result;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Rework the solution with DFS instead of BFS.
+- Return the count only if the prompt does not need coordinates.
+- Explain why the searches move from the oceans inward rather than from each cell outward.
+
+## Common Pitfalls
+
+- Simulating outward flow from every cell instead of reversing the search direction.
+- Moving to lower neighbors during the reverse traversal when the rule should be nondecreasing.
+- Forgetting that the border cells belong to the initial frontier for their adjacent ocean.

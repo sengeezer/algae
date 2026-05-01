@@ -1,0 +1,206 @@
+---
+title: Fleury's Algorithm
+slug: fleurys-algorithm
+category: Graphs
+summary: Build an undirected Euler trail one edge at a time while avoiding bridge edges until they are unavoidable.
+description: Fleury's Algorithm is the explicit Euler traversal construction that prefers non-bridge edges so the remaining graph stays traversable.
+dataStructures:
+  - Graph
+  - Array
+  - Stack
+techniques:
+  - Eulerian Traversal
+  - Bridge Avoidance
+  - Graph Traversal
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - Fleury algorithm
+  - Euler trail construction
+useCases:
+  - Constructing an undirected Euler path after feasibility is already known
+  - Comparing a bridge-aware traversal with Hierholzer's faster cycle-splicing method
+  - Explaining why some edges must be postponed until the end of the tour
+complexity:
+  time: O(E^2)
+  space: O(V + E)
+  notes: Fleury is slower than Hierholzer because it may re-run reachability checks before committing each edge.
+interviewSignals:
+  - The prompt asks for the actual Euler tour rather than only a yes or no classification.
+  - You need to avoid consuming a bridge too early unless it is the only legal choice.
+relatedSlugs:
+  - euler-path-and-euler-circuit
+  - hierholzers-algorithm-directed-graph
+  - bridges-in-a-graph
+provenance:
+  - title: GeeksforGeeks - Fleury's Algorithm for printing Eulerian Path or Circuit
+    href: https://www.geeksforgeeks.org/dsa/fleurys-algorithm-for-printing-eulerian-path/
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Fleury's algorithm is the classical construction method that turns Eulerian theory into an actual undirected traversal. The key interview move is to avoid burning a bridge while another choice still exists, because a premature bridge can strand unused edges.
+
+## Worked Example
+
+If the current vertex has three incident edges and one of them is a bridge, Fleury prefers one of the other two first. Only when an edge is the last remaining option does the algorithm accept a bridge and move through it.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function fleurysAlgorithm(graph) {
+  const remaining = graph.map((neighbors) => [...neighbors]);
+  const trail = [];
+
+  function removeEdge(from, to) {
+    remaining[from].splice(remaining[from].indexOf(to), 1);
+    remaining[to].splice(remaining[to].indexOf(from), 1);
+  }
+
+  function addEdge(from, to) {
+    remaining[from].push(to);
+    remaining[to].push(from);
+  }
+
+  function countReachable(node, seen) {
+    seen[node] = true;
+    let count = 1;
+
+    for (const neighbor of remaining[node]) {
+      if (!seen[neighbor]) {
+        count += countReachable(neighbor, seen);
+      }
+    }
+
+    return count;
+  }
+
+  function isValidNextEdge(from, to) {
+    if (remaining[from].length === 1) {
+      return true;
+    }
+
+    const seenBefore = new Array(remaining.length).fill(false);
+    const reachableBefore = countReachable(from, seenBefore);
+    removeEdge(from, to);
+    const seenAfter = new Array(remaining.length).fill(false);
+    const reachableAfter = countReachable(from, seenAfter);
+    addEdge(from, to);
+    return reachableBefore === reachableAfter;
+  }
+
+  function walk(node) {
+    while (remaining[node].length > 0) {
+      let next = remaining[node][0];
+      for (const candidate of [...remaining[node]]) {
+        if (isValidNextEdge(node, candidate)) {
+          next = candidate;
+          break;
+        }
+      }
+
+      removeEdge(node, next);
+      trail.push([node, next]);
+      walk(next);
+    }
+  }
+
+  const odd = remaining.findIndex((neighbors) => neighbors.length % 2 === 1);
+  const start = odd !== -1 ? odd : remaining.findIndex((neighbors) => neighbors.length > 0);
+  if (start === -1) {
+    return trail;
+  }
+
+  walk(start);
+  return trail;
+}
+```
+
+```ts
+export function fleurysAlgorithm(graph: number[][]): Array<[number, number]> {
+  const remaining = graph.map((neighbors) => [...neighbors]);
+  const trail: Array<[number, number]> = [];
+
+  function removeEdge(from: number, to: number): void {
+    remaining[from].splice(remaining[from].indexOf(to), 1);
+    remaining[to].splice(remaining[to].indexOf(from), 1);
+  }
+
+  function addEdge(from: number, to: number): void {
+    remaining[from].push(to);
+    remaining[to].push(from);
+  }
+
+  function countReachable(node: number, seen: boolean[]): number {
+    seen[node] = true;
+    let count = 1;
+
+    for (const neighbor of remaining[node]) {
+      if (!seen[neighbor]) {
+        count += countReachable(neighbor, seen);
+      }
+    }
+
+    return count;
+  }
+
+  function isValidNextEdge(from: number, to: number): boolean {
+    if (remaining[from].length === 1) {
+      return true;
+    }
+
+    const seenBefore = new Array<boolean>(remaining.length).fill(false);
+    const reachableBefore = countReachable(from, seenBefore);
+    removeEdge(from, to);
+    const seenAfter = new Array<boolean>(remaining.length).fill(false);
+    const reachableAfter = countReachable(from, seenAfter);
+    addEdge(from, to);
+    return reachableBefore === reachableAfter;
+  }
+
+  function walk(node: number): void {
+    while (remaining[node].length > 0) {
+      let next = remaining[node][0];
+      for (const candidate of [...remaining[node]]) {
+        if (isValidNextEdge(node, candidate)) {
+          next = candidate;
+          break;
+        }
+      }
+
+      removeEdge(node, next);
+      trail.push([node, next]);
+      walk(next);
+    }
+  }
+
+  const odd = remaining.findIndex((neighbors) => neighbors.length % 2 === 1);
+  const start = odd !== -1 ? odd : remaining.findIndex((neighbors) => neighbors.length > 0);
+  if (start === -1) {
+    return trail;
+  }
+
+  walk(start);
+  return trail;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare Fleury with Hierholzer and explain why Hierholzer is preferred in practice.
+- Add an explicit Eulerian feasibility check before construction begins.
+- Return the vertices in the tour instead of the traversed edges.
+
+## Common Pitfalls
+
+- Removing a bridge too early when another unused edge is available.
+- Forgetting that Fleury is for undirected Euler tours in this form.
+- Mutating the caller's adjacency lists instead of working on a copy.

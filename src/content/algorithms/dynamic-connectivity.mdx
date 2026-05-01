@@ -1,0 +1,157 @@
+---
+title: Dynamic Connectivity
+slug: dynamic-connectivity
+category: Graphs
+summary: Maintain connected components under edge insertions so connectivity queries become near-constant-time set lookups.
+description: Dynamic Connectivity is the incremental graph-query problem typically solved with union-find and online add-edge queries.
+dataStructures:
+  - Graph
+  - Array
+  - Disjoint Set Union
+techniques:
+  - Union-Find
+  - Online Queries
+  - Incremental Connectivity
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - incremental connectivity
+  - online connectivity queries
+useCases:
+  - Answering whether two vertices are connected while edges are added over time
+  - Turning a static DSU implementation into a query-driven graph routine
+  - Modeling social or network growth without re-running full traversals
+complexity:
+  time: Near O(Q) overall with inverse Ackermann amortization per operation
+  space: O(V)
+  notes: Union by rank and path compression keep both updates and queries effectively constant time in practice.
+interviewSignals:
+  - Queries arrive online and the graph only gains edges.
+  - Re-running DFS or BFS for every query would be unnecessarily expensive.
+relatedSlugs:
+  - union-find
+  - kruskal-mst
+  - connected-components
+provenance:
+  - title: GeeksforGeeks - Dynamic Connectivity | Set 1 (Incremental)
+    href: https://www.geeksforgeeks.org/dsa/dynamic-connectivity-set-1-incremental/
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Dynamic connectivity is what union-find looks like when the interviewer stops asking about the data structure in isolation and instead asks for query handling. The graph changes over time, but only by adding edges, which makes DSU the right tool.
+
+## Worked Example
+
+Start with all vertices disconnected. Each add-edge query unions two components, and each check query answers immediately by comparing the representatives of the queried vertices.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function dynamicConnectivity(nodeCount, queries) {
+  const parent = Array.from({ length: nodeCount }, (_, index) => index);
+  const rank = new Array(nodeCount).fill(0);
+  const answers = [];
+
+  function find(node) {
+    if (parent[node] !== node) {
+      parent[node] = find(parent[node]);
+    }
+    return parent[node];
+  }
+
+  function union(left, right) {
+    const rootLeft = find(left);
+    const rootRight = find(right);
+    if (rootLeft === rootRight) {
+      return;
+    }
+
+    if (rank[rootLeft] < rank[rootRight]) {
+      parent[rootLeft] = rootRight;
+    } else if (rank[rootLeft] > rank[rootRight]) {
+      parent[rootRight] = rootLeft;
+    } else {
+      parent[rootRight] = rootLeft;
+      rank[rootLeft] += 1;
+    }
+  }
+
+  for (const [type, left, right] of queries) {
+    if (type === 1) {
+      union(left, right);
+      continue;
+    }
+
+    answers.push(find(left) === find(right));
+  }
+
+  return answers;
+}
+```
+
+```ts
+export function dynamicConnectivity(
+  nodeCount: number,
+  queries: Array<[number, number, number]>,
+): boolean[] {
+  const parent = Array.from({ length: nodeCount }, (_, index) => index);
+  const rank = new Array<number>(nodeCount).fill(0);
+  const answers: boolean[] = [];
+
+  function find(node: number): number {
+    if (parent[node] !== node) {
+      parent[node] = find(parent[node]);
+    }
+    return parent[node];
+  }
+
+  function union(left: number, right: number): void {
+    const rootLeft = find(left);
+    const rootRight = find(right);
+    if (rootLeft === rootRight) {
+      return;
+    }
+
+    if (rank[rootLeft] < rank[rootRight]) {
+      parent[rootLeft] = rootRight;
+    } else if (rank[rootLeft] > rank[rootRight]) {
+      parent[rootRight] = rootLeft;
+    } else {
+      parent[rootRight] = rootLeft;
+      rank[rootLeft] += 1;
+    }
+  }
+
+  for (const [type, left, right] of queries) {
+    if (type === 1) {
+      union(left, right);
+      continue;
+    }
+
+    answers.push(find(left) === find(right));
+  }
+
+  return answers;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Extend the interface to support decremental or fully dynamic connectivity.
+- Return component sizes alongside connectivity answers.
+- Explain why DSU works only because edges are added and never removed.
+
+## Common Pitfalls
+
+- Re-running graph traversal on every query instead of maintaining components.
+- Forgetting path compression or union by rank when discussing complexity.
+- Assuming the same approach handles deletions without additional machinery.
