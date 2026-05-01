@@ -471,9 +471,20 @@ This fortieth expansion slice lifts the catalog from 272 to 278 entries.
 - Int To Base
 - Is Divisible
 
+## Batch 41 added
+
+This forty-first expansion slice lifts the catalog from 278 to 284 entries.
+
+- Is Even
+- Is Odd
+- Is Palindrome Integer Number
+- Is Pronic
+- Is Square Free
+- Juggler Sequence
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 40 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 41 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -482,9 +493,9 @@ All expansion entries from batch 1 through batch 40 now carry explicit per-entry
 ## Why this batch
 
 - It fills obvious interview-core gaps from TheAlgorithms/JavaScript without duplicating material already present in Algae.
-- It follows the next verified math queue directly, adding abundancy-based comparison, gcd computation, flat-grid coordinate helpers, polygonal-number formulas, base conversion, and a direct divisibility predicate.
-- It broadens the catalog across arithmetic relations, coordinate utilities, and number-representation helpers instead of staying inside the previous approximation-and-iterator slice.
-- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially simple mathematical primitives and helper routines that still reward precise validation and careful edge-case handling.
+- It follows the next verified math queue directly, adding parity predicates, an integer palindrome check, pronic and square-free classifiers, and the juggler recurrence.
+- It broadens the catalog across arithmetic classification and sequence generation instead of staying inside the previous divisor-and-coordinate helper slice.
+- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially compact predicate-style helpers that still require careful integer validation and boundary handling.
 
 ## Supporting study references from the algorithms list
 
@@ -494,9 +505,9 @@ All expansion entries from batch 1 through batch 40 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- Is Even
-- Is Odd
-- Is Palindrome Integer Number
-- Is Pronic
-- Is Square Free
-- Juggler Sequence
+- Leap Year
+- Linear Sieve
+- Liouville Function
+- Lucas Series
+- Mandelbrot
+- Matrix Exponentiation Recursive

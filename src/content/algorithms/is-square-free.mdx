@@ -1,0 +1,98 @@
+---
+title: Is Square Free
+slug: is-square-free
+category: Mathematics
+summary: Check whether a positive integer has no repeated prime factor, meaning no square greater than `1` divides it.
+description: Is Square Free is the factor-structure predicate that rejects integers divisible by any perfect square larger than `1`.
+dataStructures:
+  - Number
+techniques:
+  - Divisibility Check
+  - Square Factor Detection
+  - Number Theory
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - square-free integer check
+  - repeated prime factor test
+useCases:
+  - Filtering integers by whether prime factors repeat
+  - Teaching how square divisors reveal duplicate prime factors
+  - Supporting mobius-function or factorization-related reasoning
+complexity:
+  time: O(sqrt(n))
+  space: O(1)
+  notes: Checking whether any `d^2` divides the number only requires scanning `d` up to the square root.
+interviewSignals:
+  - The prompt asks whether an integer has repeated prime factors.
+  - The expected solution looks for square divisors instead of building every factorization path.
+relatedSlugs:
+  - perfect-square
+  - prime-factors
+  - is-divisible
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/IsSquareFree.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/IsSquareFree.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Square-free checks are a good number-theory bridge between divisibility and factor structure. The efficient insight is that any repeated prime factor creates a square divisor.
+
+## Worked Example
+
+`30` is square-free because no square greater than `1` divides it. `12` is not square-free because `4` divides `12`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function isSquareFree(value) {
+  if (!Number.isInteger(value) || value <= 0) {
+    throw new RangeError('Value must be a positive integer');
+  }
+
+  for (let divisor = 2; divisor * divisor <= value; divisor += 1) {
+    if (value % (divisor * divisor) === 0) {
+      return false;
+    }
+  }
+
+  return true;
+}
+```
+
+```ts
+export function isSquareFree(value: number): boolean {
+  if (!Number.isInteger(value) || value <= 0) {
+    throw new RangeError('Value must be a positive integer');
+  }
+
+  for (let divisor = 2; divisor * divisor <= value; divisor += 1) {
+    if (value % (divisor * divisor) === 0) {
+      return false;
+    }
+  }
+
+  return true;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Relate square-free numbers to the Möbius function.
+- Compare square-divisor scanning with prime-factor counting.
+- Count how many square-free numbers lie in a range.
+
+## Common Pitfalls
+
+- Allowing zero or negative values without defining the behavior.
+- Factoring the whole number when checking square divisors is enough.
+- Forgetting that a repeated prime factor always creates a square divisor.

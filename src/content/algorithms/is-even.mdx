@@ -1,0 +1,86 @@
+---
+title: Is Even
+slug: is-even
+category: Mathematics
+summary: Check whether an integer is divisible by `2`, with an optional bitwise formulation for 32-bit integer inputs.
+description: Is Even is the parity predicate that recognizes integers whose remainder modulo `2` is zero.
+dataStructures:
+  - Number
+techniques:
+  - Modulo Arithmetic
+  - Bitwise Check
+  - Numeric Predicate
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - parity check even
+  - even number test
+useCases:
+  - Branching on parity in arithmetic and combinatorics prompts
+  - Short-circuiting problems that behave differently for even and odd inputs
+  - Comparing modulo-based and bitwise parity checks
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: Both parity checks use a constant number of arithmetic or bitwise operations.
+interviewSignals:
+  - The prompt asks whether a number is even or requires parity-based branching.
+  - A follow-up may ask for a bitwise alternative to modulo.
+relatedSlugs:
+  - is-odd
+  - signum
+  - is-divisible
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/IsEven.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/IsEven.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Parity is one of the most common branching conditions in interview math. This helper is tiny, but it shows whether you validate integer inputs and whether you understand why bitwise parity checks only make sense for integer values.
+
+## Worked Example
+
+`14` is even because `14 % 2` is `0`. `17` is not even because its remainder modulo `2` is `1`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function isEven(value) {
+  return Number.isInteger(value) && value % 2 === 0;
+}
+
+function isEvenBitwise(value) {
+  return Number.isInteger(value) && (value & 1) === 0;
+}
+```
+
+```ts
+export function isEven(value: number): boolean {
+  return Number.isInteger(value) && value % 2 === 0;
+}
+
+export function isEvenBitwise(value: number): boolean {
+  return Number.isInteger(value) && (value & 1) === 0;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why bitwise parity checks are only appropriate for integer inputs.
+- Compare the readability of modulo and bitwise implementations.
+- Use parity to simplify a larger recurrence or dynamic-programming transition.
+
+## Common Pitfalls
+
+- Treating non-integer values as valid even numbers.
+- Forgetting that bitwise operators coerce values into 32-bit integers.
+- Reimplementing divisibility logic when `% 2` already answers the question.

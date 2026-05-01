@@ -1,0 +1,96 @@
+---
+title: Is Pronic
+slug: is-pronic
+category: Mathematics
+summary: Check whether a non-negative integer can be written as the product of two consecutive integers.
+description: Is Pronic is the figurate-number predicate that recognizes values of the form `k(k + 1)`.
+dataStructures:
+  - Number
+techniques:
+  - Square Root Heuristic
+  - Numeric Predicate
+  - Consecutive Product Check
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - oblong number check
+  - consecutive product test
+useCases:
+  - Classifying numbers that arise from consecutive products
+  - Teaching how square-root bounds simplify product-form checks
+  - Supporting figurate-number reasoning in small math prompts
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The decision comes from a constant amount of root and multiplication work.
+interviewSignals:
+  - The prompt asks whether a value equals `n(n + 1)` for some integer `n`.
+  - The expected solution uses root-based reasoning rather than a long brute-force scan.
+relatedSlugs:
+  - hexagonal-number
+  - perfect-square
+  - is-square-free
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/IsPronic.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/IsPronic.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Pronic numbers are a short closed-form classification problem. The main trick is recognizing that the relevant consecutive integers sit around the square root.
+
+## Worked Example
+
+`12` is pronic because `12 = 3 * 4`. `16` is not pronic because no pair of consecutive integers multiplies to `16`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function isPronic(value) {
+  if (!Number.isInteger(value) || value < 0) {
+    return false;
+  }
+
+  if (value === 0) {
+    return true;
+  }
+
+  const root = Math.floor(Math.sqrt(value));
+  return root * (root + 1) === value;
+}
+```
+
+```ts
+export function isPronic(value: number): boolean {
+  if (!Number.isInteger(value) || value < 0) {
+    return false;
+  }
+
+  if (value === 0) {
+    return true;
+  }
+
+  const root = Math.floor(Math.sqrt(value));
+  return root * (root + 1) === value;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Derive why checking around the square root is enough.
+- Compare pronic numbers with triangular and hexagonal numbers.
+- Generate the first `k` pronic numbers instead of testing one value.
+
+## Common Pitfalls
+
+- Forgetting that `0 = 0 * 1` is pronic.
+- Treating negative values as valid under this definition.
+- Scanning all possible factors when the square root already narrows the candidate pair.

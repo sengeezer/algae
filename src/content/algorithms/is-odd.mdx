@@ -1,0 +1,86 @@
+---
+title: Is Odd
+slug: is-odd
+category: Mathematics
+summary: Check whether an integer leaves a non-zero remainder when divided by `2`, with an optional bitwise formulation for 32-bit integer inputs.
+description: Is Odd is the parity predicate that recognizes integers whose remainder modulo `2` is not zero.
+dataStructures:
+  - Number
+techniques:
+  - Modulo Arithmetic
+  - Bitwise Check
+  - Numeric Predicate
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - parity check odd
+  - odd number test
+useCases:
+  - Branching on odd cases in recurrences and combinatorics prompts
+  - Detecting values that cannot be paired evenly
+  - Comparing modulo-based and bitwise parity checks
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: Both implementations answer the question with a constant number of operations.
+interviewSignals:
+  - The prompt asks whether a number is odd or requires parity-based branching.
+  - A follow-up may ask for a bitwise alternative to modulo.
+relatedSlugs:
+  - is-even
+  - signum
+  - is-divisible
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/IsOdd.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/IsOdd.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Oddness checks are the mirror image of evenness checks, but they still matter because many recurrences and number properties split precisely on parity.
+
+## Worked Example
+
+`17` is odd because `17 % 2` is `1`. `14` is not odd because its remainder modulo `2` is `0`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function isOdd(value) {
+  return Number.isInteger(value) && Math.abs(value % 2) === 1;
+}
+
+function isOddBitwise(value) {
+  return Number.isInteger(value) && Boolean(value & 1);
+}
+```
+
+```ts
+export function isOdd(value: number): boolean {
+  return Number.isInteger(value) && Math.abs(value % 2) === 1;
+}
+
+export function isOddBitwise(value: number): boolean {
+  return Number.isInteger(value) && Boolean(value & 1);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare how modulo behaves for negative values in JavaScript.
+- Explain why the bitwise form still works for signed integers.
+- Use oddness to simplify a recurrence like Collatz or fast exponentiation.
+
+## Common Pitfalls
+
+- Assuming `% 2 === 1` works for negative odd values in JavaScript.
+- Treating fractional inputs as odd or even.
+- Forgetting that bitwise operators coerce to 32-bit integers.

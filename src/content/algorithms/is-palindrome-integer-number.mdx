@@ -1,0 +1,110 @@
+---
+title: Is Palindrome Integer Number
+slug: is-palindrome-integer-number
+category: Mathematics
+summary: Check whether a non-negative integer reads the same forward and backward by reversing its digits arithmetically.
+description: Is Palindrome Integer Number is the digit-reversal predicate that compares an integer against its reversed decimal expansion.
+dataStructures:
+  - Number
+techniques:
+  - Digit Reversal
+  - Numeric Predicate
+  - Arithmetic Decomposition
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - integer palindrome check
+  - numeric palindrome test
+useCases:
+  - Testing mirrored digit patterns without converting to strings
+  - Building number-theory predicates over decimal expansions
+  - Comparing arithmetic reversal with string reversal solutions
+complexity:
+  time: O(d)
+  space: O(1)
+  notes: The algorithm inspects each decimal digit once while building the reversed value.
+interviewSignals:
+  - The prompt asks whether an integer reads the same both ways.
+  - The expected solution avoids string conversion or explicitly compares it with an arithmetic approach.
+relatedSlugs:
+  - reverse-number
+  - palindrome
+  - automorphic-number
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/isPalindromeIntegerNumber.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/isPalindromeIntegerNumber.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Integer-palindrome checks are a classic digit-manipulation prompt. The arithmetic version is a good test of whether you can peel digits off cleanly without falling back to strings.
+
+## Worked Example
+
+`12321` is a palindrome because reversing its digits still gives `12321`. `120` is not, because reversing its digits gives `21`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function isPalindromeIntegerNumber(value) {
+  if (typeof value !== 'number' || !Number.isFinite(value)) {
+    throw new TypeError('Expected a finite number');
+  }
+
+  if (!Number.isInteger(value) || value < 0) {
+    return false;
+  }
+
+  let remaining = value;
+  let reversed = 0;
+
+  while (remaining > 0) {
+    reversed = reversed * 10 + (remaining % 10);
+    remaining = Math.floor(remaining / 10);
+  }
+
+  return value === reversed;
+}
+```
+
+```ts
+export function isPalindromeIntegerNumber(value: number): boolean {
+  if (!Number.isFinite(value)) {
+    throw new TypeError('Expected a finite number');
+  }
+
+  if (!Number.isInteger(value) || value < 0) {
+    return false;
+  }
+
+  let remaining = value;
+  let reversed = 0;
+
+  while (remaining > 0) {
+    reversed = reversed * 10 + (remaining % 10);
+    remaining = Math.floor(remaining / 10);
+  }
+
+  return value === reversed;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare the arithmetic approach with a string-based implementation.
+- Reverse only half the digits to reduce overflow risk in fixed-width integer languages.
+- Extend the predicate to other bases besides decimal.
+
+## Common Pitfalls
+
+- Forgetting that negative integers are not palindromes under the decimal-sign convention.
+- Returning `true` for non-integer numeric inputs.
+- Dropping leading zeros during reversal and misreading what that implies for values like `120`.

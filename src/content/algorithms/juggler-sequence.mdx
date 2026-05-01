@@ -1,0 +1,103 @@
+---
+title: Juggler Sequence
+slug: juggler-sequence
+category: Mathematics
+summary: Generate the juggler sequence by repeatedly applying a square-root step for even terms and a `3/2` power step for odd terms.
+description: Juggler Sequence is the recurrence generator that starts from a positive integer and repeatedly transforms each term according to its parity until it reaches `1`.
+dataStructures:
+  - Array
+  - Number
+techniques:
+  - Recurrence Sequence
+  - Parity-Based Branching
+  - Numerical Iteration
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - juggler recurrence
+  - parity power sequence
+useCases:
+  - Exploring unusual integer sequences defined by parity rules
+  - Teaching how recurrence-driven sequences can grow and shrink sharply
+  - Comparing parity-based sequences like Juggler and Collatz
+complexity:
+  time: O(k)
+  space: O(k)
+  notes: The routine stores every generated term, so runtime and space both scale with the sequence length.
+interviewSignals:
+  - The prompt defines a sequence with different updates for even and odd values.
+  - The expected solution builds every term until the sequence reaches `1`.
+relatedSlugs:
+  - collatz-sequence
+  - is-even
+  - is-odd
+provenance:
+  - title: TheAlgorithms/JavaScript - Maths/JugglerSequence.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/JugglerSequence.js
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Juggler sequence prompts are small recurrence exercises that still test whether you can track parity correctly and build the full sequence rather than only the next term.
+
+## Worked Example
+
+Starting from `3`, the sequence is `3, 5, 11, 36, 6, 2, 1`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function jugglerSequence(value) {
+  if (!Number.isInteger(value) || value <= 0) {
+    throw new RangeError('Value must be a positive integer');
+  }
+
+  const sequence = [value];
+  let current = value;
+
+  while (current !== 1) {
+    current = current % 2 === 0 ? Math.floor(Math.sqrt(current)) : Math.floor(current ** 1.5);
+    sequence.push(current);
+  }
+
+  return sequence;
+}
+```
+
+```ts
+export function jugglerSequence(value: number): number[] {
+  if (!Number.isInteger(value) || value <= 0) {
+    throw new RangeError('Value must be a positive integer');
+  }
+
+  const sequence: number[] = [value];
+  let current = value;
+
+  while (current !== 1) {
+    current = current % 2 === 0 ? Math.floor(Math.sqrt(current)) : Math.floor(current ** 1.5);
+    sequence.push(current);
+  }
+
+  return sequence;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Track the peak value reached before the sequence hits `1`.
+- Compare the juggler sequence with the Collatz sequence.
+- Stream terms to a callback instead of storing the whole array.
+
+## Common Pitfalls
+
+- Forgetting to include the starting value in the returned sequence.
+- Mixing up the even and odd update rules.
+- Using fractional powers without flooring back to an integer term.
