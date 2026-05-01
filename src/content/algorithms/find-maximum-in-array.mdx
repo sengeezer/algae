@@ -1,0 +1,102 @@
+---
+title: Find Maximum in Array
+slug: find-maximum-in-array
+category: Array Patterns
+summary: Scan the array once while carrying forward the largest value seen so far.
+description: Find Maximum in Array is the baseline linear selection routine that surfaces whenever the prompt only needs the extreme value, not a full ordering.
+dataStructures:
+  - Array
+  - Number
+techniques:
+  - Linear Scan
+  - Selection
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - array maximum
+  - max element scan
+useCases:
+  - Finding the best score in a list
+  - Building a baseline before tracking top-k or second-largest values
+  - Teaching why sorting is unnecessary when only one extreme matters
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: You only need one pass and one running best value, so any full sort would be wasted work.
+interviewSignals:
+  - The prompt asks for the largest element only.
+  - The interviewer wants a direct scan rather than a library sort.
+relatedSlugs:
+  - find-second-largest-element
+  - quickselect
+  - max-character
+provenance:
+  - title: AllThingsSmitty/javascript-algorithms - Find Maximum in Array
+    href: https://github.com/AllThingsSmitty/javascript-algorithms#find-maximum-in-array
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the simplest selection problem, but interviewers still use it to check whether you reach for the right linear pattern immediately instead of over-solving with sorting or extra structures.
+
+## Worked Example
+
+For `[4, 1, 9, 3]`, start with `4` as the running maximum, keep it when `1` arrives, replace it with `9`, and ignore `3` because it is smaller than the best value already seen.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function findMaximumInArray(values) {
+  if (!Array.isArray(values) || values.length === 0) {
+    throw new TypeError('Expected a non-empty array');
+  }
+
+  let best = values[0];
+
+  for (let index = 1; index < values.length; index += 1) {
+    if (values[index] > best) {
+      best = values[index];
+    }
+  }
+
+  return best;
+}
+```
+
+```ts
+export function findMaximumInArray(values: number[]): number {
+  if (values.length === 0) {
+    throw new TypeError('Expected a non-empty array');
+  }
+
+  let best = values[0];
+
+  for (let index = 1; index < values.length; index += 1) {
+    if (values[index] > best) {
+      best = values[index];
+    }
+  }
+
+  return best;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Track both the maximum value and its index.
+- Extend the scan to return the top two distinct values.
+- Explain when `Math.max(...values)` becomes a worse choice than a loop.
+
+## Common Pitfalls
+
+- Sorting the array when only one maximum is needed.
+- Forgetting to guard against an empty array.
+- Using the spread operator blindly on very large arrays.

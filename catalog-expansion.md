@@ -2,6 +2,7 @@
 
 ## Sources for JavaScript / TypeScript algorithms
 - https://github.com/TheAlgorithms/JavaScript
+- https://github.com/AllThingsSmitty/javascript-algorithms
 - https://github.com/EbookFoundation/free-programming-books/blob/main/books/free-programming-books-subjects.md#algorithms--data-structures
 
 ## Existing overlap to skip
@@ -590,9 +591,20 @@ This fifty-first expansion slice lifts the catalog from 336 to 342 entries.
 - Pigeon Hole Sort
 - Swap Sort
 
+## Batch 52 added
+
+This fifty-second expansion slice lifts the catalog from 342 to 348 entries.
+
+- Merge Two Sorted Arrays
+- Find Maximum in Array
+- Linked List
+- Stack
+- Queue
+- Debounce Function
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 51 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 52 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -601,10 +613,10 @@ All expansion entries from batch 1 through batch 51 now carry explicit per-entry
 ## Why this batch
 
 - It fills obvious interview-core gaps from TheAlgorithms/JavaScript without duplicating material already present in Algae.
-- It moves beyond the Project Euler tail into the next exact upstream absences that still add distinct teaching value: naive recursive recurrence, recursive fractal geometry, fixed and variable sliding windows, dense-range integer sorting, and minimum-swap permutation repair.
-- It broadens the catalog across recursion-tree cost, vector rotation, rolling-window invariants, dense counting-based sorting, and value-to-index remapping instead of staying inside challenge-style number theory routines.
-- It leaves the immediate next upstream frontier in a duplicate-heavy zone, which is useful context for the next pass because several remaining names are variants or relabelings of material Algae already covers.
-- It still lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially the parts that emphasize pattern selection, invariants, and when a simple direct implementation is intentionally worse but pedagogically important.
+- It starts a new implementation source after saturating TheAlgorithms/JavaScript modulo variants, taking the first clean absences from the curated `AllThingsSmitty/javascript-algorithms` sequence.
+- It broadens the catalog with two-pointer merging, baseline array scanning, foundational linear data structures, and a timing-oriented control-flow utility instead of staying inside more specialized recursive and sliding-window variants.
+- It fills several foundational building blocks that interviewers often assume candidates can implement from scratch even when the catalog already covers downstream problem-specific uses like circular queues, linked-list cycle detection, or stack-based expression evaluation.
+- It leaves both current implementation sources effectively exhausted except for semantic duplicates or alternative implementations, which means the next pass should pivot to a genuinely new source rather than keep harvesting variants.
 
 ## Supporting study references from the algorithms list
 
@@ -614,4 +626,4 @@ All expansion entries from batch 1 through batch 51 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- The next exact upstream frontier after this batch is `QuickSelectSearch`, `StringSearch`, `HeapSortV2`, `QuickSortRecursive`, `CheckPalindrome`, and `LengthofLongestSubstringWithoutRepetition`, but each overlaps existing Algae coverage and needs variant-level dedupe before another authoring slice.
+- No remaining clean absences remain in the current TheAlgorithms/JavaScript DIRECTORY or the `AllThingsSmitty/javascript-algorithms` README sequence once semantic duplicates are excluded. The next expansion pass should choose a new implementation source instead of revisiting variants.

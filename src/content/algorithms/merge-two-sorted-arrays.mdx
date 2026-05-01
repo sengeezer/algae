@@ -1,0 +1,109 @@
+---
+title: Merge Two Sorted Arrays
+slug: merge-two-sorted-arrays
+category: Array Patterns
+summary: Walk two sorted arrays with separate pointers and always emit the smaller front value next.
+description: Merge Two Sorted Arrays is the linear two-pointer merge routine that underpins merge sort and many sorted-stream interview problems.
+dataStructures:
+  - Array
+techniques:
+  - Two Pointers
+  - Merging
+difficulty: Easy
+interviewFrequency: High
+aliases:
+  - merge sorted lists
+  - sorted array merge
+useCases:
+  - Combining two sorted result sets
+  - Implementing the merge step in merge sort
+  - Merging ordered event streams without resorting everything
+complexity:
+  time: O(n + m)
+  space: O(n + m)
+  notes: Each pointer advances at most once per element, so the merge stays linear in the total input size.
+interviewSignals:
+  - The input arrays are already sorted.
+  - The interviewer wants a linear-time combine step instead of concatenating and sorting again.
+relatedSlugs:
+  - merge-sort
+  - merge-two-sorted-linked-lists
+  - two-pointers
+provenance:
+  - title: AllThingsSmitty/javascript-algorithms - Merge Two Sorted Arrays
+    href: https://github.com/AllThingsSmitty/javascript-algorithms#merge-two-sorted-arrays
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the smallest useful two-pointer merge problem. It shows up on its own, but it is also the exact combine step behind merge sort, interval sweeps, and many streaming joins.
+
+## Worked Example
+
+For `[1, 3, 5]` and `[2, 4, 6]`, compare the current fronts, emit `1`, then `2`, then `3`, and keep going until one side runs out. Append the remaining tail from the other side at the end.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function mergeTwoSortedArrays(left, right) {
+  if (!Array.isArray(left) || !Array.isArray(right)) {
+    throw new TypeError('Both inputs must be arrays');
+  }
+
+  const merged = [];
+  let leftIndex = 0;
+  let rightIndex = 0;
+
+  while (leftIndex < left.length && rightIndex < right.length) {
+    if (left[leftIndex] <= right[rightIndex]) {
+      merged.push(left[leftIndex]);
+      leftIndex += 1;
+    } else {
+      merged.push(right[rightIndex]);
+      rightIndex += 1;
+    }
+  }
+
+  return merged.concat(left.slice(leftIndex), right.slice(rightIndex));
+}
+```
+
+```ts
+export function mergeTwoSortedArrays(left: number[], right: number[]): number[] {
+  const merged: number[] = [];
+  let leftIndex = 0;
+  let rightIndex = 0;
+
+  while (leftIndex < left.length && rightIndex < right.length) {
+    if (left[leftIndex] <= right[rightIndex]) {
+      merged.push(left[leftIndex]);
+      leftIndex += 1;
+    } else {
+      merged.push(right[rightIndex]);
+      rightIndex += 1;
+    }
+  }
+
+  return merged.concat(left.slice(leftIndex), right.slice(rightIndex));
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Merge the arrays in place when one buffer has extra trailing capacity.
+- Count inversions while performing the merge.
+- Generalize the merge to objects with a custom comparator.
+
+## Common Pitfalls
+
+- Concatenating both arrays and sorting again instead of exploiting the existing order.
+- Forgetting to append the leftover tail once one pointer reaches the end.
+- Advancing both pointers on every comparison.

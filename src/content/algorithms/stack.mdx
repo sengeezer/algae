@@ -1,0 +1,122 @@
+---
+title: Stack
+slug: stack
+category: Stacks
+summary: Keep the most recently pushed element at the top so pushes and pops are both constant time.
+description: Stack is the foundational LIFO data structure behind expression evaluation, undo flows, recursion simulation, and monotonic-stack interview patterns.
+dataStructures:
+  - Stack
+  - Array
+techniques:
+  - Data Structure Design
+  - LIFO Discipline
+difficulty: Easy
+interviewFrequency: High
+aliases:
+  - LIFO stack
+  - push pop structure
+useCases:
+  - Evaluating postfix expressions
+  - Matching brackets and delimiters
+  - Simulating recursion or backtracking state explicitly
+complexity:
+  time: O(1) push/pop/peek
+  space: O(n)
+  notes: The key property is order of access, not the specific backing store used to implement it.
+interviewSignals:
+  - The last inserted item must be processed first.
+  - The interviewer asks for push, pop, and peek semantics directly.
+relatedSlugs:
+  - reverse-polish-notation
+  - queue-using-two-stacks
+  - monotonic-stack
+provenance:
+  - title: AllThingsSmitty/javascript-algorithms - Stack
+    href: https://github.com/AllThingsSmitty/javascript-algorithms#stack
+    kind: Implementation
+  - title: "free-programming-books - Open Data Structures: An Introduction"
+    href: https://opendatastructures.org/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Stacks are one of the first structures interviewers expect you to know cold because so many problems reduce to “keep the latest unfinished thing on top.” The value is in the access rule, not the syntax of `push` and `pop`.
+
+## Worked Example
+
+Push `10`, then `20`, then `30`. `peek()` returns `30`, and `pop()` removes `30` first because the last inserted item leaves the structure before older ones.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class Stack {
+  constructor() {
+    this.items = [];
+  }
+
+  push(value) {
+    this.items.push(value);
+  }
+
+  pop() {
+    return this.items.length === 0 ? undefined : this.items.pop();
+  }
+
+  peek() {
+    return this.items.length === 0
+      ? undefined
+      : this.items[this.items.length - 1];
+  }
+
+  isEmpty() {
+    return this.items.length === 0;
+  }
+
+  size() {
+    return this.items.length;
+  }
+}
+```
+
+```ts
+export class Stack<T> {
+  private items: T[] = [];
+
+  push(value: T): void {
+    this.items.push(value);
+  }
+
+  pop(): T | undefined {
+    return this.items.pop();
+  }
+
+  peek(): T | undefined {
+    return this.items[this.items.length - 1];
+  }
+
+  isEmpty(): boolean {
+    return this.items.length === 0;
+  }
+
+  size(): number {
+    return this.items.length;
+  }
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Implement a minimum stack that tracks the current minimum in O(1).
+- Use the stack to validate balanced parentheses.
+- Rebuild the structure with a linked-list backing store instead of an array.
+
+## Common Pitfalls
+
+- Removing from the wrong end and accidentally building a queue.
+- Forgetting to handle empty-stack `pop` and `peek` calls.
+- Treating the stack array as if random access mattered more than LIFO order.

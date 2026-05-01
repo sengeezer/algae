@@ -1,0 +1,120 @@
+---
+title: Queue
+slug: queue
+category: Queues
+summary: Insert at the back and remove from the front so work is processed in first-in, first-out order.
+description: Queue is the foundational FIFO data structure for breadth-first traversal, scheduling, buffering, and interview prompts that need fair arrival order.
+dataStructures:
+  - Queue
+  - Array
+techniques:
+  - Data Structure Design
+  - FIFO Discipline
+difficulty: Easy
+interviewFrequency: High
+aliases:
+  - FIFO queue
+  - first in first out
+useCases:
+  - Breadth-first search frontiers
+  - Task scheduling and buffering
+  - Modeling arrival-order processing systems
+complexity:
+  time: O(1) logical enqueue/peek, O(n) array-shift dequeue in the naive implementation
+  space: O(n)
+  notes: The abstract queue operations are constant time, but a JavaScript array backed by `shift()` is only a teaching baseline, not the production-optimal implementation.
+interviewSignals:
+  - The first inserted item must leave first.
+  - The problem models arrivals, scheduling, or BFS-style frontier expansion.
+relatedSlugs:
+  - circular-queue
+  - queue-using-two-stacks
+  - breadth-first-search
+provenance:
+  - title: AllThingsSmitty/javascript-algorithms - Queue
+    href: https://github.com/AllThingsSmitty/javascript-algorithms#queue
+    kind: Implementation
+  - title: "free-programming-books - Open Data Structures: An Introduction"
+    href: https://opendatastructures.org/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Queues matter because many interview problems are really about processing items in arrival order. Once you know the FIFO rule well, BFS, scheduling, and buffering questions become much easier to recognize.
+
+## Worked Example
+
+Enqueue `1`, `2`, and `3`. `peek()` returns `1`, and `dequeue()` removes `1` first because the oldest item leaves the queue before newer arrivals.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class Queue {
+  constructor() {
+    this.items = [];
+  }
+
+  enqueue(value) {
+    this.items.push(value);
+  }
+
+  dequeue() {
+    return this.items.length === 0 ? undefined : this.items.shift();
+  }
+
+  peek() {
+    return this.items.length === 0 ? undefined : this.items[0];
+  }
+
+  isEmpty() {
+    return this.items.length === 0;
+  }
+
+  size() {
+    return this.items.length;
+  }
+}
+```
+
+```ts
+export class Queue<T> {
+  private items: T[] = [];
+
+  enqueue(value: T): void {
+    this.items.push(value);
+  }
+
+  dequeue(): T | undefined {
+    return this.items.shift();
+  }
+
+  peek(): T | undefined {
+    return this.items[0];
+  }
+
+  isEmpty(): boolean {
+    return this.items.length === 0;
+  }
+
+  size(): number {
+    return this.items.length;
+  }
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Replace the array backing store with a linked list or ring buffer to avoid `shift()` costs.
+- Add a constant-time `rear` accessor.
+- Explain why BFS naturally wants a queue instead of a stack.
+
+## Common Pitfalls
+
+- Implementing removal from the wrong end and producing LIFO behavior.
+- Claiming the naive array `shift()` version is production-grade O(1).
+- Forgetting that empty-queue operations should return a safe sentinel like `undefined`.

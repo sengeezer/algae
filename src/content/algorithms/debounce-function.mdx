@@ -1,0 +1,104 @@
+---
+title: Debounce Function
+slug: debounce-function
+category: Timing Functions
+summary: Delay a callback until calls stop arriving for a chosen interval, resetting the timer each time a new call comes in.
+description: Debounce Function is the rate-limiting utility that collapses bursts of repeated events into one trailing callback execution after inactivity.
+dataStructures:
+  - Function
+  - Timer Handle
+  - Object
+techniques:
+  - Callback Scheduling
+  - Rate Limiting
+  - Closure State
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - debounce
+  - trailing edge debounce
+useCases:
+  - Limiting search requests while a user types
+  - Reducing resize or scroll handler churn
+  - Teaching how closures preserve mutable timer state between calls
+complexity:
+  time: O(1) per call
+  space: O(1)
+  notes: Each invocation only clears and recreates one pending timer while preserving the latest call context and arguments.
+interviewSignals:
+  - The prompt describes firing once after a burst of repeated events settles.
+  - You need to preserve both the latest arguments and the `this` binding.
+relatedSlugs:
+  - interval-timer
+  - parse-date
+  - queue
+provenance:
+  - title: AllThingsSmitty/javascript-algorithms - Debounce Function
+    href: https://github.com/AllThingsSmitty/javascript-algorithms#debounce-function
+    kind: Implementation
+  - title: You Don't Know JS Yet
+    href: https://github.com/getify/You-Dont-Know-JS
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Debounce is one of the most common small frontend and systems-design utilities because it turns noisy event bursts into deliberate trailing work. The key idea is that each new call cancels the previous pending callback and schedules a fresh one.
+
+## Worked Example
+
+If a debounced search function has a `300ms` delay and the user types five keys quickly, the timer resets on every keystroke. Only one search runs, `300ms` after typing stops.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function debounce(fn, delay) {
+  if (typeof fn !== 'function' || typeof delay !== 'number') {
+    throw new TypeError('Expected a function and a numeric delay');
+  }
+
+  let timerId;
+
+  return function debounced(...args) {
+    clearTimeout(timerId);
+    timerId = setTimeout(() => {
+      fn.apply(this, args);
+    }, delay);
+  };
+}
+```
+
+```ts
+export function debounce<TArgs extends unknown[]>(
+  fn: (...args: TArgs) => void,
+  delay: number,
+): (...args: TArgs) => void {
+  let timerId: ReturnType<typeof setTimeout> | undefined;
+
+  return function debounced(this: unknown, ...args: TArgs): void {
+    if (timerId !== undefined) {
+      clearTimeout(timerId);
+    }
+
+    timerId = setTimeout(() => {
+      fn.apply(this, args);
+    }, delay);
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Add leading-edge execution or a `flush` method.
+- Return a promise-aware debounced wrapper.
+- Compare debounce with throttle and explain when each is appropriate.
+
+## Common Pitfalls
+
+- Forgetting to preserve `this` and the latest arguments.
+- Triggering every call immediately and only delaying side effects superficially.
+- Confusing debounce with throttle.

@@ -1,0 +1,206 @@
+---
+title: Linked List
+slug: linked-list
+category: Linked Lists
+summary: Chain nodes through explicit `next` references so inserts, deletes, and reversals become pointer-updating exercises.
+description: Linked List is the foundational singly linked structure for interview questions about pointer manipulation, sequential traversal, and node-local updates.
+dataStructures:
+  - Linked List
+  - Node
+techniques:
+  - Data Structure Design
+  - Pointer Manipulation
+difficulty: Easy
+interviewFrequency: High
+aliases:
+  - singly linked list
+  - node chain
+useCases:
+  - Building custom queues or stacks
+  - Practicing insert, delete, search, and reverse operations
+  - Understanding pointer updates before tackling linked-list interview variants
+complexity:
+  time: O(1) insert at head, O(n) search/delete/reverse
+  space: O(n)
+  notes: The main interview challenge is preserving references correctly while rewiring nodes.
+interviewSignals:
+  - The prompt involves nodes connected by `next` pointers instead of array indices.
+  - You are expected to manipulate structure links directly.
+relatedSlugs:
+  - linked-list-cycle-detection
+  - reverse-singly-linked-list
+  - merge-two-sorted-linked-lists
+provenance:
+  - title: AllThingsSmitty/javascript-algorithms - Linked List
+    href: https://github.com/AllThingsSmitty/javascript-algorithms#linked-list
+    kind: Implementation
+  - title: "free-programming-books - Open Data Structures: An Introduction"
+    href: https://opendatastructures.org/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Linked lists are less about the container itself and more about whether you can update pointers carefully. Once that mental model is solid, most linked-list interview problems are just constrained versions of the same rewiring work.
+
+## Worked Example
+
+Starting from `1 -> 2 -> 3`, inserting `0` at the head gives `0 -> 1 -> 2 -> 3`. Reversing the list walks through the nodes and flips each `next` pointer so the result becomes `3 -> 2 -> 1 -> 0`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class ListNode {
+  constructor(value) {
+    this.value = value;
+    this.next = null;
+  }
+}
+
+class LinkedList {
+  constructor() {
+    this.head = null;
+  }
+
+  insertAtHead(value) {
+    const node = new ListNode(value);
+    node.next = this.head;
+    this.head = node;
+  }
+
+  search(value) {
+    let current = this.head;
+
+    while (current !== null) {
+      if (current.value === value) {
+        return true;
+      }
+
+      current = current.next;
+    }
+
+    return false;
+  }
+
+  delete(value) {
+    if (this.head === null) {
+      return;
+    }
+
+    if (this.head.value === value) {
+      this.head = this.head.next;
+      return;
+    }
+
+    let current = this.head;
+    while (current.next !== null) {
+      if (current.next.value === value) {
+        current.next = current.next.next;
+        return;
+      }
+
+      current = current.next;
+    }
+  }
+
+  reverse() {
+    let previous = null;
+    let current = this.head;
+
+    while (current !== null) {
+      const next = current.next;
+      current.next = previous;
+      previous = current;
+      current = next;
+    }
+
+    this.head = previous;
+  }
+}
+```
+
+```ts
+class ListNode<T> {
+  value: T;
+  next: ListNode<T> | null = null;
+
+  constructor(value: T) {
+    this.value = value;
+  }
+}
+
+export class LinkedList<T> {
+  private head: ListNode<T> | null = null;
+
+  insertAtHead(value: T): void {
+    const node = new ListNode(value);
+    node.next = this.head;
+    this.head = node;
+  }
+
+  search(value: T): boolean {
+    let current = this.head;
+
+    while (current !== null) {
+      if (current.value === value) {
+        return true;
+      }
+
+      current = current.next;
+    }
+
+    return false;
+  }
+
+  delete(value: T): void {
+    if (this.head === null) {
+      return;
+    }
+
+    if (this.head.value === value) {
+      this.head = this.head.next;
+      return;
+    }
+
+    let current = this.head;
+    while (current.next !== null) {
+      if (current.next.value === value) {
+        current.next = current.next.next;
+        return;
+      }
+
+      current = current.next;
+    }
+  }
+
+  reverse(): void {
+    let previous: ListNode<T> | null = null;
+    let current = this.head;
+
+    while (current !== null) {
+      const next = current.next;
+      current.next = previous;
+      previous = current;
+      current = next;
+    }
+
+    this.head = previous;
+  }
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Add tail insertion and discuss the extra state it needs.
+- Detect or remove duplicates from the list.
+- Compare the tradeoffs with an array-backed list.
+
+## Common Pitfalls
+
+- Losing the rest of the list by overwriting `next` too early.
+- Forgetting to special-case deletion at the head.
+- Assuming linked lists support random access efficiently.
