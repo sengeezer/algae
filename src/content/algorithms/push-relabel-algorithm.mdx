@@ -1,0 +1,220 @@
+---
+title: Push Relabel Algorithm
+slug: push-relabel-algorithm
+category: Graphs
+summary: Maintain a preflow with vertex heights, pushing excess locally and relabeling only when no downhill residual edge remains.
+description: Push Relabel Algorithm is the preflow-based maximum flow method that uses local pushes and height labels instead of repeated global augmenting paths.
+dataStructures:
+  - Graph
+  - Array
+  - Queue
+techniques:
+  - Network Flow
+  - Preflow Push
+  - Residual Graph
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - preflow push
+  - push relabel max flow
+useCases:
+  - Computing maximum flow with a localized alternative to Dinic or Edmonds-Karp
+  - Comparing augmenting-path methods with preflow-based methods
+  - Teaching excess flow and height invariants on residual networks
+complexity:
+  time: O(V^2 * E)
+  space: O(V + E)
+  notes: The algorithm allows temporary excess at intermediate vertices, which is why it can make purely local progress without finding a full source-to-sink augmenting path each time.
+interviewSignals:
+  - The prompt still asks for maximum flow, but you want a non-augmenting-path family of solutions.
+  - Height labels and excess flow are natural parts of the explanation.
+relatedSlugs:
+  - max-flow-dinics-algorithm
+  - minimum-s-t-cut-in-a-flow-network
+  - channel-assignment-problem
+provenance:
+  - title: GeeksforGeeks - Introduction to Push Relabel Algorithm
+    href: https://www.geeksforgeeks.org/dsa/introduction-to-push-relabel-algorithm/
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Push Relabel matters because it solves the same max-flow problem from a completely different angle than Dinic or Edmonds-Karp. Instead of hunting for a whole augmenting path, it pushes local excess downhill through the residual graph and only raises a vertex when no admissible outgoing edge remains.
+
+## Worked Example
+
+The source first saturates all outgoing edges, creating excess at its neighbors. Any active vertex with extra incoming flow then tries to push that excess to a neighbor of smaller height; if none exists, the vertex relabels upward until at least one admissible residual edge appears.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class PushRelabel {
+  constructor(size) {
+    this.size = size;
+    this.capacity = Array.from({ length: size }, () => new Array(size).fill(0));
+  }
+
+  addEdge(from, to, capacity) {
+    this.capacity[from][to] += capacity;
+  }
+
+  maxFlow(source, sink) {
+    const flow = Array.from({ length: this.size }, () => new Array(this.size).fill(0));
+    const excess = new Array(this.size).fill(0);
+    const height = new Array(this.size).fill(0);
+    height[source] = this.size;
+
+    for (let neighbor = 0; neighbor < this.size; neighbor += 1) {
+      const pushed = this.capacity[source][neighbor];
+      if (pushed > 0) {
+        flow[source][neighbor] = pushed;
+        flow[neighbor][source] = -pushed;
+        excess[neighbor] += pushed;
+        excess[source] -= pushed;
+      }
+    }
+
+    const active = [];
+    for (let vertex = 0; vertex < this.size; vertex += 1) {
+      if (vertex !== source && vertex !== sink && excess[vertex] > 0) {
+        active.push(vertex);
+      }
+    }
+
+    function residualCapacity(from, to, capacity, flowMatrix) {
+      return capacity[from][to] - flowMatrix[from][to];
+    }
+
+    while (active.length > 0) {
+      const vertex = active.shift();
+      let pushedAny = false;
+
+      for (let neighbor = 0; neighbor < this.size && excess[vertex] > 0; neighbor += 1) {
+        if (
+          residualCapacity(vertex, neighbor, this.capacity, flow) > 0
+          && height[vertex] === height[neighbor] + 1
+        ) {
+          const pushed = Math.min(excess[vertex], residualCapacity(vertex, neighbor, this.capacity, flow));
+          flow[vertex][neighbor] += pushed;
+          flow[neighbor][vertex] -= pushed;
+          excess[vertex] -= pushed;
+          excess[neighbor] += pushed;
+          pushedAny = true;
+
+          if (neighbor !== source && neighbor !== sink && excess[neighbor] === pushed) {
+            active.push(neighbor);
+          }
+        }
+      }
+
+      if (excess[vertex] > 0) {
+        let nextHeight = Number.POSITIVE_INFINITY;
+        for (let neighbor = 0; neighbor < this.size; neighbor += 1) {
+          if (residualCapacity(vertex, neighbor, this.capacity, flow) > 0) {
+            nextHeight = Math.min(nextHeight, height[neighbor]);
+          }
+        }
+
+        height[vertex] = nextHeight + 1;
+        active.push(vertex);
+      } else if (!pushedAny && excess[vertex] > 0) {
+        active.push(vertex);
+      }
+    }
+
+    return excess[sink];
+  }
+}
+```
+
+```ts
+export class PushRelabel {
+  private readonly capacity: number[][];
+
+  constructor(private readonly size: number) {
+    this.capacity = Array.from({ length: size }, () => new Array<number>(size).fill(0));
+  }
+
+  addEdge(from: number, to: number, capacity: number): void {
+    this.capacity[from][to] += capacity;
+  }
+
+  maxFlow(source: number, sink: number): number {
+    const flow = Array.from({ length: this.size }, () => new Array<number>(this.size).fill(0));
+    const excess = new Array<number>(this.size).fill(0);
+    const height = new Array<number>(this.size).fill(0);
+    height[source] = this.size;
+
+    for (let neighbor = 0; neighbor < this.size; neighbor += 1) {
+      const pushed = this.capacity[source][neighbor];
+      if (pushed > 0) {
+        flow[source][neighbor] = pushed;
+        flow[neighbor][source] = -pushed;
+        excess[neighbor] += pushed;
+        excess[source] -= pushed;
+      }
+    }
+
+    const active: number[] = [];
+    for (let vertex = 0; vertex < this.size; vertex += 1) {
+      if (vertex !== source && vertex !== sink && excess[vertex] > 0) {
+        active.push(vertex);
+      }
+    }
+
+    const residualCapacity = (from: number, to: number): number => this.capacity[from][to] - flow[from][to];
+
+    while (active.length > 0) {
+      const vertex = active.shift()!;
+
+      for (let neighbor = 0; neighbor < this.size && excess[vertex] > 0; neighbor += 1) {
+        if (residualCapacity(vertex, neighbor) > 0 && height[vertex] === height[neighbor] + 1) {
+          const pushed = Math.min(excess[vertex], residualCapacity(vertex, neighbor));
+          flow[vertex][neighbor] += pushed;
+          flow[neighbor][vertex] -= pushed;
+          excess[vertex] -= pushed;
+          excess[neighbor] += pushed;
+
+          if (neighbor !== source && neighbor !== sink && excess[neighbor] === pushed) {
+            active.push(neighbor);
+          }
+        }
+      }
+
+      if (excess[vertex] > 0) {
+        let nextHeight = Number.POSITIVE_INFINITY;
+        for (let neighbor = 0; neighbor < this.size; neighbor += 1) {
+          if (residualCapacity(vertex, neighbor) > 0) {
+            nextHeight = Math.min(nextHeight, height[neighbor]);
+          }
+        }
+
+        height[vertex] = nextHeight + 1;
+        active.push(vertex);
+      }
+    }
+
+    return excess[sink];
+  }
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare Push Relabel with Dinic on dense versus sparse networks.
+- Add heuristics such as gap relabeling or highest-label selection.
+- Explain why a preflow is allowed to violate intermediate flow conservation temporarily.
+
+## Common Pitfalls
+
+- Forgetting that active vertices can have excess even when they are not on a full augmenting path to the sink.
+- Relabeling to an arbitrary larger height instead of one plus the minimum admissible neighbor height.
+- Returning before all non-source, non-sink excess has been discharged.

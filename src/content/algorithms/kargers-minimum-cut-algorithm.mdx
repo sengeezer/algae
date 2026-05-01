@@ -1,0 +1,187 @@
+---
+title: Karger's Minimum Cut Algorithm
+slug: kargers-minimum-cut-algorithm
+category: Graphs
+summary: Randomly contract edges until only two supernodes remain, then count the surviving cross edges as one candidate global minimum cut.
+description: Karger's Minimum Cut Algorithm is the randomized contraction algorithm for the global minimum cut of an undirected graph.
+dataStructures:
+  - Graph
+  - Union-Find
+  - Array
+techniques:
+  - Randomized Algorithms
+  - Graph Contraction
+  - Minimum Cut
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - Karger min cut
+  - randomized minimum cut
+useCases:
+  - Finding a global minimum cut in an undirected graph with random contraction
+  - Demonstrating Monte Carlo algorithm design in graph theory
+  - Comparing deterministic source-sink cuts with randomized global cuts
+complexity:
+  time: O(E * V^2) for repeated trials to boost success probability
+  space: O(V)
+  notes: One contraction run succeeds only with some probability, so the practical algorithm repeats the randomized process enough times to make failure unlikely.
+interviewSignals:
+  - The graph is undirected and the prompt asks for a global minimum cut, not a cut between one fixed source and sink.
+  - Random contraction and probability amplification are part of the intended discussion.
+relatedSlugs:
+  - minimum-s-t-cut-in-a-flow-network
+  - union-find
+  - push-relabel-algorithm
+provenance:
+  - title: GeeksforGeeks - Karger's Algorithm- Set 1- Introduction and Implementation
+    href: https://www.geeksforgeeks.org/dsa/introduction-and-implementation-of-kargers-algorithm-for-minimum-cut/
+    kind: Implementation
+  - title: free-programming-books - Algorithm Design
+    href: https://jeffe.cs.illinois.edu/teaching/algorithms/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Karger's algorithm stands out because it solves a cut problem by embracing randomness rather than avoiding it. Instead of carefully choosing which edge to keep or cut, it repeatedly contracts random edges and relies on probability plus repetition to preserve the true minimum cut often enough.
+
+## Worked Example
+
+Each contraction merges two endpoints into one supernode and removes any self-loops that arise. When only two supernodes remain, every edge still crossing between them belongs to that run's candidate cut; repeating the process many times drives up the chance of seeing the true global minimum cut.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function kargersMinimumCutAlgorithm(vertexCount, edges, random = Math.random) {
+  class UnionFind {
+    constructor(size) {
+      this.parent = Array.from({ length: size }, (_, index) => index);
+      this.rank = new Array(size).fill(0);
+    }
+
+    find(node) {
+      if (this.parent[node] !== node) {
+        this.parent[node] = this.find(this.parent[node]);
+      }
+      return this.parent[node];
+    }
+
+    union(left, right) {
+      const rootLeft = this.find(left);
+      const rootRight = this.find(right);
+      if (rootLeft === rootRight) {
+        return false;
+      }
+
+      if (this.rank[rootLeft] < this.rank[rootRight]) {
+        this.parent[rootLeft] = rootRight;
+      } else if (this.rank[rootLeft] > this.rank[rootRight]) {
+        this.parent[rootRight] = rootLeft;
+      } else {
+        this.parent[rootRight] = rootLeft;
+        this.rank[rootLeft] += 1;
+      }
+
+      return true;
+    }
+  }
+
+  const dsu = new UnionFind(vertexCount);
+  let components = vertexCount;
+
+  while (components > 2) {
+    const [from, to] = edges[Math.floor(random() * edges.length)];
+    if (dsu.union(from, to)) {
+      components -= 1;
+    }
+  }
+
+  let cut = 0;
+  for (const [from, to] of edges) {
+    if (dsu.find(from) !== dsu.find(to)) {
+      cut += 1;
+    }
+  }
+
+  return cut;
+}
+```
+
+```ts
+class UnionFind {
+  private readonly parent: number[];
+  private readonly rank: number[];
+
+  constructor(size: number) {
+    this.parent = Array.from({ length: size }, (_, index) => index);
+    this.rank = new Array<number>(size).fill(0);
+  }
+
+  find(node: number): number {
+    if (this.parent[node] !== node) {
+      this.parent[node] = this.find(this.parent[node]);
+    }
+    return this.parent[node];
+  }
+
+  union(left: number, right: number): boolean {
+    const rootLeft = this.find(left);
+    const rootRight = this.find(right);
+    if (rootLeft === rootRight) {
+      return false;
+    }
+
+    if (this.rank[rootLeft] < this.rank[rootRight]) {
+      this.parent[rootLeft] = rootRight;
+    } else if (this.rank[rootLeft] > this.rank[rootRight]) {
+      this.parent[rootRight] = rootLeft;
+    } else {
+      this.parent[rootRight] = rootLeft;
+      this.rank[rootLeft] += 1;
+    }
+
+    return true;
+  }
+}
+
+export function kargersMinimumCutAlgorithm(
+  vertexCount: number,
+  edges: Array<[number, number]>,
+  random: () => number = Math.random,
+): number {
+  const dsu = new UnionFind(vertexCount);
+  let components = vertexCount;
+
+  while (components > 2) {
+    const [from, to] = edges[Math.floor(random() * edges.length)];
+    if (dsu.union(from, to)) {
+      components -= 1;
+    }
+  }
+
+  let cut = 0;
+  for (const [from, to] of edges) {
+    if (dsu.find(from) !== dsu.find(to)) {
+      cut += 1;
+    }
+  }
+
+  return cut;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why one run is probabilistic and why repetition improves confidence.
+- Compare global min cut from Karger with source-sink min cut from max flow.
+- Return the actual partition of the surviving two supernodes, not just the cut size.
+
+## Common Pitfalls
+
+- Assuming one randomized run is guaranteed to find the true minimum cut.
+- Forgetting to ignore self-loops after contractions.
+- Using Karger for directed source-sink cut questions where the formulation is different.

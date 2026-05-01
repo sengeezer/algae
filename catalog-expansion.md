@@ -658,9 +658,20 @@ This fifty-seventh expansion slice lifts the catalog from 372 to 378 entries.
 - Construct Graph from Given Degree Sequence
 - Universal Sink in Directed Graph
 
+## Batch 58 added
+
+This fifty-eighth expansion slice lifts the catalog from 378 to 384 entries.
+
+- Two Clique Problem
+- Channel Assignment Problem
+- Minimum s-t Cut in a Flow Network
+- Maximum Edge Disjoint Paths
+- Push Relabel Algorithm
+- Karger's Minimum Cut Algorithm
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 57 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 58 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -668,10 +679,10 @@ All expansion entries from batch 1 through batch 57 now carry explicit per-entry
 
 ## Why this batch
 
-- It stays inside the same GeeksforGeeks graph sequence while turning theory-only mentions into first-class implementation entries and skipping weak or duplicate detours.
-- It broadens the catalog across directed Eulerian construction, bipartite validation, implicit-board BFS, trie-assisted board search, graphical degree-sequence realization, and adjacency-matrix sink detection.
-- It adds several interview patterns that were previously only implied by nearby entries: explicit Hierholzer traversal, two-color feasibility checks before matching, shortest-path modeling on game boards, Boggle-style DFS with prefix pruning, Havel-Hakimi style graph construction, and O(n) candidate elimination on directed graphs.
-- It leaves the next frontier poised to move into graph partitioning and flow-adjacent applications after one weak source-order detour that is not worth promoting to a standalone entry.
+- It continues the GeeksforGeeks flow-and-partition line while still skipping weak source-order detours such as counting sink nodes.
+- It broadens the catalog across complement-graph clique partitioning, sender-receiver assignment via matching, explicit cut extraction from max flow, flow-based path packing, preflow-push optimization, and randomized global minimum cuts.
+- It adds several interview patterns that were not previously first-class entries: complement reduction to bipartite checking, channel scheduling as matching, residual min-cut recovery, edge-disjoint path packing, excess-flow relabeling, and randomized contraction.
+- It leaves the next frontier ready to revisit alternate Eulerian construction, SCC variants, and dynamic-connectivity problem contexts without forcing those variants into this slice prematurely.
 
 ## Supporting study references from the algorithms list
 
@@ -681,4 +692,4 @@ All expansion entries from batch 1 through batch 57 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- The next clean GeeksforGeeks frontier after this batch starts with `Two Clique Problem`, `Channel Assignment Problem`, `Minimum s-t Cut in a Flow Network`, and `Maximum Edge Disjoint Paths`; the nearby `Number of sinks in a graph` detour is source-ordered but too weak to prioritize as a standalone entry.
+- The next clean GeeksforGeeks frontier after this batch starts with `Fleury's Algorithm for printing Eulerian Path or Circuit` and `Dynamic Connectivity | Set 1 (Incremental)`; nearby skipped items include the weak `Number of sinks in a graph` detour and the SCC-focused `Tarjan's Algorithm`, which still overlaps semantically with the existing `Kosaraju` entry.

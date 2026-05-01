@@ -1,0 +1,150 @@
+---
+title: Two Clique Problem
+slug: two-clique-problem
+category: Graphs
+summary: Complement the graph and check whether the result is bipartite, because two cliques in the original graph become two independent sets in the complement.
+description: Two Clique Problem asks whether the vertices of a graph can be partitioned into two cliques, which reduces neatly to a bipartite check on the complement graph.
+dataStructures:
+  - Graph
+  - Matrix
+  - Array
+techniques:
+  - Graph Complement
+  - Bipartite Check
+  - Graph Partitioning
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - split into two cliques
+  - complement bipartite test
+useCases:
+  - Testing clique partition feasibility in social or compatibility graphs
+  - Showing how graph-complement transformations simplify a partition question
+  - Reusing bipartite checking on a transformed graph instead of inventing a new routine
+complexity:
+  time: O(V^2)
+  space: O(V^2)
+  notes: "The reduction is the main idea: vertices that are not adjacent in the original graph must become opposite-side constraints in the complement."
+interviewSignals:
+  - The graph must split into two fully connected groups.
+  - A complement-graph transformation turns the problem into a familiar bipartite test.
+relatedSlugs:
+  - bipartite-or-not
+  - m-coloring-problem
+  - universal-sink-in-directed-graph
+provenance:
+  - title: GeeksforGeeks - Two Clique Problem (Check if Graph can be divided in two Cliques)
+    href: https://www.geeksforgeeks.org/dsa/two-clique-problem-check-graph-can-divided-two-cliques/
+    kind: Implementation
+  - title: free-programming-books - Algorithm Design
+    href: https://jeffe.cs.illinois.edu/teaching/algorithms/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Two Clique is a good interview problem because the direct statement sounds unfamiliar, but the solution is mostly graph translation. Once you realize that two cliques in the original graph correspond to two independent sets in the complement, the problem becomes an ordinary bipartite check.
+
+## Worked Example
+
+If two vertices are missing an edge in the original graph, they cannot belong to the same clique. In the complement graph that missing edge becomes a real edge, so a successful two-coloring there tells you exactly how to split the original vertices into two cliques.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function twoCliqueProblem(graph) {
+  const size = graph.length;
+  const complement = Array.from({ length: size }, () => []);
+
+  for (let row = 0; row < size; row += 1) {
+    for (let column = 0; column < size; column += 1) {
+      if (row !== column && graph[row][column] === 0) {
+        complement[row].push(column);
+      }
+    }
+  }
+
+  const color = new Array(size).fill(-1);
+
+  for (let start = 0; start < size; start += 1) {
+    if (color[start] !== -1) {
+      continue;
+    }
+
+    const queue = [start];
+    color[start] = 0;
+
+    for (let head = 0; head < queue.length; head += 1) {
+      const node = queue[head];
+
+      for (const neighbor of complement[node]) {
+        if (color[neighbor] === -1) {
+          color[neighbor] = 1 - color[node];
+          queue.push(neighbor);
+        } else if (color[neighbor] === color[node]) {
+          return false;
+        }
+      }
+    }
+  }
+
+  return true;
+}
+```
+
+```ts
+export function twoCliqueProblem(graph: number[][]): boolean {
+  const size = graph.length;
+  const complement = Array.from({ length: size }, () => [] as number[]);
+
+  for (let row = 0; row < size; row += 1) {
+    for (let column = 0; column < size; column += 1) {
+      if (row !== column && graph[row][column] === 0) {
+        complement[row].push(column);
+      }
+    }
+  }
+
+  const color = new Array<number>(size).fill(-1);
+
+  for (let start = 0; start < size; start += 1) {
+    if (color[start] !== -1) {
+      continue;
+    }
+
+    const queue: number[] = [start];
+    color[start] = 0;
+
+    for (let head = 0; head < queue.length; head += 1) {
+      const node = queue[head];
+
+      for (const neighbor of complement[node]) {
+        if (color[neighbor] === -1) {
+          color[neighbor] = 1 - color[node];
+          queue.push(neighbor);
+        } else if (color[neighbor] === color[node]) {
+          return false;
+        }
+      }
+    }
+  }
+
+  return true;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the actual two cliques instead of only answering yes or no.
+- Explain why the complement graph is the right transformation instead of the original graph itself.
+- Compare this with ordinary bipartite graph validation.
+
+## Common Pitfalls
+
+- Forgetting to exclude self-loops when building the complement graph.
+- Checking bipartiteness on the original graph rather than the complement.
+- Treating a missing edge inside a clique as harmless when it actually breaks the definition.

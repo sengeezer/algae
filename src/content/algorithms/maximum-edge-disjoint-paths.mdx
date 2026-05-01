@@ -1,0 +1,150 @@
+---
+title: Maximum Edge Disjoint Paths
+slug: maximum-edge-disjoint-paths
+category: Graphs
+summary: Give every edge capacity one and compute the maximum flow so each unit of flow corresponds to one path sharing no edge with the others.
+description: Maximum Edge Disjoint Paths is the path-packing problem that reduces cleanly to unit-capacity max flow.
+dataStructures:
+  - Graph
+  - Queue
+  - Array
+techniques:
+  - Network Flow
+  - Path Packing
+  - Residual Graph
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - edge disjoint path packing
+  - unit-capacity max flow
+useCases:
+  - Routing as many independent connections as possible without shared edges
+  - Translating graph packing problems into flow formulations
+  - Explaining why max-flow machinery applies beyond capacities and cuts
+complexity:
+  time: Depends on the max-flow routine; O(VE^2) with Edmonds-Karp on unit capacities
+  space: O(V^2) in the matrix form shown here
+  notes: "The reduction is the key idea: one unit of flow can cross each edge at most once, so different flow units correspond to edge-disjoint paths."
+interviewSignals:
+  - Several source-to-target paths are needed with no shared edge.
+  - The prompt asks for a maximum count rather than one path or a minimum length.
+relatedSlugs:
+  - minimum-s-t-cut-in-a-flow-network
+  - max-flow-dinics-algorithm
+  - channel-assignment-problem
+provenance:
+  - title: GeeksforGeeks - Find maximum number of edge disjoint paths between two vertices
+    href: https://www.geeksforgeeks.org/dsa/find-edge-disjoint-paths-two-vertices/
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Maximum edge-disjoint paths is one of the clearest examples of reduction to flow. The graph question sounds different from a capacity problem at first, but giving every edge capacity one makes each unit of flow correspond to one path that cannot reuse an already claimed edge.
+
+## Worked Example
+
+If two source-to-target routes must not share any edge, assign capacity `1` to each edge and compute max flow. Every augmenting path that succeeds consumes one unit of capacity along its edges, preventing later paths from using them again.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function maximumEdgeDisjointPaths(capacity, source, sink) {
+  const size = capacity.length;
+  const residual = capacity.map((row) => [...row]);
+  const parent = new Array(size).fill(-1);
+  let paths = 0;
+
+  function bfs() {
+    parent.fill(-1);
+    parent[source] = source;
+    const queue = [source];
+
+    for (let head = 0; head < queue.length; head += 1) {
+      const node = queue[head];
+
+      for (let neighbor = 0; neighbor < size; neighbor += 1) {
+        if (parent[neighbor] === -1 && residual[node][neighbor] > 0) {
+          parent[neighbor] = node;
+          queue.push(neighbor);
+        }
+      }
+    }
+
+    return parent[sink] !== -1;
+  }
+
+  while (bfs()) {
+    for (let node = sink; node !== source; node = parent[node]) {
+      residual[parent[node]][node] -= 1;
+      residual[node][parent[node]] += 1;
+    }
+
+    paths += 1;
+  }
+
+  return paths;
+}
+```
+
+```ts
+export function maximumEdgeDisjointPaths(
+  capacity: number[][],
+  source: number,
+  sink: number,
+): number {
+  const size = capacity.length;
+  const residual = capacity.map((row) => [...row]);
+  const parent = new Array<number>(size).fill(-1);
+  let paths = 0;
+
+  function bfs(): boolean {
+    parent.fill(-1);
+    parent[source] = source;
+    const queue: number[] = [source];
+
+    for (let head = 0; head < queue.length; head += 1) {
+      const node = queue[head];
+
+      for (let neighbor = 0; neighbor < size; neighbor += 1) {
+        if (parent[neighbor] === -1 && residual[node][neighbor] > 0) {
+          parent[neighbor] = node;
+          queue.push(neighbor);
+        }
+      }
+    }
+
+    return parent[sink] !== -1;
+  }
+
+  while (bfs()) {
+    for (let node = sink; node !== source; node = parent[node]) {
+      residual[parent[node]][node] -= 1;
+      residual[node][parent[node]] += 1;
+    }
+
+    paths += 1;
+  }
+
+  return paths;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Reconstruct the actual set of disjoint paths, not just the count.
+- Compare edge-disjoint paths with vertex-disjoint paths.
+- Explain why unit capacities are the correct reduction here.
+
+## Common Pitfalls
+
+- Using arbitrary capacities when the goal is specifically edge-disjoint path counting.
+- Forgetting to add reverse residual capacity after each augmentation.
+- Confusing edge-disjointness with simply choosing shortest distinct paths.

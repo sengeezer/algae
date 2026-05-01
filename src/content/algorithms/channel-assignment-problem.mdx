@@ -1,0 +1,144 @@
+---
+title: Channel Assignment Problem
+slug: channel-assignment-problem
+category: Graphs
+summary: Model sender-receiver pairings as a bipartite matching so one time slot transfers the maximum number of non-conflicting packets.
+description: Channel Assignment Problem is the sender-receiver scheduling problem that reduces to maximum bipartite matching or max flow.
+dataStructures:
+  - Graph
+  - Matrix
+  - Array
+techniques:
+  - Matching
+  - Network Flow
+  - Bipartite Graphs
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - wireless channel assignment
+  - sender receiver matching
+useCases:
+  - Scheduling one-step transmitter to receiver assignments without interference
+  - Turning communication constraints into bipartite matching
+  - Framing assignment optimization as max flow on a small network
+complexity:
+  time: O((M + N) * N) for the DFS matching formulation
+  space: O(N)
+  notes: The important reduction is that each sender can claim one receiver and each receiver can serve one sender per slot, which is exactly a bipartite matching constraint.
+interviewSignals:
+  - Transmitters and receivers each have capacity one per time slot.
+  - The prompt asks for the maximum number of simultaneous assignments, not a coloring of all nodes.
+relatedSlugs:
+  - bipartite-matching
+  - hopcroft-karp-algorithm
+  - max-flow-dinics-algorithm
+provenance:
+  - title: GeeksforGeeks - Channel Assignment Problem
+    href: https://www.geeksforgeeks.org/dsa/channel-assignment-problem/
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Channel Assignment sounds like a graph-coloring application at first glance, but the actual interview move is different: each sender chooses at most one receiver and each receiver accepts at most one sender in the next time slot. That is a matching problem, not a palette-feasibility problem.
+
+## Worked Example
+
+If transmitter `T1` can send to `R1` or `R2`, and transmitter `T2` can send only to `R2`, a greedy local choice might block one sender unnecessarily. Matching fixes that by allowing reassignment along augmenting paths until the number of simultaneous packet transfers is maximal.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function channelAssignmentProblem(table) {
+  const senderCount = table.length;
+  const receiverCount = senderCount === 0 ? 0 : table[0].length;
+  const matchReceiver = new Array(receiverCount).fill(-1);
+
+  function tryAssign(sender, seen) {
+    for (let receiver = 0; receiver < receiverCount; receiver += 1) {
+      if (table[sender][receiver] <= 0 || seen[receiver]) {
+        continue;
+      }
+
+      seen[receiver] = true;
+      if (matchReceiver[receiver] === -1 || tryAssign(matchReceiver[receiver], seen)) {
+        matchReceiver[receiver] = sender;
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  let assignments = 0;
+  for (let sender = 0; sender < senderCount; sender += 1) {
+    const seen = new Array(receiverCount).fill(false);
+    if (tryAssign(sender, seen)) {
+      assignments += 1;
+    }
+  }
+
+  return {
+    assignments,
+    pairs: matchReceiver.flatMap((sender, receiver) => (sender === -1 ? [] : [[sender, receiver]])),
+  };
+}
+```
+
+```ts
+export function channelAssignmentProblem(
+  table: number[][],
+): { assignments: number; pairs: Array<[number, number]> } {
+  const senderCount = table.length;
+  const receiverCount = senderCount === 0 ? 0 : table[0].length;
+  const matchReceiver = new Array<number>(receiverCount).fill(-1);
+
+  function tryAssign(sender: number, seen: boolean[]): boolean {
+    for (let receiver = 0; receiver < receiverCount; receiver += 1) {
+      if (table[sender][receiver] <= 0 || seen[receiver]) {
+        continue;
+      }
+
+      seen[receiver] = true;
+      if (matchReceiver[receiver] === -1 || tryAssign(matchReceiver[receiver], seen)) {
+        matchReceiver[receiver] = sender;
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  let assignments = 0;
+  for (let sender = 0; sender < senderCount; sender += 1) {
+    const seen = new Array<boolean>(receiverCount).fill(false);
+    if (tryAssign(sender, seen)) {
+      assignments += 1;
+    }
+  }
+
+  return {
+    assignments,
+    pairs: matchReceiver.flatMap((sender, receiver) => (sender === -1 ? [] : [[sender, receiver] as [number, number]])),
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Re-express the problem as a max-flow network with unit capacities.
+- Compare this assignment objective with ordinary graph coloring, where every node needs one label.
+- Upgrade the implementation to Hopcroft-Karp for larger inputs.
+
+## Common Pitfalls
+
+- Treating the matrix values as capacities for multiple simultaneous packets when the time-slot rule still limits each sender and receiver to one pairing.
+- Mistaking this problem for generic graph coloring just because channels are mentioned.
+- Forgetting to reset receiver visitation state for each new outer assignment attempt.

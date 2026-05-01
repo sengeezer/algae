@@ -1,0 +1,202 @@
+---
+title: Minimum s-t Cut in a Flow Network
+slug: minimum-s-t-cut-in-a-flow-network
+category: Graphs
+summary: Run max flow, then mark the source-reachable vertices in the residual graph to recover the minimum cut edges.
+description: Minimum s-t Cut in a Flow Network is the cut-recovery problem that pairs max-flow computation with a residual reachability pass.
+dataStructures:
+  - Graph
+  - Queue
+  - Matrix
+techniques:
+  - Network Flow
+  - Residual Graph
+  - Min-Cut Max-Flow
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - source sink min cut
+  - residual min cut
+useCases:
+  - Finding the bottleneck edges whose removal disconnects source from sink with minimum total capacity
+  - Explaining the max-flow min-cut theorem concretely
+  - Recovering a cut partition after a max-flow computation
+complexity:
+  time: Depends on the chosen max-flow routine; O(VE^2) with Edmonds-Karp
+  space: O(V^2) for the matrix form shown here
+  notes: "The recovery step is cheap once max flow is finished: the reachable set in the final residual graph directly defines the cut."
+interviewSignals:
+  - The prompt asks which edges form the minimum cut, not just for the maximum flow value.
+  - Source-to-sink separation under capacities is central to the problem.
+relatedSlugs:
+  - max-flow-dinics-algorithm
+  - channel-assignment-problem
+  - maximum-edge-disjoint-paths
+provenance:
+  - title: GeeksforGeeks - Find minimum s-t cut in a flow network
+    href: https://www.geeksforgeeks.org/dsa/minimum-cut-in-a-directed-graph/
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Minimum s-t cut is the theorem-backed companion to maximum flow. After the flow is maximized, the interesting interview step is to use the final residual graph to read off the exact source side and sink side instead of recomputing the cut from scratch.
+
+## Worked Example
+
+Once no more augmenting path exists, perform a traversal from the source using only residual edges with positive capacity. Every original edge that crosses from a reachable vertex to an unreachable vertex belongs to the minimum s-t cut.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function minimumSTCutInAFlowNetwork(capacity, source, sink) {
+  const size = capacity.length;
+  const residual = capacity.map((row) => [...row]);
+  const parent = new Array(size).fill(-1);
+
+  function bfs() {
+    parent.fill(-1);
+    parent[source] = source;
+    const queue = [source];
+
+    for (let head = 0; head < queue.length; head += 1) {
+      const node = queue[head];
+
+      for (let neighbor = 0; neighbor < size; neighbor += 1) {
+        if (parent[neighbor] === -1 && residual[node][neighbor] > 0) {
+          parent[neighbor] = node;
+          queue.push(neighbor);
+        }
+      }
+    }
+
+    return parent[sink] !== -1;
+  }
+
+  while (bfs()) {
+    let flow = Number.POSITIVE_INFINITY;
+    for (let node = sink; node !== source; node = parent[node]) {
+      flow = Math.min(flow, residual[parent[node]][node]);
+    }
+
+    for (let node = sink; node !== source; node = parent[node]) {
+      residual[parent[node]][node] -= flow;
+      residual[node][parent[node]] += flow;
+    }
+  }
+
+  const reachable = new Array(size).fill(false);
+  const queue = [source];
+  reachable[source] = true;
+
+  for (let head = 0; head < queue.length; head += 1) {
+    const node = queue[head];
+
+    for (let neighbor = 0; neighbor < size; neighbor += 1) {
+      if (!reachable[neighbor] && residual[node][neighbor] > 0) {
+        reachable[neighbor] = true;
+        queue.push(neighbor);
+      }
+    }
+  }
+
+  const cutEdges = [];
+  for (let from = 0; from < size; from += 1) {
+    for (let to = 0; to < size; to += 1) {
+      if (reachable[from] && !reachable[to] && capacity[from][to] > 0) {
+        cutEdges.push([from, to]);
+      }
+    }
+  }
+
+  return cutEdges;
+}
+```
+
+```ts
+export function minimumSTCutInAFlowNetwork(
+  capacity: number[][],
+  source: number,
+  sink: number,
+): Array<[number, number]> {
+  const size = capacity.length;
+  const residual = capacity.map((row) => [...row]);
+  const parent = new Array<number>(size).fill(-1);
+
+  function bfs(): boolean {
+    parent.fill(-1);
+    parent[source] = source;
+    const queue: number[] = [source];
+
+    for (let head = 0; head < queue.length; head += 1) {
+      const node = queue[head];
+
+      for (let neighbor = 0; neighbor < size; neighbor += 1) {
+        if (parent[neighbor] === -1 && residual[node][neighbor] > 0) {
+          parent[neighbor] = node;
+          queue.push(neighbor);
+        }
+      }
+    }
+
+    return parent[sink] !== -1;
+  }
+
+  while (bfs()) {
+    let flow = Number.POSITIVE_INFINITY;
+    for (let node = sink; node !== source; node = parent[node]) {
+      flow = Math.min(flow, residual[parent[node]][node]);
+    }
+
+    for (let node = sink; node !== source; node = parent[node]) {
+      residual[parent[node]][node] -= flow;
+      residual[node][parent[node]] += flow;
+    }
+  }
+
+  const reachable = new Array<boolean>(size).fill(false);
+  const queue: number[] = [source];
+  reachable[source] = true;
+
+  for (let head = 0; head < queue.length; head += 1) {
+    const node = queue[head];
+
+    for (let neighbor = 0; neighbor < size; neighbor += 1) {
+      if (!reachable[neighbor] && residual[node][neighbor] > 0) {
+        reachable[neighbor] = true;
+        queue.push(neighbor);
+      }
+    }
+  }
+
+  const cutEdges: Array<[number, number]> = [];
+  for (let from = 0; from < size; from += 1) {
+    for (let to = 0; to < size; to += 1) {
+      if (reachable[from] && !reachable[to] && capacity[from][to] > 0) {
+        cutEdges.push([from, to]);
+      }
+    }
+  }
+
+  return cutEdges;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the source-side and sink-side partitions along with the cut edges.
+- Swap the inner max-flow routine from Edmonds-Karp to Dinic or Push Relabel and compare the tradeoffs.
+- Explain why a cut edge can be saturated in the final residual graph.
+
+## Common Pitfalls
+
+- Forgetting that cut recovery happens after max flow, not before it.
+- Traversing the original graph instead of the residual graph to find the reachable set.
+- Returning every saturated edge instead of only those that cross from reachable to unreachable vertices.
