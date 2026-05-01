@@ -1,0 +1,153 @@
+---
+title: Cycles of length n in an undirected and connected graph
+slug: cycles-of-length-n-in-an-undirected-and-connected-graph
+category: Graphs
+summary: Launch bounded DFS paths, close them back to the source, and divide by duplicated traversal directions to count unique simple cycles of a fixed length.
+description: Cycles of length n in an undirected and connected graph is the bounded-depth cycle-counting problem solved by DFS with visited marking and duplicate correction.
+dataStructures:
+  - Graph
+  - Matrix
+  - Array
+techniques:
+  - Depth-First Search
+  - Backtracking
+  - Cycle Counting
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - count cycles of fixed length
+  - simple cycles of length n
+useCases:
+  - Counting unique simple cycles of a specified size in an undirected graph
+  - Practicing DFS with depth limits and backtracking state
+  - Understanding why undirected cycle counts require duplicate correction
+complexity:
+  time: O(V^n)
+  space: O(V)
+  notes: The naive bounded DFS can branch heavily; the key idea here is correctness and duplicate handling rather than asymptotic optimality.
+interviewSignals:
+  - The prompt asks for the number of cycles of exactly one length, not just whether any cycle exists.
+  - The graph is undirected, so the same cycle appears from multiple start points and directions.
+relatedSlugs:
+  - depth-first-search
+  - cycle-detection-ii
+  - euler-path-and-euler-circuit
+provenance:
+  - title: GeeksforGeeks - Cycles of length n in an undirected and connected graph
+    href: https://www.geeksforgeeks.org/dsa/cycles-of-length-n-in-an-undirected-and-connected-graph/
+    kind: Implementation
+  - title: free-programming-books - Algorithm Design
+    href: https://jeffe.cs.illinois.edu/teaching/algorithms/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem turns ordinary cycle detection into exact counting. The challenge is not just finding one cycle, but searching paths of a precise length, ensuring vertices stay distinct, and correcting for the fact that undirected cycles are discovered multiple times.
+
+## Worked Example
+
+If the graph has vertices `0, 1, 2, 3` forming a square, then the cycle `0 -> 1 -> 2 -> 3 -> 0` can also be discovered as `0 -> 3 -> 2 -> 1 -> 0`. A bounded DFS finds both traversals, so you divide by two after the search to count that undirected cycle only once per start-set strategy.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function cyclesOfLengthNInAnUndirectedAndConnectedGraph(graph, cycleLength) {
+  const size = graph.length;
+  if (cycleLength < 2 || cycleLength > size) {
+    return 0;
+  }
+
+  const visited = new Array(size).fill(false);
+  let count = 0;
+
+  function dfs(start, node, remainingEdges) {
+    visited[node] = true;
+
+    if (remainingEdges === 0) {
+      visited[node] = false;
+      if (graph[node][start]) {
+        count += 1;
+      }
+      return;
+    }
+
+    for (let neighbor = 0; neighbor < size; neighbor += 1) {
+      if (!graph[node][neighbor] || visited[neighbor]) {
+        continue;
+      }
+
+      dfs(start, neighbor, remainingEdges - 1);
+    }
+
+    visited[node] = false;
+  }
+
+  for (let start = 0; start <= size - cycleLength; start += 1) {
+    dfs(start, start, cycleLength - 1);
+    visited[start] = true;
+  }
+
+  return Math.floor(count / 2);
+}
+```
+
+```ts
+export function cyclesOfLengthNInAnUndirectedAndConnectedGraph(
+  graph: boolean[][],
+  cycleLength: number,
+): number {
+  const size = graph.length;
+  if (cycleLength < 2 || cycleLength > size) {
+    return 0;
+  }
+
+  const visited = new Array<boolean>(size).fill(false);
+  let count = 0;
+
+  function dfs(start: number, node: number, remainingEdges: number): void {
+    visited[node] = true;
+
+    if (remainingEdges === 0) {
+      visited[node] = false;
+      if (graph[node][start]) {
+        count += 1;
+      }
+      return;
+    }
+
+    for (let neighbor = 0; neighbor < size; neighbor += 1) {
+      if (!graph[node][neighbor] || visited[neighbor]) {
+        continue;
+      }
+
+      dfs(start, neighbor, remainingEdges - 1);
+    }
+
+    visited[node] = false;
+  }
+
+  for (let start = 0; start <= size - cycleLength; start += 1) {
+    dfs(start, start, cycleLength - 1);
+    visited[start] = true;
+  }
+
+  return Math.floor(count / 2);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you adapt the count for directed graphs?
+- Why does the `start <= size - cycleLength` bound reduce duplicate work?
+- What optimizations would you consider for sparse graphs or small fixed cycle lengths?
+
+## Common Pitfalls
+
+- Counting the same undirected cycle once in each direction.
+- Allowing a vertex to reappear before the cycle closes.
+- Solving only generic cycle detection instead of exact-length counting.

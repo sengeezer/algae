@@ -1,0 +1,151 @@
+---
+title: Shortest Path in Directed Acyclic Graph
+slug: shortest-path-in-directed-acyclic-graph
+category: Graphs
+summary: Topologically order the DAG and relax outgoing edges once so shortest distances are computed in linear time.
+description: Shortest Path in Directed Acyclic Graph is the weighted DAG shortest-path problem solved by topological order plus edge relaxation.
+dataStructures:
+  - Graph
+  - Stack
+  - Array
+techniques:
+  - Topological Sort
+  - Edge Relaxation
+  - Shortest Path
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - DAG shortest path
+  - shortest path for DAG
+useCases:
+  - Computing shortest distances in dependency graphs with edge weights
+  - Beating Dijkstra and Bellman-Ford when the graph is acyclic
+  - Reusing topological order for dynamic programming on DAGs
+complexity:
+  time: O(V + E)
+  space: O(V + E)
+  notes: Acyclicity guarantees that relaxing edges in topological order settles every shortest distance in one pass.
+interviewSignals:
+  - The graph is a weighted DAG and the question asks for shortest distances from one source.
+  - The intended optimization depends on acyclicity, not nonnegative weights.
+relatedSlugs:
+  - topological-sort
+  - longest-path-in-a-directed-acyclic-graph
+  - bellman-ford
+provenance:
+  - title: GeeksforGeeks - Shortest Path in Directed Acyclic Graph
+    href: https://www.geeksforgeeks.org/dsa/shortest-path-for-directed-acyclic-graphs/
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the shortest-path counterpart to the DAG longest-path problem. The key insight is that once the graph is topologically ordered, every edge points forward, so one relaxation pass is enough to finalize distances.
+
+## Worked Example
+
+If `0 -> 4` has weight `1`, `4 -> 2` has weight `2`, and `0 -> 1 -> 2` costs `5`, then topological-order relaxation will first set `dist[4] = 1`, then improve `dist[2]` to `3` through node `4`. Because no edge can loop back, that improvement never needs to be reconsidered from an earlier vertex.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function shortestPathInDirectedAcyclicGraph(graph, source) {
+  const size = graph.length;
+  const visited = new Array(size).fill(false);
+  const order = [];
+
+  function dfs(node) {
+    visited[node] = true;
+    for (const [neighbor] of graph[node]) {
+      if (!visited[neighbor]) {
+        dfs(neighbor);
+      }
+    }
+    order.push(node);
+  }
+
+  for (let node = 0; node < size; node += 1) {
+    if (!visited[node]) {
+      dfs(node);
+    }
+  }
+
+  const distance = new Array(size).fill(Number.POSITIVE_INFINITY);
+  distance[source] = 0;
+
+  while (order.length > 0) {
+    const node = order.pop();
+    if (distance[node] === Number.POSITIVE_INFINITY) {
+      continue;
+    }
+
+    for (const [neighbor, weight] of graph[node]) {
+      distance[neighbor] = Math.min(distance[neighbor], distance[node] + weight);
+    }
+  }
+
+  return distance.map((value) => (value === Number.POSITIVE_INFINITY ? -1 : value));
+}
+```
+
+```ts
+export function shortestPathInDirectedAcyclicGraph(
+  graph: Array<Array<[number, number]>>,
+  source: number,
+): number[] {
+  const size = graph.length;
+  const visited = new Array<boolean>(size).fill(false);
+  const order: number[] = [];
+
+  function dfs(node: number): void {
+    visited[node] = true;
+    for (const [neighbor] of graph[node]) {
+      if (!visited[neighbor]) {
+        dfs(neighbor);
+      }
+    }
+    order.push(node);
+  }
+
+  for (let node = 0; node < size; node += 1) {
+    if (!visited[node]) {
+      dfs(node);
+    }
+  }
+
+  const distance = new Array<number>(size).fill(Number.POSITIVE_INFINITY);
+  distance[source] = 0;
+
+  while (order.length > 0) {
+    const node = order.pop()!;
+    if (distance[node] === Number.POSITIVE_INFINITY) {
+      continue;
+    }
+
+    for (const [neighbor, weight] of graph[node]) {
+      distance[neighbor] = Math.min(distance[neighbor], distance[node] + weight);
+    }
+  }
+
+  return distance.map((value) => (value === Number.POSITIVE_INFINITY ? -1 : value));
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why can this handle negative edge weights as long as the graph stays acyclic?
+- How would you reconstruct the actual shortest path tree?
+- Compare this with Dijkstra and Bellman-Ford on the same graph.
+
+## Common Pitfalls
+
+- Using Dijkstra by habit instead of exploiting the DAG structure.
+- Forgetting to keep unreachable nodes at `-1` in the final output.
+- Confusing shortest-path relaxation with the max relaxation used for the longest-path variant.

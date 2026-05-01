@@ -1,0 +1,130 @@
+---
+title: Clone a Directed Acyclic Graph
+slug: clone-a-directed-acyclic-graph
+category: Graphs
+summary: Traverse the DAG, create one clone per original node, and rebuild outgoing edges by memoizing previously cloned vertices.
+description: Clone a Directed Acyclic Graph is the graph deep-copy problem solved by DFS plus a map from original nodes to cloned nodes.
+dataStructures:
+  - Graph
+  - Map
+  - Array
+techniques:
+  - Depth-First Search
+  - Graph Cloning
+  - Memoization
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - clone DAG
+  - deep copy directed acyclic graph
+useCases:
+  - Copying a DAG while preserving structure and node identity relationships
+  - Building isolated snapshots of dependency graphs
+  - Practicing structural cloning on pointer-based graph inputs
+complexity:
+  time: O(V + E)
+  space: O(V + E)
+  notes: Even without cycles, the original-to-clone map is still what guarantees shared descendants are cloned only once.
+interviewSignals:
+  - The input is a graph of node references rather than an edge list.
+  - The result must be a deep copy with new nodes and preserved edge structure.
+relatedSlugs:
+  - clone-an-undirected-graph
+  - depth-first-search
+  - longest-path-in-a-directed-acyclic-graph
+provenance:
+  - title: GeeksforGeeks - Clone a Directed Acyclic Graph
+    href: https://www.geeksforgeeks.org/dsa/clone-directed-acyclic-graph/
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the directed counterpart to generic graph cloning, but the DAG constraint changes how the problem is framed in interviews. The graph has no cycles, yet memoization still matters because multiple parents can share the same descendant subtree.
+
+## Worked Example
+
+If node `0` points to `1` and `2`, and both `1` and `2` point to `3`, the clone must create only one cloned copy of `3`. A DFS with an original-to-clone map preserves that sharing instead of duplicating the same descendant once per parent.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class DagNode {
+  constructor(value) {
+    this.value = value;
+    this.neighbors = [];
+  }
+}
+
+function cloneADirectedAcyclicGraph(node, clones = new Map()) {
+  if (node === null) {
+    return null;
+  }
+
+  if (clones.has(node)) {
+    return clones.get(node);
+  }
+
+  const clone = new DagNode(node.value);
+  clones.set(node, clone);
+
+  for (const neighbor of node.neighbors) {
+    clone.neighbors.push(cloneADirectedAcyclicGraph(neighbor, clones));
+  }
+
+  return clone;
+}
+```
+
+```ts
+class DagNode {
+  value: number;
+  neighbors: DagNode[];
+
+  constructor(value: number) {
+    this.value = value;
+    this.neighbors = [];
+  }
+}
+
+export function cloneADirectedAcyclicGraph(
+  node: DagNode | null,
+  clones: Map<DagNode, DagNode> = new Map<DagNode, DagNode>(),
+): DagNode | null {
+  if (node === null) {
+    return null;
+  }
+
+  if (clones.has(node)) {
+    return clones.get(node)!;
+  }
+
+  const clone = new DagNode(node.value);
+  clones.set(node, clone);
+
+  for (const neighbor of node.neighbors) {
+    clone.neighbors.push(cloneADirectedAcyclicGraph(neighbor, clones)!);
+  }
+
+  return clone;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would the solution change if the graph could contain cycles?
+- How would you clone all components when no single start node reaches every vertex?
+- What test would prove that shared descendants were preserved correctly?
+
+## Common Pitfalls
+
+- Assuming a DAG can be cloned without a memo table because there are no cycles.
+- Reusing original neighbor references and producing a shallow copy.
+- Creating duplicate clones for shared descendants.

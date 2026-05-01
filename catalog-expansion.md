@@ -696,9 +696,17 @@ This sixty-first expansion slice lifts the catalog from 393 to 396 entries.
 - Clone an Undirected Graph
 - Transitive Closure of a Graph using DFS
 
+## Batch 62 added
+
+This sixty-second expansion slice lifts the catalog from 396 to 399 entries.
+
+- Cycles of length n in an undirected and connected graph
+- Clone a Directed Acyclic Graph
+- Shortest Path in Directed Acyclic Graph
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 61 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 62 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -706,10 +714,10 @@ All expansion entries from batch 1 through batch 61 now carry explicit per-entry
 
 ## Why this batch
 
-- It carries the GeeksforGeeks backfill past the exhausted graph-page frontier into the next clean absences without skipping over nearer, defensible graph interview problems.
-- It broadens the catalog across grid shortest-path BFS, deep-copy graph cloning with visited-node memoization, and all-pairs reachability via repeated DFS.
-- It adds several interview patterns that were not previously first-class entries: Lee-algorithm style BFS on binary matrices, reference-preserving graph duplication in cyclic structures, and building a reachability matrix by launching DFS from every source.
-- It leaves the next continuation point at the next pair of still-clean graph absences instead of jumping to a looser source hop too early.
+- It advances the source-ordered GeeksforGeeks frontier through the remaining clean items around the cycles boundary, explicitly skipping only duplicates such as the disjoint-set introduction and already-covered shortest-path staples.
+- It broadens the catalog across bounded-length cycle counting, DAG cloning with DFS memoization, and shortest-path relaxation on topologically ordered DAGs.
+- It adds several interview patterns that were not previously first-class entries: counting unique simple cycles while avoiding overcounting, deep-copying an acyclic directed graph, and exploiting acyclicity to beat general-purpose shortest-path algorithms.
+- It leaves the next continuation point at the next unclaimed shortest-path item after the newly covered DAG shortest-path entry.
 
 ## Supporting study references from the algorithms list
 
@@ -719,4 +727,4 @@ All expansion entries from batch 1 through batch 61 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- The current GeeksforGeeks backfill frontier now starts with `Cycles of length n in an undirected and connected graph` and `Clone a Directed Acyclic Graph`; after those, the queue needs one more local verification pass instead of assuming a third item blindly.
+- The current GeeksforGeeks backfill frontier now continues with `Multistage Graph (Shortest Path)`, `Shortest path in an unweighted graph`, and `Minimum mean weight cycle algorithm`; nearby items like the disjoint-set introduction, `Dijkstra`, `Bellman-Ford`, `Floyd Warshall`, `Johnson's algorithm`, and `Dial's algorithm` are already represented.
