@@ -548,9 +548,20 @@ This forty-seventh expansion slice lifts the catalog from 314 to 320 entries.
 - Problem 009
 - Problem 010
 
+## Batch 48 added
+
+This forty-eighth expansion slice lifts the catalog from 320 to 326 entries.
+
+- Problem 011
+- Problem 012
+- Problem 013
+- Problem 014
+- Problem 015
+- Problem 016
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 47 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 48 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -559,9 +570,9 @@ All expansion entries from batch 1 through batch 47 now carry explicit per-entry
 ## Why this batch
 
 - It fills obvious interview-core gaps from TheAlgorithms/JavaScript without duplicating material already present in Algae.
-- It follows the next verified queue directly, continuing the Project Euler track with least-common-multiple reasoning, square-sum identities, nth-prime search, digit-window products, Pythagorean search, and prime summation.
-- It broadens the catalog across number theory, closed-form arithmetic, sliding-window products, and sieve-based preprocessing instead of staying inside the previous navigation-and-warmup challenge slice.
-- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially compact challenge-style routines that still reward careful formulas, search bounds, and preprocessing choices.
+- It follows the next verified queue directly, continuing the Project Euler track with grid scanning, divisor counting, manual big-number addition, memoized sequence search, lattice-path combinatorics, and power-digit arithmetic.
+- It broadens the catalog across matrix-like traversals, triangular-number generation, carry handling on decimal strings, recurrence caching, and binomial counting instead of staying inside the previous prime-and-arithmetic-identity slice.
+- It lines up with the broader textbook-style coverage highlighted by the free-programming-books algorithms list, especially compact challenge-style routines that still reward careful bounds checks, overflow awareness, and replacing brute force with reusable mathematical structure.
 
 ## Supporting study references from the algorithms list
 
@@ -571,9 +582,9 @@ All expansion entries from batch 1 through batch 47 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- Problem 011
-- Problem 012
-- Problem 013
-- Problem 014
-- Problem 015
-- Problem 016
+- Problem 017
+- Problem 018
+- Problem 019
+- Problem 020
+- Problem 021
+- Problem 023

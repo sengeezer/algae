@@ -1,0 +1,151 @@
+---
+title: Problem 013
+slug: problem013
+category: Project Euler
+summary: Compute the leading digits of a very large sum without converting the full value into an unsafe JavaScript number.
+description: Problem 013 is the large-sum problem that uses column addition on decimal strings to avoid precision loss.
+dataStructures:
+  - String
+  - Array
+techniques:
+  - Column Addition
+  - Carry Propagation
+  - Arbitrary Precision Arithmetic
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - large sum
+  - project euler 13
+useCases:
+  - Summing integers too large for native floating-point precision
+  - Practicing grade-school addition over string inputs
+  - Extracting only the leading digits from a huge aggregate
+complexity:
+  time: O(count * width)
+  space: O(width)
+  notes: The addition cost scales with the number of rows and digits, not with JavaScript numeric range limits.
+interviewSignals:
+  - The prompt gives many very large integers and only asks for a prefix of the total.
+  - The intended solution avoids `Number` overflow by summing digit columns manually.
+relatedSlugs:
+  - sum-of-digits
+  - problem016
+  - prefix-sum
+provenance:
+  - title: TheAlgorithms/JavaScript - Project-Euler/Problem013.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Project-Euler/Problem013.js
+    kind: Implementation
+  - title: Project Euler - Problem 13
+    href: https://projecteuler.net/problem=13
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem is really about precision management. The prompt is large enough that a normal JavaScript `Number` cannot safely represent the full sum, so the solution falls back to column addition.
+
+## Worked Example
+
+If you need the leading digits of `999`, `1`, and `25`, compute the exact string sum `1025` by adding columns from right to left. Then return the requested prefix from the resulting decimal string.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function problem013(numbers, prefixLength = 10) {
+  if (!Array.isArray(numbers) || numbers.length === 0) {
+    throw new TypeError('Numbers must be a non-empty array of decimal strings');
+  }
+
+  if (!Number.isInteger(prefixLength) || prefixLength < 1) {
+    throw new RangeError('Prefix length must be a positive integer');
+  }
+
+  const normalized = numbers.map((value) => {
+    if (typeof value !== 'string' || !/^\d+$/.test(value)) {
+      throw new TypeError('Each input value must be a decimal string');
+    }
+    return value;
+  });
+
+  const width = Math.max(...normalized.map((value) => value.length));
+  let carry = 0;
+  let result = '';
+
+  for (let position = 0; position < width; position += 1) {
+    let columnTotal = carry;
+
+    for (const value of normalized) {
+      const index = value.length - 1 - position;
+      columnTotal += index >= 0 ? Number(value[index]) : 0;
+    }
+
+    result = String(columnTotal % 10) + result;
+    carry = Math.floor(columnTotal / 10);
+  }
+
+  while (carry > 0) {
+    result = String(carry % 10) + result;
+    carry = Math.floor(carry / 10);
+  }
+
+  return result.slice(0, prefixLength);
+}
+```
+
+```ts
+export function problem013(numbers: string[], prefixLength = 10): string {
+  if (!Array.isArray(numbers) || numbers.length === 0) {
+    throw new TypeError('Numbers must be a non-empty array of decimal strings');
+  }
+
+  if (!Number.isInteger(prefixLength) || prefixLength < 1) {
+    throw new RangeError('Prefix length must be a positive integer');
+  }
+
+  const normalized = numbers.map((value) => {
+    if (!/^\d+$/.test(value)) {
+      throw new TypeError('Each input value must be a decimal string');
+    }
+    return value;
+  });
+
+  const width = Math.max(...normalized.map((value) => value.length));
+  let carry = 0;
+  let result = '';
+
+  for (let position = 0; position < width; position += 1) {
+    let columnTotal = carry;
+
+    for (const value of normalized) {
+      const index = value.length - 1 - position;
+      columnTotal += index >= 0 ? Number(value[index]) : 0;
+    }
+
+    result = String(columnTotal % 10) + result;
+    carry = Math.floor(columnTotal / 10);
+  }
+
+  while (carry > 0) {
+    result = String(carry % 10) + result;
+    carry = Math.floor(carry / 10);
+  }
+
+  return result.slice(0, prefixLength);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the full decimal sum instead of only its prefix.
+- Compare manual column addition with a `BigInt`-based implementation.
+- Stream the values one line at a time instead of loading them all at once.
+
+## Common Pitfalls
+
+- Converting the inputs to `Number` and silently losing precision.
+- Assuming every input string has the same width without handling shorter values.
+- Forgetting to prepend the remaining carry after the last column.

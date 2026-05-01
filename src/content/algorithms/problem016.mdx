@@ -1,0 +1,121 @@
+---
+title: Problem 016
+slug: problem016
+category: Project Euler
+summary: Sum the decimal digits of a large power by simulating multiplication on a digit array.
+description: Problem 016 is the power-digit-sum problem that keeps exact decimal digits in an array so repeated multiplication never loses precision.
+dataStructures:
+  - Array
+  - Number
+techniques:
+  - Arbitrary Precision Arithmetic
+  - Carry Propagation
+  - Repeated Multiplication
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - power digit sum
+  - project euler 16
+useCases:
+  - Raising numbers to large powers without relying on floating-point precision
+  - Reusing carry propagation across custom big-integer routines
+  - Summing digits after exact arithmetic on huge values
+complexity:
+  time: O(exponent * digits)
+  space: O(digits)
+  notes: The digit array grows with the size of the power, but the arithmetic stays exact throughout.
+interviewSignals:
+  - The prompt asks for a digit property of a huge power rather than the full numeric value itself.
+  - The intended solution tracks decimal digits explicitly or uses another exact big-number representation.
+relatedSlugs:
+  - sum-of-digits
+  - pow-logarithmic
+  - problem013
+provenance:
+  - title: TheAlgorithms/JavaScript - Project-Euler/Problem016.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Project-Euler/Problem016.js
+    kind: Implementation
+  - title: Project Euler - Problem 16
+    href: https://projecteuler.net/problem=16
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is another precision-management problem, but the input comes from repeated multiplication instead of external strings. The standard `Number` type cannot represent the full power exactly, so the digits have to be carried manually.
+
+## Worked Example
+
+`2^15 = 32768`, and the digit sum is `3 + 2 + 7 + 6 + 8 = 26`. A digit-array simulation multiplies by `2` repeatedly and stores the resulting decimal digits exactly.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function problem016(base = 2, exponent = 1000) {
+  if (!Number.isInteger(base) || base < 0 || !Number.isInteger(exponent) || exponent < 0) {
+    throw new RangeError('Base and exponent must be non-negative integers');
+  }
+
+  const digits = [1];
+
+  for (let power = 0; power < exponent; power += 1) {
+    let carry = 0;
+
+    for (let index = 0; index < digits.length; index += 1) {
+      const product = digits[index] * base + carry;
+      digits[index] = product % 10;
+      carry = Math.floor(product / 10);
+    }
+
+    while (carry > 0) {
+      digits.push(carry % 10);
+      carry = Math.floor(carry / 10);
+    }
+  }
+
+  return digits.reduce((sum, digit) => sum + digit, 0);
+}
+```
+
+```ts
+export function problem016(base = 2, exponent = 1000): number {
+  if (!Number.isInteger(base) || base < 0 || !Number.isInteger(exponent) || exponent < 0) {
+    throw new RangeError('Base and exponent must be non-negative integers');
+  }
+
+  const digits = [1];
+
+  for (let power = 0; power < exponent; power += 1) {
+    let carry = 0;
+
+    for (let index = 0; index < digits.length; index += 1) {
+      const product = digits[index] * base + carry;
+      digits[index] = product % 10;
+      carry = Math.floor(product / 10);
+    }
+
+    while (carry > 0) {
+      digits.push(carry % 10);
+      carry = Math.floor(carry / 10);
+    }
+  }
+
+  return digits.reduce((sum, digit) => sum + digit, 0);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the full decimal representation instead of only the digit sum.
+- Replace repeated multiplication with exponentiation by squaring plus exact big-number multiplication.
+- Compare this manual approach with a `BigInt` implementation.
+
+## Common Pitfalls
+
+- Using floating-point exponentiation and losing exact digits.
+- Forgetting the special case `exponent = 0`, where the value should start from `1`.
+- Dropping the final carry after a multiplication pass.

@@ -1,0 +1,147 @@
+---
+title: Problem 014
+slug: problem014
+category: Project Euler
+summary: Find the starting value below a limit that produces the longest Collatz chain.
+description: Problem 014 is the longest-Collatz-sequence search that benefits from caching previously seen chain lengths instead of recomputing them repeatedly.
+dataStructures:
+  - Map
+  - Number
+techniques:
+  - Memoization
+  - Sequence Simulation
+  - Dynamic Programming
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - longest collatz sequence
+  - project euler 14
+useCases:
+  - Reusing cached results across many sequence evaluations
+  - Comparing naive recurrence expansion with memoized dynamic programming
+  - Practicing sequence problems that branch on parity
+complexity:
+  time: O(limit * average chain work)
+  space: O(limit)
+  notes: Memoization removes most repeated work because many chains merge into previously computed tails.
+interviewSignals:
+  - The prompt asks for the best starting value under a limit, not the chain itself.
+  - The intended optimization is to cache intermediate chain lengths.
+relatedSlugs:
+  - collatz-sequence
+  - memoization-dp
+  - problem012
+provenance:
+  - title: TheAlgorithms/JavaScript - Project-Euler/Problem014.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Project-Euler/Problem014.js
+    kind: Implementation
+  - title: Project Euler - Problem 14
+    href: https://projecteuler.net/problem=14
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem looks brute-force at first, but the chains overlap heavily. Once one path reaches a value whose chain length is already known, the rest of that path can be filled in from the cache.
+
+## Worked Example
+
+Starting at `13`, the Collatz sequence is `13 -> 40 -> 20 -> 10 -> 5 -> 16 -> 8 -> 4 -> 2 -> 1`, which has length `10`. A memoized solution stores lengths for shared suffixes like `16 -> 8 -> 4 -> 2 -> 1` so later starts do less work.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function problem014(limit = 1000000) {
+  if (!Number.isInteger(limit) || limit < 2) {
+    throw new RangeError('Limit must be an integer at least 2');
+  }
+
+  const lengths = new Map([[1, 1]]);
+  let bestStart = 1;
+  let bestLength = 1;
+
+  function getLength(start) {
+    let value = start;
+    const path = [];
+
+    while (!lengths.has(value)) {
+      path.push(value);
+      value = value % 2 === 0 ? value / 2 : 3 * value + 1;
+    }
+
+    let knownLength = lengths.get(value);
+    for (let index = path.length - 1; index >= 0; index -= 1) {
+      knownLength += 1;
+      lengths.set(path[index], knownLength);
+    }
+
+    return lengths.get(start);
+  }
+
+  for (let start = 2; start < limit; start += 1) {
+    const length = getLength(start);
+    if (length > bestLength) {
+      bestLength = length;
+      bestStart = start;
+    }
+  }
+
+  return bestStart;
+}
+```
+
+```ts
+export function problem014(limit = 1000000): number {
+  if (!Number.isInteger(limit) || limit < 2) {
+    throw new RangeError('Limit must be an integer at least 2');
+  }
+
+  const lengths = new Map<number, number>([[1, 1]]);
+  let bestStart = 1;
+  let bestLength = 1;
+
+  function getLength(start: number): number {
+    let value = start;
+    const path: number[] = [];
+
+    while (!lengths.has(value)) {
+      path.push(value);
+      value = value % 2 === 0 ? value / 2 : 3 * value + 1;
+    }
+
+    let knownLength = lengths.get(value)!;
+    for (let index = path.length - 1; index >= 0; index -= 1) {
+      knownLength += 1;
+      lengths.set(path[index], knownLength);
+    }
+
+    return lengths.get(start)!;
+  }
+
+  for (let start = 2; start < limit; start += 1) {
+    const length = getLength(start);
+    if (length > bestLength) {
+      bestLength = length;
+      bestStart = start;
+    }
+  }
+
+  return bestStart;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the chain length together with the best starting value.
+- Compare recursive memoization with the iterative path-unwinding approach above.
+- Explain why the sequence is allowed to exceed the search limit mid-chain.
+
+## Common Pitfalls
+
+- Recomputing the same Collatz tails for many starting values.
+- Stopping the sequence when it rises above the limit instead of continuing to `1`.
+- Forgetting that the result is the starting value, not the longest chain itself.

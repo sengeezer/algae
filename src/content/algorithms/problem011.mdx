@@ -1,0 +1,179 @@
+---
+title: Problem 011
+slug: problem011
+category: Project Euler
+summary: Scan a numeric grid to find the greatest product of a fixed-length run in any allowed direction.
+description: Problem 011 is the grid-product search problem that evaluates horizontal, vertical, and diagonal runs without rechecking impossible directions blindly.
+dataStructures:
+  - Matrix
+  - Array
+techniques:
+  - Grid Traversal
+  - Direction Vectors
+  - Product Accumulation
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - largest product in a grid
+  - project euler 11
+useCases:
+  - Scanning two-dimensional data for the best contiguous run
+  - Reusing direction vectors in grid and matrix problems
+  - Practicing bounds checks around diagonal traversals
+complexity:
+  time: O(rows * cols * span)
+  space: O(1)
+  notes: Each cell is treated as a potential starting point for the four forward directions that can produce unique runs.
+interviewSignals:
+  - The prompt asks for adjacent values in a grid rather than a one-dimensional array.
+  - The intended solution combines fixed direction vectors with tight bounds checks.
+relatedSlugs:
+  - grid-get
+  - sliding-window
+  - problem008
+provenance:
+  - title: TheAlgorithms/JavaScript - Project-Euler/Problem011.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Project-Euler/Problem011.js
+    kind: Implementation
+  - title: Project Euler - Problem 11
+    href: https://projecteuler.net/problem=11
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a compact version of many matrix-search questions. The key is to treat each position as a start point and then reuse a small set of direction vectors with explicit bounds checks.
+
+## Worked Example
+
+In a small grid, you can scan right, down, down-right, and down-left from every cell. The best product comes from the contiguous run whose multiplied values beat every other legal run of the same span.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function problem011(grid, span = 4) {
+  if (!Array.isArray(grid) || grid.length === 0 || !Array.isArray(grid[0])) {
+    throw new TypeError('Grid must be a non-empty matrix');
+  }
+
+  if (!Number.isInteger(span) || span < 1) {
+    throw new RangeError('Span must be a positive integer');
+  }
+
+  const rowCount = grid.length;
+  const columnCount = grid[0].length;
+  const directions = [
+    [0, 1],
+    [1, 0],
+    [1, 1],
+    [1, -1],
+  ];
+
+  let best = Number.NEGATIVE_INFINITY;
+
+  for (let row = 0; row < rowCount; row += 1) {
+    if (!Array.isArray(grid[row]) || grid[row].length !== columnCount) {
+      throw new TypeError('Grid must be rectangular');
+    }
+
+    for (let column = 0; column < columnCount; column += 1) {
+      for (const [rowStep, columnStep] of directions) {
+        const endRow = row + (span - 1) * rowStep;
+        const endColumn = column + (span - 1) * columnStep;
+
+        if (
+          endRow < 0 ||
+          endRow >= rowCount ||
+          endColumn < 0 ||
+          endColumn >= columnCount
+        ) {
+          continue;
+        }
+
+        let product = 1;
+        for (let offset = 0; offset < span; offset += 1) {
+          product *= grid[row + offset * rowStep][column + offset * columnStep];
+        }
+
+        if (product > best) {
+          best = product;
+        }
+      }
+    }
+  }
+
+  return best;
+}
+```
+
+```ts
+export function problem011(grid: number[][], span = 4): number {
+  if (!Array.isArray(grid) || grid.length === 0 || !Array.isArray(grid[0])) {
+    throw new TypeError('Grid must be a non-empty matrix');
+  }
+
+  if (!Number.isInteger(span) || span < 1) {
+    throw new RangeError('Span must be a positive integer');
+  }
+
+  const rowCount = grid.length;
+  const columnCount = grid[0].length;
+  const directions: Array<readonly [number, number]> = [
+    [0, 1],
+    [1, 0],
+    [1, 1],
+    [1, -1],
+  ];
+
+  let best = Number.NEGATIVE_INFINITY;
+
+  for (let row = 0; row < rowCount; row += 1) {
+    if (!Array.isArray(grid[row]) || grid[row].length !== columnCount) {
+      throw new TypeError('Grid must be rectangular');
+    }
+
+    for (let column = 0; column < columnCount; column += 1) {
+      for (const [rowStep, columnStep] of directions) {
+        const endRow = row + (span - 1) * rowStep;
+        const endColumn = column + (span - 1) * columnStep;
+
+        if (
+          endRow < 0 ||
+          endRow >= rowCount ||
+          endColumn < 0 ||
+          endColumn >= columnCount
+        ) {
+          continue;
+        }
+
+        let product = 1;
+        for (let offset = 0; offset < span; offset += 1) {
+          product *= grid[row + offset * rowStep][column + offset * columnStep];
+        }
+
+        if (product > best) {
+          best = product;
+        }
+      }
+    }
+  }
+
+  return best;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the coordinates of the winning run as well as the product.
+- Extend the function to accept an arbitrary list of directions.
+- Compare this grid scan with a one-dimensional sliding-window product.
+
+## Common Pitfalls
+
+- Checking directions that run off the grid without a bounds test.
+- Forgetting that only four forward directions are needed to cover all unique runs.
+- Assuming the grid is rectangular without validating row widths.

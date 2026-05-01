@@ -1,0 +1,130 @@
+---
+title: Problem 012
+slug: problem012
+category: Project Euler
+summary: Generate triangle numbers until one has more than a target number of divisors.
+description: Problem 012 is the highly-divisible triangle-number search that pairs incremental figurate numbers with divisor counting.
+dataStructures:
+  - Number
+techniques:
+  - Divisor Counting
+  - Triangle Numbers
+  - Incremental Search
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - highly divisible triangular number
+  - project euler 12
+useCases:
+  - Searching a generated numeric sequence for the first value meeting a threshold
+  - Comparing divisor counting by square-root scanning versus factorization
+  - Reusing triangle-number formulas instead of repeatedly summing ranges
+complexity:
+  time: O(k sqrt(t_k))
+  space: O(1)
+  notes: The direct square-root divisor count is easy to explain, though prime-factorization-based counts can be faster.
+interviewSignals:
+  - The prompt asks for the first generated value to cross a divisor threshold.
+  - The intended solution combines the triangle formula with a reusable divisor-count helper.
+relatedSlugs:
+  - prime-factors
+  - factors
+  - problem007
+provenance:
+  - title: TheAlgorithms/JavaScript - Project-Euler/Problem012.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Project-Euler/Problem012.js
+    kind: Implementation
+  - title: Project Euler - Problem 12
+    href: https://projecteuler.net/problem=12
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem is a clean way to test whether someone can separate sequence generation from a property check. The triangle numbers are cheap to produce; the interesting work is counting divisors efficiently enough.
+
+## Worked Example
+
+The triangle numbers start `1, 3, 6, 10, 15, 21, 28, ...`. Since `28` has six divisors, it is the first triangle number with more than five divisors.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function countDivisors(value) {
+  let total = 0;
+  const root = Math.floor(Math.sqrt(value));
+
+  for (let divisor = 1; divisor <= root; divisor += 1) {
+    if (value % divisor !== 0) {
+      continue;
+    }
+
+    total += divisor * divisor === value ? 1 : 2;
+  }
+
+  return total;
+}
+
+function problem012(minDivisors = 500) {
+  if (!Number.isInteger(minDivisors) || minDivisors < 1) {
+    throw new RangeError('Divisor target must be a positive integer');
+  }
+
+  let triangle = 0;
+
+  for (let n = 1; ; n += 1) {
+    triangle += n;
+    if (countDivisors(triangle) > minDivisors) {
+      return triangle;
+    }
+  }
+}
+```
+
+```ts
+function countDivisors(value: number): number {
+  let total = 0;
+  const root = Math.floor(Math.sqrt(value));
+
+  for (let divisor = 1; divisor <= root; divisor += 1) {
+    if (value % divisor !== 0) {
+      continue;
+    }
+
+    total += divisor * divisor === value ? 1 : 2;
+  }
+
+  return total;
+}
+
+export function problem012(minDivisors = 500): number {
+  if (!Number.isInteger(minDivisors) || minDivisors < 1) {
+    throw new RangeError('Divisor target must be a positive integer');
+  }
+
+  let triangle = 0;
+
+  for (let n = 1; ; n += 1) {
+    triangle += n;
+    if (countDivisors(triangle) > minDivisors) {
+      return triangle;
+    }
+  }
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Replace square-root scanning with a prime-factorization-based divisor count.
+- Return both the triangle number and its divisor count.
+- Explain why updating the running triangle value is cheaper than recomputing `n(n + 1) / 2` from scratch each time.
+
+## Common Pitfalls
+
+- Starting the divisor loop at `0`, which makes modulo logic invalid.
+- Forgetting that a perfect square contributes only one divisor at its square root.
+- Using `>=` when the prompt says “more than” a divisor threshold.

@@ -1,0 +1,98 @@
+---
+title: Problem 015
+slug: problem015
+category: Project Euler
+summary: Count right-and-down lattice paths through a square grid with a binomial coefficient instead of path enumeration.
+description: Problem 015 is the lattice-path counting problem that reduces a grid walk to choosing which steps are horizontal among all steps taken.
+dataStructures:
+  - Number
+techniques:
+  - Binomial Coefficient
+  - Combinatorics
+  - Multiplicative Formula
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - lattice paths
+  - project euler 15
+useCases:
+  - Counting monotonic grid paths without brute-force traversal
+  - Reusing combinations in combinatorics and DP discussions
+  - Connecting Pascal-style counting to path problems
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The path count is `C(2n, n)` for an `n x n` grid because each valid route contains `n` rights and `n` downs.
+interviewSignals:
+  - The prompt only allows monotonic moves, usually signaling a combinatorics or DP shortcut.
+  - The intended solution counts arrangements of steps rather than enumerating paths.
+relatedSlugs:
+  - pascal-triangle
+  - memoization-dp
+  - problem011
+provenance:
+  - title: TheAlgorithms/JavaScript - Project-Euler/Problem015.js
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Project-Euler/Problem015.js
+    kind: Implementation
+  - title: Project Euler - Problem 15
+    href: https://projecteuler.net/problem=15
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a counting problem disguised as pathfinding. Since every valid route contains the same number of right and down steps, the answer is just the number of ways to choose where one step type appears.
+
+## Worked Example
+
+For a `2 x 2` grid, every valid route contains two rights and two downs. The count is therefore `C(4, 2) = 6`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function problem015(gridSize = 20) {
+  if (!Number.isInteger(gridSize) || gridSize < 0) {
+    throw new RangeError('Grid size must be a non-negative integer');
+  }
+
+  let paths = 1;
+
+  for (let step = 1; step <= gridSize; step += 1) {
+    paths = (paths * (gridSize + step)) / step;
+  }
+
+  return paths;
+}
+```
+
+```ts
+export function problem015(gridSize = 20): number {
+  if (!Number.isInteger(gridSize) || gridSize < 0) {
+    throw new RangeError('Grid size must be a non-negative integer');
+  }
+
+  let paths = 1;
+
+  for (let step = 1; step <= gridSize; step += 1) {
+    paths = (paths * (gridSize + step)) / step;
+  }
+
+  return paths;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Derive the same answer with dynamic programming on the grid.
+- Switch to `BigInt` when the grid size grows beyond safe integer limits.
+- Explain how Pascal's triangle encodes the same recurrence.
+
+## Common Pitfalls
+
+- Enumerating every path instead of counting combinations directly.
+- Forgetting that the route has exactly `2n` moves in an `n x n` grid.
+- Ignoring safe-integer limits if the function is generalized to larger grids.
