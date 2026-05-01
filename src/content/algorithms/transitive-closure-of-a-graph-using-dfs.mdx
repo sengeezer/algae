@@ -1,0 +1,112 @@
+---
+title: Transitive Closure of a Graph using DFS
+slug: transitive-closure-of-a-graph-using-dfs
+category: Graphs
+summary: Launch DFS from every source vertex and record every destination that becomes reachable to build the full reachability matrix.
+description: Transitive Closure of a Graph using DFS is the all-pairs reachability problem solved by repeated DFS from each vertex.
+dataStructures:
+  - Graph
+  - Matrix
+  - Array
+techniques:
+  - Depth-First Search
+  - Reachability Matrix
+  - All-Pairs Traversal
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - transitive closure by DFS
+  - reachability matrix
+useCases:
+  - Precomputing whether any vertex can reach any other vertex in a directed graph
+  - Answering repeated reachability queries after one preprocessing pass
+  - Comparing DFS-based reachability with Floyd-Warshall on dense graphs
+complexity:
+  time: O(V * (V + E))
+  space: O(V^2)
+  notes: The closure matrix dominates space, and on dense graphs the repeated DFS cost becomes O(V^3).
+interviewSignals:
+  - The output is a full reachability table, not a single-source traversal.
+  - The prompt cares about whether a path exists for every ordered pair of vertices.
+relatedSlugs:
+  - depth-first-search
+  - floyd-warshall
+  - kosaraju
+provenance:
+  - title: GeeksforGeeks - Transitive Closure of a Graph using DFS
+    href: https://www.geeksforgeeks.org/dsa/transitive-closure-of-a-graph-using-dfs/
+    kind: Implementation
+  - title: free-programming-books - Algorithm Design
+    href: https://jeffe.cs.illinois.edu/teaching/algorithms/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem is a good interview pivot from ordinary DFS because the task is no longer about one traversal order. Instead, you need a full matrix of reachability answers, which makes the repeated-source perspective the key idea.
+
+## Worked Example
+
+If vertex `0` can reach `1`, `1` can reach `2`, and `2` can reach `3`, then the closure row for source `0` should mark every vertex from `0` through `3` as reachable. Running DFS from each start vertex fills one row of the matrix at a time.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function transitiveClosureOfAGraphUsingDFS(graph) {
+  const size = graph.length;
+  const closure = Array.from({ length: size }, () => new Array(size).fill(false));
+
+  function dfs(source, node) {
+    closure[source][node] = true;
+    for (const neighbor of graph[node]) {
+      if (!closure[source][neighbor]) {
+        dfs(source, neighbor);
+      }
+    }
+  }
+
+  for (let source = 0; source < size; source += 1) {
+    dfs(source, source);
+  }
+
+  return closure.map((row) => row.map((reachable) => (reachable ? 1 : 0)));
+}
+```
+
+```ts
+export function transitiveClosureOfAGraphUsingDFS(graph: number[][]): number[][] {
+  const size = graph.length;
+  const closure = Array.from({ length: size }, () => new Array<boolean>(size).fill(false));
+
+  function dfs(source: number, node: number): void {
+    closure[source][node] = true;
+    for (const neighbor of graph[node]) {
+      if (!closure[source][neighbor]) {
+        dfs(source, neighbor);
+      }
+    }
+  }
+
+  for (let source = 0; source < size; source += 1) {
+    dfs(source, source);
+  }
+
+  return closure.map((row) => row.map((reachable) => (reachable ? 1 : 0)));
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- When is Floyd-Warshall a better framing for the same problem?
+- How would you answer online reachability queries after building the closure matrix?
+- What changes if the graph is extremely sparse and recursion depth is a concern?
+
+## Common Pitfalls
+
+- Solving only one source-to-destination query instead of filling the whole matrix.
+- Resetting visited state globally instead of per source row.
+- Forgetting that dense graphs push the repeated DFS cost toward cubic time.

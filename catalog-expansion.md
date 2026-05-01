@@ -688,9 +688,17 @@ This sixtieth expansion slice lifts the catalog from 390 to 393 entries.
 - Longest Path in a Directed Acyclic Graph
 - Find if an Array of Strings can Be Chained to Form a Circle
 
+## Batch 61 added
+
+This sixty-first expansion slice lifts the catalog from 393 to 396 entries.
+
+- Shortest path in a Binary Maze
+- Clone an Undirected Graph
+- Transitive Closure of a Graph using DFS
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 60 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 61 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -698,10 +706,10 @@ All expansion entries from batch 1 through batch 60 now carry explicit per-entry
 
 ## Why this batch
 
-- It closes the last clean source-ordered absences remaining on the current GeeksforGeeks graph page after the `Atlantic Pacific Water Flow` boundary.
-- It broadens the catalog across matrix-tree counting, longest-path relaxation on DAGs, and Eulerian string chaining as a graph construction problem.
-- It adds several interview patterns that were not previously first-class entries: Laplacian determinant reasoning for spanning-tree counts, topological-order longest-path propagation, and reducing string-circle feasibility to a directed Eulerian-cycle test.
-- It leaves the next continuation point at a clean source hop, since the current graph page is now exhausted aside from duplicate or weak detours.
+- It carries the GeeksforGeeks backfill past the exhausted graph-page frontier into the next clean absences without skipping over nearer, defensible graph interview problems.
+- It broadens the catalog across grid shortest-path BFS, deep-copy graph cloning with visited-node memoization, and all-pairs reachability via repeated DFS.
+- It adds several interview patterns that were not previously first-class entries: Lee-algorithm style BFS on binary matrices, reference-preserving graph duplication in cyclic structures, and building a reachability matrix by launching DFS from every source.
+- It leaves the next continuation point at the next pair of still-clean graph absences instead of jumping to a looser source hop too early.
 
 ## Supporting study references from the algorithms list
 
@@ -711,4 +719,4 @@ All expansion entries from batch 1 through batch 60 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- The current GeeksforGeeks graph page is now exhausted apart from duplicate or weak detours such as `Strongly Connected Components`, `Seven Bridges of Konigsberg`, `Max Flow Problem Introduction`, and the later SCC-focused `Tarjan's Algorithm`; the next defensible GFG backfill/frontier starts with `Shortest path in a Binary Maze`, `Clone an Undirected Graph`, and `Transitive Closure of a Graph using DFS`.
+- The current GeeksforGeeks backfill frontier now starts with `Cycles of length n in an undirected and connected graph` and `Clone a Directed Acyclic Graph`; after those, the queue needs one more local verification pass instead of assuming a third item blindly.

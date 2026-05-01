@@ -1,0 +1,140 @@
+---
+title: Clone an Undirected Graph
+slug: clone-an-undirected-graph
+category: Graphs
+summary: Traverse the graph while memoizing already cloned nodes so each original vertex maps to exactly one deep-copied vertex.
+description: Clone an Undirected Graph is the deep-copy graph problem solved by traversal plus a map from original nodes to cloned nodes.
+dataStructures:
+  - Graph
+  - Queue
+  - Map
+techniques:
+  - Breadth-First Search
+  - Depth-First Search
+  - Graph Cloning
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - clone graph
+  - deep copy undirected graph
+useCases:
+  - Copying cyclic graph structures without duplicating nodes incorrectly
+  - Building immutable or sandboxed graph snapshots
+  - Testing whether a traversal preserves object identity relationships
+complexity:
+  time: O(V + E)
+  space: O(V)
+  notes: The map from original nodes to clones prevents infinite revisits and guarantees shared neighbors stay shared.
+interviewSignals:
+  - The graph may contain cycles, so naive recursion can duplicate work forever.
+  - The result must be a deep copy with new node identities but the same adjacency shape.
+relatedSlugs:
+  - breadth-first-search
+  - depth-first-search
+provenance:
+  - title: GeeksforGeeks - Clone an Undirected Graph
+    href: https://www.geeksforgeeks.org/dsa/clone-an-undirected-graph/
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem tests whether you can reason about structure and identity at the same time. The graph can have cycles and shared neighbors, so the core requirement is not just traversing it, but guaranteeing that each original node corresponds to one and only one clone.
+
+## Worked Example
+
+If node `0` points to nodes `1` and `2`, and both `1` and `2` point back to `0`, the clone must preserve that shared structure without creating multiple copies of `0`. A memo table from original nodes to cloned nodes makes that identity preservation explicit.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class GraphNode {
+  constructor(val) {
+    this.val = val;
+    this.neighbors = [];
+  }
+}
+
+function cloneAnUndirectedGraph(node) {
+  if (node === null) {
+    return null;
+  }
+
+  const clones = new Map();
+  const queue = [node];
+  clones.set(node, new GraphNode(node.val));
+
+  for (let head = 0; head < queue.length; head += 1) {
+    const current = queue[head];
+    const currentClone = clones.get(current);
+
+    for (const neighbor of current.neighbors) {
+      if (!clones.has(neighbor)) {
+        clones.set(neighbor, new GraphNode(neighbor.val));
+        queue.push(neighbor);
+      }
+
+      currentClone.neighbors.push(clones.get(neighbor));
+    }
+  }
+
+  return clones.get(node);
+}
+```
+
+```ts
+class GraphNode {
+  val: number;
+  neighbors: GraphNode[];
+
+  constructor(val: number) {
+    this.val = val;
+    this.neighbors = [];
+  }
+}
+
+export function cloneAnUndirectedGraph(node: GraphNode | null): GraphNode | null {
+  if (node === null) {
+    return null;
+  }
+
+  const clones = new Map<GraphNode, GraphNode>();
+  const queue: GraphNode[] = [node];
+  clones.set(node, new GraphNode(node.val));
+
+  for (let head = 0; head < queue.length; head += 1) {
+    const current = queue[head];
+    const currentClone = clones.get(current)!;
+
+    for (const neighbor of current.neighbors) {
+      if (!clones.has(neighbor)) {
+        clones.set(neighbor, new GraphNode(neighbor.val));
+        queue.push(neighbor);
+      }
+
+      currentClone.neighbors.push(clones.get(neighbor)!);
+    }
+  }
+
+  return clones.get(node)!;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Rewrite the solution with DFS instead of BFS.
+- How would you clone multiple connected components instead of one start node?
+- How can you verify that node values match while references do not?
+
+## Common Pitfalls
+
+- Recreating the same neighbor multiple times because there is no original-to-clone map.
+- Returning a shallow copy that reuses old neighbor references.
+- Forgetting that cycles can cause infinite recursion without memoization.

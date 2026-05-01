@@ -23,8 +23,8 @@ useCases:
   - Reusing Eulerian-cycle conditions in a non-obvious setting
 complexity:
   time: O(N + A)
-  space: O(A)
-  notes: The alphabet size is usually tiny compared with the number of words, so graph checks stay effectively linear in the input.
+  space: O(N + A)
+  notes: The alphabet size is usually tiny, but the adjacency lists still store one directed edge per word.
 interviewSignals:
   - Each string must be used exactly once in a cycle.
   - The first and last characters determine how items can connect.
@@ -47,7 +47,7 @@ This problem is a strong interview reduction exercise because the input looks li
 
 ## Worked Example
 
-The words `geek`, `king`, and `gale` create edges `g -> k`, `k -> g`, and `g -> e`. If every used letter has matching in-degree and out-degree and all active letters lie in one strongly connected region, then the words can be arranged in a circle that uses each string exactly once.
+The words `ab`, `bc`, and `ca` create edges `a -> b`, `b -> c`, and `c -> a`. Every active letter has matching in-degree and out-degree, and all active letters lie in one strongly connected region, so the strings can be chained into the circle `ab -> bc -> ca`.
 
 ## Reference Implementations
 

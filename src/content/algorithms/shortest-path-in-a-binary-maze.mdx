@@ -1,0 +1,202 @@
+---
+title: Shortest path in a Binary Maze
+slug: shortest-path-in-a-binary-maze
+category: Graphs
+summary: Run BFS over the walkable cells of a 0/1 grid so the first time the destination is reached, the distance is minimal.
+description: Shortest path in a Binary Maze is the grid shortest-path problem solved by breadth-first search on four-direction moves through open cells.
+dataStructures:
+  - Matrix
+  - Queue
+  - Array
+techniques:
+  - Breadth-First Search
+  - Grid Traversal
+  - Shortest Path
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - binary maze shortest path
+  - shortest path in matrix with blocked cells
+useCases:
+  - Finding the minimum steps between two cells in an unweighted grid
+  - Modeling obstacles as blocked nodes in an implicit graph
+  - Reusing plain BFS instead of heavier weighted shortest-path tools
+complexity:
+  time: O(R * C)
+  space: O(R * C)
+  notes: Each cell is enqueued at most once, so BFS stays linear in the grid size.
+interviewSignals:
+  - The grid is unweighted and movement cost is one per step.
+  - The prompt asks for minimum moves through valid cells only.
+relatedSlugs:
+  - breadth-first-search
+  - a-star-search
+  - dijkstra-smallest-path
+provenance:
+  - title: GeeksforGeeks - Shortest path in a Binary Maze
+    href: https://www.geeksforgeeks.org/shortest-path-in-a-binary-maze/
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is one of the cleanest BFS interview problems because the grid is just an implicit graph with uniform edge cost. The main signal is that all moves cost the same, so the first time BFS reaches the destination, you already have the shortest distance.
+
+## Worked Example
+
+If the source is `(0, 1)` and the destination is `(2, 2)`, BFS expands all cells at distance `1`, then all cells at distance `2`, and so on. When the search first reaches `(2, 2)`, that layer count is the minimum number of steps needed to get there.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function shortestPathInABinaryMaze(grid, source, destination) {
+  const rowCount = grid.length;
+  const columnCount = rowCount === 0 ? 0 : grid[0].length;
+  if (rowCount === 0 || columnCount === 0) {
+    return -1;
+  }
+
+  const [startRow, startColumn] = source;
+  const [targetRow, targetColumn] = destination;
+  if (
+    startRow < 0
+    || startRow >= rowCount
+    || startColumn < 0
+    || startColumn >= columnCount
+    || targetRow < 0
+    || targetRow >= rowCount
+    || targetColumn < 0
+    || targetColumn >= columnCount
+    || grid[startRow][startColumn] === 0
+    || grid[targetRow][targetColumn] === 0
+  ) {
+    return -1;
+  }
+
+  const directions = [
+    [1, 0],
+    [-1, 0],
+    [0, 1],
+    [0, -1],
+  ];
+  const visited = Array.from({ length: rowCount }, () => new Array(columnCount).fill(false));
+  const queue = [[startRow, startColumn, 0]];
+  visited[startRow][startColumn] = true;
+
+  for (let head = 0; head < queue.length; head += 1) {
+    const [row, column, distance] = queue[head];
+    if (row === targetRow && column === targetColumn) {
+      return distance;
+    }
+
+    for (const [rowDelta, columnDelta] of directions) {
+      const nextRow = row + rowDelta;
+      const nextColumn = column + columnDelta;
+
+      if (
+        nextRow < 0
+        || nextRow >= rowCount
+        || nextColumn < 0
+        || nextColumn >= columnCount
+        || visited[nextRow][nextColumn]
+        || grid[nextRow][nextColumn] === 0
+      ) {
+        continue;
+      }
+
+      visited[nextRow][nextColumn] = true;
+      queue.push([nextRow, nextColumn, distance + 1]);
+    }
+  }
+
+  return -1;
+}
+```
+
+```ts
+export function shortestPathInABinaryMaze(
+  grid: number[][],
+  source: [number, number],
+  destination: [number, number],
+): number {
+  const rowCount = grid.length;
+  const columnCount = rowCount === 0 ? 0 : grid[0].length;
+  if (rowCount === 0 || columnCount === 0) {
+    return -1;
+  }
+
+  const [startRow, startColumn] = source;
+  const [targetRow, targetColumn] = destination;
+  if (
+    startRow < 0
+    || startRow >= rowCount
+    || startColumn < 0
+    || startColumn >= columnCount
+    || targetRow < 0
+    || targetRow >= rowCount
+    || targetColumn < 0
+    || targetColumn >= columnCount
+    || grid[startRow][startColumn] === 0
+    || grid[targetRow][targetColumn] === 0
+  ) {
+    return -1;
+  }
+
+  const directions: Array<[number, number]> = [
+    [1, 0],
+    [-1, 0],
+    [0, 1],
+    [0, -1],
+  ];
+  const visited = Array.from({ length: rowCount }, () => new Array<boolean>(columnCount).fill(false));
+  const queue: Array<[number, number, number]> = [[startRow, startColumn, 0]];
+  visited[startRow][startColumn] = true;
+
+  for (let head = 0; head < queue.length; head += 1) {
+    const [row, column, distance] = queue[head];
+    if (row === targetRow && column === targetColumn) {
+      return distance;
+    }
+
+    for (const [rowDelta, columnDelta] of directions) {
+      const nextRow = row + rowDelta;
+      const nextColumn = column + columnDelta;
+
+      if (
+        nextRow < 0
+        || nextRow >= rowCount
+        || nextColumn < 0
+        || nextColumn >= columnCount
+        || visited[nextRow][nextColumn]
+        || grid[nextRow][nextColumn] === 0
+      ) {
+        continue;
+      }
+
+      visited[nextRow][nextColumn] = true;
+      queue.push([nextRow, nextColumn, distance + 1]);
+    }
+  }
+
+  return -1;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you reconstruct the actual path, not just its length?
+- What changes if diagonal moves are allowed?
+- When would Dijkstra or A* be more appropriate than plain BFS?
+
+## Common Pitfalls
+
+- Reaching for Dijkstra even though every move has the same cost.
+- Forgetting to reject blocked source or destination cells up front.
+- Marking cells visited too late and enqueuing duplicates.
