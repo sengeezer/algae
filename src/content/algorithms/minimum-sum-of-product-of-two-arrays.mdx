@@ -1,0 +1,126 @@
+---
+title: Minimum sum of product of two arrays
+slug: minimum-sum-of-product-of-two-arrays
+category: Greedy
+summary: "Compute the current dot product, then spend all allowed `+/- 2` updates on the single index whose paired contribution can be reduced the most."
+description: "Minimum sum of product of two arrays minimizes the dot product after `k` modifications by greedily applying every allowed change to the one first-array element with the best reduction leverage."
+dataStructures:
+  - Array
+techniques:
+  - Greedy
+  - Dot Product Optimization
+  - Single-Choice Maximization
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - minimum product sum with k modifications
+  - minimize sum of products after updates
+  - k updates on first array product sum
+useCases:
+  - Optimizing a paired linear objective when every operation has identical step size
+  - Recognizing when all updates should collapse onto one best target
+  - Turning a global objective into the search for one maximum local reduction
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: "The scan accumulates the original dot product and the largest achievable reduction from applying all `k` operations to one index."
+interviewSignals:
+  - Updates are allowed only on the first array and every modification changes one value by exactly `2`.
+  - The key observation is that splitting the updates across multiple indices is never better than using them all on the best single index.
+relatedSlugs:
+  - maximize-array-sum-after-k-negations-using-sorting
+  - minimum-product-subset-of-an-array
+provenance:
+  - title: "GeeksforGeeks - Minimum sum of product of two arrays"
+    href: https://www.geeksforgeeks.org/dsa/minimum-sum-product-two-arrays/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Each allowed modification changes one `a[i]` by `2`, so spending every modification on the same best index compounds the benefit linearly. The greedy task is therefore not to distribute updates, but to find the one paired product term whose value can be driven downward the most.
+
+## Worked Example
+
+For `a = [1, 2, -3]`, `b = [-2, 3, -5]`, and `k = 5`, the original sum is `19`. Applying all five updates to `a[2]` changes it from `-3` to `7`, so the final sum becomes `(1 * -2) + (2 * 3) + (7 * -5) = -31`, which is minimal.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function minimumSumOfProductOfTwoArrays(firstArray, secondArray, operations) {
+  if (firstArray.length !== secondArray.length) {
+    return 0;
+  }
+
+  let originalSum = 0;
+  let bestReduction = 0;
+
+  for (let index = 0; index < firstArray.length; index += 1) {
+    const currentProduct = firstArray[index] * secondArray[index];
+    originalSum += currentProduct;
+
+    let adjustedProduct = currentProduct;
+
+    if (secondArray[index] > 0) {
+      adjustedProduct = (firstArray[index] - 2 * operations) * secondArray[index];
+    } else if (secondArray[index] < 0) {
+      adjustedProduct = (firstArray[index] + 2 * operations) * secondArray[index];
+    }
+
+    bestReduction = Math.max(bestReduction, currentProduct - adjustedProduct);
+  }
+
+  return originalSum - bestReduction;
+}
+```
+
+```ts
+export function minimumSumOfProductOfTwoArrays(
+  firstArray: number[],
+  secondArray: number[],
+  operations: number,
+): number {
+  if (firstArray.length !== secondArray.length) {
+    return 0;
+  }
+
+  let originalSum = 0;
+  let bestReduction = 0;
+
+  for (let index = 0; index < firstArray.length; index += 1) {
+    const currentProduct = firstArray[index] * secondArray[index];
+    originalSum += currentProduct;
+
+    let adjustedProduct = currentProduct;
+
+    if (secondArray[index] > 0) {
+      adjustedProduct = (firstArray[index] - 2 * operations) * secondArray[index];
+    } else if (secondArray[index] < 0) {
+      adjustedProduct = (firstArray[index] + 2 * operations) * secondArray[index];
+    }
+
+    bestReduction = Math.max(bestReduction, currentProduct - adjustedProduct);
+  }
+
+  return originalSum - bestReduction;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the index chosen for the updates as well as the minimized sum.
+- Prove why distributing the modifications across multiple indices cannot beat the best single-index reduction.
+- Adapt the routine if both arrays may be modified instead of only the first one.
+
+## Common Pitfalls
+
+- Trying to spread the `k` updates across many indices without first checking the best one-index improvement.
+- Forgetting that the direction of change depends only on the sign of the paired `b[i]` value.
+- Reordering the arrays even though the source problem keeps the element pairing fixed.

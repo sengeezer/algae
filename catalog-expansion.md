@@ -848,9 +848,17 @@ This eightieth expansion slice lifts the catalog from 450 to 453 entries.
 - Assign Holes to Mice
 - Fitting Shelves Problem
 
+## Batch 81 added
+
+This eighty-first expansion slice lifts the catalog from 453 to 456 entries.
+
+- Minimum product subset of an array
+- Maximize array sum after K negations using Sorting
+- Minimum sum of product of two arrays
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 80 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 81 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -858,10 +866,10 @@ All expansion entries from batch 1 through batch 80 now carry explicit per-entry
 
 ## Why this batch
 
-- It continues the GeeksforGeeks Greedy Algorithms page in exact source order after `Min Adjacent Swaps for Bracket Balancing`, skipping only the already-covered `Egyptian Fraction`, then taking the interval-matching scan `Policemen catch thieves`, the minimax assignment problem `Assign Holes to Mice`, and the tie-broken wall-packing routine `Fitting Shelves Problem`.
-- It broadens the catalog across three more greedy shapes: left-to-right matching of two constrained index streams, sorted pairing to minimize the worst assignment time, and exhaustive iteration over the cheaper larger shelf count while greedily filling the rest with smaller shelves.
-- It complements nearby local coverage rather than duplicating it: the policeman entry is a one-dimensional matching problem rather than interval scheduling, the mice-holes entry adds a classic exchange-argument sorting proof for minimizing the maximum travel time, and the shelves entry uses a cost-secondary tie-break that prefers more large shelves only after leftover space is minimized.
-- It preserves one source-order title detail that matters for later handoffs: the Greedy page labels the second article as `Assign Mice to Holes`, but the verified destination article title is `Assign Holes to Mice`, so the catalog uses the destination title while the next clean frontier begins only after that same article is exhausted.
+- It continues the GeeksforGeeks Greedy Algorithms page in exact source order after `Fitting Shelves Problem`, moving directly into the `Greedy Problems on Array` section with `Minimum product subset of an array`, `Maximize array sum after K negations using Sorting`, and `Minimum sum of product of two arrays` without any intermediary skips.
+- It broadens the catalog across three more greedy array patterns: sign-count reasoning for selecting the product-minimizing subset, sorted negation planning that spends the remaining parity on the smallest magnitude value, and concentrating all allowed value shifts on the single index that most decreases the product sum.
+- It complements nearby local coverage rather than duplicating it: the minimum-product entry focuses on subset selection rather than contiguous arrays, the k-negations entry uses operation parity and smallest absolute value tracking instead of dynamic programming, and the product-sum entry minimizes a paired objective by choosing one best modification target rather than reordering the arrays.
+- It preserves the next handoff cleanly: once these three array entries are exhausted, the Greedy-page frontier continues in order with pairwise absolute-difference minimization, monotonic non-increasing normalization, and the reverse-around-middle sorting puzzle.
 
 ## Supporting study references from the algorithms list
 
@@ -871,4 +879,4 @@ All expansion entries from batch 1 through batch 80 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- The current GeeksforGeeks Greedy-page frontier now continues with `Minimum product subset of an array`, `Maximize array sum after K negations using Sorting`, and `Minimum sum of product of two arrays` after `Fitting Shelves Problem`; `Egyptian Fraction` remains intentionally skipped as a semantic duplicate, and the Greedy-page label `Assign Mice to Holes` points to the same destination article already captured here as `Assign Holes to Mice`.
+- The current GeeksforGeeks Greedy-page frontier now continues with `Minimum sum of absolute difference of pairs of two arrays`, `Minimum increment/decrement to make array non-Increasing`, and `Sorting array with reverse around middle` after `Minimum sum of product of two arrays`, with no duplicate or label-only skips between those three items.

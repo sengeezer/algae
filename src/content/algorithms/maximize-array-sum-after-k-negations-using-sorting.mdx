@@ -1,0 +1,127 @@
+---
+title: Maximize array sum after K negations using Sorting
+slug: maximize-array-sum-after-k-negations-using-sorting
+category: Greedy
+summary: "Sort the array, flip as many negative values as possible, then spend any odd remaining operation on the smallest absolute value."
+description: "Maximize array sum after K negations using Sorting greedily uses each negation on the current most harmful value and finishes with an operation-parity check."
+dataStructures:
+  - Array
+techniques:
+  - Greedy
+  - Sorting
+  - Parity Reasoning
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - maximize sum after k negations
+  - k sign flips sorting
+  - maximize array sum with negations
+useCases:
+  - Spending a limited number of sign flips to maximize a linear objective
+  - Recognizing when leftover operation parity is the only state that still matters
+  - Combining sorting with smallest-absolute-value tracking
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: "The sorted copy preserves the caller's array while the final scan computes both the sum and the minimum absolute value needed for the leftover parity step."
+interviewSignals:
+  - Each operation can negate any one element, and the same element may be chosen multiple times.
+  - After all negative values are handled, only whether the remaining operation count is odd or even still matters.
+relatedSlugs:
+  - quick-sort
+  - minimum-product-subset-of-an-array
+provenance:
+  - title: "GeeksforGeeks - Maximize array sum after K negations using Sorting"
+    href: https://www.geeksforgeeks.org/dsa/maximize-array-sum-after-k-negations-using-sorting/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Negating a negative value is always helpful, so sorting exposes the best first choices immediately. Once every negative has been fixed, the only remaining question is whether the leftover number of operations is odd; if it is, the smallest absolute value must absorb that last unavoidable flip.
+
+## Worked Example
+
+For `arr = [-2, 0, 5, -1, 2]` and `k = 4`, sorting gives `[-2, -1, 0, 2, 5]`. Flipping `-2` and `-1` makes the array nonnegative, and the remaining two operations can both be spent on `0`, so the maximum sum is `10`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function maximizeArraySumAfterKNegationsUsingSorting(values, operations) {
+  const sortedValues = [...values].sort((left, right) => left - right);
+
+  for (
+    let index = 0;
+    index < sortedValues.length && operations > 0 && sortedValues[index] < 0;
+    index += 1
+  ) {
+    sortedValues[index] *= -1;
+    operations -= 1;
+  }
+
+  let total = 0;
+  let minimumAbsoluteValue = Number.POSITIVE_INFINITY;
+
+  for (const value of sortedValues) {
+    total += value;
+    minimumAbsoluteValue = Math.min(minimumAbsoluteValue, Math.abs(value));
+  }
+
+  if (operations % 2 === 1) {
+    total -= 2 * minimumAbsoluteValue;
+  }
+
+  return total;
+}
+```
+
+```ts
+export function maximizeArraySumAfterKNegationsUsingSorting(
+  values: number[],
+  operations: number,
+): number {
+  const sortedValues = [...values].sort((left, right) => left - right);
+
+  for (
+    let index = 0;
+    index < sortedValues.length && operations > 0 && sortedValues[index] < 0;
+    index += 1
+  ) {
+    sortedValues[index] *= -1;
+    operations -= 1;
+  }
+
+  let total = 0;
+  let minimumAbsoluteValue = Number.POSITIVE_INFINITY;
+
+  for (const value of sortedValues) {
+    total += value;
+    minimumAbsoluteValue = Math.min(minimumAbsoluteValue, Math.abs(value));
+  }
+
+  if (operations % 2 === 1) {
+    total -= 2 * minimumAbsoluteValue;
+  }
+
+  return total;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare the sorting approach with the min-heap variant from the companion article.
+- Return one maximizing final array instead of only the best possible sum.
+- Explain why a remaining even number of operations can always be ignored.
+
+## Common Pitfalls
+
+- Continuing to flip large positive values instead of the smallest absolute value after negatives are exhausted.
+- Forgetting that zero can absorb any number of leftover negations harmlessly.
+- Assuming the array must be resorted after each flip even though the parity-based final step avoids that extra work.

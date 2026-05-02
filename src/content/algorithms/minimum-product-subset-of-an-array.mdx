@@ -1,0 +1,162 @@
+---
+title: Minimum product subset of an array
+slug: minimum-product-subset-of-an-array
+category: Greedy
+summary: "Count negatives and zeros, multiply all nonzero values, and drop the least harmful negative only when an even negative count would otherwise make the product too large."
+description: "Minimum product subset of an array finds the smallest possible subset product by combining sign counting with one carefully chosen exclusion."
+dataStructures:
+  - Array
+techniques:
+  - Greedy
+  - Sign Counting
+  - Case Analysis
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - minimum product subset
+  - smallest subset product
+  - product-minimizing subset
+useCases:
+  - Choosing a subset when sign parity matters more than subset size
+  - Reducing brute-force subset search to a few sign-based cases
+  - Recognizing when excluding one closest-to-zero negative improves a product
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: "The scan tracks only aggregate counts, one running product of nonzero values, the closest-to-zero negative, and the smallest positive value."
+interviewSignals:
+  - The answer may be a single element rather than a large subset.
+  - Zero counts and negative parity completely determine which cases are feasible.
+relatedSlugs:
+  - maximize-array-sum-after-k-negations-using-sorting
+  - kadane-algorithm
+provenance:
+  - title: "GeeksforGeeks - Minimum product subset of an array"
+    href: https://www.geeksforgeeks.org/dsa/minimum-product-subset-array/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem looks like a subset-enumeration trap, but the minimum product is driven almost entirely by sign structure. The greedy reasoning is to keep as many magnitude-helpful numbers as possible while removing only the one negative that would flip an otherwise ideal negative product into a positive one.
+
+## Worked Example
+
+For `a = [-1, -1, -2, 4, 3]`, there are three negative values, so using all nonzero elements keeps the overall product negative. The subset product is `(-1) * (-1) * (-2) * 4 * 3 = -24`, which is already minimal.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function minimumProductSubsetOfAnArray(values) {
+  if (values.length === 0) {
+    return 0;
+  }
+
+  if (values.length === 1) {
+    return values[0];
+  }
+
+  let negativeCount = 0;
+  let zeroCount = 0;
+  let maximumNegative = Number.NEGATIVE_INFINITY;
+  let minimumPositive = Number.POSITIVE_INFINITY;
+  let product = 1;
+
+  for (const value of values) {
+    if (value === 0) {
+      zeroCount += 1;
+      continue;
+    }
+
+    product *= value;
+
+    if (value < 0) {
+      negativeCount += 1;
+      maximumNegative = Math.max(maximumNegative, value);
+    } else {
+      minimumPositive = Math.min(minimumPositive, value);
+    }
+  }
+
+  if (zeroCount === values.length) {
+    return 0;
+  }
+
+  if (negativeCount === 0) {
+    return zeroCount > 0 ? 0 : minimumPositive;
+  }
+
+  if (negativeCount % 2 === 0) {
+    return product / maximumNegative;
+  }
+
+  return product;
+}
+```
+
+```ts
+export function minimumProductSubsetOfAnArray(values: number[]): number {
+  if (values.length === 0) {
+    return 0;
+  }
+
+  if (values.length === 1) {
+    return values[0];
+  }
+
+  let negativeCount = 0;
+  let zeroCount = 0;
+  let maximumNegative = Number.NEGATIVE_INFINITY;
+  let minimumPositive = Number.POSITIVE_INFINITY;
+  let product = 1;
+
+  for (const value of values) {
+    if (value === 0) {
+      zeroCount += 1;
+      continue;
+    }
+
+    product *= value;
+
+    if (value < 0) {
+      negativeCount += 1;
+      maximumNegative = Math.max(maximumNegative, value);
+    } else {
+      minimumPositive = Math.min(minimumPositive, value);
+    }
+  }
+
+  if (zeroCount === values.length) {
+    return 0;
+  }
+
+  if (negativeCount === 0) {
+    return zeroCount > 0 ? 0 : minimumPositive;
+  }
+
+  if (negativeCount % 2 === 0) {
+    return product / maximumNegative;
+  }
+
+  return product;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return one actual subset, not only the minimum product value.
+- Explain why removing the negative closest to zero is optimal when the negative count is even.
+- Adapt the reasoning if overflow means you cannot multiply all values directly.
+
+## Common Pitfalls
+
+- Forgetting that the best answer can be a single positive or zero when no negative product is available.
+- Removing the most negative value instead of the negative closest to zero.
+- Multiplying zeros into the running product even though they should be handled as a separate case.
