@@ -1,0 +1,191 @@
+---
+title: Paper Cut into Minimum Number of Squares
+slug: paper-cut-into-minimum-number-of-squares
+category: Dynamic Programming
+summary: Model the remaining paper as a skyline of column heights, then memoize the best square cut starting from the current lowest-left corner state.
+description: Paper Cut into Minimum Number of Squares is the memoized tiling search that encodes the remaining rectangle profile instead of relying on the incorrect greedy largest-square rule.
+dataStructures:
+  - Array
+  - Map
+  - Recursion Stack
+techniques:
+  - Dynamic Programming
+  - Memoization
+  - Depth-First Search
+  - State Compression
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - paper cut into min squares
+  - minimum squares to cut a paper
+  - minimum square tiling of a rectangle
+useCases:
+  - Memoizing geometric partition states that can be represented compactly
+  - Distinguishing tempting greedy cuts from the actual optimal search
+  - Exploring skyline-style state compression for tiling problems
+complexity:
+  time: O(a^b)
+  space: O(a^b)
+  notes: The source article models each state as a vector of remaining column heights, so the number of memoized states is exponential in the dimension used for the profile.
+interviewSignals:
+  - Greedily taking the largest current square looks plausible but fails on counterexamples like `6 x 7`.
+  - The remaining shape can be summarized by per-column heights instead of a full grid.
+relatedSlugs:
+  - memoization-dp
+  - knapsack-dp
+  - backtracking-search
+provenance:
+  - title: "GeeksforGeeks - Paper Cut into Minimum Number of Squares"
+    href: https://www.geeksforgeeks.org/dsa/paper-cut-minimum-number-squares/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem is useful precisely because the first greedy instinct is wrong. Cutting the largest possible square at every step fails on `6 x 7`, so the real interview move is to define a reusable state for the remaining paper and memoize the search.
+
+## Worked Example
+
+For `a = 6` and `b = 7`, greedy would cut a `6 x 6` square first and then leave six `1 x 1` squares, for a total of `7`. The optimal answer is `5`, which is why you need a stateful search over possible square sizes rather than a locally largest choice.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function paperCutIntoMinimumNumberOfSquares(height, width) {
+  if (height <= 0 || width <= 0) {
+    return 0;
+  }
+
+  const rows = Math.min(height, width);
+  const columns = Math.max(height, width);
+  const memo = new Map();
+
+  function solve(remainingHeights) {
+    const stateKey = remainingHeights.join(',');
+    const cached = memo.get(stateKey);
+
+    if (cached !== undefined) {
+      return cached;
+    }
+
+    let tallest = 0;
+    let start = -1;
+
+    for (let column = 0; column < columns; column += 1) {
+      if (remainingHeights[column] > tallest) {
+        tallest = remainingHeights[column];
+        start = column;
+      }
+    }
+
+    if (tallest === 0) {
+      return 0;
+    }
+
+    let end = start;
+
+    while (end < columns && remainingHeights[end] === tallest) {
+      end += 1;
+    }
+
+    const maxSquareSize = Math.min(tallest, end - start);
+    let best = Number.POSITIVE_INFINITY;
+
+    for (let size = maxSquareSize; size >= 1; size -= 1) {
+      const next = [...remainingHeights];
+
+      for (let offset = 0; offset < size; offset += 1) {
+        next[start + offset] -= size;
+      }
+
+      best = Math.min(best, 1 + solve(next));
+    }
+
+    memo.set(stateKey, best);
+    return best;
+  }
+
+  return solve(new Array(columns).fill(rows));
+}
+```
+
+```ts
+export function paperCutIntoMinimumNumberOfSquares(
+  height: number,
+  width: number,
+): number {
+  if (height <= 0 || width <= 0) {
+    return 0;
+  }
+
+  const rows = Math.min(height, width);
+  const columns = Math.max(height, width);
+  const memo = new Map<string, number>();
+
+  function solve(remainingHeights: number[]): number {
+    const stateKey = remainingHeights.join(',');
+    const cached = memo.get(stateKey);
+
+    if (cached !== undefined) {
+      return cached;
+    }
+
+    let tallest = 0;
+    let start = -1;
+
+    for (let column = 0; column < columns; column += 1) {
+      if (remainingHeights[column] > tallest) {
+        tallest = remainingHeights[column];
+        start = column;
+      }
+    }
+
+    if (tallest === 0) {
+      return 0;
+    }
+
+    let end = start;
+
+    while (end < columns && remainingHeights[end] === tallest) {
+      end += 1;
+    }
+
+    const maxSquareSize = Math.min(tallest, end - start);
+    let best = Number.POSITIVE_INFINITY;
+
+    for (let size = maxSquareSize; size >= 1; size -= 1) {
+      const next = [...remainingHeights];
+
+      for (let offset = 0; offset < size; offset += 1) {
+        next[start + offset] -= size;
+      }
+
+      best = Math.min(best, 1 + solve(next));
+    }
+
+    memo.set(stateKey, best);
+    return best;
+  }
+
+  return solve(new Array<number>(columns).fill(rows));
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain exactly why the largest-square greedy rule fails on `6 x 7`.
+- Return one optimal sequence of square cuts instead of only the minimum count.
+- Discuss how normalizing the rectangle so `height <= width` shrinks the state space.
+
+## Common Pitfalls
+
+- Assuming the problem is greedy because the source index lists it on a Greedy page.
+- Storing the whole remaining grid instead of a compressed skyline state.
+- Forgetting that equivalent skyline states should reuse the same memoized answer.

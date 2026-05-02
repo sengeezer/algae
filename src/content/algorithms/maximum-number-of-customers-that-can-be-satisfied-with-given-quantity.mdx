@@ -1,0 +1,134 @@
+---
+title: Maximum number of customers that can be satisfied with given quantity
+slug: maximum-number-of-customers-that-can-be-satisfied-with-given-quantity
+category: Greedy
+summary: Compute each customer's total demand, sort by that demand, and satisfy the cheapest customers first while stock remains.
+description: Maximum number of customers that can be satisfied with given quantity is the greedy budget-allocation problem that maximizes the number of fulfilled requests by serving the lightest total demands first.
+dataStructures:
+  - Array
+  - Object
+techniques:
+  - Greedy
+  - Sorting
+  - Budget Allocation
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - max satisfied customers
+  - satisfy customers with limited quantity
+  - minimum-demand-first fulfillment
+useCases:
+  - Maximizing how many requests fit inside a fixed inventory budget
+  - Turning multi-field requests into one comparable fulfillment cost
+  - Returning both the best count and the chosen request indices
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: Sorting customers by total required quantity dominates the runtime; the greedy scan is linear.
+interviewSignals:
+  - The objective is to satisfy as many customers as possible, not to maximize consumed quantity or revenue.
+  - Each request can be collapsed into one total cost before selection begins.
+relatedSlugs:
+  - buy-maximum-stocks
+  - assign-maximum-cookies
+  - fractional-knapsack
+provenance:
+  - title: "GeeksforGeeks - Maximum number of customers that can be satisfied with given quantity"
+    href: https://www.geeksforgeeks.org/dsa/maximum-number-customers-can-satisfied-given-quantity/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a count-maximization greedy problem. Once each customer request is reduced to one total demand, spending inventory on any heavier request before a lighter one can only reduce how many customers you can still satisfy.
+
+## Worked Example
+
+If packet sizes are `a = 1` and `b = 1`, total stock is `5`, and customer demands become `[2, 5, 8, 10, 1]`, sort those demands to `1, 2, 5, 8, 10`. Serving the customers with demand `1` and `2` uses only `3` units total, so two customers are satisfied before the remaining stock becomes too small for the next request.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function maximumNumberOfCustomersThatCanBeSatisfiedWithGivenQuantity(
+  packetASize,
+  packetBSize,
+  totalQuantity,
+  requests,
+) {
+  const rankedCustomers = requests
+    .map(([countA, countB], index) => ({
+      customerIndex: index + 1,
+      demand: packetASize * countA + packetBSize * countB,
+    }))
+    .sort((left, right) => left.demand - right.demand || left.customerIndex - right.customerIndex);
+
+  const customerIndices = [];
+  let remaining = totalQuantity;
+
+  for (const customer of rankedCustomers) {
+    if (customer.demand > remaining) {
+      break;
+    }
+
+    remaining -= customer.demand;
+    customerIndices.push(customer.customerIndex);
+  }
+
+  return {
+    count: customerIndices.length,
+    customerIndices,
+  };
+}
+```
+
+```ts
+export function maximumNumberOfCustomersThatCanBeSatisfiedWithGivenQuantity(
+  packetASize: number,
+  packetBSize: number,
+  totalQuantity: number,
+  requests: Array<[number, number]>,
+): { count: number; customerIndices: number[] } {
+  const rankedCustomers = requests
+    .map(([countA, countB], index) => ({
+      customerIndex: index + 1,
+      demand: packetASize * countA + packetBSize * countB,
+    }))
+    .sort((left, right) => left.demand - right.demand || left.customerIndex - right.customerIndex);
+
+  const customerIndices: number[] = [];
+  let remaining = totalQuantity;
+
+  for (const customer of rankedCustomers) {
+    if (customer.demand > remaining) {
+      break;
+    }
+
+    remaining -= customer.demand;
+    customerIndices.push(customer.customerIndex);
+  }
+
+  return {
+    count: customerIndices.length,
+    customerIndices,
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the satisfied customer indices in original order instead of demand order.
+- Explain why the greedy rule changes if customers have different priorities or profit values.
+- Adapt the solution if packet inventory is split into separate `a` and `b` stock counts instead of one total quantity.
+
+## Common Pitfalls
+
+- Optimizing for the largest fulfilled demand instead of the largest number of fulfilled customers.
+- Forgetting to collapse each two-packet request into one comparable total demand.
+- Continuing after the first unaffordable customer even though all later sorted demands are at least as large.

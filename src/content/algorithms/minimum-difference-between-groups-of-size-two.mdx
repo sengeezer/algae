@@ -1,0 +1,115 @@
+---
+title: Minimum difference between groups of size two
+slug: minimum-difference-between-groups-of-size-two
+category: Greedy
+summary: Sort the array and pair the smallest value with the largest, the second smallest with the second largest, and so on.
+description: Minimum difference between groups of size two is the greedy pairing problem where opposite-end matches minimize the spread between pair sums.
+dataStructures:
+  - Array
+techniques:
+  - Greedy
+  - Sorting
+  - Pairing
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - min diff groups of size two
+  - minimum pair-sum spread
+  - balanced pair grouping
+useCases:
+  - Creating balanced pairs from an even-sized list
+  - Recognizing when opposite-end pairing compresses the range of combined values
+  - Turning a grouping objective into a sorting invariant
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: Cloning before sorting preserves the caller input; the optimized in-place version can reduce extra space to O(1).
+interviewSignals:
+  - You must partition an even-sized array into 2-element groups.
+  - The target is to minimize the difference between the largest and smallest pair sums.
+relatedSlugs:
+  - assign-maximum-cookies
+  - fractional-knapsack
+  - quick-sort
+provenance:
+  - title: "GeeksforGeeks - Minimum difference between groups of size two"
+    href: https://www.geeksforgeeks.org/dsa/minimum-difference-between-groups-of-size-two/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a balancing-by-pairing question. Once the array is sorted, pairing extremes is the move that pulls large values downward and small values upward, compressing the final spread of pair sums.
+
+## Worked Example
+
+For `arr = [11, 4, 3, 5, 7, 1]`, sort to `[1, 3, 4, 5, 7, 11]`. Pair `(1, 11)`, `(3, 7)`, and `(4, 5)`, which gives sums `12`, `10`, and `9`. The answer is `12 - 9 = 3`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function minimumDifferenceBetweenGroupsOfSizeTwo(values) {
+  if (values.length % 2 !== 0) {
+    throw new RangeError('values length must be even');
+  }
+
+  if (values.length === 0) {
+    return 0;
+  }
+
+  const sorted = [...values].sort((left, right) => left - right);
+  let lowestPairSum = Number.POSITIVE_INFINITY;
+  let highestPairSum = Number.NEGATIVE_INFINITY;
+
+  for (let index = 0; index < sorted.length / 2; index += 1) {
+    const pairSum = sorted[index] + sorted[sorted.length - 1 - index];
+    lowestPairSum = Math.min(lowestPairSum, pairSum);
+    highestPairSum = Math.max(highestPairSum, pairSum);
+  }
+
+  return highestPairSum - lowestPairSum;
+}
+```
+
+```ts
+export function minimumDifferenceBetweenGroupsOfSizeTwo(values: number[]): number {
+  if (values.length % 2 !== 0) {
+    throw new RangeError('values length must be even');
+  }
+
+  if (values.length === 0) {
+    return 0;
+  }
+
+  const sorted = [...values].sort((left, right) => left - right);
+  let lowestPairSum = Number.POSITIVE_INFINITY;
+  let highestPairSum = Number.NEGATIVE_INFINITY;
+
+  for (let index = 0; index < sorted.length / 2; index += 1) {
+    const pairSum = sorted[index] + sorted[sorted.length - 1 - index];
+    lowestPairSum = Math.min(lowestPairSum, pairSum);
+    highestPairSum = Math.max(highestPairSum, pairSum);
+  }
+
+  return highestPairSum - lowestPairSum;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the actual pairs instead of only the final difference.
+- Explain why pairing adjacent sorted values can produce a wider spread of pair sums.
+- Discuss the in-place variant that sorts the input directly to save space.
+
+## Common Pitfalls
+
+- Pairing nearby values instead of pairing from opposite ends after sorting.
+- Forgetting the input must have even length.
+- Building every possible pairing combination instead of using the sorted greedy invariant.

@@ -784,9 +784,17 @@ This seventy-second expansion slice lifts the catalog from 426 to 429 entries.
 - Maximum trains for which stoppage can be provided
 - Divide 1 to n into two groups with minimum sum difference
 
+## Batch 73 added
+
+This seventy-third expansion slice lifts the catalog from 429 to 432 entries.
+
+- Paper Cut into Minimum Number of Squares
+- Minimum difference between groups of size two
+- Maximum number of customers that can be satisfied with given quantity
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 72 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 73 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -794,10 +802,10 @@ All expansion entries from batch 1 through batch 72 now carry explicit per-entry
 
 ## Why this batch
 
-- It continues the Greedy Algorithms page in exact source order after `Minimum Platforms Required`, first taking the heap-based merge-cost problem `Connect n ropes with minimum cost`, then the platform-pinned interval selector `Maximum trains for which stoppage can be provided`, and then the constructive number partitioner `Divide 1 to n into two groups with minimum sum difference`.
-- It broadens the catalog across three more greedy shapes: repeatedly merging the two cheapest items, decomposing a fixed-resource schedule into independent platform-wise interval scans, and greedily filling one partition toward half of a known arithmetic-series total.
-- It complements nearby local coverage rather than duplicating it: Connect n ropes uses a Huffman-like heap merge rather than generic priority-queue maintenance, Maximum trains is a per-platform selection problem rather than a platform-count problem, and Divide 1 to n into two groups uses consecutive-range arithmetic structure instead of arbitrary-set subset-sum DP.
-- It preserves the local duplicate decisions already established on this page by keeping `Activity Selection` and `Merge Overlapping Intervals` skipped in favor of the existing `greedy-interval-scheduling` and `interval-merging` entries.
+- It continues the Greedy Algorithms page in exact source order after `Divide 1 to n into two groups with minimum sum difference`, then records the next three linked articles exactly as surfaced there: `Paper Cut into Minimum Number of Squares`, `Minimum difference between groups of size two`, and `Maximum number of customers that can be satisfied with given quantity`.
+- It broadens the catalog across three different decision patterns: a memoized skyline search for square tilings, opposite-end pairing to compress the spread of pair sums, and minimum-demand-first fulfillment to maximize the number of satisfied customers.
+- It captures one important source-page correction explicitly: `Paper Cut into Minimum Number of Squares` appears on the Greedy page, but the source article itself rejects greedy and uses DFS plus memoization instead, so the new entry reflects the actual algorithm rather than the page bucket.
+- It complements nearby local coverage rather than duplicating it: the paper-cut entry adds a geometric state-compression DP, the pair-group entry is about balancing pair sums rather than matching thresholds, and the customer-quantity entry optimizes request count rather than profit, value density, or future resource reuse.
 
 ## Supporting study references from the algorithms list
 
@@ -807,4 +815,4 @@ All expansion entries from batch 1 through batch 72 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- The current GeeksforGeeks Greedy-page frontier now continues with `Paper cut into min squares`, `Min diff groups of size two`, and `Max Satisfied Customers` after `Divide 1 to n into two groups with minimum sum difference`, while `Activity Selection` and `Merge Overlapping Intervals` remain intentionally skipped as local duplicates.
+- The current GeeksforGeeks Greedy-page frontier now continues with `Min initial vertices to traverse matrix with constraints`, `Largest palindromic number by permuting digits`, and `Smallest with n digits and digits sum` after `Maximum number of customers that can be satisfied with given quantity`, while `Activity Selection` and `Merge Overlapping Intervals` remain intentionally skipped as local duplicates.
