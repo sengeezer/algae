@@ -1,0 +1,248 @@
+---
+title: Connect n ropes with minimum cost
+slug: connect-n-ropes-with-minimum-cost
+category: Greedy
+summary: Repeatedly connect the two shortest ropes first so each unavoidable future merge starts from the smallest possible combined length.
+description: Connect n ropes with minimum cost is the greedy heap pattern that minimizes total merge cost by always combining the two smallest current ropes.
+dataStructures:
+  - Array
+  - Heap
+techniques:
+  - Greedy
+  - Priority Queue
+  - Heap
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - minimum cost to connect ropes
+  - rope merge cost
+  - optimal rope merging
+useCases:
+  - Minimizing repeated merge or combine costs
+  - Recognizing Huffman-like greedy structure in numeric merge problems
+  - Practicing repeated smallest-pair extraction with a min-heap
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: Building the heap is linear, but each repeated extract-and-insert step costs logarithmic time.
+interviewSignals:
+  - The total cost includes every intermediate merge, not just the final length.
+  - Each step asks for repeatedly combining the two smallest available items.
+relatedSlugs:
+  - priority-queue
+  - job-sequencing-problem
+  - greedy-algorithm-for-egyptian-fraction
+provenance:
+  - title: GeeksforGeeks - Connect n ropes with minimum cost
+    href: https://www.geeksforgeeks.org/dsa/connect-n-ropes-minimum-cost/
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is one of the cleanest examples of a merge-cost greedy proof. If an item is going to be charged again in later merges, you want its current contribution to be as small as possible, which is why the two shortest ropes must be merged first.
+
+## Worked Example
+
+For `ropes = [4, 3, 2, 6]`, merge `2` and `3` first for cost `5`, leaving `[4, 5, 6]`. Then merge `4` and `5` for cost `9`, leaving `[6, 9]`. Finally merge `6` and `9` for cost `15`, so the total cost is `5 + 9 + 15 = 29`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function connectNRopesWithMinimumCost(lengths) {
+  if (lengths.length <= 1) {
+    return 0;
+  }
+
+  const heap = [...lengths];
+
+  function swap(left, right) {
+    [heap[left], heap[right]] = [heap[right], heap[left]];
+  }
+
+  function siftUp(index) {
+    let child = index;
+
+    while (child > 0) {
+      const parent = Math.floor((child - 1) / 2);
+
+      if (heap[parent] <= heap[child]) {
+        break;
+      }
+
+      swap(parent, child);
+      child = parent;
+    }
+  }
+
+  function siftDown(index) {
+    let parent = index;
+
+    while (true) {
+      let smallest = parent;
+      const left = parent * 2 + 1;
+      const right = parent * 2 + 2;
+
+      if (left < heap.length && heap[left] < heap[smallest]) {
+        smallest = left;
+      }
+
+      if (right < heap.length && heap[right] < heap[smallest]) {
+        smallest = right;
+      }
+
+      if (smallest === parent) {
+        break;
+      }
+
+      swap(parent, smallest);
+      parent = smallest;
+    }
+  }
+
+  function buildHeap() {
+    for (let index = Math.floor(heap.length / 2) - 1; index >= 0; index -= 1) {
+      siftDown(index);
+    }
+  }
+
+  function push(value) {
+    heap.push(value);
+    siftUp(heap.length - 1);
+  }
+
+  function pop() {
+    const min = heap[0];
+    const last = heap.pop();
+
+    if (heap.length > 0 && last !== undefined) {
+      heap[0] = last;
+      siftDown(0);
+    }
+
+    return min;
+  }
+
+  buildHeap();
+  let totalCost = 0;
+
+  while (heap.length > 1) {
+    const first = pop();
+    const second = pop();
+    const merged = first + second;
+    totalCost += merged;
+    push(merged);
+  }
+
+  return totalCost;
+}
+```
+
+```ts
+export function connectNRopesWithMinimumCost(lengths: number[]): number {
+  if (lengths.length <= 1) {
+    return 0;
+  }
+
+  const heap = [...lengths];
+
+  function swap(left: number, right: number) {
+    [heap[left], heap[right]] = [heap[right], heap[left]];
+  }
+
+  function siftUp(index: number) {
+    let child = index;
+
+    while (child > 0) {
+      const parent = Math.floor((child - 1) / 2);
+
+      if (heap[parent] <= heap[child]) {
+        break;
+      }
+
+      swap(parent, child);
+      child = parent;
+    }
+  }
+
+  function siftDown(index: number) {
+    let parent = index;
+
+    while (true) {
+      let smallest = parent;
+      const left = parent * 2 + 1;
+      const right = parent * 2 + 2;
+
+      if (left < heap.length && heap[left] < heap[smallest]) {
+        smallest = left;
+      }
+
+      if (right < heap.length && heap[right] < heap[smallest]) {
+        smallest = right;
+      }
+
+      if (smallest === parent) {
+        break;
+      }
+
+      swap(parent, smallest);
+      parent = smallest;
+    }
+  }
+
+  function buildHeap() {
+    for (let index = Math.floor(heap.length / 2) - 1; index >= 0; index -= 1) {
+      siftDown(index);
+    }
+  }
+
+  function push(value: number) {
+    heap.push(value);
+    siftUp(heap.length - 1);
+  }
+
+  function pop(): number {
+    const min = heap[0];
+    const last = heap.pop();
+
+    if (heap.length > 0 && last !== undefined) {
+      heap[0] = last;
+      siftDown(0);
+    }
+
+    return min;
+  }
+
+  buildHeap();
+  let totalCost = 0;
+
+  while (heap.length > 1) {
+    const first = pop();
+    const second = pop();
+    const merged = first + second;
+    totalCost += merged;
+    push(merged);
+  }
+
+  return totalCost;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why this is the same greedy structure as Huffman-style merging.
+- Return the full merge tree instead of only the total cost.
+- Discuss when repeated sorting is acceptable versus when a heap is the right tool.
+
+## Common Pitfalls
+
+- Treating the answer as the final rope length instead of the sum of all merge costs.
+- Repeatedly sorting the whole array when a min-heap is the intended optimization.
+- Forgetting that every intermediate merged rope goes back into the candidate set.

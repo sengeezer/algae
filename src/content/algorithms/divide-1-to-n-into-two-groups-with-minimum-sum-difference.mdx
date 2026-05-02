@@ -1,0 +1,119 @@
+---
+title: Divide 1 to n into two groups with minimum sum difference
+slug: divide-1-to-n-into-two-groups-with-minimum-sum-difference
+category: Greedy
+summary: Walk down from `n` to `1`, adding each number to the first group only while its sum stays at or below half of the total.
+description: Divide 1 to n into two groups with minimum sum difference is the greedy partitioning pattern that fills one side toward half of the triangular-number total.
+dataStructures:
+  - Array
+techniques:
+  - Greedy
+  - Math
+  - Partitioning
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - partition 1 to n into two groups
+  - minimum sum difference partition
+  - greedy partition of 1 to n
+useCases:
+  - Splitting a structured consecutive range into two near-balanced groups
+  - Using arithmetic series properties to avoid heavier subset-sum machinery
+  - Practicing when a partition objective admits a direct constructive greedy answer
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: The scan is linear because the total sum and target half can be computed in O(1) before the pass.
+interviewSignals:
+  - The input is exactly the consecutive range `1..n`, not an arbitrary set.
+  - The task asks for one constructive minimum-difference grouping rather than only the difference value.
+relatedSlugs:
+  - minimum-fibonacci-terms-with-sum-equal-to-k
+  - knapsack-dp
+  - greedy-algorithm-for-egyptian-fraction
+provenance:
+  - title: GeeksforGeeks - Divide 1 to n into two groups with minimum sum difference
+    href: https://www.geeksforgeeks.org/dsa/divide-1-n-two-groups-minimum-sum-difference/
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+At first glance this resembles subset sum, but the input structure matters. Because the numbers are exactly `1` through `n`, you can aim directly at half of the total triangular sum and fill that target greedily from the largest remaining numbers downward.
+
+## Worked Example
+
+For `n = 5`, the total sum is `15`, so the first group should get as close as possible to `7`. Starting from `5`, take it, then skip `4` because `5 + 4` would overshoot `7`, then take `2`. The result can be `[[5, 2], [4, 3, 1]]`, whose sums differ by only `1`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function divideOneToNIntoTwoGroupsWithMinimumSumDifference(n) {
+  if (n <= 2) {
+    throw new RangeError('n must be greater than 2');
+  }
+
+  const firstGroup = [];
+  const secondGroup = [];
+  const target = Math.floor((n * (n + 1)) / 4);
+  let firstSum = 0;
+
+  for (let value = n; value >= 1; value -= 1) {
+    if (firstSum + value <= target) {
+      firstGroup.push(value);
+      firstSum += value;
+      continue;
+    }
+
+    secondGroup.push(value);
+  }
+
+  return [firstGroup, secondGroup];
+}
+```
+
+```ts
+export function divideOneToNIntoTwoGroupsWithMinimumSumDifference(
+  n: number,
+): [number[], number[]] {
+  if (n <= 2) {
+    throw new RangeError('n must be greater than 2');
+  }
+
+  const firstGroup: number[] = [];
+  const secondGroup: number[] = [];
+  const target = Math.floor((n * (n + 1)) / 4);
+  let firstSum = 0;
+
+  for (let value = n; value >= 1; value -= 1) {
+    if (firstSum + value <= target) {
+      firstGroup.push(value);
+      firstSum += value;
+      continue;
+    }
+
+    secondGroup.push(value);
+  }
+
+  return [firstGroup, secondGroup];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the minimum difference value along with the groups.
+- Explain why the difference is always `0` or `1` for consecutive integers.
+- Contrast this structured case with arbitrary-set partition problems that need DP.
+
+## Common Pitfalls
+
+- Reaching for generic subset-sum DP even though the consecutive-range structure gives a direct greedy construction.
+- Using floating-point half sums instead of the integer target derived from the triangular total.
+- Forgetting that the problem asks for groups, not just the difference value.

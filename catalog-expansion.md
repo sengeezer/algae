@@ -776,9 +776,17 @@ This seventy-first expansion slice lifts the catalog from 423 to 426 entries.
 - Minimum Fibonacci terms with sum equal to K
 - Minimum Platforms Required
 
+## Batch 72 added
+
+This seventy-second expansion slice lifts the catalog from 426 to 429 entries.
+
+- Connect n ropes with minimum cost
+- Maximum trains for which stoppage can be provided
+- Divide 1 to n into two groups with minimum sum difference
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 71 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 72 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -786,10 +794,10 @@ All expansion entries from batch 1 through batch 71 now carry explicit per-entry
 
 ## Why this batch
 
-- It continues the Greedy Algorithms page in exact source order after `Job Sequencing Problem`, starting with arithmetic unit-fraction decomposition in `Greedy Algorithm for Egyptian Fraction`, then keeping the intervening clean Fibonacci-greedy decomposition entry instead of skipping it, and only then reaching interval-overlap counting in `Minimum Platforms Required`.
-- It broadens the catalog across three different greedy proof shapes: repeatedly taking the largest valid unit fraction, repeatedly subtracting the largest valid Fibonacci addend, and sweeping sorted arrival and departure events to count maximum overlap.
-- It complements nearby local coverage rather than duplicating it: Egyptian Fraction adds a math decomposition problem rather than another resource-allocation scan, Minimum Fibonacci terms is a special-case greedy decomposition that contrasts directly with generic coin-change DP, and Minimum Platforms counts concurrent intervals rather than merging or selecting them.
-- It preserves the local duplicate decisions already established on this page by continuing to skip `Activity Selection` in favor of `greedy-interval-scheduling` and `Merge Overlapping Intervals` in favor of `interval-merging`.
+- It continues the Greedy Algorithms page in exact source order after `Minimum Platforms Required`, first taking the heap-based merge-cost problem `Connect n ropes with minimum cost`, then the platform-pinned interval selector `Maximum trains for which stoppage can be provided`, and then the constructive number partitioner `Divide 1 to n into two groups with minimum sum difference`.
+- It broadens the catalog across three more greedy shapes: repeatedly merging the two cheapest items, decomposing a fixed-resource schedule into independent platform-wise interval scans, and greedily filling one partition toward half of a known arithmetic-series total.
+- It complements nearby local coverage rather than duplicating it: Connect n ropes uses a Huffman-like heap merge rather than generic priority-queue maintenance, Maximum trains is a per-platform selection problem rather than a platform-count problem, and Divide 1 to n into two groups uses consecutive-range arithmetic structure instead of arbitrary-set subset-sum DP.
+- It preserves the local duplicate decisions already established on this page by keeping `Activity Selection` and `Merge Overlapping Intervals` skipped in favor of the existing `greedy-interval-scheduling` and `interval-merging` entries.
 
 ## Supporting study references from the algorithms list
 
@@ -799,4 +807,4 @@ All expansion entries from batch 1 through batch 71 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- The current GeeksforGeeks Greedy-page frontier now continues with `Min Cost to Connect n ropes`, `Max trains`, and `Partition 1 to n into two min diff groups` after the exact-source-order correction that kept `Minimum Fibonacci terms with sum equal to K` ahead of `Minimum Platforms Required`, while `Activity Selection` and `Merge Overlapping Intervals` remain intentionally skipped as local duplicates.
+- The current GeeksforGeeks Greedy-page frontier now continues with `Paper cut into min squares`, `Min diff groups of size two`, and `Max Satisfied Customers` after `Divide 1 to n into two groups with minimum sum difference`, while `Activity Selection` and `Merge Overlapping Intervals` remain intentionally skipped as local duplicates.
