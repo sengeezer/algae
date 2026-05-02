@@ -1,0 +1,104 @@
+---
+title: Partition into two subsets of lengths K and (N - k) such that the difference of sums is maximum
+slug: partition-into-two-subsets-of-lengths-k-and-n-k-such-that-the-difference-of-sums-is-maximum
+category: Greedy
+summary: "Sort the non-negative values descending, give the larger-cardinality subset the globally largest elements, and compute the resulting sum difference."
+description: "Partition into two subsets of lengths K and (N - k) such that the difference of sums is maximum uses greedy selection on the larger subset size to maximize the total separation between subset sums."
+dataStructures:
+  - Array
+techniques:
+  - Greedy
+  - Sorting
+  - Selection
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - partition into two subarrays of lengths k and n - k such that the difference of sums is maximum
+  - maximum difference partition with fixed lengths
+  - maximize subset sum difference with size constraint
+useCases:
+  - Splitting non-negative values into fixed-size groups with maximum sum separation
+  - Recognizing when the larger group should absorb the globally largest values
+  - Reducing a partition problem to one sorted prefix sum
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: "The implementation sorts a copy in descending order and uses prefix accumulation; if in-place mutation were allowed, the extra space would drop to the sorting overhead."
+interviewSignals:
+  - The source problem assumes non-negative integers, which makes concentrating large values in the bigger group always beneficial.
+  - The verified destination article title uses `subsets`, even though the Greedy-page label says `subarrays`.
+relatedSlugs:
+  - minimum-sum-of-product-of-two-arrays
+  - sum-of-areas-of-rectangles-possible-for-an-array
+provenance:
+  - title: "GeeksforGeeks - Partition into two subsets of lengths K and (N - k) such that the difference of sums is maximum"
+    href: https://www.geeksforgeeks.org/dsa/partition-into-two-subarrays-of-lengths-k-and-n-k-such-that-the-difference-of-sums-is-maximum/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This looks like a constrained partition problem, but with non-negative values the only thing that matters is which subset gets to contain more of the biggest elements. The optimal strategy is to let the larger-cardinality subset take the largest available values, because every large value moved into that side increases the final difference twice: once by increasing that subset and once by decreasing the other.
+
+## Worked Example
+
+For `arr = [8, 4, 5, 2, 10]` and `k = 2`, the larger subset size is `3`. Sorting descending gives `[10, 8, 5, 4, 2]`, so the best larger subset sum is `10 + 8 + 5 = 23`, the remaining subset sum is `6`, and the maximum difference is `17`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function partitionIntoTwoSubsetsOfLengthsKAndNKSuchThatTheDifferenceOfSumsIsMaximum(
+  values,
+  subsetLength,
+) {
+  const sortedValues = [...values].sort((left, right) => right - left);
+  const largerSubsetLength = Math.max(subsetLength, sortedValues.length - subsetLength);
+  const totalSum = sortedValues.reduce((sum, value) => sum + value, 0);
+
+  let largerSubsetSum = 0;
+
+  for (let index = 0; index < largerSubsetLength; index += 1) {
+    largerSubsetSum += sortedValues[index];
+  }
+
+  return largerSubsetSum - (totalSum - largerSubsetSum);
+}
+```
+
+```ts
+export function partitionIntoTwoSubsetsOfLengthsKAndNKSuchThatTheDifferenceOfSumsIsMaximum(
+  values: number[],
+  subsetLength: number,
+): number {
+  const sortedValues = [...values].sort((left, right) => right - left);
+  const largerSubsetLength = Math.max(subsetLength, sortedValues.length - subsetLength);
+  const totalSum = sortedValues.reduce((sum, value) => sum + value, 0);
+
+  let largerSubsetSum = 0;
+
+  for (let index = 0; index < largerSubsetLength; index += 1) {
+    largerSubsetSum += sortedValues[index];
+  }
+
+  return largerSubsetSum - (totalSum - largerSubsetSum);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why the proof depends on the source constraint that all numbers are non-negative.
+- Return one optimal pair of subsets, not only the maximum difference.
+- Adapt the solution if the objective is to maximize the ratio instead of the difference.
+
+## Common Pitfalls
+
+- Treating the problem like contiguous subarrays even though the verified article is about subsets.
+- Assigning the largest values to the smaller-cardinality subset without checking which side creates the larger difference.
+- Forgetting that the answer is `largerSubsetSum - remainingSum`, not just the sum of the chosen prefix.

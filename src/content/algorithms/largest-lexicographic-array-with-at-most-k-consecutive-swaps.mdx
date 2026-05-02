@@ -1,0 +1,125 @@
+---
+title: Largest lexicographic array with at-most K consecutive swaps
+slug: largest-lexicographic-array-with-at-most-k-consecutive-swaps
+category: Greedy
+summary: "At each index, pull the largest reachable value forward using at most the remaining consecutive-swap budget, then spend exactly the swaps needed to rotate it into place."
+description: "Largest lexicographic array with at-most K consecutive swaps greedily invests the swap budget in the earliest position where it can improve lexicographic order the most."
+dataStructures:
+  - Array
+techniques:
+  - Greedy
+  - Simulation
+  - Local Search
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - lexicographically largest array with k adjacent swaps
+  - maximize array with consecutive swaps
+  - largest array after k adjacent swaps
+useCases:
+  - Maximizing lexicographic order under an adjacent-move budget
+  - Recognizing when the best local gain should always be taken at the earliest position
+  - Converting a move budget into a bounded search window
+complexity:
+  time: O(n^2)
+  space: O(n)
+  notes: "The implementation rotates values inside a copied array so the input remains unchanged; the dominant cost is scanning and shifting within the remaining swap window."
+interviewSignals:
+  - Only consecutive swaps are allowed, so moving a value from index `j` to `i` costs `j - i`.
+  - Ties between equal candidate values should keep the earlier occurrence because it preserves more swap budget.
+relatedSlugs:
+  - quick-sort
+  - sum-of-areas-of-rectangles-possible-for-an-array
+provenance:
+  - title: "GeeksforGeeks - Largest lexicographic array with at-most K consecutive swaps"
+    href: https://www.geeksforgeeks.org/dsa/largest-lexicographic-array-with-at-most-k-consecutive-swaps/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Because lexicographic order is decided from left to right, any swap budget spent improving an earlier index dominates equal effort spent later. The greedy strategy is therefore to examine only the reachable window from the current index, pull the largest value in that window forward, and subtract exactly the swaps used before moving on.
+
+## Worked Example
+
+For `arr = [3, 5, 4, 1, 2]` and `k = 3`, the best first move is to bring `5` to the front, leaving `[5, 3, 4, 1, 2]` with `k = 2`. Then bring `4` to index `1`, and finally bring `2` to index `3`, producing `[5, 4, 3, 2, 1]`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function largestLexicographicArrayWithAtMostKConsecutiveSwaps(values, swaps) {
+  const result = [...values];
+
+  for (let index = 0; index < result.length - 1 && swaps > 0; index += 1) {
+    let bestIndex = index;
+    const farthestIndex = Math.min(result.length - 1, index + swaps);
+
+    for (let candidate = index + 1; candidate <= farthestIndex; candidate += 1) {
+      if (result[candidate] > result[bestIndex]) {
+        bestIndex = candidate;
+      }
+    }
+
+    const bestValue = result[bestIndex];
+
+    for (let move = bestIndex; move > index; move -= 1) {
+      result[move] = result[move - 1];
+    }
+
+    result[index] = bestValue;
+    swaps -= bestIndex - index;
+  }
+
+  return result;
+}
+```
+
+```ts
+export function largestLexicographicArrayWithAtMostKConsecutiveSwaps(
+  values: number[],
+  swaps: number,
+): number[] {
+  const result = [...values];
+
+  for (let index = 0; index < result.length - 1 && swaps > 0; index += 1) {
+    let bestIndex = index;
+    const farthestIndex = Math.min(result.length - 1, index + swaps);
+
+    for (let candidate = index + 1; candidate <= farthestIndex; candidate += 1) {
+      if (result[candidate] > result[bestIndex]) {
+        bestIndex = candidate;
+      }
+    }
+
+    const bestValue = result[bestIndex];
+
+    for (let move = bestIndex; move > index; move -= 1) {
+      result[move] = result[move - 1];
+    }
+
+    result[index] = bestValue;
+    swaps -= bestIndex - index;
+  }
+
+  return result;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Prove why the earliest improvable position should always consume the next unit of budget.
+- Return only the lexicographically largest prefix of length `m` if the rest of the array does not matter.
+- Compare this greedy approach with a Fenwick-tree-assisted implementation that tracks shifts faster.
+
+## Common Pitfalls
+
+- Searching beyond the reachable window defined by the remaining swap budget.
+- Spending extra swaps on a later equal maximum instead of the earliest one.
+- Forgetting that moving a value left requires shifting the intervening elements right.

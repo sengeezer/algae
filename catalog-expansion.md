@@ -864,9 +864,17 @@ This eighty-second expansion slice lifts the catalog from 456 to 459 entries.
 - Minimum increment/decrement to make array non-Increasing
 - Sorting array with reverse around middle
 
+## Batch 83 added
+
+This eighty-third expansion slice lifts the catalog from 459 to 462 entries.
+
+- Sum of Areas of Rectangles possible for an array
+- Largest lexicographic array with at-most K consecutive swaps
+- Partition into two subsets of lengths K and (N - k) such that the difference of sums is maximum
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 82 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 83 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -874,10 +882,11 @@ All expansion entries from batch 1 through batch 82 now carry explicit per-entry
 
 ## Why this batch
 
-- It continues the GeeksforGeeks Greedy Algorithms page in exact source order after `Minimum sum of product of two arrays`, taking the next three clean array-oriented entries: sorted pairing for `Minimum sum of absolute difference of pairs of two arrays`, heap-based isotonic repair for `Minimum increment/decrement to make array non-Increasing`, and mirror-feasibility checking for `Sorting array with reverse around middle`.
-- It broadens the catalog across three more greedy decision shapes: minimizing a total pairwise cost by ordering both sides the same way, repairing a sequence with the minimum aggregate unit-change cost while preserving a monotone invariant, and recognizing when a constrained reversal operation leaves every index with only two reachable values.
-- It complements nearby local coverage rather than duplicating it: the absolute-difference entry minimizes a sum rather than a bottleneck assignment, the non-increasing entry adds a priority-queue flavored greedy adjustment routine rather than a static sort-and-scan, and the reverse-around-middle entry is a feasibility test about an operation's reachable state space rather than a conventional sorting implementation.
-- It preserves the next handoff cleanly: after these three entries, the same source progression moves on to rectangle-area construction from side lengths, lexicographic maximization under consecutive-swap budget, and a maximum-difference partition problem with fixed subarray lengths.
+- It continues the GeeksforGeeks Greedy Algorithms page in exact source order after `Sorting array with reverse around middle`, exhausting the remaining `Greedy Problems on Array` entries with side-pair selection for `Sum of Areas of Rectangles possible for an array`, swap-budget planning for `Largest lexicographic array with at-most K consecutive swaps`, and cardinality-constrained partition selection for `Partition into two subsets of lengths K and (N - k) such that the difference of sums is maximum`.
+- It broadens the catalog across three more greedy array decision patterns: greedily harvesting the best usable side lengths after at-most-one reductions, spending a limited adjacent-swap budget on the earliest most valuable lexicographic gain, and maximizing a partition difference by concentrating the larger-cardinality side on the globally largest values.
+- It complements nearby local coverage rather than duplicating it: the rectangle entry turns sorted pairing into an area-accumulation routine instead of a simple pairing sum, the lexicographic entry optimizes under a move-budget constraint rather than unconstrained sorting, and the partition entry reasons about subset cardinalities and total contribution instead of pairwise matching or local monotonic repairs.
+- It preserves one source-order title detail that matters for later handoffs: the Greedy-page label uses `subarrays`, but the verified destination article title is `Partition into two subsets of lengths K and (N - k) such that the difference of sums is maximum`, so the catalog uses the destination title while the next frontier begins only after that same article is exhausted.
+- It preserves the next handoff cleanly across a section boundary: after these three array entries, the global Greedy-page progression moves into operating-system memory allocation with first-fit, best-fit, and worst-fit placement routines.
 
 ## Supporting study references from the algorithms list
 
@@ -887,4 +896,4 @@ All expansion entries from batch 1 through batch 82 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- The current GeeksforGeeks Greedy-page frontier now continues with `Sum of Areas of Rectangles possible for an array`, `Largest lexicographic array with at-most K consecutive swaps`, and `Partition into two subarrays of lengths k and (N - k) such that the difference of sums is maximum` after `Sorting array with reverse around middle`, with no duplicate or label-only skips between those three items.
+- The current GeeksforGeeks Greedy-page frontier now continues with `First Fit algorithm in Memory Management`, `Best Fit algorithm in Memory Management`, and `Worst Fit algorithm in Memory Management` after `Partition into two subsets of lengths K and (N - k) such that the difference of sums is maximum`, with no duplicate or label-only skips between those three items.

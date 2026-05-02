@@ -1,0 +1,120 @@
+---
+title: Sum of Areas of Rectangles possible for an array
+slug: sum-of-areas-of-rectangles-possible-for-an-array
+category: Greedy
+summary: "Sort the lengths from largest to smallest, greedily harvest usable side pairs with at-most-one reductions, and combine the best pairs into rectangle areas."
+description: "Sum of Areas of Rectangles possible for an array maximizes the total rectangle area by greedily pairing the largest compatible lengths after optionally reducing values by one."
+dataStructures:
+  - Array
+techniques:
+  - Greedy
+  - Sorting
+  - Pairing
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - rectangle areas from array lengths
+  - maximum total rectangle area from sticks
+  - sum of rectangle areas with one reduction
+useCases:
+  - Building the largest total rectangle area from reusable side lengths
+  - Recognizing when sorted greedy pairing beats combinatorial rectangle search
+  - Applying a limited adjustment budget before pairing values
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: "The implementation sorts a copy in descending order so the caller's array is preserved; the greedy scan itself is linear once sorting is done."
+interviewSignals:
+  - Any element may be reduced by at most one before being used as a side.
+  - Side lengths should be harvested from largest to smallest so early pair choices do not waste high-value sticks.
+relatedSlugs:
+  - minimum-sum-of-absolute-difference-of-pairs-of-two-arrays
+  - largest-lexicographic-array-with-at-most-k-consecutive-swaps
+provenance:
+  - title: "GeeksforGeeks - Sum of Areas of Rectangles possible for an array"
+    href: https://www.geeksforgeeks.org/dsa/sum-area-rectangles-possible-array/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+The brute-force framing tempts you to try every group of four lengths, but the largest total area always comes from preserving the biggest usable sides first. Once the lengths are sorted descending, every valid adjacent pair can be harvested greedily, and every two harvested sides can be combined immediately into the next best rectangle.
+
+## Worked Example
+
+For `a = [10, 10, 10, 10, 11, 10, 11, 10]`, sorting descending gives `[11, 11, 10, 10, 10, 10, 10, 10]`. Harvest side pairs `11`, `10`, `10`, and `10`, then combine them into rectangles `11 * 10 = 110` and `10 * 10 = 100`, for a total area of `210`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function sumOfAreasOfRectanglesPossibleForAnArray(values) {
+  const sortedValues = [...values].sort((left, right) => right - left);
+  let pendingSide = null;
+  let totalArea = 0;
+
+  for (let index = 0; index + 1 < sortedValues.length; index += 1) {
+    if (sortedValues[index] - sortedValues[index + 1] > 1) {
+      continue;
+    }
+
+    const currentSide = sortedValues[index + 1];
+
+    if (pendingSide === null) {
+      pendingSide = currentSide;
+    } else {
+      totalArea += pendingSide * currentSide;
+      pendingSide = null;
+    }
+
+    index += 1;
+  }
+
+  return totalArea;
+}
+```
+
+```ts
+export function sumOfAreasOfRectanglesPossibleForAnArray(values: number[]): number {
+  const sortedValues = [...values].sort((left, right) => right - left);
+  let pendingSide: number | null = null;
+  let totalArea = 0;
+
+  for (let index = 0; index + 1 < sortedValues.length; index += 1) {
+    if (sortedValues[index] - sortedValues[index + 1] > 1) {
+      continue;
+    }
+
+    const currentSide = sortedValues[index + 1];
+
+    if (pendingSide === null) {
+      pendingSide = currentSide;
+    } else {
+      totalArea += pendingSide * currentSide;
+      pendingSide = null;
+    }
+
+    index += 1;
+  }
+
+  return totalArea;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the individual rectangles, not only their total area.
+- Explain why using the smaller value of a near-equal pair is optimal when the larger one is reduced by one.
+- Adapt the routine if each length may be reduced by up to `d` instead of only one.
+
+## Common Pitfalls
+
+- Pairing small sides too early and wasting larger compatible lengths.
+- Forgetting that a difference of exactly one is still usable after one reduction.
+- Reusing a stick after it has already been consumed in a side pair.
