@@ -1,0 +1,144 @@
+---
+title: Lexicographically largest subsequence such that every character occurs at least k times
+slug: lexicographically-largest-subsequence-such-that-every-character-occurs-at-least-k-times
+category: Greedy
+summary: Scan characters from `z` down to `a`, and only commit a character once it still appears at least `k` times in the remaining suffix.
+description: Lexicographically largest subsequence such that every character occurs at least k times is the greedy suffix-selection problem that locks in the highest valid character block before moving to smaller letters.
+dataStructures:
+  - String
+  - Array
+techniques:
+  - Greedy
+  - String Scanning
+  - Counting
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - lexicographically largest subsequence
+  - largest valid subsequence with k repetitions
+  - greedy subsequence by descending characters
+useCases:
+  - Building the largest subsequence under a frequency constraint
+  - Deciding when a high-valued character can be safely committed greedily
+  - Combining suffix scanning with lexicographic optimization
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: The alphabet is fixed, so scanning from `z` to `a` keeps the total work linear in the string length.
+interviewSignals:
+  - The result is a subsequence, not a permutation or substring.
+  - Every chosen character type must appear at least `k` times in the final answer.
+relatedSlugs:
+  - largest-palindromic-number-by-permuting-digits
+  - smallest-number-with-given-digit-count-and-sum
+  - sliding-window
+provenance:
+  - title: "GeeksforGeeks - Lexicographically largest subsequence such that every character occurs at least k times"
+    href: https://www.geeksforgeeks.org/dsa/lexicographically-largest-subsequence-every-character-occurs-least-k-times/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a greedy subsequence problem where the critical choice is when to commit a high-valued character. If a character still appears at least `k` times in the remaining suffix, taking all of those copies dominates any answer that starts with a smaller letter.
+
+## Worked Example
+
+For `s = "banana"` and `k = 2`, the valid subsequences include `"aa"`, `"nn"`, and `"aa"`-prefixed variants from different positions. Since `n` is lexicographically larger than `a` and it appears twice in order, the answer is `"nn"`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function lexicographicallyLargestSubsequenceSuchThatEveryCharacterOccursAtLeastKTimes(
+  text,
+  k,
+) {
+  if (k <= 0) {
+    return text;
+  }
+
+  let start = 0;
+  let result = '';
+
+  for (let code = 'z'.charCodeAt(0); code >= 'a'.charCodeAt(0); code -= 1) {
+    const char = String.fromCharCode(code);
+    let count = 0;
+    let lastIndex = -1;
+
+    for (let index = start; index < text.length; index += 1) {
+      if (text[index] !== char) {
+        continue;
+      }
+
+      count += 1;
+      lastIndex = index;
+    }
+
+    if (count < k) {
+      continue;
+    }
+
+    result += char.repeat(count);
+    start = lastIndex + 1;
+  }
+
+  return result;
+}
+```
+
+```ts
+export function lexicographicallyLargestSubsequenceSuchThatEveryCharacterOccursAtLeastKTimes(
+  text: string,
+  k: number,
+): string {
+  if (k <= 0) {
+    return text;
+  }
+
+  let start = 0;
+  let result = '';
+
+  for (let code = 'z'.charCodeAt(0); code >= 'a'.charCodeAt(0); code -= 1) {
+    const char = String.fromCharCode(code);
+    let count = 0;
+    let lastIndex = -1;
+
+    for (let index = start; index < text.length; index += 1) {
+      if (text[index] !== char) {
+        continue;
+      }
+
+      count += 1;
+      lastIndex = index;
+    }
+
+    if (count < k) {
+      continue;
+    }
+
+    result += char.repeat(count);
+    start = lastIndex + 1;
+  }
+
+  return result;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why taking only some of a chosen character block cannot improve the answer.
+- Adapt the routine to uppercase letters or a larger custom alphabet.
+- Return the indices of the chosen subsequence instead of only the string.
+
+## Common Pitfalls
+
+- Treating the problem like a substring instead of a subsequence.
+- Committing a character that appears fewer than `k` times in the remaining suffix.
+- Scanning from low characters upward, which ruins the lexicographic objective.

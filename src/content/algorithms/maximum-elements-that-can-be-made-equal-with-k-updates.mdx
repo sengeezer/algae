@@ -1,0 +1,115 @@
+---
+title: Maximum elements that can be made equal with k updates
+slug: maximum-elements-that-can-be-made-equal-with-k-updates
+category: Greedy
+summary: Sort the array and use a sliding window to keep the largest group that can be raised to the rightmost value within the total increment budget.
+description: Maximum elements that can be made equal with k updates is the sorted two-pointer greedy problem that turns a global increment budget into a largest feasible equal-value window.
+dataStructures:
+  - Array
+techniques:
+  - Greedy
+  - Sorting
+  - Two Pointers
+  - Sliding Window
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - making max equal with k updates
+  - max equal elements with increments
+  - frequency after k increments
+useCases:
+  - Maximizing how many values can be raised to a shared target under a total budget
+  - Combining sorting with a sliding-window cost invariant
+  - Recognizing that the rightmost sorted value is the only target worth considering inside a valid window
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: Sorting dominates the runtime; the window scan is linear and cloning before sorting preserves the input.
+interviewSignals:
+  - You may only increment values, never decrement them.
+  - The goal is the largest count of equal values, not the final equal value itself.
+relatedSlugs:
+  - sliding-window
+  - buy-maximum-stocks
+  - minimize-the-maximum-difference-between-the-heights
+provenance:
+  - title: "GeeksforGeeks - Maximum elements that can be made equal with k updates"
+    href: https://www.geeksforgeeks.org/dsa/maximum-elements-can-made-equal-k-updates/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Once the array is sorted, any group you raise to a common value should target the window's largest element. The sliding-window invariant measures how many total increments are needed to raise the rest of the window up to that right boundary.
+
+## Worked Example
+
+For `arr = [1, 2, 3, 4]` and `k = 3`, sort the array and grow a window. Raising `1` by `2` and `2` by `1` makes `[3, 3, 3, 4]`, so the maximum equal count is `3`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function maximumElementsThatCanBeMadeEqualWithKUpdates(values, k) {
+  const sorted = [...values].sort((left, right) => left - right);
+  let left = 0;
+  let windowSum = 0;
+  let best = 0;
+
+  for (let right = 0; right < sorted.length; right += 1) {
+    windowSum += sorted[right];
+
+    while ((right - left + 1) * sorted[right] > windowSum + k) {
+      windowSum -= sorted[left];
+      left += 1;
+    }
+
+    best = Math.max(best, right - left + 1);
+  }
+
+  return best;
+}
+```
+
+```ts
+export function maximumElementsThatCanBeMadeEqualWithKUpdates(
+  values: number[],
+  k: number,
+): number {
+  const sorted = [...values].sort((left, right) => left - right);
+  let left = 0;
+  let windowSum = 0;
+  let best = 0;
+
+  for (let right = 0; right < sorted.length; right += 1) {
+    windowSum += sorted[right];
+
+    while ((right - left + 1) * sorted[right] > windowSum + k) {
+      windowSum -= sorted[left];
+      left += 1;
+    }
+
+    best = Math.max(best, right - left + 1);
+  }
+
+  return best;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the target value as well as the maximum count.
+- Explain why a window should always target its rightmost sorted value.
+- Adapt the solution if decrements are also allowed.
+
+## Common Pitfalls
+
+- Trying to equalize a window to something other than its current maximum.
+- Forgetting to maintain the running sum when shrinking the window.
+- Treating the problem as unrestricted replacement instead of increment-only updates.

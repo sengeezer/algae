@@ -1,0 +1,120 @@
+---
+title: Minimize the maximum difference between the heights
+slug: minimize-the-maximum-difference-between-the-heights
+category: Greedy
+summary: Sort the towers and test each split where smaller heights are raised by `k` and larger heights are lowered by `k`.
+description: Minimize the maximum difference between the heights is the sorted-boundary greedy problem that checks every left-raise and right-lower split once.
+dataStructures:
+  - Array
+techniques:
+  - Greedy
+  - Sorting
+  - Boundary Analysis
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - minimize the max height diff
+  - minimize tower height difference
+  - minimize heights with plus or minus k
+useCases:
+  - Reducing the spread of values when each item must be shifted by a fixed amount
+  - Recognizing when only sorted boundary candidates can become the new min or max
+  - Turning a combinatorial plus-or-minus choice into a single linear scan after sorting
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: Sorting dominates the runtime; cloning before sorting preserves the caller input at the cost of linear extra space.
+interviewSignals:
+  - Every value must be adjusted exactly once by either `+k` or `-k`.
+  - Negative final heights are forbidden, so some split choices are invalid.
+relatedSlugs:
+  - quick-sort
+  - fractional-knapsack
+  - maximum-elements-that-can-be-made-equal-with-k-updates
+provenance:
+  - title: "GeeksforGeeks - Minimize the maximum difference between the heights"
+    href: https://www.geeksforgeeks.org/dsa/minimize-the-maximum-difference-between-the-heights/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+The greedy step is not to decide tower by tower in isolation. After sorting, any optimal solution can be described by a split point: towers on the left are raised, towers on the right are lowered. That means you only need to inspect the boundary candidates that could become the new minimum and maximum.
+
+## Worked Example
+
+For `arr = [1, 5, 8, 10]` and `k = 2`, sort the towers and test split points. The best split yields `[3, 3, 6, 8]`, so the minimized difference is `8 - 3 = 5`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function minimizeTheMaximumDifferenceBetweenTheHeights(heights, k) {
+  if (heights.length <= 1) {
+    return 0;
+  }
+
+  const sorted = [...heights].sort((left, right) => left - right);
+  let best = sorted[sorted.length - 1] - sorted[0];
+  const smallestRaised = sorted[0] + k;
+  const largestLowered = sorted[sorted.length - 1] - k;
+
+  for (let index = 1; index < sorted.length; index += 1) {
+    if (sorted[index] - k < 0) {
+      continue;
+    }
+
+    const minHeight = Math.min(smallestRaised, sorted[index] - k);
+    const maxHeight = Math.max(largestLowered, sorted[index - 1] + k);
+    best = Math.min(best, maxHeight - minHeight);
+  }
+
+  return best;
+}
+```
+
+```ts
+export function minimizeTheMaximumDifferenceBetweenTheHeights(
+  heights: number[],
+  k: number,
+): number {
+  if (heights.length <= 1) {
+    return 0;
+  }
+
+  const sorted = [...heights].sort((left, right) => left - right);
+  let best = sorted[sorted.length - 1] - sorted[0];
+  const smallestRaised = sorted[0] + k;
+  const largestLowered = sorted[sorted.length - 1] - k;
+
+  for (let index = 1; index < sorted.length; index += 1) {
+    if (sorted[index] - k < 0) {
+      continue;
+    }
+
+    const minHeight = Math.min(smallestRaised, sorted[index] - k);
+    const maxHeight = Math.max(largestLowered, sorted[index - 1] + k);
+    best = Math.min(best, maxHeight - minHeight);
+  }
+
+  return best;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why only the split boundaries can become the new minimum or maximum.
+- Adapt the problem if each tower may also stay unchanged instead of being forced to move by `k`.
+- Compare this exact-once version with variants that allow multiple increments or decrements.
+
+## Common Pitfalls
+
+- Treating each tower independently instead of recognizing the sorted split structure.
+- Forgetting to skip configurations that create negative heights.
+- Using the unsorted endpoints after sorting instead of the boundary candidates around the split.

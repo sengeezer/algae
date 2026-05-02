@@ -800,9 +800,17 @@ This seventy-fourth expansion slice lifts the catalog from 432 to 435 entries.
 - Largest palindromic number by permuting digits
 - Smallest number with given digit count and sum
 
+## Batch 75 added
+
+This seventy-fifth expansion slice lifts the catalog from 435 to 438 entries.
+
+- Lexicographically largest subsequence such that every character occurs at least k times
+- Minimize the maximum difference between the heights
+- Maximum elements that can be made equal with k updates
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 74 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 75 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -810,10 +818,10 @@ All expansion entries from batch 1 through batch 74 now carry explicit per-entry
 
 ## Why this batch
 
-- It continues the GeeksforGeeks Greedy Algorithms page in exact source order after `Maximum number of customers that can be satisfied with given quantity`, taking the descending-value matrix-start selector `Minimum initial vertices to traverse whole matrix with given conditions`, then the digit-count construction problem `Largest palindromic number by permuting digits`, and then the right-filled digit-sum constructor `Smallest number with given digit count and sum`.
-- It broadens the catalog across three more greedy shapes: picking only the still-unreached peaks of a matrix after sorting cells by value, filling mirrored palindrome positions with the highest available pairs, and pushing digit-sum mass to the least significant places while keeping the leading digit nonzero.
-- It complements nearby local coverage rather than duplicating it: the matrix entry combines greedy ordering with DFS rather than shortest-path search, the palindrome entry is a full-string construction problem rather than a boolean palindrome test, and the digit-count entry is a fixed-length digit builder rather than a generic digit-sum utility.
-- It preserves the source-order detail that `Minimum initial vertices to traverse whole matrix with given conditions` lives on the Greedy page even though its implementation is really a greedy ordering plus DFS reachability pass.
+- It continues the GeeksforGeeks Greedy Algorithms page in exact source order after `Smallest number with given digit count and sum`, taking the suffix-selection string problem `Lexicographically largest subsequence such that every character occurs at least k times`, then the sorted boundary scan `Minimize the maximum difference between the heights`, and then the increment-budget window problem `Maximum elements that can be made equal with k updates`.
+- It broadens the catalog across three more greedy shapes: locking in the highest valid character block of a subsequence, testing each sorted plus-or-minus split boundary once, and growing the largest sorted window whose elements can be raised to a common value within a total increment budget.
+- It complements nearby local coverage rather than duplicating it: the subsequence entry is about lexicographic dominance under a repetition constraint rather than palindrome symmetry, the height-difference entry is a mandatory adjust-each-item problem rather than a subset or schedule selection problem, and the max-equal entry mixes sorting with a sliding cost invariant instead of a one-pass budgeting scan.
+- It preserves the source-order correction that the Greedy-page labels `Minimize the Max Height Diff` and `Making max equal with k updates` map to the verified destination article titles `Minimize the maximum difference between the heights` and `Maximum elements that can be made equal with k updates`.
 
 ## Supporting study references from the algorithms list
 
@@ -823,4 +831,4 @@ All expansion entries from batch 1 through batch 74 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- The current GeeksforGeeks Greedy-page frontier now continues with `Lexicographically largest subsequence`, `Minimize the Max Height Diff`, and `Making max equal with k updates` after `Smallest with n digits and digits sum`, while `Activity Selection` and `Merge Overlapping Intervals` remain intentionally skipped as local duplicates.
+- The current GeeksforGeeks Greedy-page frontier now continues with `Minimize cash flow among friends`, `Min Cost to cut a board into squares`, and `Min cost to process m tasks where switching costs` after `Maximum elements that can be made equal with k updates`, while `Activity Selection` and `Merge Overlapping Intervals` remain intentionally skipped as local duplicates.
