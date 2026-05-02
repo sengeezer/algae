@@ -1,0 +1,149 @@
+---
+title: Rearrange characters in a String such that no two adjacent characters are same
+slug: rearrange-characters-in-a-string-such-that-no-two-adjacent-characters-are-same
+category: Greedy
+summary: Place the most frequent character into even slots first, then fill the remaining even and odd slots so equal neighbors never touch.
+description: Rearrange characters in a String such that no two adjacent characters are same is the frequency-driven greedy string-construction problem that front-loads the most constrained character positions.
+dataStructures:
+  - String
+  - Array
+  - Map
+techniques:
+  - Greedy
+  - Frequency Counting
+  - String Construction
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - rearrange characters no two adjacent same
+  - reorganize string
+  - no adjacent equal characters
+useCases:
+  - Constructing strings under adjacency constraints
+  - Detecting when a dominant frequency makes a rearrangement impossible
+  - Converting a frequency table into a valid placement order
+complexity:
+  time: O(n + k log k)
+  space: O(n + k)
+  notes: Counting is linear in the string length, and sorting the distinct characters keeps the construction deterministic for ties.
+interviewSignals:
+  - A character with frequency greater than `(n + 1) / 2` makes the task impossible immediately.
+  - The output may have many valid answers, so the interview usually tests constraints rather than one exact string.
+relatedSlugs:
+  - priority-queue
+  - rearrange-a-string-so-that-all-same-characters-become-d-distance-away
+  - huffman-coding-algorithm
+provenance:
+  - title: "GeeksforGeeks - Rearrange characters in a String such that no two adjacent characters are same"
+    href: https://www.geeksforgeeks.org/dsa/rearrange-characters-string-no-two-adjacent/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+The greedy constraint is driven by the most frequent character. If it cannot be separated from itself, no solution exists. If it can, placing it into every other slot first leaves the least risky positions for the remaining characters.
+
+## Worked Example
+
+For `s = "aaabc"`, the character `a` appears `3` times, which is still within the feasible limit of `(5 + 1) / 2 = 3`. Filling even positions first gives `a _ a _ a`, and then placing `b` and `c` into the remaining slots yields `abaca`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function rearrangeCharactersInAStringSuchThatNoTwoAdjacentCharactersAreSame(
+  text,
+) {
+  if (text.length <= 1) {
+    return text;
+  }
+
+  const frequencies = new Map();
+
+  for (const char of text) {
+    frequencies.set(char, (frequencies.get(char) ?? 0) + 1);
+  }
+
+  const entries = [...frequencies.entries()].sort(
+    (left, right) => right[1] - left[1] || left[0].localeCompare(right[0]),
+  );
+
+  if (entries[0][1] > Math.floor((text.length + 1) / 2)) {
+    return '';
+  }
+
+  const result = new Array(text.length);
+  let index = 0;
+
+  for (const [char, count] of entries) {
+    for (let placed = 0; placed < count; placed += 1) {
+      if (index >= text.length) {
+        index = 1;
+      }
+
+      result[index] = char;
+      index += 2;
+    }
+  }
+
+  return result.join('');
+}
+```
+
+```ts
+export function rearrangeCharactersInAStringSuchThatNoTwoAdjacentCharactersAreSame(
+  text: string,
+): string {
+  if (text.length <= 1) {
+    return text;
+  }
+
+  const frequencies = new Map<string, number>();
+
+  for (const char of text) {
+    frequencies.set(char, (frequencies.get(char) ?? 0) + 1);
+  }
+
+  const entries = [...frequencies.entries()].sort(
+    (left, right) => right[1] - left[1] || left[0].localeCompare(right[0]),
+  );
+
+  if (entries[0][1] > Math.floor((text.length + 1) / 2)) {
+    return '';
+  }
+
+  const result = new Array<string>(text.length);
+  let index = 0;
+
+  for (const [char, count] of entries) {
+    for (let placed = 0; placed < count; placed += 1) {
+      if (index >= text.length) {
+        index = 1;
+      }
+
+      result[index] = char;
+      index += 2;
+    }
+  }
+
+  return result.join('');
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Validate a returned arrangement instead of constructing one.
+- Rework the solution with a max heap that always picks the best currently safe character.
+- Explain why the `(n + 1) / 2` frequency bound is both necessary and sufficient.
+
+## Common Pitfalls
+
+- Ignoring the impossible case before constructing the result.
+- Treating any sorted order as safe without spacing out the highest-frequency character first.
+- Comparing against one exact output string even though many valid rearrangements can exist.

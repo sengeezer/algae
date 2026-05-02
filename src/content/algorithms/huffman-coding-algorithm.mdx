@@ -1,0 +1,322 @@
+---
+title: Huffman Coding Algorithm
+slug: huffman-coding-algorithm
+category: Greedy
+summary: Repeatedly merge the two least-frequent symbols from a min heap to build an optimal prefix-code tree.
+description: Huffman Coding Algorithm is the classic greedy compression routine that minimizes weighted code length by combining the rarest symbols first.
+dataStructures:
+  - Heap
+  - Tree
+  - Array
+techniques:
+  - Greedy
+  - Priority Queue
+  - Tree Construction
+  - Prefix Codes
+difficulty: Hard
+interviewFrequency: High
+aliases:
+  - huffman coding
+  - prefix code construction
+  - optimal merge tree for frequencies
+useCases:
+  - Building lossless variable-length encodings from symbol frequencies
+  - Minimizing weighted path length in a binary tree
+  - Understanding why local least-frequency merges lead to a global optimum
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: The heap stores one node per symbol or intermediate merge, and a deterministic tie-break keeps the output stable for equal frequencies.
+interviewSignals:
+  - The problem asks for prefix-free binary codes weighted by symbol frequency.
+  - The repeated operation is always extracting the two smallest items and merging them.
+relatedSlugs:
+  - priority-queue
+  - huffman-decoding
+provenance:
+  - title: "GeeksforGeeks - Huffman Coding Algorithm"
+    href: https://www.geeksforgeeks.org/dsa/huffman-coding-greedy-algo-3/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Huffman coding is one of the canonical proofs that a local greedy choice can be globally optimal. By always merging the two least-frequent subtrees, the algorithm saves the shortest code lengths for the most common symbols.
+
+## Worked Example
+
+For `characters = ["a", "b", "c", "d", "e", "f"]` and `frequencies = [5, 9, 12, 13, 16, 45]`, the deterministic merge order produces codes such as `f -> 0`, `c -> 100`, `d -> 101`, `a -> 1100`, `b -> 1101`, and `e -> 111`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function huffmanCodingAlgorithm(characters, frequencies) {
+  if (characters.length !== frequencies.length || characters.length === 0) {
+    return {};
+  }
+
+  const heap = [];
+
+  function comesBefore(left, right) {
+    return (
+      left.frequency < right.frequency ||
+      (left.frequency === right.frequency && left.index < right.index)
+    );
+  }
+
+  function swap(left, right) {
+    [heap[left], heap[right]] = [heap[right], heap[left]];
+  }
+
+  function siftUp(index) {
+    let child = index;
+
+    while (child > 0) {
+      const parent = Math.floor((child - 1) / 2);
+
+      if (comesBefore(heap[parent], heap[child])) {
+        break;
+      }
+
+      swap(parent, child);
+      child = parent;
+    }
+  }
+
+  function siftDown(index) {
+    let parent = index;
+
+    while (true) {
+      let best = parent;
+      const left = parent * 2 + 1;
+      const right = parent * 2 + 2;
+
+      if (left < heap.length && comesBefore(heap[left], heap[best])) {
+        best = left;
+      }
+
+      if (right < heap.length && comesBefore(heap[right], heap[best])) {
+        best = right;
+      }
+
+      if (best === parent) {
+        break;
+      }
+
+      swap(parent, best);
+      parent = best;
+    }
+  }
+
+  function push(node) {
+    heap.push(node);
+    siftUp(heap.length - 1);
+  }
+
+  function pop() {
+    const top = heap[0];
+    const last = heap.pop();
+
+    if (heap.length > 0 && last !== undefined) {
+      heap[0] = last;
+      siftDown(0);
+    }
+
+    return top;
+  }
+
+  for (let index = 0; index < characters.length; index += 1) {
+    push({
+      character: characters[index],
+      frequency: frequencies[index],
+      index,
+      left: null,
+      right: null,
+    });
+  }
+
+  if (heap.length === 1) {
+    return { [characters[0]]: '0' };
+  }
+
+  while (heap.length > 1) {
+    const left = pop();
+    const right = pop();
+
+    push({
+      character: null,
+      frequency: left.frequency + right.frequency,
+      index: Math.min(left.index, right.index),
+      left,
+      right,
+    });
+  }
+
+  const root = pop();
+  const codes = {};
+
+  function buildCodes(node, prefix) {
+    if (node.character !== null) {
+      codes[node.character] = prefix || '0';
+      return;
+    }
+
+    buildCodes(node.left, `${prefix}0`);
+    buildCodes(node.right, `${prefix}1`);
+  }
+
+  buildCodes(root, '');
+  return codes;
+}
+```
+
+```ts
+type HuffmanNode = {
+  character: string | null;
+  frequency: number;
+  index: number;
+  left: HuffmanNode | null;
+  right: HuffmanNode | null;
+};
+
+export function huffmanCodingAlgorithm(
+  characters: string[],
+  frequencies: number[],
+): Record<string, string> {
+  if (characters.length !== frequencies.length || characters.length === 0) {
+    return {};
+  }
+
+  const heap: HuffmanNode[] = [];
+
+  function comesBefore(left: HuffmanNode, right: HuffmanNode): boolean {
+    return (
+      left.frequency < right.frequency ||
+      (left.frequency === right.frequency && left.index < right.index)
+    );
+  }
+
+  function swap(left: number, right: number) {
+    [heap[left], heap[right]] = [heap[right], heap[left]];
+  }
+
+  function siftUp(index: number) {
+    let child = index;
+
+    while (child > 0) {
+      const parent = Math.floor((child - 1) / 2);
+
+      if (comesBefore(heap[parent], heap[child])) {
+        break;
+      }
+
+      swap(parent, child);
+      child = parent;
+    }
+  }
+
+  function siftDown(index: number) {
+    let parent = index;
+
+    while (true) {
+      let best = parent;
+      const left = parent * 2 + 1;
+      const right = parent * 2 + 2;
+
+      if (left < heap.length && comesBefore(heap[left], heap[best])) {
+        best = left;
+      }
+
+      if (right < heap.length && comesBefore(heap[right], heap[best])) {
+        best = right;
+      }
+
+      if (best === parent) {
+        break;
+      }
+
+      swap(parent, best);
+      parent = best;
+    }
+  }
+
+  function push(node: HuffmanNode) {
+    heap.push(node);
+    siftUp(heap.length - 1);
+  }
+
+  function pop(): HuffmanNode {
+    const top = heap[0];
+    const last = heap.pop();
+
+    if (heap.length > 0 && last !== undefined) {
+      heap[0] = last;
+      siftDown(0);
+    }
+
+    return top;
+  }
+
+  for (let index = 0; index < characters.length; index += 1) {
+    push({
+      character: characters[index],
+      frequency: frequencies[index],
+      index,
+      left: null,
+      right: null,
+    });
+  }
+
+  if (heap.length === 1) {
+    return { [characters[0]]: '0' };
+  }
+
+  while (heap.length > 1) {
+    const left = pop();
+    const right = pop();
+
+    push({
+      character: null,
+      frequency: left.frequency + right.frequency,
+      index: Math.min(left.index, right.index),
+      left,
+      right,
+    });
+  }
+
+  const root = pop();
+  const codes: Record<string, string> = {};
+
+  function buildCodes(node: HuffmanNode, prefix: string) {
+    if (node.character !== null) {
+      codes[node.character] = prefix || '0';
+      return;
+    }
+
+    buildCodes(node.left as HuffmanNode, `${prefix}0`);
+    buildCodes(node.right as HuffmanNode, `${prefix}1`);
+  }
+
+  buildCodes(root, '');
+  return codes;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Encode a full input string after building the code map.
+- Explain why the deterministic tie-break does not change optimality, only the specific valid codes produced.
+- Compare Huffman coding with arithmetic coding or fixed-width encodings.
+
+## Common Pitfalls
+
+- Forgetting that multiple optimal code sets can exist when frequencies tie.
+- Building codes that are not prefix-free by skipping the tree structure.
+- Returning an empty code for a one-symbol alphabet instead of assigning a usable bit like `0`.

@@ -1,0 +1,314 @@
+---
+title: Rearrange a string so that all same characters become d distance away
+slug: rearrange-a-string-so-that-all-same-characters-become-d-distance-away
+category: Greedy
+summary: Repeatedly place the most frequent currently available character and keep it on cooldown until `d` positions later.
+description: Rearrange a string so that all same characters become d distance away is the cooldown-scheduling string problem that combines greedy frequency choice with delayed reuse.
+dataStructures:
+  - String
+  - Array
+  - Map
+  - Heap
+techniques:
+  - Greedy
+  - Frequency Counting
+  - Priority Queue
+  - Cooldown Queue
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - rearrange string d distance away
+  - same characters at least d apart
+  - string cooldown rearrangement
+useCases:
+  - Scheduling repeated symbols with a minimum separation constraint
+  - Generalizing the no-adjacent-equals problem to a larger distance bound
+  - Using a greedy heap with delayed reuse rules
+complexity:
+  time: O(n log k)
+  space: O(n + k)
+  notes: The heap stores only distinct characters, and each character occurrence is pushed and popped at most once.
+interviewSignals:
+  - The problem is a cooldown constraint rather than a simple adjacency rule.
+  - If no character is available before the string is complete, the arrangement is impossible.
+relatedSlugs:
+  - priority-queue
+  - rearrange-characters-in-a-string-such-that-no-two-adjacent-characters-are-same
+  - huffman-coding-algorithm
+provenance:
+  - title: "GeeksforGeeks - Rearrange a string so that all same characters become d distance away"
+    href: https://www.geeksforgeeks.org/dsa/rearrange-a-string-so-that-all-same-characters-become-at-least-d-distance-away/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the adjacency problem with a larger cooldown window. The greedy move is still to use the most frequent available character first, but now a used character must be held out of the heap until it is legal to place again.
+
+## Worked Example
+
+For `s = "aacbbc"` and `d = 3`, placing the most frequent available characters with a three-step cooldown can produce `abcabc`. Each repeated character is exactly three positions away from its next occurrence, so the arrangement is valid.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function rearrangeAStringSoThatAllSameCharactersBecomeDDistanceAway(
+  text,
+  distance,
+) {
+  if (distance <= 1 || text.length <= 1) {
+    return text;
+  }
+
+  const frequencies = new Map();
+
+  for (const char of text) {
+    frequencies.set(char, (frequencies.get(char) ?? 0) + 1);
+  }
+
+  const heap = [];
+
+  function comesBefore(left, right) {
+    return left.count > right.count || (left.count === right.count && left.char < right.char);
+  }
+
+  function swap(left, right) {
+    [heap[left], heap[right]] = [heap[right], heap[left]];
+  }
+
+  function siftUp(index) {
+    let child = index;
+
+    while (child > 0) {
+      const parent = Math.floor((child - 1) / 2);
+
+      if (comesBefore(heap[parent], heap[child])) {
+        break;
+      }
+
+      swap(parent, child);
+      child = parent;
+    }
+  }
+
+  function siftDown(index) {
+    let parent = index;
+
+    while (true) {
+      let best = parent;
+      const left = parent * 2 + 1;
+      const right = parent * 2 + 2;
+
+      if (left < heap.length && comesBefore(heap[left], heap[best])) {
+        best = left;
+      }
+
+      if (right < heap.length && comesBefore(heap[right], heap[best])) {
+        best = right;
+      }
+
+      if (best === parent) {
+        break;
+      }
+
+      swap(parent, best);
+      parent = best;
+    }
+  }
+
+  function push(value) {
+    heap.push(value);
+    siftUp(heap.length - 1);
+  }
+
+  function pop() {
+    const top = heap[0];
+    const last = heap.pop();
+
+    if (heap.length > 0 && last !== undefined) {
+      heap[0] = last;
+      siftDown(0);
+    }
+
+    return top;
+  }
+
+  for (const [char, count] of frequencies.entries()) {
+    push({ char, count });
+  }
+
+  const cooldown = [];
+  let cooldownHead = 0;
+  let result = '';
+
+  for (let step = 0; step < text.length; step += 1) {
+    while (
+      cooldownHead < cooldown.length &&
+      cooldown[cooldownHead].releaseStep <= step
+    ) {
+      push(cooldown[cooldownHead]);
+      cooldownHead += 1;
+    }
+
+    if (heap.length === 0) {
+      return '';
+    }
+
+    const current = pop();
+    result += current.char;
+    current.count -= 1;
+
+    if (current.count > 0) {
+      cooldown.push({
+        char: current.char,
+        count: current.count,
+        releaseStep: step + distance,
+      });
+    }
+  }
+
+  return result;
+}
+```
+
+```ts
+export function rearrangeAStringSoThatAllSameCharactersBecomeDDistanceAway(
+  text: string,
+  distance: number,
+): string {
+  if (distance <= 1 || text.length <= 1) {
+    return text;
+  }
+
+  const frequencies = new Map<string, number>();
+
+  for (const char of text) {
+    frequencies.set(char, (frequencies.get(char) ?? 0) + 1);
+  }
+
+  const heap: Array<{ char: string; count: number }> = [];
+
+  function comesBefore(
+    left: { char: string; count: number },
+    right: { char: string; count: number },
+  ): boolean {
+    return left.count > right.count || (left.count === right.count && left.char < right.char);
+  }
+
+  function swap(left: number, right: number) {
+    [heap[left], heap[right]] = [heap[right], heap[left]];
+  }
+
+  function siftUp(index: number) {
+    let child = index;
+
+    while (child > 0) {
+      const parent = Math.floor((child - 1) / 2);
+
+      if (comesBefore(heap[parent], heap[child])) {
+        break;
+      }
+
+      swap(parent, child);
+      child = parent;
+    }
+  }
+
+  function siftDown(index: number) {
+    let parent = index;
+
+    while (true) {
+      let best = parent;
+      const left = parent * 2 + 1;
+      const right = parent * 2 + 2;
+
+      if (left < heap.length && comesBefore(heap[left], heap[best])) {
+        best = left;
+      }
+
+      if (right < heap.length && comesBefore(heap[right], heap[best])) {
+        best = right;
+      }
+
+      if (best === parent) {
+        break;
+      }
+
+      swap(parent, best);
+      parent = best;
+    }
+  }
+
+  function push(value: { char: string; count: number }) {
+    heap.push(value);
+    siftUp(heap.length - 1);
+  }
+
+  function pop(): { char: string; count: number } {
+    const top = heap[0];
+    const last = heap.pop();
+
+    if (heap.length > 0 && last !== undefined) {
+      heap[0] = last;
+      siftDown(0);
+    }
+
+    return top;
+  }
+
+  for (const [char, count] of frequencies.entries()) {
+    push({ char, count });
+  }
+
+  const cooldown: Array<{ char: string; count: number; releaseStep: number }> = [];
+  let cooldownHead = 0;
+  let result = '';
+
+  for (let step = 0; step < text.length; step += 1) {
+    while (
+      cooldownHead < cooldown.length &&
+      cooldown[cooldownHead].releaseStep <= step
+    ) {
+      push(cooldown[cooldownHead]);
+      cooldownHead += 1;
+    }
+
+    if (heap.length === 0) {
+      return '';
+    }
+
+    const current = pop();
+    result += current.char;
+    current.count -= 1;
+
+    if (current.count > 0) {
+      cooldown.push({
+        char: current.char,
+        count: current.count,
+        releaseStep: step + distance,
+      });
+    }
+  }
+
+  return result;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return one of the placement schedules that proves the arrangement impossible.
+- Compare the `d = 2` case with the simpler no-adjacent-equals variant.
+- Adapt the routine if different characters have different cooldown distances.
+
+## Common Pitfalls
+
+- Reusing a character before its cooldown expires.
+- Returning any prefix built so far when the heap runs dry before the output is complete.
+- Claiming O(1) queue operations while using `shift()` on a JavaScript array.

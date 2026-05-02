@@ -824,9 +824,17 @@ This seventy-seventh expansion slice lifts the catalog from 441 to 444 entries.
 - Minimum edges to reverse to make path from a source to a destination
 - Largest Pefect Cube by Deleting Minimum Digits
 
+## Batch 78 added
+
+This seventy-eighth expansion slice lifts the catalog from 444 to 447 entries.
+
+- Rearrange characters in a String such that no two adjacent characters are same
+- Rearrange a string so that all same characters become d distance away
+- Huffman Coding Algorithm
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 77 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 78 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -834,10 +842,10 @@ All expansion entries from batch 1 through batch 77 now carry explicit per-entry
 
 ## Why this batch
 
-- It continues the GeeksforGeeks Greedy Algorithms page in exact source order after `Minimum cost to process m tasks where switching costs`, taking the contiguous-partition minimax problem `Find minimum time to finish all jobs with given constraints`, then the reversal-cost shortest-path problem `Minimum edges to reverse to make path from a source to a destination`, and then the cube-subsequence search `Largest Pefect Cube by Deleting Minimum Digits`.
-- It broadens the catalog across three more patterns that sit on the Greedy page but use different core engines: binary search over a monotone feasibility limit, 0-1 BFS on an augmented graph with reversal costs, and direct enumeration of sparse numeric targets checked as digit subsequences.
-- It complements nearby local coverage rather than duplicating it: the job-time entry uses greedy feasibility only inside an answer-space binary search, the edge-reversal entry is a shortest-path transformation rather than a reachability-only graph traversal, and the cube entry scans candidate cubes instead of enumerating every deleted-digit subsequence.
-- It preserves two source-order details from the verified destination pages: the repeated height-difference article is still intentionally skipped as an already-covered duplicate, and the cube destination page itself spells the title as `Largest Pefect Cube by Deleting Minimum Digits`.
+- It continues the GeeksforGeeks Greedy Algorithms page in exact source order after `Largest Pefect Cube by Deleting Minimum Digits`, taking the frequency-spacing string constructor `Rearrange characters in a String such that no two adjacent characters are same`, then the cooldown-constrained extension `Rearrange a string so that all same characters become d distance away`, and then, after the duplicate Standard Greedy entries `Activity Selection` and `Job Sequencing Problem`, the canonical prefix-code builder `Huffman Coding Algorithm`.
+- It broadens the catalog across three more greedy shapes: filling constrained string slots from the highest remaining frequency, scheduling character reuse through a distance cooldown window, and repeatedly merging the two least frequent symbols to minimize total code length.
+- It complements nearby local coverage rather than duplicating it: the first two entries are full constructive string rearrangements rather than pairwise interleaving or subsequence checks, and the Huffman entry adds the encoder-side tree construction that was not previously represented locally.
+- It preserves source-order title details that matter for later handoffs: the first rearrangement article's destination title is longer than its Greedy-page label, and the batch crosses from the page's Hard Problems section into Standard Greedy Algorithms only after intentionally skipping the already-covered `Activity Selection` and `Job Sequencing Problem` entries.
 
 ## Supporting study references from the algorithms list
 
@@ -847,4 +855,4 @@ All expansion entries from batch 1 through batch 77 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- The current GeeksforGeeks Greedy-page frontier now continues with `Rearrange characters in a string such that no two adjacent are same` and `Rearrange a string so that all same characters become d distance away` after `Largest Pefect Cube by Deleting Minimum Digits`; the next clean absence after those needs a fresh source-order verification because the public listing truncated in this pass, while `Activity Selection`, `Merge Overlapping Intervals`, and the repeated height-difference article remain intentionally skipped as local duplicates.
+- The current GeeksforGeeks Greedy-page frontier now continues with `Huffman Decoding`, `Water Connection Problem`, and `Min Adjacent Swaps for Bracket Balancing` after `Huffman Coding Algorithm`, while `Activity Selection`, `Job Sequencing Problem`, `Merge Overlapping Intervals`, and the repeated height-difference article remain intentionally skipped as local duplicates.
