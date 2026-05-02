@@ -1,0 +1,135 @@
+---
+title: Program for Worst Fit algorithm in Memory Management
+slug: program-for-worst-fit-algorithm-in-memory-management
+category: Greedy
+summary: "For each process, choose the largest remaining block that can still hold it, then reduce that block by the allocated size."
+description: "Program for Worst Fit algorithm in Memory Management greedily allocates each process to the largest sufficient partition in an attempt to preserve medium-sized free blocks."
+dataStructures:
+  - Array
+techniques:
+  - Greedy
+  - Selection
+  - Capacity Tracking
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - worst fit algorithm in memory management
+  - worst fit memory allocation
+  - worst fit partition allocation
+useCases:
+  - Simulating largest-gap allocation in partitioned memory
+  - Comparing fragmentation strategies across memory-placement heuristics
+  - Exploring how preserving medium-sized holes can still block later large requests
+complexity:
+  time: O(processes * blocks)
+  space: O(processes)
+  notes: "The implementation rescans all remaining blocks for every process to find the largest sufficient capacity and records a 1-based allocation result."
+interviewSignals:
+  - The policy intentionally avoids consuming tight blocks, unlike best fit.
+  - A later large process can still fail even though worst fit kept taking the biggest available block.
+relatedSlugs:
+  - program-for-first-fit-algorithm-in-memory-management
+  - program-for-best-fit-algorithm-in-memory-management
+provenance:
+  - title: "GeeksforGeeks - Program for Worst Fit algorithm in Memory Management"
+    href: https://www.geeksforgeeks.org/dsa/program-worst-fit-algorithm-memory-management/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Worst fit is the mirror image of best fit: instead of minimizing slack immediately, it spends the largest hole first so smaller and medium holes remain untouched. That makes it a strong teaching example for why different greedy objectives can feel plausible yet still fail differently on the same sequence of requests.
+
+## Worked Example
+
+For `blockSizes = [100, 500, 200, 300, 600]` and `processSizes = [212, 417, 112, 426]`, worst fit places `212` into block `5`, `417` into block `2`, `112` into the remaining space of block `5`, and cannot place `426`. The resulting 1-based allocation array is `[5, 2, 5, -1]`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function programForWorstFitAlgorithmInMemoryManagement(blockSizes, processSizes) {
+  const remainingBlocks = [...blockSizes];
+  const allocation = Array(processSizes.length).fill(-1);
+
+  for (let processIndex = 0; processIndex < processSizes.length; processIndex += 1) {
+    let worstBlockIndex = -1;
+
+    for (let blockIndex = 0; blockIndex < remainingBlocks.length; blockIndex += 1) {
+      if (remainingBlocks[blockIndex] < processSizes[processIndex]) {
+        continue;
+      }
+
+      if (
+        worstBlockIndex === -1 ||
+        remainingBlocks[blockIndex] > remainingBlocks[worstBlockIndex]
+      ) {
+        worstBlockIndex = blockIndex;
+      }
+    }
+
+    if (worstBlockIndex === -1) {
+      continue;
+    }
+
+    allocation[processIndex] = worstBlockIndex + 1;
+    remainingBlocks[worstBlockIndex] -= processSizes[processIndex];
+  }
+
+  return allocation;
+}
+```
+
+```ts
+export function programForWorstFitAlgorithmInMemoryManagement(
+  blockSizes: number[],
+  processSizes: number[],
+): number[] {
+  const remainingBlocks = [...blockSizes];
+  const allocation = Array(processSizes.length).fill(-1);
+
+  for (let processIndex = 0; processIndex < processSizes.length; processIndex += 1) {
+    let worstBlockIndex = -1;
+
+    for (let blockIndex = 0; blockIndex < remainingBlocks.length; blockIndex += 1) {
+      if (remainingBlocks[blockIndex] < processSizes[processIndex]) {
+        continue;
+      }
+
+      if (
+        worstBlockIndex === -1 ||
+        remainingBlocks[blockIndex] > remainingBlocks[worstBlockIndex]
+      ) {
+        worstBlockIndex = blockIndex;
+      }
+    }
+
+    if (worstBlockIndex === -1) {
+      continue;
+    }
+
+    allocation[processIndex] = worstBlockIndex + 1;
+    remainingBlocks[worstBlockIndex] -= processSizes[processIndex];
+  }
+
+  return allocation;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Give an input where worst fit allocates fewer processes than first fit.
+- Return the remaining free blocks after all allocations, not only the chosen block numbers.
+- Replace the repeated scans with a max-heap keyed by remaining block capacity.
+
+## Common Pitfalls
+
+- Choosing the largest block overall even when it still cannot fit the current process.
+- Forgetting that the same block may be selected again later after its remaining size shrinks.
+- Assuming worst fit automatically leaves enough room for future large processes.

@@ -872,9 +872,17 @@ This eighty-third expansion slice lifts the catalog from 459 to 462 entries.
 - Largest lexicographic array with at-most K consecutive swaps
 - Partition into two subsets of lengths K and (N - k) such that the difference of sums is maximum
 
+## Batch 84 added
+
+This eighty-fourth expansion slice lifts the catalog from 462 to 465 entries.
+
+- Program for First Fit algorithm in Memory Management
+- Program for Best Fit algorithm in Memory Management
+- Program for Worst Fit algorithm in Memory Management
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 83 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 84 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -882,11 +890,11 @@ All expansion entries from batch 1 through batch 83 now carry explicit per-entry
 
 ## Why this batch
 
-- It continues the GeeksforGeeks Greedy Algorithms page in exact source order after `Sorting array with reverse around middle`, exhausting the remaining `Greedy Problems on Array` entries with side-pair selection for `Sum of Areas of Rectangles possible for an array`, swap-budget planning for `Largest lexicographic array with at-most K consecutive swaps`, and cardinality-constrained partition selection for `Partition into two subsets of lengths K and (N - k) such that the difference of sums is maximum`.
-- It broadens the catalog across three more greedy array decision patterns: greedily harvesting the best usable side lengths after at-most-one reductions, spending a limited adjacent-swap budget on the earliest most valuable lexicographic gain, and maximizing a partition difference by concentrating the larger-cardinality side on the globally largest values.
-- It complements nearby local coverage rather than duplicating it: the rectangle entry turns sorted pairing into an area-accumulation routine instead of a simple pairing sum, the lexicographic entry optimizes under a move-budget constraint rather than unconstrained sorting, and the partition entry reasons about subset cardinalities and total contribution instead of pairwise matching or local monotonic repairs.
-- It preserves one source-order title detail that matters for later handoffs: the Greedy-page label uses `subarrays`, but the verified destination article title is `Partition into two subsets of lengths K and (N - k) such that the difference of sums is maximum`, so the catalog uses the destination title while the next frontier begins only after that same article is exhausted.
-- It preserves the next handoff cleanly across a section boundary: after these three array entries, the global Greedy-page progression moves into operating-system memory allocation with first-fit, best-fit, and worst-fit placement routines.
+- It continues the GeeksforGeeks Greedy Algorithms page in exact source order after `Partition into two subsets of lengths K and (N - k) such that the difference of sums is maximum`, entering the operating-system allocation section with sequential placement for `Program for First Fit algorithm in Memory Management`, smallest-sufficient selection for `Program for Best Fit algorithm in Memory Management`, and largest-sufficient selection for `Program for Worst Fit algorithm in Memory Management`.
+- It broadens the catalog across three more greedy resource-allocation policies: commit each process to the earliest usable block, minimize immediate slack by taking the tightest fit, and preserve mid-sized gaps by carving from the largest feasible block.
+- It complements nearby local coverage rather than duplicating it: these entries model mutable capacity consumption across multiple allocations rather than one-shot array pairing or subset selection, and the contrast among first-fit, best-fit, and worst-fit exposes how different greedy local choices alter later feasibility.
+- It preserves one destination-title detail that matters for later handoffs: the verified GeeksforGeeks article headings for these memory-allocation pages include the `Program for` prefix, so the catalog uses those destination titles verbatim.
+- It preserves the next handoff cleanly: after these three allocation policies, the same source progression continues into operating-system scheduling and paging with `Shortest Job First Scheduling`, `Job Scheduling with two jobs allowed at a time`, and `Program for Optimal Page Replacement Algorithm`.
 
 ## Supporting study references from the algorithms list
 
@@ -896,4 +904,4 @@ All expansion entries from batch 1 through batch 83 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- The current GeeksforGeeks Greedy-page frontier now continues with `First Fit algorithm in Memory Management`, `Best Fit algorithm in Memory Management`, and `Worst Fit algorithm in Memory Management` after `Partition into two subsets of lengths K and (N - k) such that the difference of sums is maximum`, with no duplicate or label-only skips between those three items.
+- The current GeeksforGeeks Greedy-page frontier now continues with `Shortest Job First Scheduling`, `Job Scheduling with two jobs allowed at a time`, and `Program for Optimal Page Replacement Algorithm` after `Program for Worst Fit algorithm in Memory Management`, with no duplicate or label-only skips between those three items.

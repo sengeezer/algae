@@ -1,0 +1,135 @@
+---
+title: Program for Best Fit algorithm in Memory Management
+slug: program-for-best-fit-algorithm-in-memory-management
+category: Greedy
+summary: "For each process, scan all blocks and commit it to the smallest remaining block that is still large enough."
+description: "Program for Best Fit algorithm in Memory Management greedily chooses the tightest sufficient partition for each process to minimize immediate unused space."
+dataStructures:
+  - Array
+techniques:
+  - Greedy
+  - Selection
+  - Capacity Tracking
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - best fit algorithm in memory management
+  - best fit memory allocation
+  - best fit partition allocation
+useCases:
+  - Simulating tightest-fit allocation in partitioned memory
+  - Comparing local waste minimization against faster scan-based heuristics
+  - Exploring fragmentation tradeoffs in greedy placement policies
+complexity:
+  time: O(processes * blocks)
+  space: O(processes)
+  notes: "Each process scans all blocks to find the smallest sufficient remainder candidate before the chosen block is reduced by the process size."
+interviewSignals:
+  - The policy minimizes immediate slack for the current process, not necessarily future global fragmentation.
+  - Ties between equally sized sufficient blocks can stay with the earliest encountered block for determinism.
+relatedSlugs:
+  - program-for-first-fit-algorithm-in-memory-management
+  - program-for-worst-fit-algorithm-in-memory-management
+provenance:
+  - title: "GeeksforGeeks - Program for Best Fit algorithm in Memory Management"
+    href: https://www.geeksforgeeks.org/dsa/program-best-fit-algorithm-memory-management/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Best fit looks more informed than first fit because it inspects every eligible block and tries to waste as little space as possible on the current process. That local greediness makes it a useful contrast case: sometimes it improves utilization, and sometimes it creates tiny unusable fragments that hurt later requests.
+
+## Worked Example
+
+For `blockSizes = [100, 500, 200, 300, 600]` and `processSizes = [212, 417, 112, 426]`, best fit assigns `212` to block `4`, `417` to block `2`, `112` to block `3`, and `426` to block `5`. The resulting 1-based allocation array is `[4, 2, 3, 5]`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function programForBestFitAlgorithmInMemoryManagement(blockSizes, processSizes) {
+  const remainingBlocks = [...blockSizes];
+  const allocation = Array(processSizes.length).fill(-1);
+
+  for (let processIndex = 0; processIndex < processSizes.length; processIndex += 1) {
+    let bestBlockIndex = -1;
+
+    for (let blockIndex = 0; blockIndex < remainingBlocks.length; blockIndex += 1) {
+      if (remainingBlocks[blockIndex] < processSizes[processIndex]) {
+        continue;
+      }
+
+      if (
+        bestBlockIndex === -1 ||
+        remainingBlocks[blockIndex] < remainingBlocks[bestBlockIndex]
+      ) {
+        bestBlockIndex = blockIndex;
+      }
+    }
+
+    if (bestBlockIndex === -1) {
+      continue;
+    }
+
+    allocation[processIndex] = bestBlockIndex + 1;
+    remainingBlocks[bestBlockIndex] -= processSizes[processIndex];
+  }
+
+  return allocation;
+}
+```
+
+```ts
+export function programForBestFitAlgorithmInMemoryManagement(
+  blockSizes: number[],
+  processSizes: number[],
+): number[] {
+  const remainingBlocks = [...blockSizes];
+  const allocation = Array(processSizes.length).fill(-1);
+
+  for (let processIndex = 0; processIndex < processSizes.length; processIndex += 1) {
+    let bestBlockIndex = -1;
+
+    for (let blockIndex = 0; blockIndex < remainingBlocks.length; blockIndex += 1) {
+      if (remainingBlocks[blockIndex] < processSizes[processIndex]) {
+        continue;
+      }
+
+      if (
+        bestBlockIndex === -1 ||
+        remainingBlocks[blockIndex] < remainingBlocks[bestBlockIndex]
+      ) {
+        bestBlockIndex = blockIndex;
+      }
+    }
+
+    if (bestBlockIndex === -1) {
+      continue;
+    }
+
+    allocation[processIndex] = bestBlockIndex + 1;
+    remainingBlocks[bestBlockIndex] -= processSizes[processIndex];
+  }
+
+  return allocation;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Show a workload where best fit performs worse than first fit due to tiny leftover fragments.
+- Return the wasted space after each allocation as part of the result.
+- Optimize the search with a size-ordered structure instead of rescanning every block.
+
+## Common Pitfalls
+
+- Picking the globally smallest block instead of the smallest sufficient block.
+- Forgetting that the chosen block's size changes before the next process is handled.
+- Assuming best fit is always globally optimal because it minimizes local waste.

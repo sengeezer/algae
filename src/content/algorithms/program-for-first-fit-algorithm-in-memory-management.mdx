@@ -1,0 +1,111 @@
+---
+title: Program for First Fit algorithm in Memory Management
+slug: program-for-first-fit-algorithm-in-memory-management
+category: Greedy
+summary: "Process each request in order and allocate it to the first memory block whose remaining capacity is large enough."
+description: "Program for First Fit algorithm in Memory Management greedily scans blocks from the start and commits each process to the earliest sufficient partition."
+dataStructures:
+  - Array
+techniques:
+  - Greedy
+  - Sequential Scan
+  - Capacity Tracking
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - first fit algorithm in memory management
+  - first fit memory allocation
+  - first fit partition allocation
+useCases:
+  - Simulating contiguous partition allocation policies
+  - Understanding how early greedy placement affects later allocations
+  - Comparing OS memory-placement heuristics under mutable capacities
+complexity:
+  time: O(processes * blocks)
+  space: O(processes)
+  notes: "The implementation maintains an allocation array for processes and mutates a copy of the remaining block capacities after each successful placement."
+interviewSignals:
+  - Each successful allocation reduces the remaining size of that chosen block.
+  - The policy cares only about the earliest sufficient block, not about minimizing waste.
+relatedSlugs:
+  - program-for-best-fit-algorithm-in-memory-management
+  - program-for-worst-fit-algorithm-in-memory-management
+provenance:
+  - title: "GeeksforGeeks - Program for First Fit algorithm in Memory Management"
+    href: https://www.geeksforgeeks.org/dsa/program-first-fit-algorithm-memory-management/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+First fit is the simplest nontrivial placement heuristic: every decision is local, irreversible, and changes the future search space by shrinking one block. That makes it a common interview vehicle for explaining how a greedy policy can be fast and easy to implement while still causing avoidable fragmentation later.
+
+## Worked Example
+
+For `blockSizes = [100, 500, 200, 300, 600]` and `processSizes = [212, 417, 112, 426]`, first fit places `212` into block `2`, `417` into block `5`, `112` into the remaining space of block `2`, and cannot place `426`. The resulting allocation is `[2, 5, 2, -1]` using 1-based block numbers.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function programForFirstFitAlgorithmInMemoryManagement(blockSizes, processSizes) {
+  const remainingBlocks = [...blockSizes];
+  const allocation = Array(processSizes.length).fill(-1);
+
+  for (let processIndex = 0; processIndex < processSizes.length; processIndex += 1) {
+    for (let blockIndex = 0; blockIndex < remainingBlocks.length; blockIndex += 1) {
+      if (remainingBlocks[blockIndex] < processSizes[processIndex]) {
+        continue;
+      }
+
+      allocation[processIndex] = blockIndex + 1;
+      remainingBlocks[blockIndex] -= processSizes[processIndex];
+      break;
+    }
+  }
+
+  return allocation;
+}
+```
+
+```ts
+export function programForFirstFitAlgorithmInMemoryManagement(
+  blockSizes: number[],
+  processSizes: number[],
+): number[] {
+  const remainingBlocks = [...blockSizes];
+  const allocation = Array(processSizes.length).fill(-1);
+
+  for (let processIndex = 0; processIndex < processSizes.length; processIndex += 1) {
+    for (let blockIndex = 0; blockIndex < remainingBlocks.length; blockIndex += 1) {
+      if (remainingBlocks[blockIndex] < processSizes[processIndex]) {
+        continue;
+      }
+
+      allocation[processIndex] = blockIndex + 1;
+      remainingBlocks[blockIndex] -= processSizes[processIndex];
+      break;
+    }
+  }
+
+  return allocation;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the final remaining block capacities along with the process allocations.
+- Compare the fragmentation pattern of first fit against best fit on the same workload.
+- Adapt the routine if a block may hold at most one process instead of shrinking after allocation.
+
+## Common Pitfalls
+
+- Forgetting to reduce the remaining capacity of a block after allocating a process.
+- Returning zero-based block indices when the worked examples use 1-based numbering.
+- Continuing the scan after a successful first-fit placement instead of stopping immediately.
