@@ -744,9 +744,17 @@ This sixty-seventh expansion slice lifts the catalog from 411 to 414 entries.
 - Tarjan's Algorithm to find Strongly Connected Components
 - Paths to travel each nodes using each edge (Seven Bridges of Konigsberg)
 
+## Batch 68 added
+
+This sixty-eighth expansion slice lifts the catalog from 414 to 417 entries.
+
+- Max Area of Island - Largest in Boolean Matrix
+- Count number of trees in a forest
+- A Peterson Graph Problem
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 67 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 68 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -754,10 +762,10 @@ All expansion entries from batch 1 through batch 67 now carry explicit per-entry
 
 ## Why this batch
 
-- It closes three distinct graph gaps after the clean batch 66 review: implicit shortest-path search over words, one-pass SCC decomposition, and actual Euler-trail construction from an adjacency matrix.
-- It broadens the catalog across three interview patterns that were only partially represented before this slice: BFS on an implicit state graph, Tarjan's low-link stack discipline for directed SCCs, and Hierholzer-style edge consumption for undirected Euler trails.
-- It complements nearby local coverage rather than duplicating it: Word Ladder builds on BFS and unweighted shortest path, Tarjan adds the one-pass counterpart to Kosaraju, and Seven Bridges upgrades Eulerian feasibility into an explicit returned route.
-- It leaves the continuation point at the first uncataloged must-do graph problems after the already-covered dynamic-connectivity and max-flow construction block, while treating the generic max-flow overview page as a theory-only detour.
+- It closes the next three graph-page absences after the clean batch 67 review: largest-region measurement on a binary matrix, forest-specific component counting, and a fixed labeled-graph walk reconstruction problem.
+- It broadens the catalog across three patterns that were still underrepresented locally: 8-direction grid component sizing, counting trees by leaning on the forest guarantee, and lexicographically least path reconstruction in a fixed graph with repeated labels.
+- It complements nearby local coverage rather than duplicating it: the matrix entry extends Number of Islands from counting to area under diagonal adjacency, the forest entry specializes Connected Components to acyclic inputs, and the Petersen entry adds a string-constrained walk problem rather than a generic traversal.
+- It leaves the remaining graph-page frontier effectively narrowed to the uncataloged random-graph generator entry after skipping already-covered or applications-only neighbors such as Clone an Undirected Graph, Graph Coloring applications, Traveling Salesman Problem, and Chinese Postman or Route Inspection.
 
 ## Supporting study references from the algorithms list
 
@@ -767,4 +775,4 @@ All expansion entries from batch 1 through batch 67 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- The current GeeksforGeeks backfill frontier now continues with `Largest region in Boolean Matrix`, `Count Trees in a forest`, and `A Peterson Graph Problem` after skipping the theory-only `Max Flow Problem Introduction` page and already-covered neighbors such as `Dynamic Connectivity`, `Ford-Fulkerson Algorithm for Maximum Flow`, `Maximum edge disjoint paths`, `Minimum s-t Cut in a Flow Network`, and `Maximum Bipartite Matching`.
+- The current GeeksforGeeks graph-page frontier now narrows to `Erdos Renyl Model (for generating Random Graphs)`; the neighboring must-do entries `Clone an Undirected Graph`, `Graph Coloring`, `Traveling Salesman Problem (TSP)`, `Chinese Postman or Route Inspection`, `Hierholzer's Algorithm for directed graph`, `Hopcroft Karp Algorithm for Maximum Matching`, `Graph from given degrees of all vertices`, and `Universal Sink` are already represented locally, while `Number of sinks in a graph` remains intentionally skipped as too weak to prioritize.

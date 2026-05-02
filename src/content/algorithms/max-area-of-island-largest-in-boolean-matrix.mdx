@@ -1,0 +1,197 @@
+---
+title: Max Area of Island - Largest in Boolean Matrix
+slug: max-area-of-island-largest-in-boolean-matrix
+category: Graphs
+summary: Flood-fill each 8-direction region of `1` cells and keep the largest area you discover.
+description: "Max Area of Island - Largest in Boolean Matrix is the grid-component sizing problem solved by repeated BFS or DFS over 8-direction connected land cells."
+dataStructures:
+  - Matrix
+  - Queue
+  - Array
+techniques:
+  - Breadth-First Search
+  - Connected Components
+  - Flood Fill
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - largest region in boolean matrix
+  - max area of island
+  - largest 8-direction region
+useCases:
+  - Measuring the largest connected blob in a binary image or terrain map
+  - Extending island counting from component count to component size
+  - Handling diagonal adjacency rather than only four-direction movement
+complexity:
+  time: O(rows * cols)
+  space: O(rows * cols)
+  notes: "The queue and visited matrix can both grow to the size of one full region in the worst case."
+interviewSignals:
+  - The grid uses `1` and `0`, but the answer is the largest region size rather than the number of regions.
+  - Diagonal cells count as connected, which changes the usual island-neighbor rule.
+relatedSlugs:
+  - number-of-islands
+  - flood-fill
+  - breadth-first-search
+provenance:
+  - title: "GeeksforGeeks - Max Area of Island - Largest in Boolean Matrix"
+    href: https://www.geeksforgeeks.org/dsa/find-length-largest-region-boolean-matrix/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the "largest component" follow-up to Number of Islands. You still discover connected regions one at a time, but now each traversal measures a region instead of only proving that one exists, and the adjacency rule expands to all eight neighboring cells.
+
+## Worked Example
+
+If a binary matrix contains one diagonal-friendly cluster of six `1` cells and a few smaller disconnected groups, the answer is `6`. The important detail is that diagonal contact counts, so some cells that would form separate islands under four-direction rules merge into one region here.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function maxAreaOfIslandLargestInBooleanMatrix(matrix) {
+  const rows = matrix.length;
+  if (rows === 0) {
+    return 0;
+  }
+
+  const cols = matrix[0].length;
+  const visited = Array.from({ length: rows }, () => new Array(cols).fill(false));
+  const directions = [
+    [-1, -1],
+    [-1, 0],
+    [-1, 1],
+    [0, -1],
+    [0, 1],
+    [1, -1],
+    [1, 0],
+    [1, 1],
+  ];
+  let best = 0;
+
+  for (let row = 0; row < rows; row += 1) {
+    for (let col = 0; col < cols; col += 1) {
+      if (matrix[row][col] !== 1 || visited[row][col]) {
+        continue;
+      }
+
+      let area = 0;
+      const queue = [[row, col]];
+      visited[row][col] = true;
+
+      for (let head = 0; head < queue.length; head += 1) {
+        const [currentRow, currentCol] = queue[head];
+        area += 1;
+
+        for (const [rowOffset, colOffset] of directions) {
+          const nextRow = currentRow + rowOffset;
+          const nextCol = currentCol + colOffset;
+
+          if (
+            nextRow < 0
+            || nextRow >= rows
+            || nextCol < 0
+            || nextCol >= cols
+            || matrix[nextRow][nextCol] !== 1
+            || visited[nextRow][nextCol]
+          ) {
+            continue;
+          }
+
+          visited[nextRow][nextCol] = true;
+          queue.push([nextRow, nextCol]);
+        }
+      }
+
+      best = Math.max(best, area);
+    }
+  }
+
+  return best;
+}
+```
+
+```ts
+export function maxAreaOfIslandLargestInBooleanMatrix(
+  matrix: number[][],
+): number {
+  const rows = matrix.length;
+  if (rows === 0) {
+    return 0;
+  }
+
+  const cols = matrix[0].length;
+  const visited = Array.from({ length: rows }, () => new Array<boolean>(cols).fill(false));
+  const directions: Array<[number, number]> = [
+    [-1, -1],
+    [-1, 0],
+    [-1, 1],
+    [0, -1],
+    [0, 1],
+    [1, -1],
+    [1, 0],
+    [1, 1],
+  ];
+  let best = 0;
+
+  for (let row = 0; row < rows; row += 1) {
+    for (let col = 0; col < cols; col += 1) {
+      if (matrix[row][col] !== 1 || visited[row][col]) {
+        continue;
+      }
+
+      let area = 0;
+      const queue: Array<[number, number]> = [[row, col]];
+      visited[row][col] = true;
+
+      for (let head = 0; head < queue.length; head += 1) {
+        const [currentRow, currentCol] = queue[head];
+        area += 1;
+
+        for (const [rowOffset, colOffset] of directions) {
+          const nextRow = currentRow + rowOffset;
+          const nextCol = currentCol + colOffset;
+
+          if (
+            nextRow < 0
+            || nextRow >= rows
+            || nextCol < 0
+            || nextCol >= cols
+            || matrix[nextRow][nextCol] !== 1
+            || visited[nextRow][nextCol]
+          ) {
+            continue;
+          }
+
+          visited[nextRow][nextCol] = true;
+          queue.push([nextRow, nextCol]);
+        }
+      }
+
+      best = Math.max(best, area);
+    }
+  }
+
+  return best;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Rewrite the solution with DFS and compare the recursion-depth tradeoffs.
+- Return the coordinates of every cell in the largest region instead of only its area.
+- Explain how the answer changes if only four-direction adjacency counts.
+
+## Common Pitfalls
+
+- Reusing the Number of Islands neighbor list and forgetting to include diagonals.
+- Counting how many regions exist when the prompt asks for the largest area.
+- Marking cells as visited too late and enqueueing the same cell multiple times.

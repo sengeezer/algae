@@ -1,0 +1,150 @@
+---
+title: Count number of trees in a forest
+slug: count-number-of-trees-in-a-forest
+category: Graphs
+summary: Because every connected component in a forest is already a tree, count components with DFS or BFS and return that total.
+description: "Count number of trees in a forest is the forest-component counting problem solved by traversing each unvisited connected component exactly once."
+dataStructures:
+  - Graph
+  - Stack
+  - Array
+techniques:
+  - Depth-First Search
+  - Connected Components
+  - Forest Traversal
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - count trees in a forest
+  - forest component count
+  - number of trees in forest
+useCases:
+  - Counting disconnected tree clusters in an undirected acyclic graph
+  - Translating forest terminology into ordinary connected-component logic
+  - Handling isolated vertices as one-node trees
+complexity:
+  time: O(V + E)
+  space: O(V)
+  notes: "The forest guarantee removes the need for cycle detection; every connected component is automatically one tree."
+interviewSignals:
+  - The input is described as a forest rather than an arbitrary graph.
+  - The real task is to count connected components, not to validate acyclicity from scratch.
+relatedSlugs:
+  - connected-components
+  - depth-first-search
+  - union-find
+provenance:
+  - title: "GeeksforGeeks - Count number of trees in a forest"
+    href: https://www.geeksforgeeks.org/dsa/count-number-trees-forest/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is connected-components reasoning with a lighter vocabulary. Once the interviewer says the graph is a forest, you no longer need to worry about cycles inside a component. Each DFS or BFS launched from an unvisited node identifies exactly one tree.
+
+## Worked Example
+
+If the edges are `(0, 1)`, `(0, 2)`, and `(3, 4)`, then the graph has two connected components: `{0, 1, 2}` and `{3, 4}`. Because the input is already a forest, those two components are the two trees in the answer.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function countNumberOfTreesInAForest(nodeCount, edges) {
+  const graph = Array.from({ length: nodeCount }, () => []);
+
+  for (const [from, to] of edges) {
+    graph[from].push(to);
+    graph[to].push(from);
+  }
+
+  const visited = new Array(nodeCount).fill(false);
+  let trees = 0;
+
+  for (let node = 0; node < nodeCount; node += 1) {
+    if (visited[node]) {
+      continue;
+    }
+
+    trees += 1;
+    const stack = [node];
+    visited[node] = true;
+
+    while (stack.length > 0) {
+      const current = stack.pop();
+
+      for (const neighbor of graph[current]) {
+        if (visited[neighbor]) {
+          continue;
+        }
+
+        visited[neighbor] = true;
+        stack.push(neighbor);
+      }
+    }
+  }
+
+  return trees;
+}
+```
+
+```ts
+export function countNumberOfTreesInAForest(
+  nodeCount: number,
+  edges: Array<[number, number]>,
+): number {
+  const graph = Array.from({ length: nodeCount }, () => [] as number[]);
+
+  for (const [from, to] of edges) {
+    graph[from].push(to);
+    graph[to].push(from);
+  }
+
+  const visited = new Array<boolean>(nodeCount).fill(false);
+  let trees = 0;
+
+  for (let node = 0; node < nodeCount; node += 1) {
+    if (visited[node]) {
+      continue;
+    }
+
+    trees += 1;
+    const stack: number[] = [node];
+    visited[node] = true;
+
+    while (stack.length > 0) {
+      const current = stack.pop()!;
+
+      for (const neighbor of graph[current]) {
+        if (visited[neighbor]) {
+          continue;
+        }
+
+        visited[neighbor] = true;
+        stack.push(neighbor);
+      }
+    }
+  }
+
+  return trees;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Remove the forest guarantee and reject any component that contains a cycle.
+- Count the size of each tree instead of only the number of trees.
+- Solve the same problem with union-find when edges arrive incrementally.
+
+## Common Pitfalls
+
+- Forgetting that isolated vertices count as one-node trees.
+- Spending extra work on cycle detection even though the input is already promised to be a forest.
+- Treating the graph as directed when the forest definition here is undirected.
