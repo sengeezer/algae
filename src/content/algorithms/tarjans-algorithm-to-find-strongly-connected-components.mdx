@@ -1,0 +1,177 @@
+---
+title: Tarjan's Algorithm to find Strongly Connected Components
+slug: tarjans-algorithm-to-find-strongly-connected-components
+category: Graphs
+summary: Run one DFS with discovery times, low-link values, and an active stack to emit each strongly connected component when its root closes.
+description: "Tarjan's Algorithm to find Strongly Connected Components is the one-pass SCC decomposition solved by DFS timestamps, low-link values, and an active stack."
+dataStructures:
+  - Graph
+  - Stack
+  - Array
+techniques:
+  - Strongly Connected Components
+  - Depth-First Search
+  - Tarjan Low-Link
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - tarjan SCC
+  - one-pass SCC decomposition
+  - low-link SCC
+useCases:
+  - Grouping mutually reachable modules in a directed dependency graph
+  - Replacing Kosaraju's second DFS pass with one traversal and a stack
+  - Reusing low-link intuition across SCC, bridge, and articulation-point problems
+complexity:
+  time: O(V + E)
+  space: O(V)
+  notes: "Each vertex enters and leaves the active stack once, so the bookkeeping stays linear."
+interviewSignals:
+  - The prompt asks for strongly connected components but hints that one DFS pass should be enough.
+  - Discovery times, low-link values, or an active stack are part of the intended explanation.
+relatedSlugs:
+  - kosaraju
+  - bridges-in-a-graph
+  - articulation-points
+provenance:
+  - title: "GeeksforGeeks - Tarjan's Algorithm to find Strongly Connected Components"
+    href: https://www.geeksforgeeks.org/dsa/tarjan-algorithm-find-strongly-connected-components/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Tarjan matters when the interviewer wants SCCs but also wants you to show that you understand low-link reasoning, not just two-pass graph reversal. The active stack is the key distinction: only vertices still on that stack can help keep the current DFS subtree inside one component.
+
+## Worked Example
+
+If `0 -> 1 -> 2 -> 0` forms one directed cycle and `3 <-> 4` forms another, Tarjan pushes vertices as DFS enters them. When DFS finishes a root whose `disc` and `low` values match, popping the stack until that root appears yields exactly one SCC.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function tarjansAlgorithmToFindStronglyConnectedComponents(graph) {
+  const nodeCount = graph.length;
+  const disc = new Array(nodeCount).fill(-1);
+  const low = new Array(nodeCount).fill(0);
+  const onStack = new Array(nodeCount).fill(false);
+  const stack = [];
+  const components = [];
+  let time = 0;
+
+  function dfs(node) {
+    disc[node] = time;
+    low[node] = time;
+    time += 1;
+    stack.push(node);
+    onStack[node] = true;
+
+    for (const neighbor of graph[node]) {
+      if (disc[neighbor] === -1) {
+        dfs(neighbor);
+        low[node] = Math.min(low[node], low[neighbor]);
+      } else if (onStack[neighbor]) {
+        low[node] = Math.min(low[node], disc[neighbor]);
+      }
+    }
+
+    if (low[node] !== disc[node]) {
+      return;
+    }
+
+    const component = [];
+    while (stack.length > 0) {
+      const top = stack.pop();
+      onStack[top] = false;
+      component.push(top);
+      if (top === node) {
+        break;
+      }
+    }
+
+    components.push(component);
+  }
+
+  for (let node = 0; node < nodeCount; node += 1) {
+    if (disc[node] === -1) {
+      dfs(node);
+    }
+  }
+
+  return components;
+}
+```
+
+```ts
+export function tarjansAlgorithmToFindStronglyConnectedComponents(
+  graph: number[][],
+): number[][] {
+  const nodeCount = graph.length;
+  const disc = new Array<number>(nodeCount).fill(-1);
+  const low = new Array<number>(nodeCount).fill(0);
+  const onStack = new Array<boolean>(nodeCount).fill(false);
+  const stack: number[] = [];
+  const components: number[][] = [];
+  let time = 0;
+
+  function dfs(node: number): void {
+    disc[node] = time;
+    low[node] = time;
+    time += 1;
+    stack.push(node);
+    onStack[node] = true;
+
+    for (const neighbor of graph[node]) {
+      if (disc[neighbor] === -1) {
+        dfs(neighbor);
+        low[node] = Math.min(low[node], low[neighbor]);
+      } else if (onStack[neighbor]) {
+        low[node] = Math.min(low[node], disc[neighbor]);
+      }
+    }
+
+    if (low[node] !== disc[node]) {
+      return;
+    }
+
+    const component: number[] = [];
+    while (stack.length > 0) {
+      const top = stack.pop()!;
+      onStack[top] = false;
+      component.push(top);
+      if (top === node) {
+        break;
+      }
+    }
+
+    components.push(component);
+  }
+
+  for (let node = 0; node < nodeCount; node += 1) {
+    if (disc[node] === -1) {
+      dfs(node);
+    }
+  }
+
+  return components;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Contrast Tarjan with Kosaraju and explain why Tarjan does not need a reversed graph.
+- Explain why the back-edge update uses `disc[neighbor]` instead of `low[neighbor]`.
+- Contract the SCCs into a DAG for a downstream topological or DP step.
+
+## Common Pitfalls
+
+- Updating low-link values from any visited neighbor instead of only neighbors still on the stack.
+- Forgetting that `disc[node] === low[node]` marks the root of one complete SCC.
+- Mixing directed SCC logic with the undirected low-link rules used for bridges and articulation points.

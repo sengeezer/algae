@@ -736,9 +736,17 @@ This sixty-sixth expansion slice lifts the catalog from 408 to 411 entries.
 - Topological Sort of a graph using departure time of vertex
 - Find Itinerary from a given list of tickets
 
+## Batch 67 added
+
+This sixty-seventh expansion slice lifts the catalog from 411 to 414 entries.
+
+- Word Ladder - Shortest Chain To Reach Target Word
+- Tarjan's Algorithm to find Strongly Connected Components
+- Paths to travel each nodes using each edge (Seven Bridges of Konigsberg)
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 66 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 67 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -746,10 +754,10 @@ All expansion entries from batch 1 through batch 66 now carry explicit per-entry
 
 ## Why this batch
 
-- It completes the remaining clean topological-order and itinerary-style absences before the source-ordered frontier moves into the next connectivity entries.
-- It broadens the catalog across DAG saturation by forward-edge augmentation, DFS departure-time ordering as an alternative to Kahn's indegree queue, and one-way ticket chain reconstruction from unordered pairs.
-- It adds several interview patterns that were not previously first-class entries: constructing every missing forward DAG edge from a topological order, making DFS timestamps concrete in a topological-sort setting, and recovering a unique directed path by identifying the unmatched source.
-- It leaves the next continuation point at the first clean connectivity absences after skipping already represented items such as biconnected components and Kosaraju-backed SCC coverage.
+- It closes three distinct graph gaps after the clean batch 66 review: implicit shortest-path search over words, one-pass SCC decomposition, and actual Euler-trail construction from an adjacency matrix.
+- It broadens the catalog across three interview patterns that were only partially represented before this slice: BFS on an implicit state graph, Tarjan's low-link stack discipline for directed SCCs, and Hierholzer-style edge consumption for undirected Euler trails.
+- It complements nearby local coverage rather than duplicating it: Word Ladder builds on BFS and unweighted shortest path, Tarjan adds the one-pass counterpart to Kosaraju, and Seven Bridges upgrades Eulerian feasibility into an explicit returned route.
+- It leaves the continuation point at the first uncataloged must-do graph problems after the already-covered dynamic-connectivity and max-flow construction block, while treating the generic max-flow overview page as a theory-only detour.
 
 ## Supporting study references from the algorithms list
 
@@ -759,4 +767,4 @@ All expansion entries from batch 1 through batch 66 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- The current GeeksforGeeks backfill frontier now continues with `Word Ladder - Shortest Chain To Reach Target Word`, `Tarjan's Algorithm to find Strongly Connected Components`, and `Paths to travel each nodes using each edge (Seven Bridges of Königsberg)`; nearby entries like `Biconnected Components` and `Strongly Connected Components` are already represented by local coverage.
+- The current GeeksforGeeks backfill frontier now continues with `Largest region in Boolean Matrix`, `Count Trees in a forest`, and `A Peterson Graph Problem` after skipping the theory-only `Max Flow Problem Introduction` page and already-covered neighbors such as `Dynamic Connectivity`, `Ford-Fulkerson Algorithm for Maximum Flow`, `Maximum edge disjoint paths`, `Minimum s-t Cut in a Flow Network`, and `Maximum Bipartite Matching`.

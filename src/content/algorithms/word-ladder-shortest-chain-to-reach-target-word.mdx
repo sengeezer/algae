@@ -1,0 +1,181 @@
+---
+title: Word Ladder - Shortest Chain To Reach Target Word
+slug: word-ladder-shortest-chain-to-reach-target-word
+category: Graphs
+summary: Run BFS over one-letter transformations so the first time you reach the target word you have the minimum chain length.
+description: "Word Ladder - Shortest Chain To Reach Target Word is the shortest transformation problem solved by BFS over valid one-letter mutations."
+dataStructures:
+  - Hash Set
+  - Queue
+  - Array
+techniques:
+  - Breadth-First Search
+  - State Graph
+  - Shortest Path
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - word ladder
+  - shortest chain to reach target word
+  - word transformation BFS
+useCases:
+  - Finding the fewest one-letter edits that stay inside a dictionary
+  - Modeling strings as an implicit unweighted graph
+  - Recognizing when BFS beats backtracking for shortest transformation sequences
+complexity:
+  time: O(N * L * L)
+  space: O(N * L)
+  notes: "N is the dictionary size and L is the word length; generating each candidate word copies O(L) characters."
+interviewSignals:
+  - Each valid move changes one character and every intermediate word must belong to the dictionary.
+  - The prompt asks for the shortest number of transformations rather than all possible chains.
+relatedSlugs:
+  - breadth-first-search
+  - shortest-path-in-an-unweighted-graph
+  - shortest-path-in-a-binary-maze
+provenance:
+  - title: "GeeksforGeeks - Word Ladder - Shortest Chain To Reach Target Word"
+    href: https://www.geeksforgeeks.org/dsa/word-ladder-length-of-shortest-chain-to-reach-a-target-word/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Word Ladder is the classic example of an implicit graph. Every valid dictionary word is a node, every one-letter mutation is an edge, and the interviewer wants the minimum number of steps, which makes breadth-first search the right fit immediately.
+
+## Worked Example
+
+If `toon` must become `plea` and the dictionary contains `poon`, `poin`, `poie`, `plie`, and `plee`, then BFS explores all one-step mutations before any two-step mutations. The first time it reaches `plea`, the chain length is guaranteed to be minimal.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function wordLadderShortestChainToReachTargetWord(start, target, words) {
+  if (start === target) {
+    return 1;
+  }
+
+  if (start.length !== target.length) {
+    return 0;
+  }
+
+  const dictionary = new Set(words);
+  if (!dictionary.has(target)) {
+    return 0;
+  }
+
+  dictionary.delete(start);
+  const queue = [[start, 1]];
+
+  for (let head = 0; head < queue.length; head += 1) {
+    const [word, distance] = queue[head];
+    const chars = word.split('');
+
+    for (let index = 0; index < chars.length; index += 1) {
+      const original = chars[index];
+
+      for (let code = 97; code <= 122; code += 1) {
+        const nextChar = String.fromCharCode(code);
+        if (nextChar === original) {
+          continue;
+        }
+
+        chars[index] = nextChar;
+        const nextWord = chars.join('');
+
+        if (!dictionary.has(nextWord)) {
+          continue;
+        }
+
+        if (nextWord === target) {
+          return distance + 1;
+        }
+
+        dictionary.delete(nextWord);
+        queue.push([nextWord, distance + 1]);
+      }
+
+      chars[index] = original;
+    }
+  }
+
+  return 0;
+}
+```
+
+```ts
+export function wordLadderShortestChainToReachTargetWord(
+  start: string,
+  target: string,
+  words: string[],
+): number {
+  if (start === target) {
+    return 1;
+  }
+
+  if (start.length !== target.length) {
+    return 0;
+  }
+
+  const dictionary = new Set<string>(words);
+  if (!dictionary.has(target)) {
+    return 0;
+  }
+
+  dictionary.delete(start);
+  const queue: Array<[string, number]> = [[start, 1]];
+
+  for (let head = 0; head < queue.length; head += 1) {
+    const [word, distance] = queue[head];
+    const chars = word.split('');
+
+    for (let index = 0; index < chars.length; index += 1) {
+      const original = chars[index];
+
+      for (let code = 97; code <= 122; code += 1) {
+        const nextChar = String.fromCharCode(code);
+        if (nextChar === original) {
+          continue;
+        }
+
+        chars[index] = nextChar;
+        const nextWord = chars.join('');
+
+        if (!dictionary.has(nextWord)) {
+          continue;
+        }
+
+        if (nextWord === target) {
+          return distance + 1;
+        }
+
+        dictionary.delete(nextWord);
+        queue.push([nextWord, distance + 1]);
+      }
+
+      chars[index] = original;
+    }
+  }
+
+  return 0;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the actual transformation sequence instead of only its length.
+- Precompute wildcard buckets to reduce repeated neighbor generation.
+- Explain why DFS or backtracking does not guarantee the shortest chain first.
+
+## Common Pitfalls
+
+- Treating the dictionary like a weighted graph problem when every valid transformation has unit cost.
+- Forgetting to mark generated words as visited when they enter the queue.
+- Returning the number of edges instead of the chain length that includes both endpoints.

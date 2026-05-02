@@ -1,0 +1,222 @@
+---
+title: Paths to travel each nodes using each edge (Seven Bridges of Konigsberg)
+slug: paths-to-travel-each-nodes-using-each-edge-seven-bridges-of-konigsberg
+category: Graphs
+summary: Check the Euler-path degree conditions, then consume the undirected edges with a stack to recover one valid all-edges trail.
+description: "Paths to travel each nodes using each edge (Seven Bridges of Konigsberg) is the Euler-trail construction problem solved by degree checks and Hierholzer-style edge consumption on an adjacency matrix."
+dataStructures:
+  - Graph
+  - Matrix
+  - Stack
+  - Array
+techniques:
+  - Eulerian Traversal
+  - Degree Counting
+  - Hierholzer Style Construction
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - seven bridges of konigsberg
+  - use each edge exactly once
+  - euler path from adjacency matrix
+useCases:
+  - Reconstructing an undirected route that uses every bridge exactly once
+  - Turning Eulerian feasibility conditions into an actual traversal
+  - Handling multiedges stored in an adjacency matrix instead of adjacency lists
+complexity:
+  time: O(V * V + E)
+  space: O(V + E)
+  notes: "Scanning matrix rows to find the next unused edge dominates the cost when the graph is sparse."
+interviewSignals:
+  - The prompt asks for an actual path that uses every edge exactly once, not just a yes or no.
+  - The graph is undirected and represented as a square adjacency matrix.
+relatedSlugs:
+  - euler-path-and-euler-circuit
+  - fleurys-algorithm
+  - hierholzers-algorithm-directed-graph
+provenance:
+  - title: "GeeksforGeeks - Paths to travel each nodes using each edge (Seven Bridges of Konigsberg)"
+    href: https://www.geeksforgeeks.org/dsa/paths-travel-nodes-using-edgeseven-bridges-konigsberg/
+    kind: Implementation
+  - title: "free-programming-books - Algorithms, 4th Edition"
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the construction counterpart to Eulerian classification. Knowing that zero or two odd-degree vertices are allowed is not enough here; you also need to emit the actual route, and the adjacency-matrix input forces you to think about consuming undirected edge counts directly.
+
+## Worked Example
+
+If exactly two vertices have odd degree, the trail must start at one of them. As the stack walks unused edges, vertices are appended to the answer only after all remaining incident edges are exhausted, so the final path appears in reverse and must be flipped at the end.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function pathsToTravelEachNodesUsingEachEdgeSevenBridgesOfKonigsberg(adj) {
+  const nodeCount = adj.length;
+  if (nodeCount === 0) {
+    return [];
+  }
+
+  const degree = new Array(nodeCount).fill(0);
+  const odd = [];
+  let totalEdges = 0;
+  let start = -1;
+
+  for (let row = 0; row < nodeCount; row += 1) {
+    for (let col = 0; col < nodeCount; col += 1) {
+      degree[row] += adj[row][col];
+      if (col > row) {
+        totalEdges += adj[row][col];
+      }
+    }
+
+    if (degree[row] > 0 && start === -1) {
+      start = row;
+    }
+
+    if (degree[row] % 2 === 1) {
+      odd.push(row);
+    }
+  }
+
+  if (start === -1) {
+    return [1];
+  }
+
+  if (odd.length !== 0 && odd.length !== 2) {
+    return [-1];
+  }
+
+  if (odd.length === 2) {
+    start = odd[0];
+  }
+
+  const remaining = adj.map((row) => [...row]);
+  const stack = [start];
+  const path = [];
+
+  while (stack.length > 0) {
+    const node = stack[stack.length - 1];
+    let next = -1;
+
+    for (let neighbor = 0; neighbor < nodeCount; neighbor += 1) {
+      if (remaining[node][neighbor] > 0) {
+        next = neighbor;
+        break;
+      }
+    }
+
+    if (next === -1) {
+      path.push(stack.pop() + 1);
+      continue;
+    }
+
+    remaining[node][next] -= 1;
+    remaining[next][node] -= 1;
+    stack.push(next);
+  }
+
+  if (path.length !== totalEdges + 1) {
+    return [-1];
+  }
+
+  path.reverse();
+  return path;
+}
+```
+
+```ts
+export function pathsToTravelEachNodesUsingEachEdgeSevenBridgesOfKonigsberg(
+  adj: number[][],
+): number[] {
+  const nodeCount = adj.length;
+  if (nodeCount === 0) {
+    return [];
+  }
+
+  const degree = new Array<number>(nodeCount).fill(0);
+  const odd: number[] = [];
+  let totalEdges = 0;
+  let start = -1;
+
+  for (let row = 0; row < nodeCount; row += 1) {
+    for (let col = 0; col < nodeCount; col += 1) {
+      degree[row] += adj[row][col];
+      if (col > row) {
+        totalEdges += adj[row][col];
+      }
+    }
+
+    if (degree[row] > 0 && start === -1) {
+      start = row;
+    }
+
+    if (degree[row] % 2 === 1) {
+      odd.push(row);
+    }
+  }
+
+  if (start === -1) {
+    return [1];
+  }
+
+  if (odd.length !== 0 && odd.length !== 2) {
+    return [-1];
+  }
+
+  if (odd.length === 2) {
+    start = odd[0];
+  }
+
+  const remaining = adj.map((row) => [...row]);
+  const stack: number[] = [start];
+  const path: number[] = [];
+
+  while (stack.length > 0) {
+    const node = stack[stack.length - 1];
+    let next = -1;
+
+    for (let neighbor = 0; neighbor < nodeCount; neighbor += 1) {
+      if (remaining[node][neighbor] > 0) {
+        next = neighbor;
+        break;
+      }
+    }
+
+    if (next === -1) {
+      path.push(stack.pop()! + 1);
+      continue;
+    }
+
+    remaining[node][next] -= 1;
+    remaining[next][node] -= 1;
+    stack.push(next);
+  }
+
+  if (path.length !== totalEdges + 1) {
+    return [-1];
+  }
+
+  path.reverse();
+  return path;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Convert the same idea to adjacency lists for better sparse-graph performance.
+- Compare this stack-based construction with Fleury's bridge-avoidance strategy.
+- Adapt the feasibility checks and construction to the directed Eulerian case.
+
+## Common Pitfalls
+
+- Forgetting that an undirected Euler trail allows either zero or two odd-degree vertices.
+- Building the route in stack-pop order and forgetting to reverse it before returning.
+- Assuming degree checks alone are enough without verifying that every edge was actually consumed.
