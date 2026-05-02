@@ -1,0 +1,173 @@
+---
+title: Huffman Decoding
+slug: huffman-decoding
+category: Greedy
+summary: Walk the Huffman tree one bit at a time and emit a character whenever the traversal reaches a leaf.
+description: Huffman Decoding reconstructs the original text from a prefix-coded bitstream by repeatedly following 0 and 1 edges in the known Huffman tree.
+dataStructures:
+  - Tree
+  - String
+techniques:
+  - Greedy
+  - Tree Traversal
+  - Decoding
+  - Prefix Codes
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - decode huffman data
+  - huffman tree decoding
+  - prefix-code decoding
+useCases:
+  - Reconstructing compressed text when the Huffman tree is already known
+  - Validating that a prefix-free bitstream matches its coding tree
+  - Pairing encoding and decoding routines in compression pipelines
+complexity:
+  time: O(m)
+  space: O(1)
+  notes: The scan touches each encoded bit once and only keeps the current tree pointer outside the output buffer.
+interviewSignals:
+  - The encoding tree is given, so the task is to consume bits rather than rebuild codes.
+  - Every leaf means one decoded character and an immediate reset back to the root.
+relatedSlugs:
+  - huffman-coding-algorithm
+  - trie
+provenance:
+  - title: "GeeksforGeeks - Huffman Decoding"
+    href: https://www.geeksforgeeks.org/dsa/huffman-decoding/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Once a Huffman tree is fixed, decoding is greedy in the sense that every next bit immediately determines the only legal subtree to enter. The moment the walk hits a leaf, that character is forced, so the traversal resets to the root and continues.
+
+## Worked Example
+
+Suppose the tree gives `A -> 0`, `B -> 10`, and `C -> 11`. Then the encoded bitstring `010110` is decoded by walking `0 | 10 | 11 | 0`, which reconstructs `ABCA`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function huffmanDecoding(root, encodedBits) {
+  if (root === null) {
+    return '';
+  }
+
+  function isLeaf(node) {
+    return node.left === null && node.right === null;
+  }
+
+  if (isLeaf(root)) {
+    for (const bit of encodedBits) {
+      if (bit !== '0') {
+        throw new Error('Single-symbol Huffman data must use only 0 bits.');
+      }
+    }
+
+    return root.character.repeat(encodedBits.length);
+  }
+
+  let result = '';
+  let current = root;
+
+  for (const bit of encodedBits) {
+    if (bit !== '0' && bit !== '1') {
+      throw new Error('Encoded data must contain only 0 and 1.');
+    }
+
+    current = bit === '0' ? current.left : current.right;
+
+    if (current === null) {
+      throw new Error('Encoded data does not match the Huffman tree.');
+    }
+
+    if (isLeaf(current)) {
+      result += current.character;
+      current = root;
+    }
+  }
+
+  if (current !== root) {
+    throw new Error('Encoded data ended in the middle of a code.');
+  }
+
+  return result;
+}
+```
+
+```ts
+type HuffmanNode = {
+  character: string;
+  left: HuffmanNode | null;
+  right: HuffmanNode | null;
+};
+
+export function huffmanDecoding(
+  root: HuffmanNode | null,
+  encodedBits: string,
+): string {
+  if (root === null) {
+    return '';
+  }
+
+  function isLeaf(node: HuffmanNode): boolean {
+    return node.left === null && node.right === null;
+  }
+
+  if (isLeaf(root)) {
+    for (const bit of encodedBits) {
+      if (bit !== '0') {
+        throw new Error('Single-symbol Huffman data must use only 0 bits.');
+      }
+    }
+
+    return root.character.repeat(encodedBits.length);
+  }
+
+  let result = '';
+  let current: HuffmanNode | null = root;
+
+  for (const bit of encodedBits) {
+    if (bit !== '0' && bit !== '1') {
+      throw new Error('Encoded data must contain only 0 and 1.');
+    }
+
+    current = bit === '0' ? current.left : current.right;
+
+    if (current === null) {
+      throw new Error('Encoded data does not match the Huffman tree.');
+    }
+
+    if (isLeaf(current)) {
+      result += current.character;
+      current = root;
+    }
+  }
+
+  if (current !== root) {
+    throw new Error('Encoded data ended in the middle of a code.');
+  }
+
+  return result;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Decode a stream lazily without materializing the full output string first.
+- Explain why prefix-free codes guarantee the walk can reset at every leaf without ambiguity.
+- Extend the API so the decoder consumes the tree format emitted by your Huffman encoder.
+
+## Common Pitfalls
+
+- Forgetting to reset to the root after decoding one leaf.
+- Accepting a bitstream that ends halfway through a root-to-leaf path.
+- Ignoring the single-symbol edge case where the tree has only one leaf.

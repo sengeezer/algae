@@ -832,9 +832,17 @@ This seventy-eighth expansion slice lifts the catalog from 444 to 447 entries.
 - Rearrange a string so that all same characters become d distance away
 - Huffman Coding Algorithm
 
+## Batch 79 added
+
+This seventy-ninth expansion slice lifts the catalog from 447 to 450 entries.
+
+- Huffman Decoding
+- Water Connection Problem
+- Min Adjacent Swaps for Bracket Balancing
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 78 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 79 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -842,10 +850,10 @@ All expansion entries from batch 1 through batch 78 now carry explicit per-entry
 
 ## Why this batch
 
-- It continues the GeeksforGeeks Greedy Algorithms page in exact source order after `Largest Pefect Cube by Deleting Minimum Digits`, taking the frequency-spacing string constructor `Rearrange characters in a String such that no two adjacent characters are same`, then the cooldown-constrained extension `Rearrange a string so that all same characters become d distance away`, and then, after the duplicate Standard Greedy entries `Activity Selection` and `Job Sequencing Problem`, the canonical prefix-code builder `Huffman Coding Algorithm`.
-- It broadens the catalog across three more greedy shapes: filling constrained string slots from the highest remaining frequency, scheduling character reuse through a distance cooldown window, and repeatedly merging the two least frequent symbols to minimize total code length.
-- It complements nearby local coverage rather than duplicating it: the first two entries are full constructive string rearrangements rather than pairwise interleaving or subsequence checks, and the Huffman entry adds the encoder-side tree construction that was not previously represented locally.
-- It preserves source-order title details that matter for later handoffs: the first rearrangement article's destination title is longer than its Greedy-page label, and the batch crosses from the page's Hard Problems section into Standard Greedy Algorithms only after intentionally skipping the already-covered `Activity Selection` and `Job Sequencing Problem` entries.
+- It continues the GeeksforGeeks Greedy Algorithms page in exact source order after `Huffman Coding Algorithm`, taking the paired tree-walk entry `Huffman Decoding`, then the constrained pipeline summary problem `Water Connection Problem`, and then the imbalance-repair string scan `Min Adjacent Swaps for Bracket Balancing` with no intermediary skips.
+- It broadens the catalog across three more greedy interpretations: decoding a prefix code by resetting at each leaf, collapsing one-in/one-out pipe chains into tank-tap bottleneck summaries, and charging each late opening bracket for the exact imbalance it repairs.
+- It complements nearby local coverage rather than duplicating it: the Huffman decoder is the natural consumer-side companion to the encoder added in batch 78, the water-connection entry uses graph-shaped input but relies on the chain constraint instead of general shortest-path machinery, and the bracket entry adds a one-pass swap-counting invariant rather than another constructive rearrangement routine.
+- It preserves the next handoff accurately: `Egyptian Fraction` appears immediately afterward on the same source page but is intentionally skipped as a semantic duplicate of the existing `Greedy Algorithm for Egyptian Fraction`, so the next clean frontier starts later in Standard Greedy Algorithms.
 
 ## Supporting study references from the algorithms list
 
@@ -855,4 +863,4 @@ All expansion entries from batch 1 through batch 78 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- The current GeeksforGeeks Greedy-page frontier now continues with `Huffman Decoding`, `Water Connection Problem`, and `Min Adjacent Swaps for Bracket Balancing` after `Huffman Coding Algorithm`, while `Activity Selection`, `Job Sequencing Problem`, `Merge Overlapping Intervals`, and the repeated height-difference article remain intentionally skipped as local duplicates.
+- The current GeeksforGeeks Greedy-page frontier now continues with `Policemen catch thieves`, `Assign Holes to Mice`, and `Fitting Shelves Problem` after `Min Adjacent Swaps for Bracket Balancing`, while `Egyptian Fraction` is intentionally skipped as a semantic duplicate of the existing `Greedy Algorithm for Egyptian Fraction` entry.

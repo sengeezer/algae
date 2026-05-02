@@ -1,0 +1,141 @@
+---
+title: Water Connection Problem
+slug: water-connection-problem
+category: Greedy
+summary: Start from each tank house, follow its unique outgoing pipe chain to the tap, and keep the minimum diameter seen on the route.
+description: Water Connection Problem compresses each one-incoming-one-outgoing pipeline chain into a tank, a tap, and the bottleneck pipe diameter that limits the whole connection.
+dataStructures:
+  - Array
+  - Graph
+techniques:
+  - Greedy
+  - Graph Traversal
+  - Bottleneck Tracking
+  - Path Compression
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - water distribution problem
+  - tank tap pipeline problem
+  - minimum diameter tank tap pairs
+useCases:
+  - Summarizing linear water-pipe networks into installable tank and tap pairs
+  - Finding the bottleneck edge on each constrained directed chain
+  - Exploiting one-incoming-one-outgoing graph structure instead of generic path search
+complexity:
+  time: O(n + p)
+  space: O(n)
+  notes: The outgoing, incoming, and diameter arrays each use one slot per house, and every pipe is followed at most once from its owning tank chain.
+interviewSignals:
+  - Each house has at most one outgoing and at most one incoming pipe.
+  - The output needs both endpoints of each chain and the minimum diameter along that chain.
+relatedSlugs:
+  - depth-first-search
+  - minimum-edges-to-reverse-to-make-path-from-a-source-to-a-destination
+provenance:
+  - title: "GeeksforGeeks - Water Connection Problem"
+    href: https://www.geeksforgeeks.org/dsa/water-connection-problem/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+The greedy simplification comes from the graph constraint: each house belongs to at most one directed chain. That means every valid installation can be found by starting only at tank houses, then walking forward until the tap while tracking the smallest diameter seen so far.
+
+## Worked Example
+
+If the pipes are `1 -> 2 (30)`, `2 -> 3 (20)`, and `4 -> 5 (40)`, then houses `1` and `4` are tanks because they have outgoing pipes but no incoming pipes. The resulting installations are `[1, 3, 20]` and `[4, 5, 40]`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function waterConnectionProblem(houseCount, from, to, diameters) {
+  const outgoing = new Array(houseCount + 1).fill(0);
+  const incoming = new Array(houseCount + 1).fill(0);
+  const pipeDiameter = new Array(houseCount + 1).fill(0);
+
+  for (let index = 0; index < from.length; index += 1) {
+    outgoing[from[index]] = to[index];
+    incoming[to[index]] = from[index];
+    pipeDiameter[from[index]] = diameters[index];
+  }
+
+  const result = [];
+
+  for (let house = 1; house <= houseCount; house += 1) {
+    if (outgoing[house] === 0 || incoming[house] !== 0) {
+      continue;
+    }
+
+    let current = house;
+    let minimumDiameter = Number.POSITIVE_INFINITY;
+
+    while (outgoing[current] !== 0) {
+      minimumDiameter = Math.min(minimumDiameter, pipeDiameter[current]);
+      current = outgoing[current];
+    }
+
+    result.push([house, current, minimumDiameter]);
+  }
+
+  return result;
+}
+```
+
+```ts
+export function waterConnectionProblem(
+  houseCount: number,
+  from: number[],
+  to: number[],
+  diameters: number[],
+): Array<[number, number, number]> {
+  const outgoing = new Array<number>(houseCount + 1).fill(0);
+  const incoming = new Array<number>(houseCount + 1).fill(0);
+  const pipeDiameter = new Array<number>(houseCount + 1).fill(0);
+
+  for (let index = 0; index < from.length; index += 1) {
+    outgoing[from[index]] = to[index];
+    incoming[to[index]] = from[index];
+    pipeDiameter[from[index]] = diameters[index];
+  }
+
+  const result: Array<[number, number, number]> = [];
+
+  for (let house = 1; house <= houseCount; house += 1) {
+    if (outgoing[house] === 0 || incoming[house] !== 0) {
+      continue;
+    }
+
+    let current = house;
+    let minimumDiameter = Number.POSITIVE_INFINITY;
+
+    while (outgoing[current] !== 0) {
+      minimumDiameter = Math.min(minimumDiameter, pipeDiameter[current]);
+      current = outgoing[current];
+    }
+
+    result.push([house, current, minimumDiameter]);
+  }
+
+  return result;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Detect malformed input where a house incorrectly has multiple outgoing or incoming pipes.
+- Return the full chain of houses for each tank-tap connection instead of only the endpoints.
+- Explain why starting the walk from every house would waste work once tanks are known.
+
+## Common Pitfalls
+
+- Starting from every node instead of only tank houses.
+- Forgetting that the answer needs the minimum diameter on the chain, not the last pipe's diameter.
+- Treating the input like a general graph even though the one-incoming-one-outgoing constraint makes the traversal linear.

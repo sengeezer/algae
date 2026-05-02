@@ -1,0 +1,148 @@
+---
+title: Min Adjacent Swaps for Bracket Balancing
+slug: min-adjacent-swaps-for-bracket-balancing
+category: Greedy
+summary: Scan the brackets left to right, track the current imbalance, and charge each late `[` for exactly the unmatched `]` it repairs.
+description: Min Adjacent Swaps for Bracket Balancing counts the minimum adjacent swaps needed to fix a bracket string by accumulating how far opening brackets must travel leftward across current imbalance.
+dataStructures:
+  - String
+techniques:
+  - Greedy
+  - Imbalance Tracking
+  - String Scan
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - minimum swaps for bracket balancing
+  - bracket balancing swaps
+  - adjacent swaps to balance brackets
+useCases:
+  - Repairing bracket strings when only adjacent swaps are allowed
+  - Turning a local balance invariant into an exact swap count
+  - Recognizing when position tracking can be replaced by a cheaper imbalance counter
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The one-pass imbalance method keeps only running counts and never stores the bracket positions explicitly.
+interviewSignals:
+  - The cost is in adjacent swaps, not arbitrary swaps.
+  - Each opening bracket that appears after an imbalance repairs exactly that many unmatched closing brackets.
+relatedSlugs:
+  - rearrange-characters-in-a-string-such-that-no-two-adjacent-characters-are-same
+  - rearrange-a-string-so-that-all-same-characters-become-d-distance-away
+provenance:
+  - title: "GeeksforGeeks - Min Adjacent Swaps for Bracket Balancing"
+    href: https://www.geeksforgeeks.org/dsa/minimum-swaps-bracket-balancing/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem looks like it needs explicit swap simulation, but the greedy invariant is cheaper: when there are more `]` than `[` so far, the next `[` must cross every unmatched `]` before it. That imbalance count is exactly the number of swaps contributed by that character.
+
+## Worked Example
+
+For `s = "[]][]["`, the third character creates an imbalance of one unmatched `]`. The next `[` repairs that imbalance for one swap, and the final `[` repairs another imbalance for one more swap, so the minimum total is `2`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function minAdjacentSwapsForBracketBalancing(text) {
+  let openingCount = 0;
+  let closingCount = 0;
+
+  for (const char of text) {
+    if (char === '[') {
+      openingCount += 1;
+    } else if (char === ']') {
+      closingCount += 1;
+    }
+  }
+
+  if (openingCount !== closingCount) {
+    return -1;
+  }
+
+  openingCount = 0;
+  closingCount = 0;
+
+  let imbalance = 0;
+  let swaps = 0;
+
+  for (const char of text) {
+    if (char === '[') {
+      openingCount += 1;
+
+      if (imbalance > 0) {
+        swaps += imbalance;
+        imbalance -= 1;
+      }
+    } else {
+      closingCount += 1;
+      imbalance = closingCount - openingCount;
+    }
+  }
+
+  return swaps;
+}
+```
+
+```ts
+export function minAdjacentSwapsForBracketBalancing(text: string): number {
+  let openingCount = 0;
+  let closingCount = 0;
+
+  for (const char of text) {
+    if (char === '[') {
+      openingCount += 1;
+    } else if (char === ']') {
+      closingCount += 1;
+    }
+  }
+
+  if (openingCount !== closingCount) {
+    return -1;
+  }
+
+  openingCount = 0;
+  closingCount = 0;
+
+  let imbalance = 0;
+  let swaps = 0;
+
+  for (const char of text) {
+    if (char === '[') {
+      openingCount += 1;
+
+      if (imbalance > 0) {
+        swaps += imbalance;
+        imbalance -= 1;
+      }
+    } else {
+      closingCount += 1;
+      imbalance = closingCount - openingCount;
+    }
+  }
+
+  return swaps;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare this O(1)-space imbalance scan with the index-tracking version that stores every `[` position.
+- Adapt the routine if the input may contain non-bracket characters that should be ignored or rejected.
+- Explain why arbitrary swaps would change the cost model completely.
+
+## Common Pitfalls
+
+- Simulating each adjacent swap explicitly and turning a linear scan into quadratic work.
+- Forgetting that unequal counts of `[` and `]` make balancing impossible.
+- Counting future swaps when the current scan has not yet accumulated an imbalance.
