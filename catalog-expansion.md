@@ -840,9 +840,17 @@ This seventy-ninth expansion slice lifts the catalog from 447 to 450 entries.
 - Water Connection Problem
 - Min Adjacent Swaps for Bracket Balancing
 
+## Batch 80 added
+
+This eightieth expansion slice lifts the catalog from 450 to 453 entries.
+
+- Policemen catch thieves
+- Assign Holes to Mice
+- Fitting Shelves Problem
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 79 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 80 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -850,10 +858,10 @@ All expansion entries from batch 1 through batch 79 now carry explicit per-entry
 
 ## Why this batch
 
-- It continues the GeeksforGeeks Greedy Algorithms page in exact source order after `Huffman Coding Algorithm`, taking the paired tree-walk entry `Huffman Decoding`, then the constrained pipeline summary problem `Water Connection Problem`, and then the imbalance-repair string scan `Min Adjacent Swaps for Bracket Balancing` with no intermediary skips.
-- It broadens the catalog across three more greedy interpretations: decoding a prefix code by resetting at each leaf, collapsing one-in/one-out pipe chains into tank-tap bottleneck summaries, and charging each late opening bracket for the exact imbalance it repairs.
-- It complements nearby local coverage rather than duplicating it: the Huffman decoder is the natural consumer-side companion to the encoder added in batch 78, the water-connection entry uses graph-shaped input but relies on the chain constraint instead of general shortest-path machinery, and the bracket entry adds a one-pass swap-counting invariant rather than another constructive rearrangement routine.
-- It preserves the next handoff accurately: `Egyptian Fraction` appears immediately afterward on the same source page but is intentionally skipped as a semantic duplicate of the existing `Greedy Algorithm for Egyptian Fraction`, so the next clean frontier starts later in Standard Greedy Algorithms.
+- It continues the GeeksforGeeks Greedy Algorithms page in exact source order after `Min Adjacent Swaps for Bracket Balancing`, skipping only the already-covered `Egyptian Fraction`, then taking the interval-matching scan `Policemen catch thieves`, the minimax assignment problem `Assign Holes to Mice`, and the tie-broken wall-packing routine `Fitting Shelves Problem`.
+- It broadens the catalog across three more greedy shapes: left-to-right matching of two constrained index streams, sorted pairing to minimize the worst assignment time, and exhaustive iteration over the cheaper larger shelf count while greedily filling the rest with smaller shelves.
+- It complements nearby local coverage rather than duplicating it: the policeman entry is a one-dimensional matching problem rather than interval scheduling, the mice-holes entry adds a classic exchange-argument sorting proof for minimizing the maximum travel time, and the shelves entry uses a cost-secondary tie-break that prefers more large shelves only after leftover space is minimized.
+- It preserves one source-order title detail that matters for later handoffs: the Greedy page labels the second article as `Assign Mice to Holes`, but the verified destination article title is `Assign Holes to Mice`, so the catalog uses the destination title while the next clean frontier begins only after that same article is exhausted.
 
 ## Supporting study references from the algorithms list
 
@@ -863,4 +871,4 @@ All expansion entries from batch 1 through batch 79 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- The current GeeksforGeeks Greedy-page frontier now continues with `Policemen catch thieves`, `Assign Holes to Mice`, and `Fitting Shelves Problem` after `Min Adjacent Swaps for Bracket Balancing`, while `Egyptian Fraction` is intentionally skipped as a semantic duplicate of the existing `Greedy Algorithm for Egyptian Fraction` entry.
+- The current GeeksforGeeks Greedy-page frontier now continues with `Minimum product subset of an array`, `Maximize array sum after K negations using Sorting`, and `Minimum sum of product of two arrays` after `Fitting Shelves Problem`; `Egyptian Fraction` remains intentionally skipped as a semantic duplicate, and the Greedy-page label `Assign Mice to Holes` points to the same destination article already captured here as `Assign Holes to Mice`.

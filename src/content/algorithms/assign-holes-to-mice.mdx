@@ -1,0 +1,114 @@
+---
+title: Assign Holes to Mice
+slug: assign-holes-to-mice
+category: Greedy
+summary: Sort the mice and hole positions independently, then pair them in order to minimize the maximum travel time.
+description: Assign Holes to Mice minimizes the time taken by the last mouse by greedily matching the sorted mice and hole positions one-to-one.
+dataStructures:
+  - Array
+techniques:
+  - Greedy
+  - Sorting
+  - Assignment
+  - Minimax
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - assign mice to holes
+  - mice and holes
+  - minimize maximum mouse travel time
+useCases:
+  - Matching two equal-size position sets while minimizing the worst individual distance
+  - Applying exchange-argument reasoning to a sorted assignment problem
+  - Recognizing when a bottleneck objective turns into ordered pairing
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: The copies created for sorting keep the input arrays unchanged while the final scan only tracks the largest paired distance.
+interviewSignals:
+  - The objective is the maximum time taken by any mouse, not the sum of all movement.
+  - Sorting both sides and pairing by index is the key greedy exchange argument.
+relatedSlugs:
+  - quick-sort
+  - policemen-catch-thieves
+provenance:
+  - title: "GeeksforGeeks - Assign Holes to Mice"
+    href: https://www.geeksforgeeks.org/dsa/assign-mice-holes/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+When the objective is to minimize the worst assigned distance, crossings are harmful. Sorting both lists and pairing the `i`th mouse with the `i`th hole removes those crossings, and any alternative assignment cannot improve the largest travel time.
+
+## Worked Example
+
+For `mices = [4, -4, 2]` and `holes = [4, 0, 5]`, sorting gives `[-4, 2, 4]` and `[0, 4, 5]`. The travel times are `4`, `2`, and `1`, so the best possible answer is `4`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function assignHolesToMice(micePositions, holePositions) {
+  if (micePositions.length !== holePositions.length) {
+    return -1;
+  }
+
+  const sortedMice = [...micePositions].sort((left, right) => left - right);
+  const sortedHoles = [...holePositions].sort((left, right) => left - right);
+
+  let minimumTime = 0;
+
+  for (let index = 0; index < sortedMice.length; index += 1) {
+    minimumTime = Math.max(
+      minimumTime,
+      Math.abs(sortedMice[index] - sortedHoles[index]),
+    );
+  }
+
+  return minimumTime;
+}
+```
+
+```ts
+export function assignHolesToMice(
+  micePositions: number[],
+  holePositions: number[],
+): number {
+  if (micePositions.length !== holePositions.length) {
+    return -1;
+  }
+
+  const sortedMice = [...micePositions].sort((left, right) => left - right);
+  const sortedHoles = [...holePositions].sort((left, right) => left - right);
+
+  let minimumTime = 0;
+
+  for (let index = 0; index < sortedMice.length; index += 1) {
+    minimumTime = Math.max(
+      minimumTime,
+      Math.abs(sortedMice[index] - sortedHoles[index]),
+    );
+  }
+
+  return minimumTime;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the actual mouse-to-hole assignment pairs, not only the minimized time.
+- Explain the exchange argument that proves crossing pairs can be uncrossed without worsening the bottleneck.
+- Adapt the function if holes can hold more than one mouse.
+
+## Common Pitfalls
+
+- Minimizing the total movement instead of the maximum movement.
+- Sorting only one array or pairing each mouse with the nearest currently unused hole greedily.
+- Mutating the input arrays unexpectedly when the caller may still need their original order.

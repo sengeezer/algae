@@ -1,0 +1,147 @@
+---
+title: Policemen catch thieves
+slug: policemen-catch-thieves
+category: Greedy
+summary: Walk the next policeman and next thief positions with two pointers and match them whenever they are within reach `k`.
+description: Policemen catch thieves maximizes the number of catches by greedily matching the leftmost still-available policeman and thief whenever their distance is small enough.
+dataStructures:
+  - Array
+techniques:
+  - Greedy
+  - Two Pointers
+  - Matching
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - police and thieves
+  - maximum thieves caught
+  - catch thieves within distance k
+useCases:
+  - Matching two kinds of positions under a maximum-distance constraint
+  - Converting a local nearest-feasible pairing into a global maximum count
+  - Recognizing when a queue-based matching problem can collapse to two pointers
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: Each pointer only moves forward, so every array slot is examined at most once after skipping nonmatching characters.
+interviewSignals:
+  - The goal is to maximize the number of matches, not minimize the travel distance.
+  - Once the leftmost policeman and thief are too far apart, one of them can never help any earlier unmatched position again.
+relatedSlugs:
+  - two-pointers
+  - assign-holes-to-mice
+provenance:
+  - title: "GeeksforGeeks - Policemen catch thieves"
+    href: https://www.geeksforgeeks.org/dsa/policemen-catch-thieves/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a greedy matching problem on a line. If the leftmost available policeman and thief can be paired, taking that match is always safe. If they cannot, the one farther left can never help any earlier unmatched element, so that pointer must move on.
+
+## Worked Example
+
+For `arr = ['P', 'T', 'T', 'P', 'T']` and `k = 1`, the policeman at index `0` catches the thief at index `1`. The next policeman at index `3` can then catch either thief at `2` or `4`, so the maximum number of catches is `2`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function policemenCatchThieves(layout, reach) {
+  if (reach < 0) {
+    return 0;
+  }
+
+  const length = layout.length;
+  let policeIndex = 0;
+  let thiefIndex = 0;
+  let caughtCount = 0;
+
+  while (policeIndex < length && thiefIndex < length) {
+    while (policeIndex < length && layout[policeIndex] !== 'P') {
+      policeIndex += 1;
+    }
+
+    while (thiefIndex < length && layout[thiefIndex] !== 'T') {
+      thiefIndex += 1;
+    }
+
+    if (policeIndex === length || thiefIndex === length) {
+      break;
+    }
+
+    if (Math.abs(policeIndex - thiefIndex) <= reach) {
+      caughtCount += 1;
+      policeIndex += 1;
+      thiefIndex += 1;
+    } else if (thiefIndex < policeIndex) {
+      thiefIndex += 1;
+    } else {
+      policeIndex += 1;
+    }
+  }
+
+  return caughtCount;
+}
+```
+
+```ts
+export function policemenCatchThieves(
+  layout: string[],
+  reach: number,
+): number {
+  if (reach < 0) {
+    return 0;
+  }
+
+  const length = layout.length;
+  let policeIndex = 0;
+  let thiefIndex = 0;
+  let caughtCount = 0;
+
+  while (policeIndex < length && thiefIndex < length) {
+    while (policeIndex < length && layout[policeIndex] !== 'P') {
+      policeIndex += 1;
+    }
+
+    while (thiefIndex < length && layout[thiefIndex] !== 'T') {
+      thiefIndex += 1;
+    }
+
+    if (policeIndex === length || thiefIndex === length) {
+      break;
+    }
+
+    if (Math.abs(policeIndex - thiefIndex) <= reach) {
+      caughtCount += 1;
+      policeIndex += 1;
+      thiefIndex += 1;
+    } else if (thiefIndex < policeIndex) {
+      thiefIndex += 1;
+    } else {
+      policeIndex += 1;
+    }
+  }
+
+  return caughtCount;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the actual matched index pairs instead of only the maximum count.
+- Compare this O(1)-space two-pointer method with the queue-based formulation from the same article.
+- Adapt the routine if policemen and thieves have different catch radii.
+
+## Common Pitfalls
+
+- Treating each policeman independently and rescanning nearby thieves, which wastes linear-time structure.
+- Moving both pointers when the current positions are too far apart.
+- Forgetting that each policeman and each thief can be used at most once.

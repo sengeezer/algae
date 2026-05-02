@@ -1,0 +1,150 @@
+---
+title: Fitting Shelves Problem
+slug: fitting-shelves-problem
+category: Greedy
+summary: Try every feasible count of the larger shelf, fill the remaining wall with as many smaller shelves as possible, and keep the least leftover space.
+description: Fitting Shelves Problem minimizes unused wall space and breaks ties by preferring more of the larger cheaper shelf length.
+dataStructures:
+  - Array
+  - Math
+techniques:
+  - Greedy
+  - Enumeration
+  - Tie Breaking
+  - Packing
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - fit shelves on wall
+  - shelf packing with minimum empty space
+  - prefer larger shelf when leftover ties
+useCases:
+  - Packing two fixed item sizes into a one-dimensional capacity with a leftover minimization objective
+  - Handling secondary optimization criteria after the primary objective is tied
+  - Recognizing when bounded enumeration is simpler than dynamic programming
+complexity:
+  time: O(w / max(m, n))
+  space: O(1)
+  notes: The loop only iterates over feasible counts of the larger shelf, and each step computes the best compatible smaller-shelf count in O(1).
+interviewSignals:
+  - The primary objective is minimum empty space, while the cheaper larger shelf only matters as a tie-break.
+  - Once a count of larger shelves is fixed, the greedy best response is to use as many smaller shelves as possible in the remainder.
+relatedSlugs:
+  - assign-holes-to-mice
+  - greedy-algorithm-for-egyptian-fraction
+provenance:
+  - title: "GeeksforGeeks - Fitting Shelves Problem"
+    href: https://www.geeksforgeeks.org/dsa/fitting-shelves-problem/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem looks combinatorial, but the greedy core is local once the larger-shelf count is fixed: fill the remaining wall with as many smaller shelves as possible. Enumerating all feasible larger-shelf counts is cheap, and the tie-break naturally prefers the solution with more larger shelves when leftover space is equal.
+
+## Worked Example
+
+For `w = 29`, `m = 3`, and `n = 9`, trying larger-shelf counts from `0` to `3` shows that `3` large shelves use `27` units of wall, leaving `2` units empty. No other combination leaves less space, so the answer is `0` smaller shelves, `3` larger shelves, and `2` units of empty space.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function fittingShelvesProblem(wallLength, firstShelfLength, secondShelfLength) {
+  const smallerShelfLength = Math.min(firstShelfLength, secondShelfLength);
+  const largerShelfLength = Math.max(firstShelfLength, secondShelfLength);
+
+  let bestSmallerShelfCount = 0;
+  let bestLargerShelfCount = 0;
+  let minimumEmptySpace = wallLength;
+
+  for (
+    let largerShelfCount = 0;
+    largerShelfCount * largerShelfLength <= wallLength;
+    largerShelfCount += 1
+  ) {
+    const remainingLength = wallLength - largerShelfCount * largerShelfLength;
+    const smallerShelfCount = Math.floor(remainingLength / smallerShelfLength);
+    const emptySpace = remainingLength % smallerShelfLength;
+
+    if (
+      emptySpace < minimumEmptySpace ||
+      (emptySpace === minimumEmptySpace &&
+        largerShelfCount > bestLargerShelfCount)
+    ) {
+      minimumEmptySpace = emptySpace;
+      bestSmallerShelfCount = smallerShelfCount;
+      bestLargerShelfCount = largerShelfCount;
+    }
+  }
+
+  return {
+    smallerShelfCount: bestSmallerShelfCount,
+    largerShelfCount: bestLargerShelfCount,
+    emptySpace: minimumEmptySpace,
+  };
+}
+```
+
+```ts
+export function fittingShelvesProblem(
+  wallLength: number,
+  firstShelfLength: number,
+  secondShelfLength: number,
+): {
+  smallerShelfCount: number;
+  largerShelfCount: number;
+  emptySpace: number;
+} {
+  const smallerShelfLength = Math.min(firstShelfLength, secondShelfLength);
+  const largerShelfLength = Math.max(firstShelfLength, secondShelfLength);
+
+  let bestSmallerShelfCount = 0;
+  let bestLargerShelfCount = 0;
+  let minimumEmptySpace = wallLength;
+
+  for (
+    let largerShelfCount = 0;
+    largerShelfCount * largerShelfLength <= wallLength;
+    largerShelfCount += 1
+  ) {
+    const remainingLength = wallLength - largerShelfCount * largerShelfLength;
+    const smallerShelfCount = Math.floor(remainingLength / smallerShelfLength);
+    const emptySpace = remainingLength % smallerShelfLength;
+
+    if (
+      emptySpace < minimumEmptySpace ||
+      (emptySpace === minimumEmptySpace &&
+        largerShelfCount > bestLargerShelfCount)
+    ) {
+      minimumEmptySpace = emptySpace;
+      bestSmallerShelfCount = smallerShelfCount;
+      bestLargerShelfCount = largerShelfCount;
+    }
+  }
+
+  return {
+    smallerShelfCount: bestSmallerShelfCount,
+    largerShelfCount: bestLargerShelfCount,
+    emptySpace: minimumEmptySpace,
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the counts mapped back to the caller's original shelf order when `m > n` is allowed.
+- Explain why the tie-break can be applied only after minimizing empty space without changing correctness.
+- Compare this bounded enumeration with a dynamic-programming knapsack approach.
+
+## Common Pitfalls
+
+- Preferring more larger shelves before confirming that leftover space is minimal.
+- Assuming the smaller shelf length is always passed first and hard-coding that requirement.
+- Exploring all pairs of shelf counts explicitly instead of fixing the larger-shelf count and greedily filling the remainder.
