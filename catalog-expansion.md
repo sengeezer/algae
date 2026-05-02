@@ -816,9 +816,17 @@ This seventy-sixth expansion slice lifts the catalog from 438 to 441 entries.
 - Minimum Cost to cut a board into squares
 - Minimum cost to process m tasks where switching costs
 
+## Batch 77 added
+
+This seventy-seventh expansion slice lifts the catalog from 441 to 444 entries.
+
+- Find minimum time to finish all jobs with given constraints
+- Minimum edges to reverse to make path from a source to a destination
+- Largest Pefect Cube by Deleting Minimum Digits
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 76 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 77 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -826,10 +834,10 @@ All expansion entries from batch 1 through batch 76 now carry explicit per-entry
 
 ## Why this batch
 
-- It continues the GeeksforGeeks Greedy Algorithms page in exact source order after `Maximum elements that can be made equal with k updates`, taking the debt-settlement problem `Minimize Cash Flow`, then the segment-multiplier board-cutting problem `Minimum Cost to cut a board into squares`, and then the offline core-assignment problem `Minimum cost to process m tasks where switching costs`.
-- It broadens the catalog across three more greedy shapes: directly matching the largest debtor with the largest creditor after balance reduction, taking the currently most expensive board cut before its multiplier grows, and evicting the running task whose next use is farthest in the future when every core is occupied.
-- It complements nearby local coverage rather than duplicating it: the cash-flow entry rewrites a transaction matrix into net balances rather than searching paths, the board-cut entry is a multiplicative cut-order optimization rather than a merge-cost heap problem, and the task-switching entry is an offline cache-replacement greedy rather than a standard interval or stock-budget selection scan.
-- It preserves the source-order title correction that the Greedy-page label `Minimize cash flow among friends` maps to the verified destination article title `Minimize Cash Flow`.
+- It continues the GeeksforGeeks Greedy Algorithms page in exact source order after `Minimum cost to process m tasks where switching costs`, taking the contiguous-partition minimax problem `Find minimum time to finish all jobs with given constraints`, then the reversal-cost shortest-path problem `Minimum edges to reverse to make path from a source to a destination`, and then the cube-subsequence search `Largest Pefect Cube by Deleting Minimum Digits`.
+- It broadens the catalog across three more patterns that sit on the Greedy page but use different core engines: binary search over a monotone feasibility limit, 0-1 BFS on an augmented graph with reversal costs, and direct enumeration of sparse numeric targets checked as digit subsequences.
+- It complements nearby local coverage rather than duplicating it: the job-time entry uses greedy feasibility only inside an answer-space binary search, the edge-reversal entry is a shortest-path transformation rather than a reachability-only graph traversal, and the cube entry scans candidate cubes instead of enumerating every deleted-digit subsequence.
+- It preserves two source-order details from the verified destination pages: the repeated height-difference article is still intentionally skipped as an already-covered duplicate, and the cube destination page itself spells the title as `Largest Pefect Cube by Deleting Minimum Digits`.
 
 ## Supporting study references from the algorithms list
 
@@ -839,4 +847,4 @@ All expansion entries from batch 1 through batch 76 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- The current GeeksforGeeks Greedy-page frontier now continues with `Min time to finish all jobs with given constraints`, `Minimum edges to reverse to make path from a source to a destination`, and `Largest Cube formed by Deleting minimum Digits from a number` after `Minimum cost to process m tasks where switching costs`, while `Activity Selection`, `Merge Overlapping Intervals`, and the repeated height-difference article remain intentionally skipped as local duplicates.
+- The current GeeksforGeeks Greedy-page frontier now continues with `Rearrange characters in a string such that no two adjacent are same` and `Rearrange a string so that all same characters become d distance away` after `Largest Pefect Cube by Deleting Minimum Digits`; the next clean absence after those needs a fresh source-order verification because the public listing truncated in this pass, while `Activity Selection`, `Merge Overlapping Intervals`, and the repeated height-difference article remain intentionally skipped as local duplicates.

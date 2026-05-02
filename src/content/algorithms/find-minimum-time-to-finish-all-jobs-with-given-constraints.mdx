@@ -1,0 +1,166 @@
+---
+title: Find minimum time to finish all jobs with given constraints
+slug: find-minimum-time-to-finish-all-jobs-with-given-constraints
+category: Binary Search
+summary: Binary search the smallest feasible maximum workload, and greedily pack contiguous jobs under each candidate limit.
+description: Find minimum time to finish all jobs with given constraints is the binary-search partition problem that uses a greedy feasibility scan to assign contiguous jobs across a fixed number of assignees.
+dataStructures:
+  - Array
+techniques:
+  - Binary Search
+  - Greedy
+  - Partition Feasibility
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - min time to finish all jobs with constraints
+  - painter partition with multiplier
+  - contiguous job allocation minimum time
+useCases:
+  - Minimizing the worst contiguous workload across a fixed number of workers
+  - Searching an answer range where every larger limit stays feasible
+  - Translating partition problems into binary search plus greedy validation
+complexity:
+  time: O(n log(sum(job)))
+  space: O(1)
+  notes: Each feasibility check is linear, and binary search runs across the range between the largest single job and the total workload.
+interviewSignals:
+  - Jobs must stay contiguous, so the problem is about partition boundaries rather than arbitrary assignment.
+  - The prompt asks for a minimum feasible maximum time, which is a strong binary-search cue.
+relatedSlugs:
+  - binary-search
+  - prefix-sum
+provenance:
+  - title: "GeeksforGeeks - Find minimum time to finish all jobs with given constraints"
+    href: https://www.geeksforgeeks.org/dsa/find-minimum-time-to-finish-all-jobs-with-given-constraints/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+The greedy step only answers a yes-or-no question: if no assignee may exceed a candidate workload limit, how many contiguous partitions are needed? Once a limit works, every larger limit also works, which makes the full problem a binary search over feasible maximum workloads.
+
+## Worked Example
+
+For `job = [10, 7, 8, 12, 6, 8]`, `k = 4`, and `t = 5`, the minimum feasible workload per assignee is `15`. One optimal split is `[10]`, `[7, 8]`, `[12]`, and `[6, 8]`, so the final minimum time is `15 * 5 = 75`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function findMinimumTimeToFinishAllJobsWithGivenConstraints(
+  jobs,
+  assigneeCount,
+  unitTime,
+) {
+  if (jobs.length === 0 || assigneeCount <= 0) {
+    return 0;
+  }
+
+  let low = Math.max(...jobs);
+  let high = jobs.reduce((sum, value) => sum + value, 0);
+  let answer = high;
+
+  function canFinishWithin(limit) {
+    let usedAssignees = 1;
+    let currentLoad = 0;
+
+    for (const job of jobs) {
+      if (currentLoad + job <= limit) {
+        currentLoad += job;
+        continue;
+      }
+
+      usedAssignees += 1;
+      currentLoad = job;
+
+      if (usedAssignees > assigneeCount) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  while (low <= high) {
+    const mid = low + Math.floor((high - low) / 2);
+
+    if (canFinishWithin(mid)) {
+      answer = mid;
+      high = mid - 1;
+    } else {
+      low = mid + 1;
+    }
+  }
+
+  return answer * unitTime;
+}
+```
+
+```ts
+export function findMinimumTimeToFinishAllJobsWithGivenConstraints(
+  jobs: number[],
+  assigneeCount: number,
+  unitTime: number,
+): number {
+  if (jobs.length === 0 || assigneeCount <= 0) {
+    return 0;
+  }
+
+  let low = Math.max(...jobs);
+  let high = jobs.reduce((sum, value) => sum + value, 0);
+  let answer = high;
+
+  function canFinishWithin(limit: number): boolean {
+    let usedAssignees = 1;
+    let currentLoad = 0;
+
+    for (const job of jobs) {
+      if (currentLoad + job <= limit) {
+        currentLoad += job;
+        continue;
+      }
+
+      usedAssignees += 1;
+      currentLoad = job;
+
+      if (usedAssignees > assigneeCount) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  while (low <= high) {
+    const mid = low + Math.floor((high - low) / 2);
+
+    if (canFinishWithin(mid)) {
+      answer = mid;
+      high = mid - 1;
+    } else {
+      low = mid + 1;
+    }
+  }
+
+  return answer * unitTime;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the actual contiguous partitions, not only the minimum time.
+- Explain why greedy packing is valid for a fixed workload limit.
+- Compare this with `Allocate Minimum Pages` or other split-array minimax variants.
+
+## Common Pitfalls
+
+- Searching the answer over time units directly without separating the per-assignee workload from the final multiplier `t`.
+- Forgetting that each assignee must receive a contiguous block.
+- Starting binary search below the largest single job, which can never be feasible.

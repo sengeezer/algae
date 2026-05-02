@@ -1,0 +1,220 @@
+---
+title: Minimum edges to reverse to make path from a source to a destination
+slug: minimum-edges-to-reverse-to-make-path-from-a-source-to-a-destination
+category: Graph
+summary: Add each original edge with cost `0` and each reverse edge with cost `1`, then run 0-1 BFS to find the cheapest route.
+description: Minimum edges to reverse to make path from a source to a destination is the shortest-path reformulation that turns edge reversals into weights and solves the problem with 0-1 BFS.
+dataStructures:
+  - Graph
+  - Array
+  - Deque
+techniques:
+  - Graph Traversal
+  - 0-1 BFS
+  - Shortest Path
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - minimum edge reversals to make a path
+  - reverse edges for source to destination path
+  - 0-1 bfs edge reversal problem
+useCases:
+  - Converting edit operations on graph edges into shortest-path costs
+  - Replacing Dijkstra with 0-1 BFS when edge weights are only `0` and `1`
+  - Finding the cheapest way to enforce reachability in a directed graph
+complexity:
+  time: O(n + m)
+  space: O(n + m)
+  notes: Building the augmented adjacency list doubles the edge count, but 0-1 BFS still stays linear in the graph size.
+interviewSignals:
+  - Every original edge can either be used as-is for free or reversed at cost `1`.
+  - The weights are only `0` and `1`, which should suggest a deque instead of a heap.
+relatedSlugs:
+  - dijkstra
+  - breadth-first-search
+  - priority-queue
+provenance:
+  - title: "GeeksforGeeks - Minimum edges to reverse to make path from a source to a destination"
+    href: https://www.geeksforgeeks.org/dsa/minimum-edges-reverse-make-path-source-destination/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+The greedy-looking part of this problem is really a shortest-path transformation. Every forward edge costs `0`, every reversed edge costs `1`, and 0-1 BFS always expands the currently cheapest frontier by pushing zero-cost moves to the front of a deque.
+
+## Worked Example
+
+For `n = 7`, `src = 0`, `dst = 6`, and
+
+```text
+[[0, 1], [2, 1], [2, 3], [6, 3], [6, 4], [4, 5], [5, 1]]
+```
+
+the best route is `0 -> 1 -> 2 -> 3 -> 6`, which requires reversing the edges `2 -> 1` and `6 -> 3`. The minimum number of reversals is therefore `2`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function minimumEdgesToReverseToMakePathFromASourceToADestination(
+  nodeCount,
+  edges,
+  source,
+  destination,
+) {
+  const maxNode = Math.max(
+    source,
+    destination,
+    ...edges.flatMap(([from, to]) => [from, to]),
+  );
+  const size = Math.max(nodeCount, maxNode + 1);
+  const graph = Array.from({ length: size }, () => []);
+
+  for (const [from, to] of edges) {
+    graph[from].push([to, 0]);
+    graph[to].push([from, 1]);
+  }
+
+  const distances = Array(size).fill(Number.POSITIVE_INFINITY);
+  const deque = {};
+  let head = 0;
+  let tail = 0;
+
+  function pushFront(value) {
+    head -= 1;
+    deque[head] = value;
+  }
+
+  function pushBack(value) {
+    deque[tail] = value;
+    tail += 1;
+  }
+
+  function popFront() {
+    const value = deque[head];
+    delete deque[head];
+    head += 1;
+    return value;
+  }
+
+  distances[source] = 0;
+  pushBack(source);
+
+  while (head !== tail) {
+    const node = popFront();
+
+    for (const [nextNode, weight] of graph[node]) {
+      const nextDistance = distances[node] + weight;
+
+      if (nextDistance >= distances[nextNode]) {
+        continue;
+      }
+
+      distances[nextNode] = nextDistance;
+
+      if (weight === 0) {
+        pushFront(nextNode);
+      } else {
+        pushBack(nextNode);
+      }
+    }
+  }
+
+  return distances[destination] === Number.POSITIVE_INFINITY
+    ? -1
+    : distances[destination];
+}
+```
+
+```ts
+export function minimumEdgesToReverseToMakePathFromASourceToADestination(
+  nodeCount: number,
+  edges: Array<[number, number]>,
+  source: number,
+  destination: number,
+): number {
+  const maxNode = Math.max(
+    source,
+    destination,
+    ...edges.flatMap(([from, to]) => [from, to]),
+  );
+  const size = Math.max(nodeCount, maxNode + 1);
+  const graph: Array<Array<[number, number]>> = Array.from(
+    { length: size },
+    () => [],
+  );
+
+  for (const [from, to] of edges) {
+    graph[from].push([to, 0]);
+    graph[to].push([from, 1]);
+  }
+
+  const distances = Array(size).fill(Number.POSITIVE_INFINITY);
+  const deque: Record<number, number> = {};
+  let head = 0;
+  let tail = 0;
+
+  function pushFront(value: number) {
+    head -= 1;
+    deque[head] = value;
+  }
+
+  function pushBack(value: number) {
+    deque[tail] = value;
+    tail += 1;
+  }
+
+  function popFront(): number {
+    const value = deque[head];
+    delete deque[head];
+    head += 1;
+    return value;
+  }
+
+  distances[source] = 0;
+  pushBack(source);
+
+  while (head !== tail) {
+    const node = popFront();
+
+    for (const [nextNode, weight] of graph[node]) {
+      const nextDistance = distances[node] + weight;
+
+      if (nextDistance >= distances[nextNode]) {
+        continue;
+      }
+
+      distances[nextNode] = nextDistance;
+
+      if (weight === 0) {
+        pushFront(nextNode);
+      } else {
+        pushBack(nextNode);
+      }
+    }
+  }
+
+  return distances[destination] === Number.POSITIVE_INFINITY
+    ? -1
+    : distances[destination];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Rework the solution with Dijkstra and explain why 0-1 BFS is better here.
+- Return one optimal path in addition to the minimum reversal count.
+- Adapt the approach if some reversals cost more than `1`.
+
+## Common Pitfalls
+
+- Treating the graph as purely directed and forgetting to add the synthetic reverse edges.
+- Using `shift()` and `unshift()` on arrays while claiming O(1) deque operations in JavaScript.
+- Returning the first path found instead of the minimum-cost one.

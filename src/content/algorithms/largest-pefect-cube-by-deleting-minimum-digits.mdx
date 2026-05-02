@@ -1,0 +1,148 @@
+---
+title: Largest Pefect Cube by Deleting Minimum Digits
+slug: largest-pefect-cube-by-deleting-minimum-digits
+category: String
+summary: Iterate perfect cubes up to the input value and keep the largest one whose decimal digits appear as a subsequence of the original number.
+description: Largest Pefect Cube by Deleting Minimum Digits is the digit-subsequence search problem that checks candidate cubes directly instead of generating every deleted-digit subsequence.
+dataStructures:
+  - String
+techniques:
+  - Enumeration
+  - Math
+  - Subsequence Checking
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - largest cube formed by deleting minimum digits from a number
+  - largest perfect cube by deleting minimum digits
+  - cube subsequence by digit deletion
+useCases:
+  - Searching numeric targets by subsequence rather than by substring or permutation
+  - Replacing exponential subsequence generation with direct candidate enumeration
+  - Combining digit-order constraints with a numeric property like perfect cubes
+complexity:
+  time: O(n^(1/3) log n)
+  space: O(log n)
+  notes: There are O(n^(1/3)) candidate cubes up to `n`, and each subsequence check scans digit strings whose lengths are O(log n).
+interviewSignals:
+  - Digits may be deleted but not reordered, so subsequence logic matters more than sorting.
+  - The candidate property is numeric and sparse, which suggests enumerating targets instead of every subsequence.
+relatedSlugs:
+  - two-pointers
+  - sum-of-digits
+provenance:
+  - title: "GeeksforGeeks - Largest Pefect Cube by Deleting Minimum Digits"
+    href: https://www.geeksforgeeks.org/dsa/find-largest-cube-formed-deleting-minimum-digits-number/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+The brute-force instinct is to try every deleted-digit subsequence, which is exponential. A better move is to iterate through perfect cubes up to the input value and keep the largest cube whose digits can be matched as a subsequence of the original number.
+
+## Worked Example
+
+For `n = 4125`, the cube `125` is valid because its digits appear in order after deleting the leading `4`. No larger cube can be formed as a subsequence, so the answer is `125`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function largestPefectCubeByDeletingMinimumDigits(value) {
+  const digits = String(value);
+  let root = Math.floor(Math.cbrt(value));
+
+  while ((root + 1) ** 3 <= value) {
+    root += 1;
+  }
+
+  while (root ** 3 > value) {
+    root -= 1;
+  }
+
+  function isSubsequence(candidate) {
+    let candidateIndex = 0;
+
+    for (const digit of digits) {
+      if (digit === candidate[candidateIndex]) {
+        candidateIndex += 1;
+
+        if (candidateIndex === candidate.length) {
+          return true;
+        }
+      }
+    }
+
+    return candidateIndex === candidate.length;
+  }
+
+  for (let cubeRoot = root; cubeRoot >= 0; cubeRoot -= 1) {
+    const cube = cubeRoot ** 3;
+
+    if (isSubsequence(String(cube))) {
+      return cube;
+    }
+  }
+
+  return 0;
+}
+```
+
+```ts
+export function largestPefectCubeByDeletingMinimumDigits(value: number): number {
+  const digits = String(value);
+  let root = Math.floor(Math.cbrt(value));
+
+  while ((root + 1) ** 3 <= value) {
+    root += 1;
+  }
+
+  while (root ** 3 > value) {
+    root -= 1;
+  }
+
+  function isSubsequence(candidate: string): boolean {
+    let candidateIndex = 0;
+
+    for (const digit of digits) {
+      if (digit === candidate[candidateIndex]) {
+        candidateIndex += 1;
+
+        if (candidateIndex === candidate.length) {
+          return true;
+        }
+      }
+    }
+
+    return candidateIndex === candidate.length;
+  }
+
+  for (let cubeRoot = root; cubeRoot >= 0; cubeRoot -= 1) {
+    const cube = cubeRoot ** 3;
+
+    if (isSubsequence(String(cube))) {
+      return cube;
+    }
+  }
+
+  return 0;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return how many digits were deleted along with the resulting cube.
+- Explain why iterating candidate cubes is better than generating every subsequence.
+- Adapt the technique to perfect squares or powers of two.
+
+## Common Pitfalls
+
+- Generating all subsequences explicitly, which becomes exponential in the number of digits.
+- Treating the task like a permutation problem and reordering digits.
+- Forgetting that `0` is also a perfect cube candidate if no larger valid cube exists.
