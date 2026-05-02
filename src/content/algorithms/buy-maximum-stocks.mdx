@@ -1,0 +1,129 @@
+---
+title: Buy Maximum Stocks if i stocks can be bought on i-th day
+slug: buy-maximum-stocks
+category: Greedy
+summary: Sort days by stock price and buy as many shares as possible on the cheapest eligible days before the budget runs out.
+description: Buy Maximum Stocks if i stocks can be bought on i-th day is the greedy budget-allocation pattern that spends money on the cheapest day-limited offers first.
+dataStructures:
+  - Array
+  - Object
+techniques:
+  - Greedy
+  - Sorting
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - buy maximum stocks
+  - stock buying with day limits
+  - budgeted stock purchases
+useCases:
+  - Maximizing the number of units purchased under a fixed budget
+  - Prioritizing cheaper offers when each source has its own quantity cap
+  - Practicing greedy proofs for cost-first selection under simple constraints
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: Sorting the day-price offers dominates the runtime; the buying scan is linear afterward.
+interviewSignals:
+  - Each day has both a stock price and a maximum quantity you may buy.
+  - The objective is to maximize the count bought, not the profit earned later.
+relatedSlugs:
+  - assign-maximum-cookies
+  - fractional-knapsack
+  - quick-sort
+provenance:
+  - title: GeeksforGeeks - Buy Maximum Stocks if i stocks can be bought on i-th day
+    href: https://www.geeksforgeeks.org/dsa/buy-maximum-stocks-stocks-can-bought-th-day/
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a greedy budgeting problem disguised as a stock story. Because the goal is to maximize how many shares you can buy, not how much future profit you make, the right move is to consume the cheapest eligible offers first.
+
+## Worked Example
+
+For `prices = [10, 7, 19]` and `budget = 45`, day 2 is cheapest and allows buying at most `2` shares, so buy `2` there for `14`. Day 1 then costs `10` for one more share, leaving `21`, and day 3 allows one share at `19`. The total becomes `4` shares.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function buyMaximumStocks(prices, budget) {
+  const offers = prices
+    .map((price, index) => ({
+      price,
+      limit: index + 1,
+    }))
+    .sort((left, right) => left.price - right.price || left.limit - right.limit);
+
+  let remainingBudget = budget;
+  let stocksBought = 0;
+
+  for (const offer of offers) {
+    if (remainingBudget === 0) {
+      break;
+    }
+
+    if (offer.price === 0) {
+      stocksBought += offer.limit;
+      continue;
+    }
+
+    const shares = Math.min(offer.limit, Math.floor(remainingBudget / offer.price));
+    stocksBought += shares;
+    remainingBudget -= shares * offer.price;
+  }
+
+  return stocksBought;
+}
+```
+
+```ts
+export function buyMaximumStocks(prices: number[], budget: number): number {
+  const offers = prices
+    .map((price, index) => ({
+      price,
+      limit: index + 1,
+    }))
+    .sort((left, right) => left.price - right.price || left.limit - right.limit);
+
+  let remainingBudget = budget;
+  let stocksBought = 0;
+
+  for (const offer of offers) {
+    if (remainingBudget === 0) {
+      break;
+    }
+
+    if (offer.price === 0) {
+      stocksBought += offer.limit;
+      continue;
+    }
+
+    const shares = Math.min(offer.limit, Math.floor(remainingBudget / offer.price));
+    stocksBought += shares;
+    remainingBudget -= shares * offer.price;
+  }
+
+  return stocksBought;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return how many shares are bought on each day rather than only the total count.
+- Explain why sorting by price is valid even though later days allow larger purchase caps.
+- Adapt the solution if short selling or fractional shares were allowed.
+
+## Common Pitfalls
+
+- Optimizing for future selling profit instead of the stated goal of maximizing quantity bought.
+- Forgetting that day `i` allows buying at most `i + 1` shares in zero-based indexing.
+- Spending budget on expensive days too early and losing cheaper opportunities.

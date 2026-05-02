@@ -760,9 +760,17 @@ This sixty-ninth expansion slice lifts the catalog from 417 to 420 entries.
 - Fractional Knapsack
 - Assign Maximum Cookies
 
+## Batch 70 added
+
+This seventieth expansion slice lifts the catalog from 420 to 423 entries.
+
+- Buy Maximum Stocks if i stocks can be bought on i-th day
+- Jump Game - Minimum Jumps to Reach End
+- Job Sequencing Problem
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 69 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 70 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -770,10 +778,10 @@ All expansion entries from batch 1 through batch 69 now carry explicit per-entry
 
 ## Why this batch
 
-- It uses the clean batch 68 review as the gate to close the last remaining uncataloged graph-page item, then carries source order forward onto the Greedy Algorithms page instead of inventing an artificial all-graph batch.
-- It broadens the catalog across three complementary patterns: randomized graph generation with the `G(n, p)` model, the canonical greedy ratio proof in Fractional Knapsack, and sorted two-pointer resource matching in Assign Maximum Cookies.
-- It complements nearby local coverage rather than duplicating it: Erdos Renyl adds graph generation rather than graph analysis, Fractional Knapsack is the greedy counterpart to the existing `0/1 Knapsack` DP entry, and Assign Maximum Cookies introduces a threshold-matching greedy scan rather than another interval selector.
-- It explicitly skips the local duplicate `Activity Selection`, which is already covered by `greedy-interval-scheduling`, and leaves the next frontier on the Greedy page after passing over several weaker early one-off problems.
+- It continues the Greedy Algorithms page in source order after batch 69, starting with budget-first purchasing in `Buy Maximum Stocks`, then moving into greedy range expansion for `Jump Game`, and keeping `Job Sequencing Problem` ahead of `Huffman Coding Algorithm` because that is the actual page order.
+- It broadens the catalog across three distinct greedy shapes: buying the cheapest bounded offers first, compressing a reachability BFS into a linear scan, and using a min-heap to preserve the most profitable schedulable jobs under deadlines.
+- It complements nearby local coverage rather than duplicating it: Buy Maximum Stocks adds budgeted quantity maximization rather than resource matching, Jump Game adds minimum frontier counting rather than mere reachability, and Job Sequencing introduces profit-maximizing deadline scheduling rather than count-maximizing interval selection.
+- It keeps local semantic-duplicate decisions intact by leaving `Activity Selection` skipped in favor of the existing `greedy-interval-scheduling` entry and by keeping later duplicates such as `Merge Overlapping Intervals` behind the existing `interval-merging` coverage.
 
 ## Supporting study references from the algorithms list
 
@@ -783,4 +791,4 @@ All expansion entries from batch 1 through batch 69 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- The current GeeksforGeeks frontier has shifted onto the Greedy Algorithms page and now continues with `Buy Maximum Stocks if i stocks can be bought on i-th day`, `Jump Game - Minimum Jumps to Reach End`, and `Huffman Coding Algorithm` after skipping the already-covered `Activity Selection` duplicate and weaker early easy-page one-offs such as `Min Cost to Make Array Size 1`, `Min Rotations for Circular Lock`, `Max Composite Numbers to Make n`, and `Smallest Subset Greater Sum`.
+- The current GeeksforGeeks Greedy-page frontier now continues with `Egyptian Fraction`, `Minimum Platforms`, and `Min Cost to Connect n ropes` after keeping `Job Sequencing Problem` ahead of `Huffman Coding Algorithm`, skipping the already-covered `Activity Selection` and `Merge Overlapping Intervals` duplicates, and continuing to leave weaker easy-page one-offs such as `Min Cost to Make Array Size 1`, `Min Rotations for Circular Lock`, `Max Composite Numbers to Make n`, `Smallest Subset Greater Sum`, `Max Consecutive Diff Sum`, `Min and Max Costs to buy all`, `Min Notes with Given Sum`, and `Max Equal Sum of Three Stacks` out of the clean frontier.

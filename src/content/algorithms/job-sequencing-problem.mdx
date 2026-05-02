@@ -1,0 +1,241 @@
+---
+title: Job Sequencing Problem
+slug: job-sequencing-problem
+category: Greedy
+summary: Sort jobs by deadline, keep the chosen profits in a min-heap, and replace the weakest scheduled job when a better one fits.
+description: Job Sequencing Problem is the greedy scheduling pattern for maximizing total profit when each chosen job takes one slot before its deadline.
+dataStructures:
+  - Array
+  - Heap
+techniques:
+  - Greedy
+  - Sorting
+  - Priority Queue
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - job sequencing
+  - deadline scheduling with profit
+  - scheduling jobs for maximum profit
+useCases:
+  - Selecting the most profitable subset of unit-time tasks with deadlines
+  - Practicing heap-backed greedy replacement decisions
+  - Distinguishing maximize-profit scheduling from maximize-count interval selection
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: Sorting by deadline and maintaining the chosen profits in a min-heap keeps only the best jobs that can still fit.
+interviewSignals:
+  - Every accepted job takes exactly one unit of time.
+  - The objective is to maximize total profit while respecting per-job deadlines.
+relatedSlugs:
+  - greedy-interval-scheduling
+  - priority-queue
+  - quick-sort
+provenance:
+  - title: GeeksforGeeks - Job Sequencing Problem
+    href: https://www.geeksforgeeks.org/dsa/job-sequencing-problem/
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem looks close to interval scheduling, but the objective is different. Instead of maximizing how many compatible jobs fit, you maximize profit, so sometimes a later-arriving high-profit job should evict a weaker choice from the current schedule.
+
+## Worked Example
+
+For `deadline = [4, 1, 1, 1]` and `profit = [20, 10, 40, 30]`, sort by deadline to process tighter jobs first. The best deadline-1 job contributes profit `40`, and the deadline-4 job with profit `20` also fits in a later slot. The result is `2` jobs with total profit `60`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function jobSequencingProblem(deadlines, profits) {
+  if (deadlines.length !== profits.length) {
+    throw new RangeError('deadlines and profits must have the same length');
+  }
+
+  const jobs = deadlines
+    .map((deadline, index) => ({
+      deadline,
+      profit: profits[index],
+    }))
+    .sort((left, right) => left.deadline - right.deadline || left.profit - right.profit);
+
+  const heap = [];
+
+  function swap(left, right) {
+    [heap[left], heap[right]] = [heap[right], heap[left]];
+  }
+
+  function siftUp(index) {
+    let child = index;
+
+    while (child > 0) {
+      const parent = Math.floor((child - 1) / 2);
+
+      if (heap[parent] <= heap[child]) {
+        break;
+      }
+
+      swap(parent, child);
+      child = parent;
+    }
+  }
+
+  function siftDown(index) {
+    let parent = index;
+
+    while (true) {
+      let smallest = parent;
+      const left = parent * 2 + 1;
+      const right = parent * 2 + 2;
+
+      if (left < heap.length && heap[left] < heap[smallest]) {
+        smallest = left;
+      }
+
+      if (right < heap.length && heap[right] < heap[smallest]) {
+        smallest = right;
+      }
+
+      if (smallest === parent) {
+        break;
+      }
+
+      swap(parent, smallest);
+      parent = smallest;
+    }
+  }
+
+  function push(value) {
+    heap.push(value);
+    siftUp(heap.length - 1);
+  }
+
+  function replaceTop(value) {
+    heap[0] = value;
+    siftDown(0);
+  }
+
+  for (const job of jobs) {
+    if (job.deadline > heap.length) {
+      push(job.profit);
+      continue;
+    }
+
+    if (heap.length > 0 && heap[0] < job.profit) {
+      replaceTop(job.profit);
+    }
+  }
+
+  const totalProfit = heap.reduce((sum, profit) => sum + profit, 0);
+  return [heap.length, totalProfit];
+}
+```
+
+```ts
+export function jobSequencingProblem(
+  deadlines: number[],
+  profits: number[],
+): [number, number] {
+  if (deadlines.length !== profits.length) {
+    throw new RangeError('deadlines and profits must have the same length');
+  }
+
+  const jobs = deadlines
+    .map((deadline, index) => ({
+      deadline,
+      profit: profits[index],
+    }))
+    .sort((left, right) => left.deadline - right.deadline || left.profit - right.profit);
+
+  const heap: number[] = [];
+
+  function swap(left: number, right: number) {
+    [heap[left], heap[right]] = [heap[right], heap[left]];
+  }
+
+  function siftUp(index: number) {
+    let child = index;
+
+    while (child > 0) {
+      const parent = Math.floor((child - 1) / 2);
+
+      if (heap[parent] <= heap[child]) {
+        break;
+      }
+
+      swap(parent, child);
+      child = parent;
+    }
+  }
+
+  function siftDown(index: number) {
+    let parent = index;
+
+    while (true) {
+      let smallest = parent;
+      const left = parent * 2 + 1;
+      const right = parent * 2 + 2;
+
+      if (left < heap.length && heap[left] < heap[smallest]) {
+        smallest = left;
+      }
+
+      if (right < heap.length && heap[right] < heap[smallest]) {
+        smallest = right;
+      }
+
+      if (smallest === parent) {
+        break;
+      }
+
+      swap(parent, smallest);
+      parent = smallest;
+    }
+  }
+
+  function push(value: number) {
+    heap.push(value);
+    siftUp(heap.length - 1);
+  }
+
+  function replaceTop(value: number) {
+    heap[0] = value;
+    siftDown(0);
+  }
+
+  for (const job of jobs) {
+    if (job.deadline > heap.length) {
+      push(job.profit);
+      continue;
+    }
+
+    if (heap.length > 0 && heap[0] < job.profit) {
+      replaceTop(job.profit);
+    }
+  }
+
+  const totalProfit = heap.reduce((sum, profit) => sum + profit, 0);
+  return [heap.length, totalProfit];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Reconstruct one concrete slot assignment instead of only returning count and profit.
+- Compare this heap approach with the disjoint-set scheduling variant.
+- Explain why sorting by profit alone is enough for the quadratic solution but not for the tighter heap formulation.
+
+## Common Pitfalls
+
+- Treating the problem as interval scheduling instead of deadline-limited slot assignment.
+- Sorting by profit and then using the heap method anyway, which breaks the deadline invariant.
+- Forgetting that the heap stores only the currently selected job profits, not all seen jobs.
