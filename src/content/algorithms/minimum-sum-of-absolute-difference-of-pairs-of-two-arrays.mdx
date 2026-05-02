@@ -1,0 +1,107 @@
+---
+title: Minimum sum of absolute difference of pairs of two arrays
+slug: minimum-sum-of-absolute-difference-of-pairs-of-two-arrays
+category: Greedy
+summary: "Sort both arrays and pair equal-ranked elements so that each local absolute difference is as small as possible."
+description: "Minimum sum of absolute difference of pairs of two arrays minimizes the total pairing cost by matching both arrays in sorted order."
+dataStructures:
+  - Array
+techniques:
+  - Greedy
+  - Sorting
+  - Pairing
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - minimum absolute difference pairing
+  - minimum pairwise absolute difference sum
+  - pair two arrays with minimum absolute difference
+useCases:
+  - Matching two equal-sized sets to minimize total absolute error
+  - Recognizing exchange-argument sorting proofs for pairings
+  - Reducing permutation search to ordered matching
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: "The implementation sorts copies of both arrays so the caller's inputs remain unchanged; in-place sorting would reduce the extra space to the sorting algorithm's overhead."
+interviewSignals:
+  - Both arrays must be fully paired with no reuse of indices.
+  - The key proof is that crossing pairings cannot improve the total absolute difference.
+relatedSlugs:
+  - assign-holes-to-mice
+  - minimum-sum-of-product-of-two-arrays
+provenance:
+  - title: "GeeksforGeeks - Minimum sum of absolute difference of pairs of two arrays"
+    href: https://www.geeksforgeeks.org/dsa/minimum-sum-absolute-difference-pairs-two-arrays/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+The brute-force version asks you to test every permutation of one array against the other, but the greedy insight is that optimal pairings never cross once both sides are ordered. Sorting both arrays and pairing equal-ranked elements collapses the search space from factorial to a single deterministic scan.
+
+## Worked Example
+
+For `a = [4, 1, 8, 7]` and `b = [2, 3, 6, 5]`, sort both arrays to get `[1, 4, 7, 8]` and `[2, 3, 5, 6]`. The minimum sum is `|1 - 2| + |4 - 3| + |7 - 5| + |8 - 6| = 6`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function minimumSumOfAbsoluteDifferenceOfPairsOfTwoArrays(firstArray, secondArray) {
+  if (firstArray.length !== secondArray.length) {
+    return 0;
+  }
+
+  const sortedFirst = [...firstArray].sort((left, right) => left - right);
+  const sortedSecond = [...secondArray].sort((left, right) => left - right);
+
+  let totalDifference = 0;
+
+  for (let index = 0; index < sortedFirst.length; index += 1) {
+    totalDifference += Math.abs(sortedFirst[index] - sortedSecond[index]);
+  }
+
+  return totalDifference;
+}
+```
+
+```ts
+export function minimumSumOfAbsoluteDifferenceOfPairsOfTwoArrays(
+  firstArray: number[],
+  secondArray: number[],
+): number {
+  if (firstArray.length !== secondArray.length) {
+    return 0;
+  }
+
+  const sortedFirst = [...firstArray].sort((left, right) => left - right);
+  const sortedSecond = [...secondArray].sort((left, right) => left - right);
+
+  let totalDifference = 0;
+
+  for (let index = 0; index < sortedFirst.length; index += 1) {
+    totalDifference += Math.abs(sortedFirst[index] - sortedSecond[index]);
+  }
+
+  return totalDifference;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Prove with an exchange argument why crossing pairings can always be uncrossed without increasing the cost.
+- Return one explicit optimal pairing, not only the minimum sum.
+- Explain what changes if the arrays can have different lengths and some elements may stay unmatched.
+
+## Common Pitfalls
+
+- Trying all permutations even though sorted pairing is sufficient.
+- Sorting only one array and leaving the other in its original order.
+- Forgetting to define behavior when the input arrays have different lengths.

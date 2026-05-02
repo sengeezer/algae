@@ -1,0 +1,277 @@
+---
+title: Minimum increment/decrement to make array non-Increasing
+slug: minimum-increment-decrement-to-make-array-non-increasing
+category: Greedy
+summary: "Scan from left to right with a min-heap of chosen prefix targets and pay only when the current value must be lowered to keep the sequence non-increasing."
+description: "Minimum increment/decrement to make array non-Increasing computes the minimum total unit-change cost by greedily repairing violations with a heap-backed monotonic invariant."
+dataStructures:
+  - Array
+  - Priority Queue
+techniques:
+  - Greedy
+  - Heap
+  - Isotonic Repair
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - minimum operations to make array non-increasing
+  - decreasing array minimum adjustments
+  - minimum increments decrements for non-increasing order
+useCases:
+  - Repairing sequences with minimum total absolute adjustment cost
+  - Recognizing heap-based greedy solutions for monotonic constraints
+  - Translating between non-increasing and non-decreasing adjustment problems
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: "The heap stores prefix target values implied by the greedy repair process; each push or pop costs O(log n)."
+interviewSignals:
+  - Each operation changes a single element by exactly one, but an element may be changed many times.
+  - The challenge is to minimize total adjustment cost, not to output any particular final non-increasing array.
+relatedSlugs:
+  - priority-queue
+  - maximize-array-sum-after-k-negations-using-sorting
+provenance:
+  - title: "GeeksforGeeks - Minimum increment/decrement to make array non-Increasing"
+    href: https://www.geeksforgeeks.org/dsa/minimum-incrementdecrement-to-make-array-non-increasing/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem is not about a single local inversion; every adjustment changes what later values are allowed to become. The greedy heap trick keeps the cheapest prefix target multiset seen so far and only pays when the current value is too large to fit that non-increasing prefix.
+
+## Worked Example
+
+For `arr = [3, 1, 2, 1]`, the only violation is the `2` after `1`. Lowering that `2` to `1` costs `1`, producing a valid non-increasing array such as `[3, 1, 1, 1]`, so the minimum total cost is `1`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class MinHeap {
+  constructor() {
+    this.values = [];
+  }
+
+  peek() {
+    return this.values[0];
+  }
+
+  isEmpty() {
+    return this.values.length === 0;
+  }
+
+  push(value) {
+    this.values.push(value);
+    this.bubbleUp(this.values.length - 1);
+  }
+
+  pop() {
+    if (this.values.length === 0) {
+      return undefined;
+    }
+
+    const topValue = this.values[0];
+    const lastValue = this.values.pop();
+
+    if (this.values.length > 0 && lastValue !== undefined) {
+      this.values[0] = lastValue;
+      this.bubbleDown(0);
+    }
+
+    return topValue;
+  }
+
+  bubbleUp(index) {
+    while (index > 0) {
+      const parentIndex = Math.floor((index - 1) / 2);
+
+      if (this.values[parentIndex] <= this.values[index]) {
+        break;
+      }
+
+      [this.values[parentIndex], this.values[index]] = [
+        this.values[index],
+        this.values[parentIndex],
+      ];
+      index = parentIndex;
+    }
+  }
+
+  bubbleDown(index) {
+    const lastIndex = this.values.length - 1;
+
+    while (true) {
+      const leftChildIndex = index * 2 + 1;
+      const rightChildIndex = leftChildIndex + 1;
+      let smallestIndex = index;
+
+      if (
+        leftChildIndex <= lastIndex &&
+        this.values[leftChildIndex] < this.values[smallestIndex]
+      ) {
+        smallestIndex = leftChildIndex;
+      }
+
+      if (
+        rightChildIndex <= lastIndex &&
+        this.values[rightChildIndex] < this.values[smallestIndex]
+      ) {
+        smallestIndex = rightChildIndex;
+      }
+
+      if (smallestIndex === index) {
+        break;
+      }
+
+      [this.values[index], this.values[smallestIndex]] = [
+        this.values[smallestIndex],
+        this.values[index],
+      ];
+      index = smallestIndex;
+    }
+  }
+}
+
+function minimumIncrementDecrementToMakeArrayNonIncreasing(values) {
+  const heap = new MinHeap();
+  let totalChanges = 0;
+
+  for (const value of values) {
+    if (!heap.isEmpty() && heap.peek() < value) {
+      totalChanges += value - heap.peek();
+      heap.pop();
+      heap.push(value);
+    }
+
+    heap.push(value);
+  }
+
+  return totalChanges;
+}
+```
+
+```ts
+class MinHeap {
+  private values: number[] = [];
+
+  peek(): number | undefined {
+    return this.values[0];
+  }
+
+  isEmpty(): boolean {
+    return this.values.length === 0;
+  }
+
+  push(value: number): void {
+    this.values.push(value);
+    this.bubbleUp(this.values.length - 1);
+  }
+
+  pop(): number | undefined {
+    if (this.values.length === 0) {
+      return undefined;
+    }
+
+    const topValue = this.values[0];
+    const lastValue = this.values.pop();
+
+    if (this.values.length > 0 && lastValue !== undefined) {
+      this.values[0] = lastValue;
+      this.bubbleDown(0);
+    }
+
+    return topValue;
+  }
+
+  private bubbleUp(index: number): void {
+    while (index > 0) {
+      const parentIndex = Math.floor((index - 1) / 2);
+
+      if (this.values[parentIndex] <= this.values[index]) {
+        break;
+      }
+
+      [this.values[parentIndex], this.values[index]] = [
+        this.values[index],
+        this.values[parentIndex],
+      ];
+      index = parentIndex;
+    }
+  }
+
+  private bubbleDown(index: number): void {
+    const lastIndex = this.values.length - 1;
+
+    while (true) {
+      const leftChildIndex = index * 2 + 1;
+      const rightChildIndex = leftChildIndex + 1;
+      let smallestIndex = index;
+
+      if (
+        leftChildIndex <= lastIndex &&
+        this.values[leftChildIndex] < this.values[smallestIndex]
+      ) {
+        smallestIndex = leftChildIndex;
+      }
+
+      if (
+        rightChildIndex <= lastIndex &&
+        this.values[rightChildIndex] < this.values[smallestIndex]
+      ) {
+        smallestIndex = rightChildIndex;
+      }
+
+      if (smallestIndex === index) {
+        break;
+      }
+
+      [this.values[index], this.values[smallestIndex]] = [
+        this.values[smallestIndex],
+        this.values[index],
+      ];
+      index = smallestIndex;
+    }
+  }
+}
+
+export function minimumIncrementDecrementToMakeArrayNonIncreasing(
+  values: number[],
+): number {
+  const heap = new MinHeap();
+  let totalChanges = 0;
+
+  for (const value of values) {
+    const smallestTarget = heap.peek();
+
+    if (smallestTarget !== undefined && smallestTarget < value) {
+      totalChanges += value - smallestTarget;
+      heap.pop();
+      heap.push(value);
+    }
+
+    heap.push(value);
+  }
+
+  return totalChanges;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Reconstruct one optimal final non-increasing array instead of only the minimum cost.
+- Explain why the same idea becomes a max-heap solution for the non-decreasing version.
+- Compare the greedy heap approach with dynamic programming for the same cost model.
+
+## Common Pitfalls
+
+- Assuming every violation should be repaired only against the immediately previous element.
+- Treating the problem like a simple one-pass clamp without accounting for total absolute adjustment cost.
+- Forgetting that the heap may contain multiple copies of the same chosen target value.

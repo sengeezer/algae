@@ -1,0 +1,104 @@
+---
+title: Sorting array with reverse around middle
+slug: sorting-array-with-reverse-around-middle
+category: Greedy
+summary: "Sort a copy, then verify that every index can reach its sorted value from either its original position or its mirror across the array center."
+description: "Sorting array with reverse around middle is a feasibility check that uses the operation's mirror symmetry to test whether repeated center-anchored reversals can sort the array."
+dataStructures:
+  - Array
+techniques:
+  - Greedy
+  - Sorting
+  - Symmetry Check
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - sort with reverse around middle
+  - center reverse sortable array
+  - middle anchored reversal sorting
+useCases:
+  - Recognizing when a constrained operation leaves only two reachable positions per element
+  - Turning a repeated-operation puzzle into a static feasibility test
+  - Reasoning about mirror symmetry around the array center
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: "The sorted copy is used only as a target arrangement; the feasibility test itself is a linear mirror comparison."
+interviewSignals:
+  - You may apply the center-anchored reversal operation any number of times.
+  - The key observation is that an element can only stay in its current index or move to its mirrored index.
+relatedSlugs:
+  - merge-sort
+  - quick-sort
+provenance:
+  - title: "GeeksforGeeks - Sorting array with reverse around middle"
+    href: https://www.geeksforgeeks.org/dsa/sorting-array-reverse-around-middle/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+At first glance this looks like a custom sorting routine, but the allowed operation is so constrained that it does not create arbitrary permutations. Once you notice that every element can only swap with its mirror across the center, the repeated-operation question collapses into a one-pass reachability check against the sorted target order.
+
+## Worked Example
+
+For `arr = [1, 6, 3, 4, 5, 2, 7]`, sorting gives `[1, 2, 3, 4, 5, 6, 7]`. The `6` at index `1` can move to its mirror index `5`, which is exactly where the sorted array wants `6`, and the `2` at index `5` can move back to index `1`, so every position is reachable and the answer is `true`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function sortingArrayWithReverseAroundMiddle(values) {
+  const sortedValues = [...values].sort((left, right) => left - right);
+
+  for (let index = 0; index < values.length; index += 1) {
+    const mirrorIndex = values.length - 1 - index;
+
+    if (
+      values[index] !== sortedValues[index] &&
+      values[mirrorIndex] !== sortedValues[index]
+    ) {
+      return false;
+    }
+  }
+
+  return true;
+}
+```
+
+```ts
+export function sortingArrayWithReverseAroundMiddle(values: number[]): boolean {
+  const sortedValues = [...values].sort((left, right) => left - right);
+
+  for (let index = 0; index < values.length; index += 1) {
+    const mirrorIndex = values.length - 1 - index;
+
+    if (
+      values[index] !== sortedValues[index] &&
+      values[mirrorIndex] !== sortedValues[index]
+    ) {
+      return false;
+    }
+  }
+
+  return true;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return one sequence of valid center-anchored reversals when the array is sortable.
+- Prove why every element has only two reachable positions under this operation.
+- Extend the reasoning if the allowed subarray is anchored at a different fixed pivot instead of the center.
+
+## Common Pitfalls
+
+- Treating the operation like an arbitrary subarray reversal.
+- Simulating many reversals instead of checking the static mirror constraint directly.
+- Forgetting that the middle element of an odd-length array never leaves the center.

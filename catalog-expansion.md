@@ -856,9 +856,17 @@ This eighty-first expansion slice lifts the catalog from 453 to 456 entries.
 - Maximize array sum after K negations using Sorting
 - Minimum sum of product of two arrays
 
+## Batch 82 added
+
+This eighty-second expansion slice lifts the catalog from 456 to 459 entries.
+
+- Minimum sum of absolute difference of pairs of two arrays
+- Minimum increment/decrement to make array non-Increasing
+- Sorting array with reverse around middle
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 81 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 82 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -866,10 +874,10 @@ All expansion entries from batch 1 through batch 81 now carry explicit per-entry
 
 ## Why this batch
 
-- It continues the GeeksforGeeks Greedy Algorithms page in exact source order after `Fitting Shelves Problem`, moving directly into the `Greedy Problems on Array` section with `Minimum product subset of an array`, `Maximize array sum after K negations using Sorting`, and `Minimum sum of product of two arrays` without any intermediary skips.
-- It broadens the catalog across three more greedy array patterns: sign-count reasoning for selecting the product-minimizing subset, sorted negation planning that spends the remaining parity on the smallest magnitude value, and concentrating all allowed value shifts on the single index that most decreases the product sum.
-- It complements nearby local coverage rather than duplicating it: the minimum-product entry focuses on subset selection rather than contiguous arrays, the k-negations entry uses operation parity and smallest absolute value tracking instead of dynamic programming, and the product-sum entry minimizes a paired objective by choosing one best modification target rather than reordering the arrays.
-- It preserves the next handoff cleanly: once these three array entries are exhausted, the Greedy-page frontier continues in order with pairwise absolute-difference minimization, monotonic non-increasing normalization, and the reverse-around-middle sorting puzzle.
+- It continues the GeeksforGeeks Greedy Algorithms page in exact source order after `Minimum sum of product of two arrays`, taking the next three clean array-oriented entries: sorted pairing for `Minimum sum of absolute difference of pairs of two arrays`, heap-based isotonic repair for `Minimum increment/decrement to make array non-Increasing`, and mirror-feasibility checking for `Sorting array with reverse around middle`.
+- It broadens the catalog across three more greedy decision shapes: minimizing a total pairwise cost by ordering both sides the same way, repairing a sequence with the minimum aggregate unit-change cost while preserving a monotone invariant, and recognizing when a constrained reversal operation leaves every index with only two reachable values.
+- It complements nearby local coverage rather than duplicating it: the absolute-difference entry minimizes a sum rather than a bottleneck assignment, the non-increasing entry adds a priority-queue flavored greedy adjustment routine rather than a static sort-and-scan, and the reverse-around-middle entry is a feasibility test about an operation's reachable state space rather than a conventional sorting implementation.
+- It preserves the next handoff cleanly: after these three entries, the same source progression moves on to rectangle-area construction from side lengths, lexicographic maximization under consecutive-swap budget, and a maximum-difference partition problem with fixed subarray lengths.
 
 ## Supporting study references from the algorithms list
 
@@ -879,4 +887,4 @@ All expansion entries from batch 1 through batch 81 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- The current GeeksforGeeks Greedy-page frontier now continues with `Minimum sum of absolute difference of pairs of two arrays`, `Minimum increment/decrement to make array non-Increasing`, and `Sorting array with reverse around middle` after `Minimum sum of product of two arrays`, with no duplicate or label-only skips between those three items.
+- The current GeeksforGeeks Greedy-page frontier now continues with `Sum of Areas of Rectangles possible for an array`, `Largest lexicographic array with at-most K consecutive swaps`, and `Partition into two subarrays of lengths k and (N - k) such that the difference of sums is maximum` after `Sorting array with reverse around middle`, with no duplicate or label-only skips between those three items.
