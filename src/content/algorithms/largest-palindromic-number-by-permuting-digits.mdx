@@ -1,0 +1,148 @@
+---
+title: Largest palindromic number by permuting digits
+slug: largest-palindromic-number-by-permuting-digits
+category: Greedy
+summary: Count the digits, place the largest available matching pairs on the outside, and use the largest remaining odd digit in the middle.
+description: Largest palindromic number by permuting digits is the greedy counting problem that builds the maximum palindrome by filling the most significant mirrored positions first.
+dataStructures:
+  - Array
+  - String
+techniques:
+  - Greedy
+  - Counting
+  - String Construction
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - largest palindrome from digits
+  - max palindrome by digit permutation
+  - palindrome from multiset of digits
+useCases:
+  - Building the lexicographically largest valid string under a symmetry constraint
+  - Recognizing when digit counts make a palindrome impossible
+  - Filling mirrored positions greedily from most significant to least significant
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: Counting digits is constant-size, but the constructed palindrome itself grows with the input length.
+interviewSignals:
+  - The input is a digit string that may be permuted freely.
+  - The palindrome must be as large as possible rather than merely valid.
+relatedSlugs:
+  - sum-of-digits
+  - smallest-number-with-given-digit-count-and-sum
+  - quick-sort
+provenance:
+  - title: "GeeksforGeeks - Largest palindromic number by permuting digits"
+    href: https://www.geeksforgeeks.org/dsa/largest-palindromic-number-permuting-digits/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a greedy construction problem over mirrored positions. To maximize a palindrome numerically, the largest digits must be pushed as far left as possible, which means placing the biggest available pairs on the outside before handling smaller pairs or the optional middle digit.
+
+## Worked Example
+
+For `"313551"`, the digit counts let you place `5`, then `3`, then `1` on the left half. Mirroring that half produces `"531135"`, which is larger than other valid palindromic permutations like `"315513"` or `"135531"`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function largestPalindromicNumberByPermutingDigits(digits) {
+  const counts = new Array(10).fill(0);
+
+  for (const digit of digits) {
+    counts[Number(digit)] += 1;
+  }
+
+  let middle = '';
+
+  for (let digit = 9; digit >= 0; digit -= 1) {
+    if (counts[digit] % 2 === 0) {
+      continue;
+    }
+
+    if (middle !== '') {
+      return '';
+    }
+
+    middle = String(digit);
+  }
+
+  const leftHalf = [];
+
+  for (let digit = 9; digit >= 0; digit -= 1) {
+    const pairs = Math.floor(counts[digit] / 2);
+
+    if (pairs === 0) {
+      continue;
+    }
+
+    leftHalf.push(String(digit).repeat(pairs));
+  }
+
+  const left = leftHalf.join('');
+  const right = [...left].reverse().join('');
+  return left + middle + right;
+}
+```
+
+```ts
+export function largestPalindromicNumberByPermutingDigits(digits: string): string {
+  const counts = new Array<number>(10).fill(0);
+
+  for (const digit of digits) {
+    counts[Number(digit)] += 1;
+  }
+
+  let middle = '';
+
+  for (let digit = 9; digit >= 0; digit -= 1) {
+    if (counts[digit] % 2 === 0) {
+      continue;
+    }
+
+    if (middle !== '') {
+      return '';
+    }
+
+    middle = String(digit);
+  }
+
+  const leftHalf: string[] = [];
+
+  for (let digit = 9; digit >= 0; digit -= 1) {
+    const pairs = Math.floor(counts[digit] / 2);
+
+    if (pairs === 0) {
+      continue;
+    }
+
+    leftHalf.push(String(digit).repeat(pairs));
+  }
+
+  const left = leftHalf.join('');
+  const right = [...left].reverse().join('');
+  return left + middle + right;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why placing a smaller pair before a larger pair can never lead to the maximum answer.
+- Ignore leading-zero palindromes and return the largest valid non-leading-zero result.
+- Adapt the solution if you may drop unused digits instead of using the full multiset.
+
+## Common Pitfalls
+
+- Accepting more than one odd digit count even though that makes a full palindrome impossible.
+- Filling the palindrome from small digits upward, which wastes the most significant positions.
+- Forgetting that the middle digit should be the largest odd-count digit when one exists.

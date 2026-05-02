@@ -792,9 +792,17 @@ This seventy-third expansion slice lifts the catalog from 429 to 432 entries.
 - Minimum difference between groups of size two
 - Maximum number of customers that can be satisfied with given quantity
 
+## Batch 74 added
+
+This seventy-fourth expansion slice lifts the catalog from 432 to 435 entries.
+
+- Minimum initial vertices to traverse whole matrix with given conditions
+- Largest palindromic number by permuting digits
+- Smallest number with given digit count and sum
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 73 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 74 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -802,10 +810,10 @@ All expansion entries from batch 1 through batch 73 now carry explicit per-entry
 
 ## Why this batch
 
-- It continues the Greedy Algorithms page in exact source order after `Divide 1 to n into two groups with minimum sum difference`, then records the next three linked articles exactly as surfaced there: `Paper Cut into Minimum Number of Squares`, `Minimum difference between groups of size two`, and `Maximum number of customers that can be satisfied with given quantity`.
-- It broadens the catalog across three different decision patterns: a memoized skyline search for square tilings, opposite-end pairing to compress the spread of pair sums, and minimum-demand-first fulfillment to maximize the number of satisfied customers.
-- It captures one important source-page correction explicitly: `Paper Cut into Minimum Number of Squares` appears on the Greedy page, but the source article itself rejects greedy and uses DFS plus memoization instead, so the new entry reflects the actual algorithm rather than the page bucket.
-- It complements nearby local coverage rather than duplicating it: the paper-cut entry adds a geometric state-compression DP, the pair-group entry is about balancing pair sums rather than matching thresholds, and the customer-quantity entry optimizes request count rather than profit, value density, or future resource reuse.
+- It continues the GeeksforGeeks Greedy Algorithms page in exact source order after `Maximum number of customers that can be satisfied with given quantity`, taking the descending-value matrix-start selector `Minimum initial vertices to traverse whole matrix with given conditions`, then the digit-count construction problem `Largest palindromic number by permuting digits`, and then the right-filled digit-sum constructor `Smallest number with given digit count and sum`.
+- It broadens the catalog across three more greedy shapes: picking only the still-unreached peaks of a matrix after sorting cells by value, filling mirrored palindrome positions with the highest available pairs, and pushing digit-sum mass to the least significant places while keeping the leading digit nonzero.
+- It complements nearby local coverage rather than duplicating it: the matrix entry combines greedy ordering with DFS rather than shortest-path search, the palindrome entry is a full-string construction problem rather than a boolean palindrome test, and the digit-count entry is a fixed-length digit builder rather than a generic digit-sum utility.
+- It preserves the source-order detail that `Minimum initial vertices to traverse whole matrix with given conditions` lives on the Greedy page even though its implementation is really a greedy ordering plus DFS reachability pass.
 
 ## Supporting study references from the algorithms list
 
@@ -815,4 +823,4 @@ All expansion entries from batch 1 through batch 73 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- The current GeeksforGeeks Greedy-page frontier now continues with `Min initial vertices to traverse matrix with constraints`, `Largest palindromic number by permuting digits`, and `Smallest with n digits and digits sum` after `Maximum number of customers that can be satisfied with given quantity`, while `Activity Selection` and `Merge Overlapping Intervals` remain intentionally skipped as local duplicates.
+- The current GeeksforGeeks Greedy-page frontier now continues with `Lexicographically largest subsequence`, `Minimize the Max Height Diff`, and `Making max equal with k updates` after `Smallest with n digits and digits sum`, while `Activity Selection` and `Merge Overlapping Intervals` remain intentionally skipped as local duplicates.

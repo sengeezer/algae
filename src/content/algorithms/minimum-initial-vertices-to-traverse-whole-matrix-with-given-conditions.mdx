@@ -1,0 +1,196 @@
+---
+title: Minimum initial vertices to traverse whole matrix with given conditions
+slug: minimum-initial-vertices-to-traverse-whole-matrix-with-given-conditions
+category: Greedy
+summary: Process cells from highest value downward and start a DFS only when that cell is still unreachable from previously chosen higher starts.
+description: Minimum initial vertices to traverse whole matrix with given conditions is the greedy-plus-DFS matrix problem that picks descending-value start cells only when they are still unvisited.
+dataStructures:
+  - Array
+  - Matrix
+  - Recursion Stack
+techniques:
+  - Greedy
+  - Sorting
+  - Depth-First Search
+  - Matrix Traversal
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - min initial vertices to traverse matrix with constraints
+  - minimum starting cells for constrained matrix traversal
+  - descending-value matrix start selection
+useCases:
+  - Finding a minimum set of matrix starting points under monotone movement rules
+  - Combining greedy ordering with flood-fill reachability checks
+  - Recognizing when highest-value sources dominate lower-value traversal starts
+complexity:
+  time: O(rows * cols * log(rows * cols))
+  space: O(rows * cols)
+  notes: Sorting all cells dominates the runtime; the DFS visits each cell at most once after the ordering step.
+interviewSignals:
+  - Movement is only allowed from a cell to neighboring cells with lower or equal values.
+  - The task asks for a minimum set of starting positions rather than for one path.
+relatedSlugs:
+  - depth-first-search
+  - atlantic-pacific-water-flow
+  - max-area-of-island-largest-in-boolean-matrix
+provenance:
+  - title: "GeeksforGeeks - Minimum initial vertices to traverse whole matrix with given conditions"
+    href: https://www.geeksforgeeks.org/dsa/minimum-initial-vertices-traverse-whole-matrix-given-conditions/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+The greedy insight here is not about choosing the next neighbor locally. It is about choosing start cells in descending value order. If a high-valued cell is still unvisited when its turn comes, no lower-valued start can ever reach it later, so it must be added to the answer set.
+
+## Worked Example
+
+For the matrix `[[1, 2, 3], [2, 3, 1], [1, 1, 1]]`, one valid minimum answer is `[[1, 1], [0, 2]]`. Starting from a `3` lets you flow only into equal-or-lower neighbors, so the traversal expands downhill. The second `3` must still be picked because the first start cannot climb back up to it.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function minimumInitialVerticesToTraverseWholeMatrixWithGivenConditions(matrix) {
+  if (matrix.length === 0 || matrix[0].length === 0) {
+    return [];
+  }
+
+  const rowCount = matrix.length;
+  const columnCount = matrix[0].length;
+  const visited = Array.from({ length: rowCount }, () => Array(columnCount).fill(false));
+  const cells = [];
+  const directions = [
+    [1, 0],
+    [-1, 0],
+    [0, 1],
+    [0, -1],
+  ];
+
+  for (let row = 0; row < rowCount; row += 1) {
+    for (let column = 0; column < columnCount; column += 1) {
+      cells.push({ row, column, value: matrix[row][column] });
+    }
+  }
+
+  cells.sort((left, right) => right.value - left.value || left.row - right.row || left.column - right.column);
+
+  function dfs(row, column) {
+    visited[row][column] = true;
+
+    for (const [rowOffset, columnOffset] of directions) {
+      const nextRow = row + rowOffset;
+      const nextColumn = column + columnOffset;
+
+      if (
+        nextRow < 0 ||
+        nextRow >= rowCount ||
+        nextColumn < 0 ||
+        nextColumn >= columnCount ||
+        visited[nextRow][nextColumn] ||
+        matrix[nextRow][nextColumn] > matrix[row][column]
+      ) {
+        continue;
+      }
+
+      dfs(nextRow, nextColumn);
+    }
+  }
+
+  const starts = [];
+
+  for (const cell of cells) {
+    if (visited[cell.row][cell.column]) {
+      continue;
+    }
+
+    starts.push([cell.row, cell.column]);
+    dfs(cell.row, cell.column);
+  }
+
+  return starts;
+}
+```
+
+```ts
+export function minimumInitialVerticesToTraverseWholeMatrixWithGivenConditions(
+  matrix: number[][],
+): Array<[number, number]> {
+  if (matrix.length === 0 || matrix[0].length === 0) {
+    return [];
+  }
+
+  const rowCount = matrix.length;
+  const columnCount = matrix[0].length;
+  const visited = Array.from({ length: rowCount }, () => Array<boolean>(columnCount).fill(false));
+  const cells: Array<{ row: number; column: number; value: number }> = [];
+  const directions: Array<[number, number]> = [
+    [1, 0],
+    [-1, 0],
+    [0, 1],
+    [0, -1],
+  ];
+
+  for (let row = 0; row < rowCount; row += 1) {
+    for (let column = 0; column < columnCount; column += 1) {
+      cells.push({ row, column, value: matrix[row][column] });
+    }
+  }
+
+  cells.sort((left, right) => right.value - left.value || left.row - right.row || left.column - right.column);
+
+  function dfs(row: number, column: number): void {
+    visited[row][column] = true;
+
+    for (const [rowOffset, columnOffset] of directions) {
+      const nextRow = row + rowOffset;
+      const nextColumn = column + columnOffset;
+
+      if (
+        nextRow < 0 ||
+        nextRow >= rowCount ||
+        nextColumn < 0 ||
+        nextColumn >= columnCount ||
+        visited[nextRow][nextColumn] ||
+        matrix[nextRow][nextColumn] > matrix[row][column]
+      ) {
+        continue;
+      }
+
+      dfs(nextRow, nextColumn);
+    }
+  }
+
+  const starts: Array<[number, number]> = [];
+
+  for (const cell of cells) {
+    if (visited[cell.row][cell.column]) {
+      continue;
+    }
+
+    starts.push([cell.row, cell.column]);
+    dfs(cell.row, cell.column);
+  }
+
+  return starts;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the traversal order from each chosen start, not only the starting coordinates.
+- Explain why processing cells in ascending value order cannot work.
+- Rewrite the DFS as an explicit stack to avoid recursion depth issues.
+
+## Common Pitfalls
+
+- Starting from low-valued cells that can never climb up into the remaining peaks.
+- Forgetting that equal-valued neighbors are still traversable.
+- Re-running a fresh traversal from every cell instead of only from descending-value cells that remain unvisited.

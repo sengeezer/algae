@@ -1,0 +1,127 @@
+---
+title: Smallest number with given digit count and sum
+slug: smallest-number-with-given-digit-count-and-sum
+category: Greedy
+summary: Reserve a nonzero leading digit, then push as much remaining digit sum as possible to the rightmost positions.
+description: Smallest number with given digit count and sum is the greedy digit-construction problem that keeps the number minimal by filling from right to left after protecting the first digit from becoming zero.
+dataStructures:
+  - Array
+  - String
+techniques:
+  - Greedy
+  - Digit Construction
+  - Math
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - smallest with n digits and digits sum
+  - minimum number with digit sum
+  - smallest d-digit number with sum s
+useCases:
+  - Constructing the lexicographically smallest fixed-length numeric string under a digit-sum constraint
+  - Recognizing when pushing weight to less significant positions keeps the whole number smaller
+  - Handling impossible digit-sum targets before constructing an answer
+complexity:
+  time: O(d)
+  space: O(d)
+  notes: The greedy state is constant-size, but the output buffer itself stores `d` digits.
+interviewSignals:
+  - The result must have exactly `d` digits, so the leading position cannot become zero unless `d = 1`.
+  - The task asks for the smallest possible number under a fixed digit-sum total.
+relatedSlugs:
+  - sum-of-digits
+  - largest-palindromic-number-by-permuting-digits
+  - maximum-number-of-customers-that-can-be-satisfied-with-given-quantity
+provenance:
+  - title: "GeeksforGeeks - Smallest number with given digit count and sum"
+    href: https://www.geeksforgeeks.org/dsa/find-smallest-number-with-given-number-of-digits-and-digit-sum/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+To make the number as small as possible, large digits should be pushed toward the least significant positions. The only catch is that the leftmost digit cannot be zero, so you reserve one unit for it first and then distribute the rest from right to left.
+
+## Worked Example
+
+For `sum = 20` and `digitCount = 3`, reserve `1` for the first digit and distribute the remaining `19` from the right. That yields digits `2`, `9`, and `9`, producing `"299"`, which is the smallest three-digit number with digit sum `20`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function smallestNumberWithGivenDigitCountAndSum(sum, digitCount) {
+  if (digitCount <= 0 || sum < 0) {
+    return '-1';
+  }
+
+  if (sum === 0) {
+    return digitCount === 1 ? '0' : '-1';
+  }
+
+  if (sum > 9 * digitCount) {
+    return '-1';
+  }
+
+  const digits = new Array(digitCount).fill('0');
+  let remaining = sum - 1;
+
+  for (let index = digitCount - 1; index > 0; index -= 1) {
+    const digit = Math.min(9, remaining);
+    digits[index] = String(digit);
+    remaining -= digit;
+  }
+
+  digits[0] = String(remaining + 1);
+  return digits.join('');
+}
+```
+
+```ts
+export function smallestNumberWithGivenDigitCountAndSum(
+  sum: number,
+  digitCount: number,
+): string {
+  if (digitCount <= 0 || sum < 0) {
+    return '-1';
+  }
+
+  if (sum === 0) {
+    return digitCount === 1 ? '0' : '-1';
+  }
+
+  if (sum > 9 * digitCount) {
+    return '-1';
+  }
+
+  const digits = new Array<string>(digitCount).fill('0');
+  let remaining = sum - 1;
+
+  for (let index = digitCount - 1; index > 0; index -= 1) {
+    const digit = Math.min(9, remaining);
+    digits[index] = String(digit);
+    remaining -= digit;
+  }
+
+  digits[0] = String(remaining + 1);
+  return digits.join('');
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why filling from left to right with the largest possible digits gives the wrong objective.
+- Return `-1` immediately under which exact impossible conditions.
+- Adapt the construction to return the largest number with the same digit count and sum.
+
+## Common Pitfalls
+
+- Letting the leading digit become zero for multi-digit answers.
+- Forgetting the simple impossibility check `sum > 9 * digitCount`.
+- Filling the number from the left first, which makes the result larger than necessary.
