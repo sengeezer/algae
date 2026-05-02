@@ -15,6 +15,13 @@
     "git remote": true,
     "git add": true,
     "git commit": true,
-    "git push": true
+    "git push": true,
+    "/usr/bin/curl": true,
+    "/usr/bin/grep": true,
+    "/usr/bin/head": true,
+    "/usr/bin/printf": true,
+    "exit": true,
+    "/usr/bin/git": true,
+    "/bin/rm": true
   }
 }
