@@ -1,0 +1,132 @@
+---
+title: Topological Sort of a graph using departure time of vertex
+slug: topological-sort-of-a-graph-using-departure-time-of-vertex
+category: Graphs
+summary: Record each vertex when DFS finishes it, then read vertices in reverse departure order to obtain a topological ordering.
+description: Topological Sort of a graph using departure time of vertex is the DFS-timestamp variant of DAG ordering, where reverse departure order yields the answer.
+dataStructures:
+  - Graph
+  - Array
+  - Recursion
+techniques:
+  - Topological Sort
+  - Depth-First Search
+  - Departure Time
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - DFS departure-time topological sort
+  - reverse postorder topological sort
+useCases:
+  - Producing a DAG order without maintaining indegrees
+  - Explaining DFS timestamps in a concrete graph algorithm
+  - Contrasting DFS-based ordering with Kahn's queue-based method
+complexity:
+  time: O(V + E)
+  space: O(V)
+  notes: Reverse departure order is valid for DAGs because every directed edge leaves earlier than its destination finishes.
+interviewSignals:
+  - The prompt asks for a topological order but hints at DFS timestamps rather than indegrees.
+  - You want to explain why reverse finishing order works on DAGs.
+relatedSlugs:
+  - topological-sort
+  - depth-first-search
+  - all-topological-sorts-of-a-directed-acyclic-graph
+provenance:
+  - title: GeeksforGeeks - Topological Sort of a graph using departure time of vertex
+    href: https://www.geeksforgeeks.org/dsa/topological-sorting-using-departure-time-of-vertex/
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Most interview explanations of topological sort focus on indegrees or an implicit DFS stack. This variant makes the DFS reasoning explicit: once a vertex has finished exploring all outgoing edges, its departure time tells you where it belongs relative to every descendant.
+
+## Worked Example
+
+If DFS finishes vertex `3` before vertex `1`, then `1` gets a later departure time. Reading vertices in decreasing departure time puts `1` before `3`, which is exactly what a topological order needs when `1 -> 3` is an edge.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function topologicalSortOfAGraphUsingDepartureTimeOfVertex(graph) {
+  const nodeCount = graph.length;
+  const visited = new Array(nodeCount).fill(false);
+  const departure = new Array(nodeCount);
+  let time = 0;
+
+  function dfs(node) {
+    visited[node] = true;
+
+    for (const neighbor of graph[node]) {
+      if (!visited[neighbor]) {
+        dfs(neighbor);
+      }
+    }
+
+    departure[time] = node;
+    time += 1;
+  }
+
+  for (let node = 0; node < nodeCount; node += 1) {
+    if (!visited[node]) {
+      dfs(node);
+    }
+  }
+
+  departure.reverse();
+  return departure;
+}
+```
+
+```ts
+export function topologicalSortOfAGraphUsingDepartureTimeOfVertex(
+  graph: number[][],
+): number[] {
+  const nodeCount = graph.length;
+  const visited = new Array<boolean>(nodeCount).fill(false);
+  const departure = new Array<number>(nodeCount);
+  let time = 0;
+
+  function dfs(node: number): void {
+    visited[node] = true;
+
+    for (const neighbor of graph[node]) {
+      if (!visited[neighbor]) {
+        dfs(neighbor);
+      }
+    }
+
+    departure[time] = node;
+    time += 1;
+  }
+
+  for (let node = 0; node < nodeCount; node += 1) {
+    if (!visited[node]) {
+      dfs(node);
+    }
+  }
+
+  departure.reverse();
+  return departure;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you detect and reject a cycle instead of assuming the input is a DAG?
+- Why is reverse departure order equivalent to the classic DFS postorder stack approach?
+- When would you prefer Kahn's Algorithm over this DFS-timestamp method?
+
+## Common Pitfalls
+
+- Mixing up arrival times with departure times.
+- Reversing the order before DFS is complete.
+- Forgetting that the method depends on the graph being acyclic.

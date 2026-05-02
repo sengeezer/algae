@@ -728,9 +728,17 @@ This sixty-fifth expansion slice lifts the catalog from 405 to 408 entries.
 - Minimum Product Spanning Tree
 - All topological sorts of a Directed Acyclic Graph
 
+## Batch 66 added
+
+This sixty-sixth expansion slice lifts the catalog from 408 to 411 entries.
+
+- Maximum edges that can be added to DAG so that it remains DAG
+- Topological Sort of a graph using departure time of vertex
+- Find Itinerary from a given list of tickets
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 65 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 66 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -738,10 +746,10 @@ All expansion entries from batch 1 through batch 65 now carry explicit per-entry
 
 ## Why this batch
 
-- It advances the source-ordered GeeksforGeeks graph frontier from shortest paths into the first clean minimum-spanning-tree and topological-order absences.
-- It broadens the catalog across an MST repair-cost problem, the logarithmic transform that converts product minimization into ordinary spanning-tree structure, and exhaustive enumeration of every valid DAG ordering.
-- It adds several interview patterns that were not previously first-class entries: mapping a story problem directly onto an MST, changing the optimization objective from sum to product without changing the underlying cut-order reasoning, and backtracking over zero-indegree choices instead of returning only one topological order.
-- It leaves the next continuation point at the remaining clean topological-order and itinerary-style absences after skipping already represented Kahn and longest-path variants.
+- It completes the remaining clean topological-order and itinerary-style absences before the source-ordered frontier moves into the next connectivity entries.
+- It broadens the catalog across DAG saturation by forward-edge augmentation, DFS departure-time ordering as an alternative to Kahn's indegree queue, and one-way ticket chain reconstruction from unordered pairs.
+- It adds several interview patterns that were not previously first-class entries: constructing every missing forward DAG edge from a topological order, making DFS timestamps concrete in a topological-sort setting, and recovering a unique directed path by identifying the unmatched source.
+- It leaves the next continuation point at the first clean connectivity absences after skipping already represented items such as biconnected components and Kosaraju-backed SCC coverage.
 
 ## Supporting study references from the algorithms list
 
@@ -751,4 +759,4 @@ All expansion entries from batch 1 through batch 65 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- The current GeeksforGeeks backfill frontier now continues with `Maximum edges that can be added to DAG so that is remains DAG`, `Topological Sort of a graph using departure time of vertex`, and `Find Itinerary from a given list of tickets`; nearby entries like `Kahn's Algorithm for Topological Sorting` and `Longest Path in a Directed Acyclic Graph` are already represented.
+- The current GeeksforGeeks backfill frontier now continues with `Word Ladder - Shortest Chain To Reach Target Word`, `Tarjan's Algorithm to find Strongly Connected Components`, and `Paths to travel each nodes using each edge (Seven Bridges of Königsberg)`; nearby entries like `Biconnected Components` and `Strongly Connected Components` are already represented by local coverage.

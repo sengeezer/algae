@@ -1,0 +1,158 @@
+---
+title: Find Itinerary from a given list of tickets
+slug: find-itinerary-from-a-given-list-of-tickets
+category: Graphs
+summary: Identify the unique starting city that never appears as a destination, then follow the ticket map until the route ends.
+description: Find Itinerary from a given list of tickets is the unique-chain reconstruction problem solved by hashing outgoing flights and locating the unmatched source.
+dataStructures:
+  - Hash Map
+  - Set
+  - Array
+techniques:
+  - Hashing
+  - Path Reconstruction
+  - Graph Traversal
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - reconstruct itinerary from tickets
+  - ticket chain reconstruction
+useCases:
+  - Rebuilding a unique travel route from unordered one-way tickets
+  - Finding the starting node of a directed chain
+  - Recovering an ordered path when each source has at most one next stop
+complexity:
+  time: O(N)
+  space: O(N)
+  notes: The linear hash-map solution relies on the guarantee that tickets form one acyclic chain with at most one outgoing edge per city.
+interviewSignals:
+  - Tickets are given out of order, but the final route is unique.
+  - One city never appears as a destination, which identifies the route start.
+relatedSlugs:
+  - topological-sort
+  - hierholzers-algorithm-directed-graph
+  - strings-chained-to-form-a-circle
+provenance:
+  - title: GeeksforGeeks - Find Itinerary from a given list of tickets
+    href: https://www.geeksforgeeks.org/dsa/find-itinerary-from-a-given-list-of-tickets/
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This looks like a graph problem, but the hidden simplification is strong: every city has at most one outgoing ticket and the data is acyclic. That means you do not need a general Eulerian-path construction. You only need to find the unique start and walk the chain.
+
+## Worked Example
+
+If the unordered tickets are `Bombay -> Delhi`, `Delhi -> Goa`, `Goa -> Chennai`, and `Chennai -> Bangalore`, then `Bombay` is the only source that never appears as a destination. Start there and repeatedly follow the hash map to rebuild the full itinerary.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function findItineraryFromAGivenListOfTickets(tickets) {
+  if (tickets.length === 0) {
+    return [];
+  }
+
+  const nextBySource = new Map();
+  const destinations = new Set();
+
+  for (const [from, to] of tickets) {
+    nextBySource.set(from, to);
+    destinations.add(to);
+  }
+
+  let start = null;
+  for (const [from] of tickets) {
+    if (!destinations.has(from)) {
+      start = from;
+      break;
+    }
+  }
+
+  if (start === null) {
+    return [];
+  }
+
+  const itinerary = [start];
+  const seen = new Set([start]);
+
+  while (nextBySource.has(start)) {
+    const next = nextBySource.get(start);
+    if (seen.has(next)) {
+      return [];
+    }
+
+    itinerary.push(next);
+    seen.add(next);
+    start = next;
+  }
+
+  return itinerary.length === tickets.length + 1 ? itinerary : [];
+}
+```
+
+```ts
+export function findItineraryFromAGivenListOfTickets(
+  tickets: Array<[string, string]>,
+): string[] {
+  if (tickets.length === 0) {
+    return [];
+  }
+
+  const nextBySource = new Map<string, string>();
+  const destinations = new Set<string>();
+
+  for (const [from, to] of tickets) {
+    nextBySource.set(from, to);
+    destinations.add(to);
+  }
+
+  let start: string | null = null;
+  for (const [from] of tickets) {
+    if (!destinations.has(from)) {
+      start = from;
+      break;
+    }
+  }
+
+  if (start === null) {
+    return [];
+  }
+
+  const itinerary: string[] = [start];
+  const seen = new Set<string>([start]);
+
+  while (nextBySource.has(start)) {
+    const next = nextBySource.get(start)!;
+    if (seen.has(next)) {
+      return [];
+    }
+
+    itinerary.push(next);
+    seen.add(next);
+    start = next;
+  }
+
+  return itinerary.length === tickets.length + 1 ? itinerary : [];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would the solution change if a city could have multiple outgoing tickets?
+- Why is this simpler than the general itinerary problems that use every ticket exactly once?
+- How do you detect malformed input that breaks the one-chain assumption?
+
+## Common Pitfalls
+
+- Starting from an arbitrary source instead of the source missing from the destination set.
+- Using a general graph traversal when the tickets already form a unique chain.
+- Forgetting that duplicate outgoing tickets from the same city violate the simplifying assumptions.
