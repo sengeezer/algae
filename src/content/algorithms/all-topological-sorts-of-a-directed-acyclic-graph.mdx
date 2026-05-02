@@ -1,0 +1,171 @@
+---
+title: All topological sorts of a Directed Acyclic Graph
+slug: all-topological-sorts-of-a-directed-acyclic-graph
+category: Graphs
+summary: Backtrack over every currently available zero-indegree vertex to enumerate all valid topological orders of a DAG.
+description: All topological sorts of a Directed Acyclic Graph is the exhaustive dependency-order problem solved by recursive indegree updates and backtracking.
+dataStructures:
+  - Graph
+  - Array
+  - Recursion
+techniques:
+  - Topological Sort
+  - Backtracking
+  - Indegree Tracking
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - enumerate all topological orders
+  - all DAG orderings
+useCases:
+  - Listing every valid dependency ordering in a DAG
+  - Exploring all schedule variants that respect prerequisites
+  - Searching over every feasible topological arrangement before scoring them further
+complexity:
+  time: O(V! * (V + E))
+  space: O(V + E)
+  notes: The number of valid outputs can itself be factorial, so enumeration cost dominates the problem.
+interviewSignals:
+  - The prompt asks for every valid ordering, not just one.
+  - Multiple zero-indegree choices can appear at the same step and must all be explored.
+relatedSlugs:
+  - topological-sort
+  - longest-path-in-a-directed-acyclic-graph
+  - shortest-path-in-directed-acyclic-graph
+provenance:
+  - title: GeeksforGeeks - All Topological Sorts of a Directed Acyclic Graph
+    href: https://www.geeksforgeeks.org/dsa/all-topological-sorts-of-a-directed-acyclic-graph/
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Ordinary topological sort gives one valid ordering, but some problems need every possible one. That happens when unrelated tasks can swap positions freely and a later objective depends on testing each feasible dependency-respecting arrangement.
+
+## Worked Example
+
+If both vertices `0` and `2` currently have indegree zero, then both choices are valid next steps. Pick `0`, recurse, backtrack, then pick `2` and recurse again. Repeating that branching process produces every valid ordering.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function allTopologicalSortsOfADirectedAcyclicGraph(nodeCount, edges) {
+  const graph = Array.from({ length: nodeCount }, () => []);
+  const indegree = new Array(nodeCount).fill(0);
+
+  for (const [from, to] of edges) {
+    graph[from].push(to);
+    indegree[to] += 1;
+  }
+
+  const used = new Array(nodeCount).fill(false);
+  const order = [];
+  const allOrders = [];
+
+  function backtrack() {
+    let progressed = false;
+
+    for (let node = 0; node < nodeCount; node += 1) {
+      if (used[node] || indegree[node] !== 0) {
+        continue;
+      }
+
+      progressed = true;
+      used[node] = true;
+      order.push(node);
+
+      for (const neighbor of graph[node]) {
+        indegree[neighbor] -= 1;
+      }
+
+      backtrack();
+
+      for (const neighbor of graph[node]) {
+        indegree[neighbor] += 1;
+      }
+
+      order.pop();
+      used[node] = false;
+    }
+
+    if (!progressed && order.length === nodeCount) {
+      allOrders.push([...order]);
+    }
+  }
+
+  backtrack();
+  return allOrders;
+}
+```
+
+```ts
+export function allTopologicalSortsOfADirectedAcyclicGraph(
+  nodeCount: number,
+  edges: Array<[number, number]>,
+): number[][] {
+  const graph = Array.from({ length: nodeCount }, () => [] as number[]);
+  const indegree = new Array<number>(nodeCount).fill(0);
+
+  for (const [from, to] of edges) {
+    graph[from].push(to);
+    indegree[to] += 1;
+  }
+
+  const used = new Array<boolean>(nodeCount).fill(false);
+  const order: number[] = [];
+  const allOrders: number[][] = [];
+
+  function backtrack(): void {
+    let progressed = false;
+
+    for (let node = 0; node < nodeCount; node += 1) {
+      if (used[node] || indegree[node] !== 0) {
+        continue;
+      }
+
+      progressed = true;
+      used[node] = true;
+      order.push(node);
+
+      for (const neighbor of graph[node]) {
+        indegree[neighbor] -= 1;
+      }
+
+      backtrack();
+
+      for (const neighbor of graph[node]) {
+        indegree[neighbor] += 1;
+      }
+
+      order.pop();
+      used[node] = false;
+    }
+
+    if (!progressed && order.length === nodeCount) {
+      allOrders.push([...order]);
+    }
+  }
+
+  backtrack();
+  return allOrders;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you stop after finding only the lexicographically smallest valid order?
+- How do you detect that the graph is not a DAG?
+- When does enumerating all orders become computationally unrealistic?
+
+## Common Pitfalls
+
+- Returning after the first zero-indegree choice instead of exploring all of them.
+- Forgetting to restore indegrees during backtracking.
+- Using the single-order Kahn algorithm when the prompt explicitly wants every valid ordering.

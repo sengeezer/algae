@@ -1,0 +1,283 @@
+---
+title: Minimum cost to connect all cities
+slug: minimum-cost-to-connect-all-cities
+category: Graphs
+summary: Treat the road-repair problem as a minimum spanning tree and keep choosing the cheapest edge that reaches a new city.
+description: Minimum cost to connect all cities is the story-form minimum-spanning-tree problem where repairing roads reconnects every city at minimum total cost.
+dataStructures:
+  - Graph
+  - Priority Queue
+  - Array
+techniques:
+  - Prim's Algorithm
+  - Minimum Spanning Tree
+  - Greedy
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - connect cities with minimum cost
+  - repair roads minimum cost
+useCases:
+  - Restoring connectivity in a damaged road network with minimum rebuild cost
+  - Translating a story problem into a minimum spanning tree model
+  - Verifying whether all cities can be reconnected at all
+complexity:
+  time: O(E log V)
+  space: O(V + E)
+  notes: The heap always exposes the cheapest road that can extend the currently repaired component.
+interviewSignals:
+  - The prompt asks for the cheapest way to connect every location, not the cheapest route between two locations.
+  - Roads are weighted and the answer is a total infrastructure cost.
+relatedSlugs:
+  - prim-mst
+  - kruskal-mst
+  - priority-queue
+provenance:
+  - title: GeeksforGeeks - Minimum cost to connect all cities
+    href: https://www.geeksforgeeks.org/dsa/minimum-cost-connect-cities/
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is Prim's algorithm in a story problem disguise. Instead of talking about abstract weighted edges, the prompt talks about damaged roads and repair costs, but the objective is still to pick the cheapest set of edges that reconnects the entire graph.
+
+## Worked Example
+
+If cities `1`, `2`, and `3` can be connected for costs `1` and `2`, while linking city `4` through that repaired component costs `3`, then the minimum total repair cost becomes `1 + 2 + 3 = 6`. Every step adds exactly one new city through the cheapest frontier road.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class MinHeap {
+  constructor() {
+    this.values = [];
+  }
+
+  push(entry) {
+    this.values.push(entry);
+    this.bubbleUp(this.values.length - 1);
+  }
+
+  pop() {
+    if (this.values.length === 0) {
+      return undefined;
+    }
+
+    const smallest = this.values[0];
+    const last = this.values.pop();
+    if (this.values.length > 0) {
+      this.values[0] = last;
+      this.bubbleDown(0);
+    }
+
+    return smallest;
+  }
+
+  get size() {
+    return this.values.length;
+  }
+
+  bubbleUp(index) {
+    while (index > 0) {
+      const parent = Math.floor((index - 1) / 2);
+      if (this.values[parent][0] <= this.values[index][0]) {
+        break;
+      }
+
+      [this.values[parent], this.values[index]] = [this.values[index], this.values[parent]];
+      index = parent;
+    }
+  }
+
+  bubbleDown(index) {
+    const length = this.values.length;
+
+    while (true) {
+      let smallest = index;
+      const left = index * 2 + 1;
+      const right = left + 1;
+
+      if (left < length && this.values[left][0] < this.values[smallest][0]) {
+        smallest = left;
+      }
+
+      if (right < length && this.values[right][0] < this.values[smallest][0]) {
+        smallest = right;
+      }
+
+      if (smallest === index) {
+        break;
+      }
+
+      [this.values[index], this.values[smallest]] = [this.values[smallest], this.values[index]];
+      index = smallest;
+    }
+  }
+}
+
+function minimumCostToConnectAllCities(cityCount, roads) {
+  if (cityCount === 0) {
+    return 0;
+  }
+
+  const graph = Array.from({ length: cityCount + 1 }, () => []);
+  for (const [from, to, cost] of roads) {
+    graph[from].push([to, cost]);
+    graph[to].push([from, cost]);
+  }
+
+  const heap = new MinHeap();
+  const repaired = new Array(cityCount + 1).fill(false);
+  heap.push([0, 1]);
+
+  let totalCost = 0;
+  let connectedCities = 0;
+
+  while (heap.size > 0 && connectedCities < cityCount) {
+    const [cost, city] = heap.pop();
+    if (repaired[city]) {
+      continue;
+    }
+
+    repaired[city] = true;
+    totalCost += cost;
+    connectedCities += 1;
+
+    for (const [neighbor, neighborCost] of graph[city]) {
+      if (!repaired[neighbor]) {
+        heap.push([neighborCost, neighbor]);
+      }
+    }
+  }
+
+  return connectedCities === cityCount ? totalCost : -1;
+}
+```
+
+```ts
+class MinHeap {
+  private readonly values: Array<[number, number]> = [];
+
+  push(entry: [number, number]): void {
+    this.values.push(entry);
+    this.bubbleUp(this.values.length - 1);
+  }
+
+  pop(): [number, number] | undefined {
+    if (this.values.length === 0) {
+      return undefined;
+    }
+
+    const smallest = this.values[0];
+    const last = this.values.pop()!;
+    if (this.values.length > 0) {
+      this.values[0] = last;
+      this.bubbleDown(0);
+    }
+
+    return smallest;
+  }
+
+  get size(): number {
+    return this.values.length;
+  }
+
+  private bubbleUp(index: number): void {
+    while (index > 0) {
+      const parent = Math.floor((index - 1) / 2);
+      if (this.values[parent][0] <= this.values[index][0]) {
+        break;
+      }
+
+      [this.values[parent], this.values[index]] = [this.values[index], this.values[parent]];
+      index = parent;
+    }
+  }
+
+  private bubbleDown(index: number): void {
+    const length = this.values.length;
+
+    while (true) {
+      let smallest = index;
+      const left = index * 2 + 1;
+      const right = left + 1;
+
+      if (left < length && this.values[left][0] < this.values[smallest][0]) {
+        smallest = left;
+      }
+
+      if (right < length && this.values[right][0] < this.values[smallest][0]) {
+        smallest = right;
+      }
+
+      if (smallest === index) {
+        break;
+      }
+
+      [this.values[index], this.values[smallest]] = [this.values[smallest], this.values[index]];
+      index = smallest;
+    }
+  }
+}
+
+export function minimumCostToConnectAllCities(
+  cityCount: number,
+  roads: Array<[number, number, number]>,
+): number {
+  if (cityCount === 0) {
+    return 0;
+  }
+
+  const graph = Array.from({ length: cityCount + 1 }, () => [] as Array<[number, number]>);
+  for (const [from, to, cost] of roads) {
+    graph[from].push([to, cost]);
+    graph[to].push([from, cost]);
+  }
+
+  const heap = new MinHeap();
+  const repaired = new Array<boolean>(cityCount + 1).fill(false);
+  heap.push([0, 1]);
+
+  let totalCost = 0;
+  let connectedCities = 0;
+
+  while (heap.size > 0 && connectedCities < cityCount) {
+    const [cost, city] = heap.pop()!;
+    if (repaired[city]) {
+      continue;
+    }
+
+    repaired[city] = true;
+    totalCost += cost;
+    connectedCities += 1;
+
+    for (const [neighbor, neighborCost] of graph[city]) {
+      if (!repaired[neighbor]) {
+        heap.push([neighborCost, neighbor]);
+      }
+    }
+  }
+
+  return connectedCities === cityCount ? totalCost : -1;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you solve the same problem with Kruskal and Union-Find?
+- How do you detect that reconnecting every city is impossible?
+- What changes if the city labels are zero-based instead of one-based?
+
+## Common Pitfalls
+
+- Solving shortest path between two cities instead of total reconnection cost.
+- Forgetting that the answer is impossible if the graph is disconnected.
+- Starting Prim's expansion without marking which cities are already inside the repaired component.

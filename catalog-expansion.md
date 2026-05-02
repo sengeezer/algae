@@ -720,9 +720,17 @@ This sixty-fourth expansion slice lifts the catalog from 402 to 405 entries.
 - Minimum Weight Cycle in a Graph
 - D'Esopo-Pape Algorithm : Single Source Shortest Path
 
+## Batch 65 added
+
+This sixty-fifth expansion slice lifts the catalog from 405 to 408 entries.
+
+- Minimum cost to connect all cities
+- Minimum Product Spanning Tree
+- All topological sorts of a Directed Acyclic Graph
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 64 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 65 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -730,10 +738,10 @@ All expansion entries from batch 1 through batch 64 now carry explicit per-entry
 
 ## Why this batch
 
-- It completes the next clean shortest-path trio from the GeeksforGeeks graph index without reopening already represented items such as Johnson's Algorithm and Dial's Algorithm.
-- It broadens the catalog across deque-based 0-1 BFS, repeated-edge-removal cycle minimization with Dijkstra, and the practical deque heuristic behind D'Esopo-Pape shortest paths.
-- It adds several interview patterns that were not previously first-class entries: exploiting binary edge weights without a heap, turning minimum cycle search into repeated shortest-path checks, and using queue-front promotion to accelerate relaxations in sparse weighted graphs.
-- It leaves the next continuation point at the first remaining clean minimum-spanning-tree and topological-order absences after the shortest-path section is exhausted.
+- It advances the source-ordered GeeksforGeeks graph frontier from shortest paths into the first clean minimum-spanning-tree and topological-order absences.
+- It broadens the catalog across an MST repair-cost problem, the logarithmic transform that converts product minimization into ordinary spanning-tree structure, and exhaustive enumeration of every valid DAG ordering.
+- It adds several interview patterns that were not previously first-class entries: mapping a story problem directly onto an MST, changing the optimization objective from sum to product without changing the underlying cut-order reasoning, and backtracking over zero-indegree choices instead of returning only one topological order.
+- It leaves the next continuation point at the remaining clean topological-order and itinerary-style absences after skipping already represented Kahn and longest-path variants.
 
 ## Supporting study references from the algorithms list
 
@@ -743,4 +751,4 @@ All expansion entries from batch 1 through batch 64 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- The current GeeksforGeeks backfill frontier now continues with `Minimum cost to connect all cities`, `Minimum Product Spanning Tree`, and `All topological sorts of a Directed Acyclic Graph`; nearby entries like `Prim's vs Kruskal's algorithm for MST` and `Applications of Minimum Spanning Tree` remain comparison/theory detours, while `Prim's Minimum Spanning Tree (MST)` and `Kruskal's Minimum Spanning Tree` are already represented.
+- The current GeeksforGeeks backfill frontier now continues with `Maximum edges that can be added to DAG so that is remains DAG`, `Topological Sort of a graph using departure time of vertex`, and `Find Itinerary from a given list of tickets`; nearby entries like `Kahn's Algorithm for Topological Sorting` and `Longest Path in a Directed Acyclic Graph` are already represented.

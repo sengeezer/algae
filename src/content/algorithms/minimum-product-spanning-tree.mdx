@@ -1,0 +1,181 @@
+---
+title: Minimum Product Spanning Tree
+slug: minimum-product-spanning-tree
+category: Graphs
+summary: Convert the multiplicative objective into an additive one with logarithms, then run a standard minimum spanning tree algorithm.
+description: Minimum Product Spanning Tree is the positive-weight spanning-tree problem where taking logarithms turns product minimization into ordinary MST reasoning.
+dataStructures:
+  - Graph
+  - Edge List
+  - Disjoint Set
+techniques:
+  - Kruskal's Algorithm
+  - Logarithmic Transform
+  - Minimum Spanning Tree
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - minimum multiplicative spanning tree
+  - product-optimal spanning tree
+useCases:
+  - Optimizing multiplicative cost rather than additive cost
+  - Reusing MST structure after changing the objective with logarithms
+  - Reasoning about positive-weight graph objectives through monotone transforms
+complexity:
+  time: O(E log E)
+  space: O(V + E)
+  notes: Positive edge weights are required so logarithms are defined and preserve the order used by Kruskal.
+interviewSignals:
+  - The prompt asks to minimize a product instead of a sum.
+  - Every edge weight is positive, making a logarithmic transform possible.
+relatedSlugs:
+  - kruskal-mst
+  - prim-mst
+  - union-find
+provenance:
+  - title: GeeksforGeeks - Minimum Product Spanning Tree
+    href: https://www.geeksforgeeks.org/dsa/minimum-product-spanning-tree/
+    kind: Implementation
+  - title: free-programming-books - Algorithms, 4th Edition
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem is valuable because the graph structure does not change, but the optimization target does. Minimizing a product looks different from minimizing a sum until you apply logarithms and recover ordinary spanning-tree reasoning on transformed edge costs.
+
+## Worked Example
+
+If one spanning tree has edge weights `2`, `3`, and `5`, its product is `30`. Taking logs turns that into `log(2) + log(3) + log(5)`, so comparing products becomes comparing sums again.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function minimumProductSpanningTree(nodeCount, edges) {
+  const parent = Array.from({ length: nodeCount }, (_, index) => index);
+  const rank = new Array(nodeCount).fill(0);
+
+  function find(node) {
+    if (parent[node] !== node) {
+      parent[node] = find(parent[node]);
+    }
+    return parent[node];
+  }
+
+  function unite(left, right) {
+    const rootLeft = find(left);
+    const rootRight = find(right);
+    if (rootLeft === rootRight) {
+      return false;
+    }
+
+    if (rank[rootLeft] < rank[rootRight]) {
+      parent[rootLeft] = rootRight;
+    } else if (rank[rootLeft] > rank[rootRight]) {
+      parent[rootRight] = rootLeft;
+    } else {
+      parent[rootRight] = rootLeft;
+      rank[rootLeft] += 1;
+    }
+
+    return true;
+  }
+
+  const sortedEdges = [...edges].sort(
+    (left, right) => Math.log(left[2]) - Math.log(right[2]),
+  );
+
+  const tree = [];
+  let product = 1;
+
+  for (const [from, to, weight] of sortedEdges) {
+    if (!unite(from, to)) {
+      continue;
+    }
+
+    tree.push([from, to, weight]);
+    product *= weight;
+
+    if (tree.length === nodeCount - 1) {
+      return { product, tree };
+    }
+  }
+
+  return null;
+}
+```
+
+```ts
+export function minimumProductSpanningTree(
+  nodeCount: number,
+  edges: Array<[number, number, number]>,
+): { product: number; tree: Array<[number, number, number]> } | null {
+  const parent = Array.from({ length: nodeCount }, (_, index) => index);
+  const rank = new Array<number>(nodeCount).fill(0);
+
+  function find(node: number): number {
+    if (parent[node] !== node) {
+      parent[node] = find(parent[node]);
+    }
+    return parent[node];
+  }
+
+  function unite(left: number, right: number): boolean {
+    const rootLeft = find(left);
+    const rootRight = find(right);
+    if (rootLeft === rootRight) {
+      return false;
+    }
+
+    if (rank[rootLeft] < rank[rootRight]) {
+      parent[rootLeft] = rootRight;
+    } else if (rank[rootLeft] > rank[rootRight]) {
+      parent[rootRight] = rootLeft;
+    } else {
+      parent[rootRight] = rootLeft;
+      rank[rootLeft] += 1;
+    }
+
+    return true;
+  }
+
+  const sortedEdges = [...edges].sort(
+    (left, right) => Math.log(left[2]) - Math.log(right[2]),
+  );
+
+  const tree: Array<[number, number, number]> = [];
+  let product = 1;
+
+  for (const [from, to, weight] of sortedEdges) {
+    if (!unite(from, to)) {
+      continue;
+    }
+
+    tree.push([from, to, weight]);
+    product *= weight;
+
+    if (tree.length === nodeCount - 1) {
+      return { product, tree };
+    }
+  }
+
+  return null;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why do logarithms require all edge weights to be positive?
+- Why does Kruskal still work after the transformation?
+- How would you avoid numeric overflow if the literal product becomes huge?
+
+## Common Pitfalls
+
+- Trying to minimize the raw sum of weights when the prompt asks for a product.
+- Applying logarithms to zero or negative edge weights.
+- Forgetting that a disconnected graph has no spanning tree at all.
