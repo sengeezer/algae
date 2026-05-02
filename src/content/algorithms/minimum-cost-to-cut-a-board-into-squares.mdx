@@ -1,0 +1,149 @@
+---
+title: Minimum Cost to cut a board into squares
+slug: minimum-cost-to-cut-a-board-into-squares
+category: Greedy
+summary: Sort both cut-cost lists in descending order and always take the currently more expensive cut while its multiplier is smallest.
+description: Minimum Cost to cut a board into squares is the greedy board-cutting problem that front-loads expensive horizontal and vertical cuts before they have to cross more segments.
+dataStructures:
+  - Array
+techniques:
+  - Greedy
+  - Sorting
+  - Two Pointers
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - min cost to cut a board into squares
+  - board cutting problem
+  - minimum board cut cost
+useCases:
+  - Ordering costly operations before their multiplicative effect grows
+  - Turning two independent cost streams into one greedy merge process
+  - Reasoning about segment-count multipliers in grid partitioning problems
+complexity:
+  time: O(x log x + y log y)
+  space: O(x + y)
+  notes: Cloning and sorting both cut arrays preserves the caller input; in-place sorting can reduce the extra space to the sort overhead.
+interviewSignals:
+  - A horizontal cut is multiplied by the current number of vertical segments, and vice versa.
+  - The expensive cuts should happen earlier because every later cut affects more pieces.
+relatedSlugs:
+  - connect-n-ropes-with-minimum-cost
+  - quick-sort
+provenance:
+  - title: "GeeksforGeeks - Minimum Cost to cut a board into squares"
+    href: https://www.geeksforgeeks.org/dsa/minimum-cost-cut-board-squares/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+The key greedy observation is that the same cut cost becomes more expensive later because it must cross more segments. That means high-cost cuts should be taken first, which turns the problem into merging two descending cost lists.
+
+## Worked Example
+
+With `x = [2, 1, 3, 1, 4]` and `y = [4, 1, 2]`, start from one horizontal strip and one vertical strip. Taking `4` from `x` first costs `4`, then `4` from `y` costs `8`, and continuing with the largest remaining cut each time yields the optimal total of `42`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function minimumCostToCutABoardIntoSquares(verticalCutCosts, horizontalCutCosts) {
+  const vertical = [...verticalCutCosts].sort((left, right) => right - left);
+  const horizontal = [...horizontalCutCosts].sort((left, right) => right - left);
+
+  let verticalIndex = 0;
+  let horizontalIndex = 0;
+  let verticalSegments = 1;
+  let horizontalSegments = 1;
+  let totalCost = 0;
+
+  while (verticalIndex < vertical.length && horizontalIndex < horizontal.length) {
+    if (vertical[verticalIndex] >= horizontal[horizontalIndex]) {
+      totalCost += vertical[verticalIndex] * horizontalSegments;
+      verticalSegments += 1;
+      verticalIndex += 1;
+      continue;
+    }
+
+    totalCost += horizontal[horizontalIndex] * verticalSegments;
+    horizontalSegments += 1;
+    horizontalIndex += 1;
+  }
+
+  while (verticalIndex < vertical.length) {
+    totalCost += vertical[verticalIndex] * horizontalSegments;
+    verticalSegments += 1;
+    verticalIndex += 1;
+  }
+
+  while (horizontalIndex < horizontal.length) {
+    totalCost += horizontal[horizontalIndex] * verticalSegments;
+    horizontalSegments += 1;
+    horizontalIndex += 1;
+  }
+
+  return totalCost;
+}
+```
+
+```ts
+export function minimumCostToCutABoardIntoSquares(
+  verticalCutCosts: number[],
+  horizontalCutCosts: number[],
+): number {
+  const vertical = [...verticalCutCosts].sort((left, right) => right - left);
+  const horizontal = [...horizontalCutCosts].sort((left, right) => right - left);
+
+  let verticalIndex = 0;
+  let horizontalIndex = 0;
+  let verticalSegments = 1;
+  let horizontalSegments = 1;
+  let totalCost = 0;
+
+  while (verticalIndex < vertical.length && horizontalIndex < horizontal.length) {
+    if (vertical[verticalIndex] >= horizontal[horizontalIndex]) {
+      totalCost += vertical[verticalIndex] * horizontalSegments;
+      verticalSegments += 1;
+      verticalIndex += 1;
+      continue;
+    }
+
+    totalCost += horizontal[horizontalIndex] * verticalSegments;
+    horizontalSegments += 1;
+    horizontalIndex += 1;
+  }
+
+  while (verticalIndex < vertical.length) {
+    totalCost += vertical[verticalIndex] * horizontalSegments;
+    verticalSegments += 1;
+    verticalIndex += 1;
+  }
+
+  while (horizontalIndex < horizontal.length) {
+    totalCost += horizontal[horizontalIndex] * verticalSegments;
+    horizontalSegments += 1;
+    horizontalIndex += 1;
+  }
+
+  return totalCost;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why taking a cheaper cut before a more expensive cut can only increase or preserve the final cost.
+- Adapt the routine if a third dimension adds depth-wise cuts.
+- Return the actual cut order as well as the minimum total cost.
+
+## Common Pitfalls
+
+- Multiplying a vertical cut by the wrong segment count.
+- Sorting ascending and then scanning forward without compensating for the order.
+- Forgetting to finish the remaining cuts once one list is exhausted.

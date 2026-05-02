@@ -1,0 +1,225 @@
+---
+title: Minimum cost to process m tasks where switching costs
+slug: minimum-cost-to-process-m-tasks-where-switching-costs
+category: Greedy
+summary: Reuse a core if it already runs the needed task; otherwise, when every core is occupied, evict the running task whose next use is farthest in the future or never occurs again.
+description: Minimum cost to process m tasks where switching costs is the offline cache-replacement variant for processor cores, where the greedy choice minimizes future switching penalties.
+dataStructures:
+  - Array
+  - Set
+  - Map
+techniques:
+  - Greedy
+  - Future Occurrence Tracking
+  - Lookahead
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - task assignment with switching costs
+  - minimum processor switching cost
+  - offline core replacement problem
+useCases:
+  - Minimizing context switches when the future task schedule is known
+  - Reusing active task types across a bounded number of worker slots
+  - Applying Belady-style eviction outside traditional page caching
+complexity:
+  time: O(m^2)
+  space: O(m)
+  notes: Scanning the running set on each miss keeps the implementation simple, while next-occurrence lists avoid the source article's O(m^2) auxiliary table.
+interviewSignals:
+  - The core choice is equivalent to optimal page replacement with cache size `n`.
+  - When every core is busy, the task with no future use or the farthest next use is the correct victim.
+relatedSlugs:
+  - lru-cache
+  - priority-queue
+provenance:
+  - title: "GeeksforGeeks - Minimum cost to process m tasks where switching costs"
+    href: https://www.geeksforgeeks.org/dsa/minimum-cost-to-process-m-tasks-where-switching-costs/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem is the same greedy structure as optimal page replacement. If the desired task is not already running and all cores are occupied, the safest task to evict is the one needed farthest in the future, because every other running task is useful sooner.
+
+## Worked Example
+
+For `n = 2` and `arr = [1, 2, 1, 3, 2, 1]`, load `1` and `2` for cost `2`, reuse `1` for free, then evict `1` for `3` because `2` is needed sooner. Later reuse `2` for free and switch back to `1`, giving a minimum total cost of `4`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function minimumCostToProcessMTasksWhereSwitchingCosts(coreCount, tasks) {
+  if (coreCount <= 0 || tasks.length === 0) {
+    return 0;
+  }
+
+  const positionsByTask = new Map();
+
+  for (let index = 0; index < tasks.length; index += 1) {
+    const task = tasks[index];
+    const positions = positionsByTask.get(task);
+
+    if (positions) {
+      positions.push(index);
+      continue;
+    }
+
+    positionsByTask.set(task, [index]);
+  }
+
+  const nextPointerByTask = new Map();
+
+  for (const task of positionsByTask.keys()) {
+    nextPointerByTask.set(task, 0);
+  }
+
+  const runningTasks = new Set();
+  let totalCost = 0;
+
+  for (let index = 0; index < tasks.length; index += 1) {
+    const task = tasks[index];
+    nextPointerByTask.set(task, (nextPointerByTask.get(task) ?? 0) + 1);
+
+    if (runningTasks.has(task)) {
+      continue;
+    }
+
+    totalCost += 1;
+
+    if (runningTasks.size < coreCount) {
+      runningTasks.add(task);
+      continue;
+    }
+
+    let taskToReplace = null;
+    let farthestNextUse = -1;
+
+    for (const runningTask of runningTasks) {
+      const positions = positionsByTask.get(runningTask) ?? [];
+      const nextPointer = nextPointerByTask.get(runningTask) ?? 0;
+      const nextUse =
+        nextPointer < positions.length
+          ? positions[nextPointer]
+          : Number.POSITIVE_INFINITY;
+
+      if (nextUse === Number.POSITIVE_INFINITY) {
+        taskToReplace = runningTask;
+        break;
+      }
+
+      if (nextUse > farthestNextUse) {
+        farthestNextUse = nextUse;
+        taskToReplace = runningTask;
+      }
+    }
+
+    if (taskToReplace !== null) {
+      runningTasks.delete(taskToReplace);
+    }
+
+    runningTasks.add(task);
+  }
+
+  return totalCost;
+}
+```
+
+```ts
+export function minimumCostToProcessMTasksWhereSwitchingCosts(
+  coreCount: number,
+  tasks: number[],
+): number {
+  if (coreCount <= 0 || tasks.length === 0) {
+    return 0;
+  }
+
+  const positionsByTask = new Map<number, number[]>();
+
+  for (let index = 0; index < tasks.length; index += 1) {
+    const task = tasks[index];
+    const positions = positionsByTask.get(task);
+
+    if (positions) {
+      positions.push(index);
+      continue;
+    }
+
+    positionsByTask.set(task, [index]);
+  }
+
+  const nextPointerByTask = new Map<number, number>();
+
+  for (const task of positionsByTask.keys()) {
+    nextPointerByTask.set(task, 0);
+  }
+
+  const runningTasks = new Set<number>();
+  let totalCost = 0;
+
+  for (let index = 0; index < tasks.length; index += 1) {
+    const task = tasks[index];
+    nextPointerByTask.set(task, (nextPointerByTask.get(task) ?? 0) + 1);
+
+    if (runningTasks.has(task)) {
+      continue;
+    }
+
+    totalCost += 1;
+
+    if (runningTasks.size < coreCount) {
+      runningTasks.add(task);
+      continue;
+    }
+
+    let taskToReplace: number | null = null;
+    let farthestNextUse = -1;
+
+    for (const runningTask of runningTasks) {
+      const positions = positionsByTask.get(runningTask) ?? [];
+      const nextPointer = nextPointerByTask.get(runningTask) ?? 0;
+      const nextUse =
+        nextPointer < positions.length
+          ? positions[nextPointer]
+          : Number.POSITIVE_INFINITY;
+
+      if (nextUse === Number.POSITIVE_INFINITY) {
+        taskToReplace = runningTask;
+        break;
+      }
+
+      if (nextUse > farthestNextUse) {
+        farthestNextUse = nextUse;
+        taskToReplace = runningTask;
+      }
+    }
+
+    if (taskToReplace !== null) {
+      runningTasks.delete(taskToReplace);
+    }
+
+    runningTasks.add(task);
+  }
+
+  return totalCost;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Improve the eviction search with a max-heap keyed by next use.
+- Return the exact core assignment sequence rather than only the minimum cost.
+- Compare this offline optimum with a real-time policy such as LRU.
+
+## Common Pitfalls
+
+- Evicting the task needed soonest instead of the one needed farthest in the future.
+- Recomputing future occurrences with full rescans instead of maintaining next-use information.
+- Forgetting that assigning a task to a currently free core still costs `1` the first time.
