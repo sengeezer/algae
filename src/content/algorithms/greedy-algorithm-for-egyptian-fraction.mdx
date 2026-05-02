@@ -1,0 +1,123 @@
+---
+title: Greedy Algorithm for Egyptian Fraction
+slug: greedy-algorithm-for-egyptian-fraction
+category: Greedy
+summary: Repeatedly take the largest unit fraction that does not exceed the remaining rational value and recurse on the remainder.
+description: Greedy Algorithm for Egyptian Fraction decomposes a positive rational number into a sum of distinct unit fractions by always choosing the next largest valid unit term.
+dataStructures:
+  - Array
+  - Number
+techniques:
+  - Greedy
+  - Math
+  - Recursion
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - egyptian fraction
+  - unit fraction decomposition
+  - greedy egyptian fraction
+useCases:
+  - Decomposing rational numbers into unique unit fractions
+  - Practicing greedy proofs on arithmetic decomposition problems
+  - Contrasting when a locally largest valid unit term still leads to a complete representation
+complexity:
+  time: O(t)
+  space: O(t)
+  notes: t is the number of unit fractions produced; each step computes the next denominator and reduces the remainder.
+interviewSignals:
+  - The prompt asks for a representation as a sum of distinct `1 / x` terms.
+  - You only need one valid Egyptian-fraction decomposition, not every possible one.
+relatedSlugs:
+  - fractional-knapsack
+  - knapsack-dp
+  - prefix-sum
+provenance:
+  - title: GeeksforGeeks - Greedy Algorithm for Egyptian Fraction
+    href: https://www.geeksforgeeks.org/dsa/greedy-algorithm-egyptian-fraction/
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a good greedy proof problem because the move looks almost too simple: choose the largest unit fraction that still fits. The interesting part is explaining why that choice always leaves another smaller positive fraction to decompose.
+
+## Worked Example
+
+For `6 / 14`, the next unit fraction must be at most `1 / 3` because `1 / 2` is too large. Subtracting `1 / 3` leaves `4 / 42`, which reduces to `2 / 21`. Repeating the same rule produces `1 / 11` and then `1 / 231`, so the final representation is `1 / 3 + 1 / 11 + 1 / 231`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function greedyAlgorithmForEgyptianFraction(numerator, denominator) {
+  if (numerator <= 0 || denominator <= 0) {
+    throw new RangeError('numerator and denominator must be positive');
+  }
+
+  const terms = [];
+  let currentNumerator = numerator;
+  let currentDenominator = denominator;
+
+  while (currentNumerator !== 0) {
+    if (currentDenominator % currentNumerator === 0) {
+      terms.push(`1/${currentDenominator / currentNumerator}`);
+      break;
+    }
+
+    const nextDenominator = Math.ceil(currentDenominator / currentNumerator);
+    terms.push(`1/${nextDenominator}`);
+    currentNumerator = currentNumerator * nextDenominator - currentDenominator;
+    currentDenominator *= nextDenominator;
+  }
+
+  return terms;
+}
+```
+
+```ts
+export function greedyAlgorithmForEgyptianFraction(
+  numerator: number,
+  denominator: number,
+): string[] {
+  if (numerator <= 0 || denominator <= 0) {
+    throw new RangeError('numerator and denominator must be positive');
+  }
+
+  const terms: string[] = [];
+  let currentNumerator = numerator;
+  let currentDenominator = denominator;
+
+  while (currentNumerator !== 0) {
+    if (currentDenominator % currentNumerator === 0) {
+      terms.push(`1/${currentDenominator / currentNumerator}`);
+      break;
+    }
+
+    const nextDenominator = Math.ceil(currentDenominator / currentNumerator);
+    terms.push(`1/${nextDenominator}`);
+    currentNumerator = currentNumerator * nextDenominator - currentDenominator;
+    currentDenominator *= nextDenominator;
+  }
+
+  return terms;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the decomposition as reduced numerator-denominator pairs instead of strings.
+- Explain why the next denominator is `ceil(denominator / numerator)`.
+- Discuss how integer overflow can appear when denominators grow quickly.
+
+## Common Pitfalls
+
+- Choosing any smaller unit fraction instead of the largest valid one, which can increase the number of terms unnecessarily.
+- Forgetting to stop when the remainder is already a unit fraction.
+- Using floating-point subtraction instead of exact integer arithmetic on numerators and denominators.

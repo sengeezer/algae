@@ -768,9 +768,17 @@ This seventieth expansion slice lifts the catalog from 420 to 423 entries.
 - Jump Game - Minimum Jumps to Reach End
 - Job Sequencing Problem
 
+## Batch 71 added
+
+This seventy-first expansion slice lifts the catalog from 423 to 426 entries.
+
+- Greedy Algorithm for Egyptian Fraction
+- Minimum Fibonacci terms with sum equal to K
+- Minimum Platforms Required
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 70 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 71 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -778,10 +786,10 @@ All expansion entries from batch 1 through batch 70 now carry explicit per-entry
 
 ## Why this batch
 
-- It continues the Greedy Algorithms page in source order after batch 69, starting with budget-first purchasing in `Buy Maximum Stocks`, then moving into greedy range expansion for `Jump Game`, and keeping `Job Sequencing Problem` ahead of `Huffman Coding Algorithm` because that is the actual page order.
-- It broadens the catalog across three distinct greedy shapes: buying the cheapest bounded offers first, compressing a reachability BFS into a linear scan, and using a min-heap to preserve the most profitable schedulable jobs under deadlines.
-- It complements nearby local coverage rather than duplicating it: Buy Maximum Stocks adds budgeted quantity maximization rather than resource matching, Jump Game adds minimum frontier counting rather than mere reachability, and Job Sequencing introduces profit-maximizing deadline scheduling rather than count-maximizing interval selection.
-- It keeps local semantic-duplicate decisions intact by leaving `Activity Selection` skipped in favor of the existing `greedy-interval-scheduling` entry and by keeping later duplicates such as `Merge Overlapping Intervals` behind the existing `interval-merging` coverage.
+- It continues the Greedy Algorithms page in exact source order after `Job Sequencing Problem`, starting with arithmetic unit-fraction decomposition in `Greedy Algorithm for Egyptian Fraction`, then keeping the intervening clean Fibonacci-greedy decomposition entry instead of skipping it, and only then reaching interval-overlap counting in `Minimum Platforms Required`.
+- It broadens the catalog across three different greedy proof shapes: repeatedly taking the largest valid unit fraction, repeatedly subtracting the largest valid Fibonacci addend, and sweeping sorted arrival and departure events to count maximum overlap.
+- It complements nearby local coverage rather than duplicating it: Egyptian Fraction adds a math decomposition problem rather than another resource-allocation scan, Minimum Fibonacci terms is a special-case greedy decomposition that contrasts directly with generic coin-change DP, and Minimum Platforms counts concurrent intervals rather than merging or selecting them.
+- It preserves the local duplicate decisions already established on this page by continuing to skip `Activity Selection` in favor of `greedy-interval-scheduling` and `Merge Overlapping Intervals` in favor of `interval-merging`.
 
 ## Supporting study references from the algorithms list
 
@@ -791,4 +799,4 @@ All expansion entries from batch 1 through batch 70 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- The current GeeksforGeeks Greedy-page frontier now continues with `Egyptian Fraction`, `Minimum Platforms`, and `Min Cost to Connect n ropes` after keeping `Job Sequencing Problem` ahead of `Huffman Coding Algorithm`, skipping the already-covered `Activity Selection` and `Merge Overlapping Intervals` duplicates, and continuing to leave weaker easy-page one-offs such as `Min Cost to Make Array Size 1`, `Min Rotations for Circular Lock`, `Max Composite Numbers to Make n`, `Smallest Subset Greater Sum`, `Max Consecutive Diff Sum`, `Min and Max Costs to buy all`, `Min Notes with Given Sum`, and `Max Equal Sum of Three Stacks` out of the clean frontier.
+- The current GeeksforGeeks Greedy-page frontier now continues with `Min Cost to Connect n ropes`, `Max trains`, and `Partition 1 to n into two min diff groups` after the exact-source-order correction that kept `Minimum Fibonacci terms with sum equal to K` ahead of `Minimum Platforms Required`, while `Activity Selection` and `Merge Overlapping Intervals` remain intentionally skipped as local duplicates.

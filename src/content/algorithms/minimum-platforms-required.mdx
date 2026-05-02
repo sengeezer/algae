@@ -1,0 +1,130 @@
+---
+title: Minimum Platforms Required
+slug: minimum-platforms-required
+category: Greedy
+summary: Sort arrivals and departures separately, then sweep both lists to track the maximum number of overlapping trains.
+description: Minimum Platforms Required is the interval-overlap counting problem solved by processing sorted arrival and departure events in chronological order.
+dataStructures:
+  - Array
+techniques:
+  - Greedy
+  - Sorting
+  - Sweep Line
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - minimum platforms
+  - railway platforms
+  - interval overlap count
+useCases:
+  - Counting the maximum number of concurrent intervals
+  - Sizing shared resources like rooms, docks, or service counters
+  - Distinguishing overlap counting from interval merging or interval selection
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: Sorting copied arrival and departure lists dominates the runtime; the sweep itself is linear.
+interviewSignals:
+  - You need the maximum number of simultaneous intervals, not the merged intervals themselves.
+  - Arrival and departure times are supplied in separate arrays but describe the same interval set.
+relatedSlugs:
+  - interval-merging
+  - greedy-interval-scheduling
+  - merge-sort
+provenance:
+  - title: GeeksforGeeks - Minimum Platforms Required
+    href: https://www.geeksforgeeks.org/dsa/minimum-number-platforms-required-railwaybus-station/
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is one of the standard overlap-count problems. The trick is to stop thinking in terms of per-train decisions and instead process the entire timeline as a merged stream of arrival and departure events.
+
+## Worked Example
+
+For `arr = [900, 940, 950, 1100, 1500, 1800]` and `dep = [910, 1200, 1120, 1130, 1900, 2000]`, sorted events show three trains present at `1100`, before the departures at `1120` and `1130` reduce the count again. That maximum overlap means `3` platforms are required.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function minimumPlatformsRequired(arrivals, departures) {
+  if (arrivals.length === 0) {
+    return 0;
+  }
+
+  const sortedArrivals = [...arrivals].sort((left, right) => left - right);
+  const sortedDepartures = [...departures].sort((left, right) => left - right);
+
+  let platformsInUse = 1;
+  let maxPlatforms = 1;
+  let arrivalIndex = 1;
+  let departureIndex = 0;
+
+  while (arrivalIndex < sortedArrivals.length && departureIndex < sortedDepartures.length) {
+    if (sortedArrivals[arrivalIndex] <= sortedDepartures[departureIndex]) {
+      platformsInUse += 1;
+      maxPlatforms = Math.max(maxPlatforms, platformsInUse);
+      arrivalIndex += 1;
+      continue;
+    }
+
+    platformsInUse -= 1;
+    departureIndex += 1;
+  }
+
+  return maxPlatforms;
+}
+```
+
+```ts
+export function minimumPlatformsRequired(
+  arrivals: number[],
+  departures: number[],
+): number {
+  if (arrivals.length === 0) {
+    return 0;
+  }
+
+  const sortedArrivals = [...arrivals].sort((left, right) => left - right);
+  const sortedDepartures = [...departures].sort((left, right) => left - right);
+
+  let platformsInUse = 1;
+  let maxPlatforms = 1;
+  let arrivalIndex = 1;
+  let departureIndex = 0;
+
+  while (arrivalIndex < sortedArrivals.length && departureIndex < sortedDepartures.length) {
+    if (sortedArrivals[arrivalIndex] <= sortedDepartures[departureIndex]) {
+      platformsInUse += 1;
+      maxPlatforms = Math.max(maxPlatforms, platformsInUse);
+      arrivalIndex += 1;
+      continue;
+    }
+
+    platformsInUse -= 1;
+    departureIndex += 1;
+  }
+
+  return maxPlatforms;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why equal arrival and departure times still require a new platform in this version of the problem.
+- Return the actual maximum-overlap time window instead of only the count.
+- Compare this two-array sweep with a generic event-list sweep-line implementation.
+
+## Common Pitfalls
+
+- Treating a departure at the same time as an arrival as freeing a platform early, which this prompt explicitly disallows.
+- Merging intervals instead of counting the maximum number of overlaps.
+- Sorting one array but forgetting that departures must also be sorted before the sweep.

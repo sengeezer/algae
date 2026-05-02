@@ -1,0 +1,132 @@
+---
+title: Minimum Fibonacci terms with sum equal to K
+slug: minimum-fibonacci-terms-with-sum-equal-to-k
+category: Greedy
+summary: Generate Fibonacci values up to `K`, then repeatedly subtract the largest usable Fibonacci term until the remainder is zero.
+description: Minimum Fibonacci terms with sum equal to K is the greedy decomposition pattern that uses the largest available Fibonacci number at each step to minimize the term count.
+dataStructures:
+  - Array
+  - Number
+techniques:
+  - Greedy
+  - Math
+  - Sequence Generation
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - fibonacci coin change
+  - minimum fibonacci terms
+  - zeckendorf greedy
+useCases:
+  - Decomposing an integer into the fewest Fibonacci addends
+  - Practicing greedy choices that are valid because of Fibonacci structure
+  - Contrasting special-case greedy decompositions with generic coin change DP
+complexity:
+  time: O(log K)
+  space: O(log K)
+  notes: Only Fibonacci terms up to K are generated, and there are O(log K) of them.
+interviewSignals:
+  - The allowed building blocks are Fibonacci numbers, and the objective is to minimize how many are used.
+  - The prompt hints at a coin-change style problem but the denomination family is highly structured.
+relatedSlugs:
+  - knapsack-dp
+  - memoization-dp
+  - fractional-knapsack
+provenance:
+  - title: GeeksforGeeks - Minimum Fibonacci terms with sum equal to K
+    href: https://www.geeksforgeeks.org/dsa/minimum-fibonacci-terms-sum-equal-k/
+    kind: Implementation
+  - title: free-programming-books - Competitive Programmer's Handbook
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem looks like coin change, which usually pushes you toward dynamic programming. The twist is that Fibonacci denominations are special enough for a greedy choice to work: taking the largest usable Fibonacci number never blocks an optimal minimum-term decomposition.
+
+## Worked Example
+
+For `K = 19`, generate Fibonacci values up to `19`: `1, 1, 2, 3, 5, 8, 13`. Take `13` first, leaving `6`, then take `5`, leaving `1`, then take `1`. The answer is `3` terms: `13 + 5 + 1`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function minimumFibonacciTermsWithSumEqualToK(target) {
+  if (target < 0) {
+    throw new RangeError('target must be non-negative');
+  }
+
+  if (target === 0) {
+    return 0;
+  }
+
+  const fibonacci = [1, 1];
+
+  while (fibonacci[fibonacci.length - 1] < target) {
+    fibonacci.push(
+      fibonacci[fibonacci.length - 1] + fibonacci[fibonacci.length - 2],
+    );
+  }
+
+  let remaining = target;
+  let count = 0;
+
+  for (let index = fibonacci.length - 1; index >= 0 && remaining > 0; index -= 1) {
+    while (remaining >= fibonacci[index]) {
+      remaining -= fibonacci[index];
+      count += 1;
+    }
+  }
+
+  return count;
+}
+```
+
+```ts
+export function minimumFibonacciTermsWithSumEqualToK(target: number): number {
+  if (target < 0) {
+    throw new RangeError('target must be non-negative');
+  }
+
+  if (target === 0) {
+    return 0;
+  }
+
+  const fibonacci = [1, 1];
+
+  while (fibonacci[fibonacci.length - 1] < target) {
+    fibonacci.push(
+      fibonacci[fibonacci.length - 1] + fibonacci[fibonacci.length - 2],
+    );
+  }
+
+  let remaining = target;
+  let count = 0;
+
+  for (let index = fibonacci.length - 1; index >= 0 && remaining > 0; index -= 1) {
+    while (remaining >= fibonacci[index]) {
+      remaining -= fibonacci[index];
+      count += 1;
+    }
+  }
+
+  return count;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the actual Fibonacci terms used, not just the count.
+- Explain how this relates to Zeckendorf-style representations.
+- Contrast why greedy works here but fails for arbitrary coin systems.
+
+## Common Pitfalls
+
+- Reaching for generic coin-change DP before checking whether the denomination family has a stronger greedy property.
+- Forgetting to generate Fibonacci numbers only up to the needed target.
+- Treating the answer as distinct-term only when the prompt allows repeated Fibonacci numbers.
