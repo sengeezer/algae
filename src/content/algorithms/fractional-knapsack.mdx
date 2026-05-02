@@ -1,0 +1,154 @@
+---
+title: Fractional Knapsack
+slug: fractional-knapsack
+category: Greedy
+summary: Sort items by value-to-weight ratio and keep taking the best remaining ratio until the capacity is full.
+description: Fractional Knapsack is the greedy variant of knapsack where divisible items make value-density ordering optimal.
+dataStructures:
+  - Array
+  - Object
+techniques:
+  - Greedy
+  - Sorting
+  - Ratio Ordering
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - greedy knapsack
+  - continuous knapsack
+  - value density knapsack
+useCases:
+  - Maximizing value when divisible resources can be partially taken
+  - Contrasting when greedy works versus when 0/1 knapsack needs dynamic programming
+  - Choosing the best value density under a hard capacity limit
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: Sorting the ratio list dominates the runtime; the scan afterward is linear.
+interviewSignals:
+  - Items may be taken partially rather than only fully included or excluded.
+  - The intended distinction from 0/1 knapsack is why greedy becomes valid here.
+relatedSlugs:
+  - knapsack-dp
+  - greedy-interval-scheduling
+  - quick-sort
+provenance:
+  - title: "GeeksforGeeks - Fractional Knapsack"
+    href: https://www.geeksforgeeks.org/dsa/fractional-knapsack-problem/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Fractional Knapsack is one of the cleanest examples of when greedy is truly optimal. The moment an interviewer says you may take part of an item, the problem stops being 0/1 subset optimization and becomes value-density ordering.
+
+## Worked Example
+
+Suppose the items are `(value 60, weight 10)`, `(100, 20)`, and `(120, 30)` with capacity `50`. Take the first two items completely, then take `20 / 30` of the last item. The total value is `60 + 100 + 120 * (20 / 30) = 240`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function fractionalKnapsack(values, weights, capacity) {
+  if (capacity <= 0 || values.length === 0) {
+    return 0;
+  }
+
+  const items = values
+    .map((value, index) => ({
+      value,
+      weight: weights[index],
+      ratio: weights[index] === 0 ? Number.POSITIVE_INFINITY : value / weights[index],
+    }))
+    .sort((left, right) => right.ratio - left.ratio);
+
+  let remaining = capacity;
+  let totalValue = 0;
+
+  for (const item of items) {
+    if (remaining === 0) {
+      break;
+    }
+
+    if (item.weight === 0) {
+      totalValue += item.value;
+      continue;
+    }
+
+    if (item.weight <= remaining) {
+      totalValue += item.value;
+      remaining -= item.weight;
+      continue;
+    }
+
+    totalValue += item.ratio * remaining;
+    remaining = 0;
+  }
+
+  return totalValue;
+}
+```
+
+```ts
+export function fractionalKnapsack(
+  values: number[],
+  weights: number[],
+  capacity: number,
+): number {
+  if (capacity <= 0 || values.length === 0) {
+    return 0;
+  }
+
+  const items = values
+    .map((value, index) => ({
+      value,
+      weight: weights[index],
+      ratio: weights[index] === 0 ? Number.POSITIVE_INFINITY : value / weights[index],
+    }))
+    .sort((left, right) => right.ratio - left.ratio);
+
+  let remaining = capacity;
+  let totalValue = 0;
+
+  for (const item of items) {
+    if (remaining === 0) {
+      break;
+    }
+
+    if (item.weight === 0) {
+      totalValue += item.value;
+      continue;
+    }
+
+    if (item.weight <= remaining) {
+      totalValue += item.value;
+      remaining -= item.weight;
+      continue;
+    }
+
+    totalValue += item.ratio * remaining;
+    remaining = 0;
+  }
+
+  return totalValue;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why the same greedy ratio rule fails for 0/1 knapsack.
+- Return which fraction of each item is taken rather than only the final value.
+- Discuss how floating-point precision affects the reported answer.
+
+## Common Pitfalls
+
+- Reusing the greedy rule for 0/1 knapsack, where items cannot be split.
+- Sorting by raw value or by raw weight instead of value-to-weight ratio.
+- Forgetting to stop once the remaining capacity reaches zero.

@@ -1,0 +1,131 @@
+---
+title: Erdos Renyl Model (for generating Random Graphs)
+slug: erdos-renyl-model-for-generating-random-graphs
+category: Graphs
+summary: Iterate over every unordered pair of vertices and include the edge independently with probability `p` to sample a `G(n, p)` random graph.
+description: "Erdos Renyl Model (for generating Random Graphs) is the random-graph generation pattern that samples each possible undirected edge independently with probability p."
+dataStructures:
+  - Graph
+  - Array
+  - Random Number Generator
+techniques:
+  - Randomized Algorithms
+  - Graph Generation
+  - Probability
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - erdos-renyi random graph
+  - gnp random graph
+  - random graph generator
+useCases:
+  - Generating synthetic graph inputs for testing connectivity or traversal algorithms
+  - Studying how graph density changes as edge probability varies
+  - Building random network baselines before measuring higher-level graph properties
+complexity:
+  time: O(n^2)
+  space: O(n + E)
+  notes: "E is random, with expected value p * n * (n - 1) / 2 in the undirected G(n, p) model."
+interviewSignals:
+  - The prompt asks you to generate a random undirected graph rather than analyze a fixed one.
+  - Each possible edge is included independently with the same probability `p`.
+relatedSlugs:
+  - connected-components
+  - dynamic-connectivity
+  - clone-an-undirected-graph
+provenance:
+  - title: "GeeksforGeeks - Erdos Renyl Model (for generating Random Graphs)"
+    href: https://www.geeksforgeeks.org/dsa/erdos-renyl-model-generating-random-graphs/
+    kind: Implementation
+  - title: "free-programming-books - Algorithms, 4th Edition"
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Most graph interview problems start with a fixed input. This one flips the job around: you need to generate the input itself. The `G(n, p)` model is the cleanest randomized baseline because every possible edge is treated symmetrically and independently.
+
+## Worked Example
+
+If `n = 4` and `p = 0.5`, there are six possible undirected edges. The generator flips one probability check for each pair such as `(0, 1)`, `(0, 2)`, and `(2, 3)`. Every pair survives independently with chance `0.5`, so the final graph density varies from sample to sample.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function erdosRenylModelForGeneratingRandomGraphs(
+  nodeCount,
+  edgeProbability,
+  random = Math.random,
+) {
+  if (nodeCount < 0) {
+    throw new RangeError('nodeCount must be non-negative');
+  }
+
+  if (edgeProbability < 0 || edgeProbability > 1) {
+    throw new RangeError('edgeProbability must be between 0 and 1');
+  }
+
+  const graph = Array.from({ length: nodeCount }, () => []);
+
+  for (let from = 0; from < nodeCount; from += 1) {
+    for (let to = from + 1; to < nodeCount; to += 1) {
+      if (random() >= edgeProbability) {
+        continue;
+      }
+
+      graph[from].push(to);
+      graph[to].push(from);
+    }
+  }
+
+  return graph;
+}
+```
+
+```ts
+export function erdosRenylModelForGeneratingRandomGraphs(
+  nodeCount: number,
+  edgeProbability: number,
+  random: () => number = Math.random,
+): number[][] {
+  if (nodeCount < 0) {
+    throw new RangeError('nodeCount must be non-negative');
+  }
+
+  if (edgeProbability < 0 || edgeProbability > 1) {
+    throw new RangeError('edgeProbability must be between 0 and 1');
+  }
+
+  const graph = Array.from({ length: nodeCount }, () => [] as number[]);
+
+  for (let from = 0; from < nodeCount; from += 1) {
+    for (let to = from + 1; to < nodeCount; to += 1) {
+      if (random() >= edgeProbability) {
+        continue;
+      }
+
+      graph[from].push(to);
+      graph[to].push(from);
+    }
+  }
+
+  return graph;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Add the `G(n, M)` variant that samples exactly `M` edges instead of using a probability.
+- Generate a directed random graph by checking every ordered pair instead of every unordered pair.
+- Estimate expected edge count, average degree, or connectivity thresholds as `p` changes.
+
+## Common Pitfalls
+
+- Iterating over both `(u, v)` and `(v, u)` when you intend to build an undirected graph.
+- Using one shared random decision for a whole vertex instead of one independent decision per edge.
+- Forgetting to validate that `p` lies in `[0, 1]`.

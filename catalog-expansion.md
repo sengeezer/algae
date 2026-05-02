@@ -752,9 +752,17 @@ This sixty-eighth expansion slice lifts the catalog from 414 to 417 entries.
 - Count number of trees in a forest
 - A Peterson Graph Problem
 
+## Batch 69 added
+
+This sixty-ninth expansion slice lifts the catalog from 417 to 420 entries.
+
+- Erdos Renyl Model (for generating Random Graphs)
+- Fractional Knapsack
+- Assign Maximum Cookies
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 68 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 69 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -762,10 +770,10 @@ All expansion entries from batch 1 through batch 68 now carry explicit per-entry
 
 ## Why this batch
 
-- It closes the next three graph-page absences after the clean batch 67 review: largest-region measurement on a binary matrix, forest-specific component counting, and a fixed labeled-graph walk reconstruction problem.
-- It broadens the catalog across three patterns that were still underrepresented locally: 8-direction grid component sizing, counting trees by leaning on the forest guarantee, and lexicographically least path reconstruction in a fixed graph with repeated labels.
-- It complements nearby local coverage rather than duplicating it: the matrix entry extends Number of Islands from counting to area under diagonal adjacency, the forest entry specializes Connected Components to acyclic inputs, and the Petersen entry adds a string-constrained walk problem rather than a generic traversal.
-- It leaves the remaining graph-page frontier effectively narrowed to the uncataloged random-graph generator entry after skipping already-covered or applications-only neighbors such as Clone an Undirected Graph, Graph Coloring applications, Traveling Salesman Problem, and Chinese Postman or Route Inspection.
+- It uses the clean batch 68 review as the gate to close the last remaining uncataloged graph-page item, then carries source order forward onto the Greedy Algorithms page instead of inventing an artificial all-graph batch.
+- It broadens the catalog across three complementary patterns: randomized graph generation with the `G(n, p)` model, the canonical greedy ratio proof in Fractional Knapsack, and sorted two-pointer resource matching in Assign Maximum Cookies.
+- It complements nearby local coverage rather than duplicating it: Erdos Renyl adds graph generation rather than graph analysis, Fractional Knapsack is the greedy counterpart to the existing `0/1 Knapsack` DP entry, and Assign Maximum Cookies introduces a threshold-matching greedy scan rather than another interval selector.
+- It explicitly skips the local duplicate `Activity Selection`, which is already covered by `greedy-interval-scheduling`, and leaves the next frontier on the Greedy page after passing over several weaker early one-off problems.
 
 ## Supporting study references from the algorithms list
 
@@ -775,4 +783,4 @@ All expansion entries from batch 1 through batch 68 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- The current GeeksforGeeks graph-page frontier now narrows to `Erdos Renyl Model (for generating Random Graphs)`; the neighboring must-do entries `Clone an Undirected Graph`, `Graph Coloring`, `Traveling Salesman Problem (TSP)`, `Chinese Postman or Route Inspection`, `Hierholzer's Algorithm for directed graph`, `Hopcroft Karp Algorithm for Maximum Matching`, `Graph from given degrees of all vertices`, and `Universal Sink` are already represented locally, while `Number of sinks in a graph` remains intentionally skipped as too weak to prioritize.
+- The current GeeksforGeeks frontier has shifted onto the Greedy Algorithms page and now continues with `Buy Maximum Stocks if i stocks can be bought on i-th day`, `Jump Game - Minimum Jumps to Reach End`, and `Huffman Coding Algorithm` after skipping the already-covered `Activity Selection` duplicate and weaker early easy-page one-offs such as `Min Cost to Make Array Size 1`, `Min Rotations for Circular Lock`, `Max Composite Numbers to Make n`, and `Smallest Subset Greater Sum`.
