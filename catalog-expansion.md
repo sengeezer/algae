@@ -1010,11 +1010,16 @@ This ninety-second expansion slice lifts the catalog from 511 to 519 entries.
 
 ## Next candidates from the same sources
 
-- The local catalog now stands at 519 entries pending any batch-92 publish step.
+- The published catalog now reaches 519 entries on `main`.
 - Batch 92 carries the vetted Dynamic Programming hard stretch through `Longest repeating and non-overlapping substring` and then consumes the clean `Advanced Concepts` absences `Count Ways To Assign Unique Cap To Every Person`, `Digit DP | Introduction`, and `Sum over Subsets | Dynamic Programming`.
 - The Dynamic Programming items skipped between `Program to find amount of water in a given glass` and `Largest Cross Bordered Square` remain already represented locally: `Longest Common Subsequence`, `Longest Increasing Subsequence`, `Edit Distance`, `0-1 Knapsack Problem`, `Partition Problem`, `Longest Palindromic Subsequence`, `Bellman-Ford Algorithm`, and `Floyd Warshall Algorithm`.
 - `The painter's partition problem` remains skipped because the local `Find minimum time to finish all jobs with given constraints` entry already covers that partition-minimax problem and includes the alias `painter partition with multiplier`.
 - The repeated `Palindrome Substrings Count` link after `Longest repeating and non-overlapping substring` remains a duplicate of the already-published palindrome-count entry.
 - The `Problems Sorted by Topic / Dimensions` trio (`DP Standard Problems and Variations.`, `DP Problems Dimension Wise (1D, 2D and 3D)`, and `DP Problems Topic Wise`) remain aggregator pages and should stay skipped during source-order drafting.
 - `Traveling Salesman Problem` remains a duplicate of the published exact TSP entry despite appearing inside `Advanced Concepts`.
-- Batch 93 needs a fresh source-order vetting pass starting after `Sum over Subsets | Dynamic Programming` in the GeeksforGeeks advanced-concepts chain, or a shift back to the next eligible source branch if that tail is duplicate-only.
+- The GeeksforGeeks Dynamic Programming page is now exhausted in source order: `Sum over Subsets | Dynamic Programming` is the last `Advanced Concepts` item, and the surrounding tail is duplicate-only or intentionally skipped.
+- Batch 93 should shift to the GeeksforGeeks Bitwise Algorithms page: https://www.geeksforgeeks.org/dsa/bitwise-algorithms/
+- On that Bitwise page, the `Basics` and `Bit Manipulation Tips and Tricks` sections are theory or language-specific pages and should stay skipped during drafting.
+- Inside `Easy Problems on Bit Algorithms`, `Binary Representation` is already covered semantically by `Binary Equivalent`, `Set the K-th Bit` by `Set Bit`, `Odd Occurring Number` by the existing XOR-singleton coverage in `Unique Element In An Array`, and `Power of two` by `Is Power Of Two`.
+- The next clean eight source-ordered absences for batch 93 are `Turn off the rightmost set bit`, `Check if K-th Bit Set`, `Modulus division by 2's Power`, `The only set bit`, `Add Bit Strings`, `Check for Integer Overflow`, `XOR without using XOR`, and `Check for Equal`.
+- The immediate follow-ons after that vetted eight-entry queue are `Check for opposite signs`, `Swap Two Numbers`, and `Russian Peasant`.
