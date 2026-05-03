@@ -1,0 +1,108 @@
+---
+title: "How to print maximum number of A's using given four keys"
+slug: how-to-print-maximum-number-of-as-using-given-four-keys
+category: Dynamic Programming
+summary: "Choose the best breakpoint for copy-paste bursts so a limited number of keystrokes prints as many `A` characters as possible."
+description: "How to print maximum number of A's using given four keys is the breakpoint-optimization DP where typing directly competes with copy-all and repeated paste sequences."
+dataStructures:
+  - Array
+techniques:
+  - Dynamic Programming
+  - Breakpoint Optimization
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - four keys keyboard
+  - max A keyboard
+  - special keyboard dp
+useCases:
+  - Optimizing repeated copy-paste workflows under limited actions
+  - Practicing DP where every split point represents a different strategy change
+  - Comparing direct local actions with delayed bulk multiplication
+complexity:
+  time: O(n^2)
+  space: O(n)
+  notes: "For each keystroke budget, the DP tries every earlier point where a copy-all plus paste burst could begin."
+interviewSignals:
+  - The available operations are type `A`, select all, copy, and paste.
+  - The best plan may require typing fewer direct `A`s early to enable larger paste gains later.
+relatedSlugs:
+  - max-non-adjacent-sum
+  - rod-cutting
+  - climbing-stairs
+provenance:
+  - title: "GeeksforGeeks - How to print maximum number of  A's using given four keys"
+    href: https://www.geeksforgeeks.org/dsa/how-to-print-maximum-number-of-a-using-given-four-keys/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem is a clean DP exercise in delayed payoff. Typing `A` directly is always safe, but the optimal answer comes from choosing the right moment to switch into `select all -> copy -> paste` so future keystrokes multiply earlier work.
+
+## Worked Example
+
+With `7` keystrokes, the best plan is `A, A, A, Ctrl-A, Ctrl-C, Ctrl-V, Ctrl-V`, which produces `9` `A` characters. Typing seven direct letters would only produce `7`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function howToPrintMaximumNumberOfAsUsingGivenFourKeys(keystrokes) {
+  if (keystrokes <= 0) {
+    return 0;
+  }
+
+  const dp = new Array(keystrokes + 1).fill(0);
+
+  for (let current = 1; current <= keystrokes; current += 1) {
+    dp[current] = current;
+
+    for (let breakpoint = 1; breakpoint <= current - 3; breakpoint += 1) {
+      const produced = dp[breakpoint] * (current - breakpoint - 1);
+      dp[current] = Math.max(dp[current], produced);
+    }
+  }
+
+  return dp[keystrokes];
+}
+```
+
+```ts
+export function howToPrintMaximumNumberOfAsUsingGivenFourKeys(keystrokes: number): number {
+  if (keystrokes <= 0) {
+    return 0;
+  }
+
+  const dp = new Array<number>(keystrokes + 1).fill(0);
+
+  for (let current = 1; current <= keystrokes; current += 1) {
+    dp[current] = current;
+
+    for (let breakpoint = 1; breakpoint <= current - 3; breakpoint += 1) {
+      const produced = dp[breakpoint] * (current - breakpoint - 1);
+      dp[current] = Math.max(dp[current], produced);
+    }
+  }
+
+  return dp[keystrokes];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Reconstruct one optimal keystroke sequence, not only the best count.
+- Explain why at least three keystrokes are needed after a breakpoint to make copy-paste worthwhile.
+- Compare this DP with a greedy rule and show where greedy fails.
+
+## Common Pitfalls
+
+- Forgetting to reserve two keystrokes for `select all` and `copy` before counting pastes.
+- Assuming the best answer always comes from the latest possible breakpoint.
+- Overlooking the simple baseline that typing `A` directly remains valid for every step count.

@@ -1,0 +1,130 @@
+---
+title: Count Derangements
+slug: count-derangements
+category: Dynamic Programming
+summary: "Count fixed-point-free permutations by reusing the previous two answers in the standard derangement recurrence."
+description: "Count Derangements is the combinatorics DP where no element may stay in its original position, leading to the recurrence D(n) = (n - 1) * (D(n - 1) + D(n - 2))."
+dataStructures:
+  - Number
+  - Array
+techniques:
+  - Dynamic Programming
+  - Combinatorics
+  - Rolling State
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - derangement count
+  - rencontres number
+  - no fixed point permutations
+useCases:
+  - Counting Secret Santa assignments where nobody keeps their own name
+  - Practicing recurrences that split into swap-now versus defer-swap cases
+  - Connecting combinatorics prompts to a small rolling DP state
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: "Only the previous two derangement counts are needed, so the tabulation compresses cleanly into rolling state."
+interviewSignals:
+  - No item is allowed to remain in its original position.
+  - The prompt asks for the number of valid permutations, not one explicit arrangement.
+relatedSlugs:
+  - permutation-and-combination
+  - binomial-coefficient
+  - bell-numbers-number-of-ways-to-partition-a-set
+provenance:
+  - title: "GeeksforGeeks - Count Derangements"
+    href: https://www.geeksforgeeks.org/dsa/count-derangements-permutation-such-that-no-element-appears-in-its-original-position/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Derangements show up when a counting problem forbids fixed points instead of just asking for unrestricted permutations. The useful reduction is that once the first element moves away from its original slot, the rest of the problem falls into two smaller cases that depend only on the previous two answers.
+
+## Worked Example
+
+For `n = 4`, the answer is `9`. The recurrence gives `D(4) = 3 * (D(3) + D(2)) = 3 * (2 + 1) = 9`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function countDerangements(size) {
+  if (size < 0) {
+    throw new RangeError('size must be non-negative');
+  }
+
+  if (size === 0) {
+    return 1;
+  }
+
+  if (size === 1) {
+    return 0;
+  }
+
+  if (size === 2) {
+    return 1;
+  }
+
+  let previousTwo = 0;
+  let previousOne = 1;
+
+  for (let current = 3; current <= size; current += 1) {
+    const next = (current - 1) * (previousOne + previousTwo);
+    previousTwo = previousOne;
+    previousOne = next;
+  }
+
+  return previousOne;
+}
+```
+
+```ts
+export function countDerangements(size: number): number {
+  if (size < 0) {
+    throw new RangeError('size must be non-negative');
+  }
+
+  if (size === 0) {
+    return 1;
+  }
+
+  if (size === 1) {
+    return 0;
+  }
+
+  if (size === 2) {
+    return 1;
+  }
+
+  let previousTwo = 0;
+  let previousOne = 1;
+
+  for (let current = 3; current <= size; current += 1) {
+    const next = (current - 1) * (previousOne + previousTwo);
+    previousTwo = previousOne;
+    previousOne = next;
+  }
+
+  return previousOne;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the answer modulo a large prime for bigger `n`.
+- Derive the same count from inclusion-exclusion and compare it with the DP.
+- Construct one derangement instead of only counting them.
+
+## Common Pitfalls
+
+- Forgetting the base cases `D(1) = 0` and `D(2) = 1`.
+- Confusing derangements with permutations that only avoid adjacent equality.
+- Recomputing the full DP table when only two prior values are needed.

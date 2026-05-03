@@ -1,0 +1,139 @@
+---
+title: Largest divisible subset in array
+slug: largest-divisible-subset-in-array
+category: Dynamic Programming
+summary: "Sort the values and build the longest chain where every later element is divisible by the previous chosen element."
+description: "Largest divisible subset in array is the subset-chain dynamic-programming problem where divisibility replaces the usual increasing-order comparison from LIS."
+dataStructures:
+  - Array
+techniques:
+  - Dynamic Programming
+  - Sorting
+  - Sequence Reconstruction
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - largest divisible subset
+  - divisible chain
+  - divisibility lis
+useCases:
+  - Finding the longest multiplicative compatibility chain in a set of numbers
+  - Reframing LIS-style predecessor tracking under a divisibility rule
+  - Practicing DP reconstruction after optimizing subset length
+complexity:
+  time: O(n^2)
+  space: O(n)
+  notes: "After sorting, each value only needs to check earlier candidates as possible divisible predecessors, which yields the standard quadratic LIS-style scan."
+interviewSignals:
+  - The subset must satisfy pairwise divisibility when ordered from small to large.
+  - The prompt asks for the actual subset or its maximum size, not only a boolean decision.
+relatedSlugs:
+  - longest-increasing-subsequence
+  - subset-sum-problem
+  - number-of-subsets-equal-to-given-sum
+provenance:
+  - title: "GeeksforGeeks - Largest divisible subset in array"
+    href: https://www.geeksforgeeks.org/dsa/largest-divisible-subset-array/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Largest divisible subset is a useful DP follow-up to LIS because the structure looks familiar but the ordering rule changes. Once the array is sorted, each value tries to extend the longest earlier chain ending at a divisor of that value.
+
+## Worked Example
+
+For `[1, 2, 3, 8, 4, 16]`, sorting gives `[1, 2, 3, 4, 8, 16]`. The best divisible chain is `[1, 2, 4, 8, 16]`, which is longer than any chain that goes through `3`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function largestDivisibleSubsetInArray(values) {
+  if (values.length === 0) {
+    return [];
+  }
+
+  const sorted = [...values].sort((left, right) => left - right);
+  const lengths = new Array(sorted.length).fill(1);
+  const previous = new Array(sorted.length).fill(-1);
+  let bestIndex = 0;
+
+  for (let current = 0; current < sorted.length; current += 1) {
+    for (let candidate = 0; candidate < current; candidate += 1) {
+      if (
+        sorted[current] % sorted[candidate] === 0 &&
+        lengths[candidate] + 1 > lengths[current]
+      ) {
+        lengths[current] = lengths[candidate] + 1;
+        previous[current] = candidate;
+      }
+    }
+
+    if (lengths[current] > lengths[bestIndex]) {
+      bestIndex = current;
+    }
+  }
+
+  const subset = [];
+  for (let index = bestIndex; index !== -1; index = previous[index]) {
+    subset.push(sorted[index]);
+  }
+
+  return subset.reverse();
+}
+```
+
+```ts
+export function largestDivisibleSubsetInArray(values: number[]): number[] {
+  if (values.length === 0) {
+    return [];
+  }
+
+  const sorted = [...values].sort((left, right) => left - right);
+  const lengths = new Array<number>(sorted.length).fill(1);
+  const previous = new Array<number>(sorted.length).fill(-1);
+  let bestIndex = 0;
+
+  for (let current = 0; current < sorted.length; current += 1) {
+    for (let candidate = 0; candidate < current; candidate += 1) {
+      if (
+        sorted[current] % sorted[candidate] === 0 &&
+        lengths[candidate] + 1 > lengths[current]
+      ) {
+        lengths[current] = lengths[candidate] + 1;
+        previous[current] = candidate;
+      }
+    }
+
+    if (lengths[current] > lengths[bestIndex]) {
+      bestIndex = current;
+    }
+  }
+
+  const subset: number[] = [];
+  for (let index = bestIndex; index !== -1; index = previous[index]) {
+    subset.push(sorted[index]);
+  }
+
+  return subset.reverse();
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return only the maximum size instead of reconstructing the subset.
+- Explain why sorting is enough to make the predecessor relation one-directional.
+- Discuss how ties between multiple optimal subsets can be broken.
+
+## Common Pitfalls
+
+- Skipping the sort and losing the simple predecessor ordering.
+- Checking only adjacent numbers instead of all earlier divisibility candidates.
+- Forgetting to reconstruct the chain after computing the best lengths.

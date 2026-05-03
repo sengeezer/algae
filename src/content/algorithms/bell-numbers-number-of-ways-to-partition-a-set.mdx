@@ -1,0 +1,116 @@
+---
+title: "Bell Numbers (Number of ways to Partition a Set)"
+slug: bell-numbers-number-of-ways-to-partition-a-set
+category: Dynamic Programming
+summary: "Count set partitions by tabulating how many ways each new element can either join an existing block or start a new one."
+description: "Bell Numbers (Number of ways to Partition a Set) uses dynamic programming over Bell-triangle or Stirling-style subproblems to count all possible partitions of a finite set."
+dataStructures:
+  - Array
+  - Matrix
+techniques:
+  - Dynamic Programming
+  - Combinatorics
+  - Bell Triangle
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - bell numbers
+  - ways to partition a set
+  - set partition count
+useCases:
+  - Counting how many groupings can be formed from a finite set
+  - Connecting Stirling-number recurrences to one-dimensional dynamic programming
+  - Practicing combinatorics problems that do not ask for explicit partition construction
+complexity:
+  time: O(n^2)
+  space: O(n)
+  notes: "The Bell-triangle update only needs the previous row, so the combinatorial count can be tabulated in quadratic time with linear extra storage."
+interviewSignals:
+  - The prompt asks for the number of partitions of `n` labeled elements into any number of non-empty groups.
+  - The recurrence splits on whether the newest element starts a new block or joins an existing one.
+relatedSlugs:
+  - catalan-numbers
+  - partition
+  - binomial-coefficient
+provenance:
+  - title: "GeeksforGeeks - Bell Numbers (Number of ways to Partition a Set)"
+    href: https://www.geeksforgeeks.org/dsa/bell-numbers-number-of-ways-to-partition-a-set/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Bell numbers are the natural follow-up when counting subsets is no longer enough and the interviewer wants complete set partitions instead. The useful shift is that every new element either creates a new singleton block or gets inserted into one of the existing blocks counted by a smaller subproblem.
+
+## Worked Example
+
+For `n = 3`, the five set partitions are `{{1}, {2}, {3}}`, `{{1, 2}, {3}}`, `{{1, 3}, {2}}`, `{{2, 3}, {1}}`, and `{{1, 2, 3}}`. That is why the third Bell number is `5`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function bellNumbersNumberOfWaysToPartitionASet(size) {
+  if (size < 0) {
+    throw new RangeError('size must be non-negative');
+  }
+
+  const dp = new Array(size + 1).fill(0);
+  dp[0] = 1;
+
+  for (let row = 1; row <= size; row += 1) {
+    let previous = dp[0];
+    dp[0] = dp[row - 1];
+
+    for (let col = 1; col <= row; col += 1) {
+      const current = dp[col];
+      dp[col] = previous + dp[col - 1];
+      previous = current;
+    }
+  }
+
+  return dp[0];
+}
+```
+
+```ts
+export function bellNumbersNumberOfWaysToPartitionASet(size: number): number {
+  if (size < 0) {
+    throw new RangeError('size must be non-negative');
+  }
+
+  const dp = new Array<number>(size + 1).fill(0);
+  dp[0] = 1;
+
+  for (let row = 1; row <= size; row += 1) {
+    let previous = dp[0];
+    dp[0] = dp[row - 1];
+
+    for (let col = 1; col <= row; col += 1) {
+      const current = dp[col];
+      dp[col] = previous + dp[col - 1];
+      previous = current;
+    }
+  }
+
+  return dp[0];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compute the Stirling numbers of the second kind for a fixed number of blocks instead of summing all block counts.
+- Return the first `n` Bell numbers as a sequence.
+- Explain how the Bell triangle relates to the recurrence for Stirling numbers.
+
+## Common Pitfalls
+
+- Confusing set partitions with subset enumeration or combinations.
+- Forgetting that empty blocks are not allowed in the counted partitions.
+- Recomputing the full Bell triangle when only the previous row is needed.

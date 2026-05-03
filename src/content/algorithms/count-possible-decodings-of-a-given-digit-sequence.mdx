@@ -1,0 +1,134 @@
+---
+title: "Count Possible Decodings of a given Digit Sequence"
+slug: count-possible-decodings-of-a-given-digit-sequence
+category: Dynamic Programming
+summary: "Walk the digit string left to right and count how many valid decodings end at each position using one-digit and two-digit transitions."
+description: "Count Possible Decodings of a given Digit Sequence is the string-DP problem where each prefix may extend by a single valid digit or a valid two-digit code from 10 to 26."
+dataStructures:
+  - String
+  - Array
+techniques:
+  - Dynamic Programming
+  - String Parsing
+  - Rolling State
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - decode ways
+  - digit string decoding
+  - message decoding count
+useCases:
+  - Counting valid alphabet decodings of numeric messages
+  - Practicing DP on prefixes with invalid local states like leading zeroes
+  - Recognizing when a staircase-style recurrence is driven by string validity checks
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: "Each position only depends on the previous one- and two-prefix counts once the one-digit and two-digit validity checks are known."
+interviewSignals:
+  - Digits map to letters `1 -> A` through `26 -> Z`.
+  - Zero cannot stand alone, so validity depends on both the current digit and the previous one.
+relatedSlugs:
+  - climbing-stairs
+  - count-ways-to-reach-the-nth-stair-using-step-1-2-or-3
+  - coin-change
+provenance:
+  - title: "GeeksforGeeks - Count Possible Decodings of a given Digit Sequence"
+    href: https://www.geeksforgeeks.org/dsa/count-possible-decodings-given-digit-sequence/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Decode Ways is a useful interview problem because the recurrence is small, but the edge cases are not. A prefix can extend by one digit or two digits, yet zeroes invalidate many apparently natural moves, so the DP has to combine counting with local parsing rules.
+
+## Worked Example
+
+For `digits = "226"`, the valid decodings are `"2|2|6"`, `"22|6"`, and `"2|26"`, so the answer is `3`. The two-digit chunks work only because `22` and `26` both stay within the `10` to `26` range.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function countPossibleDecodingsOfAGivenDigitSequence(digits) {
+  if (!/^\d*$/.test(digits)) {
+    throw new TypeError('digits must contain only numeric characters');
+  }
+
+  if (digits.length === 0 || digits[0] === '0') {
+    return 0;
+  }
+
+  let previousTwo = 1;
+  let previousOne = 1;
+
+  for (let index = 1; index < digits.length; index += 1) {
+    let current = 0;
+
+    if (digits[index] !== '0') {
+      current += previousOne;
+    }
+
+    const pair = Number(digits.slice(index - 1, index + 1));
+    if (digits[index - 1] !== '0' && pair >= 10 && pair <= 26) {
+      current += previousTwo;
+    }
+
+    previousTwo = previousOne;
+    previousOne = current;
+  }
+
+  return previousOne;
+}
+```
+
+```ts
+export function countPossibleDecodingsOfAGivenDigitSequence(digits: string): number {
+  if (!/^\d*$/.test(digits)) {
+    throw new TypeError('digits must contain only numeric characters');
+  }
+
+  if (digits.length === 0 || digits[0] === '0') {
+    return 0;
+  }
+
+  let previousTwo = 1;
+  let previousOne = 1;
+
+  for (let index = 1; index < digits.length; index += 1) {
+    let current = 0;
+
+    if (digits[index] !== '0') {
+      current += previousOne;
+    }
+
+    const pair = Number(digits.slice(index - 1, index + 1));
+    if (digits[index - 1] !== '0' && pair >= 10 && pair <= 26) {
+      current += previousTwo;
+    }
+
+    previousTwo = previousOne;
+    previousOne = current;
+  }
+
+  return previousOne;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return one actual decoding string instead of only the count.
+- Allow `*` wildcards that can stand for multiple digits.
+- Compare the rolling-state version with a full prefix DP array.
+
+## Common Pitfalls
+
+- Treating `0` as a valid one-digit decoding.
+- Allowing two-digit values above `26` like `27` or `30`.
+- Forgetting that an empty-prefix base case of `1` is still needed inside the DP.

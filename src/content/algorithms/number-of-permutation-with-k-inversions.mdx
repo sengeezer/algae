@@ -1,0 +1,116 @@
+---
+title: "Number of permutation with K inversions"
+slug: number-of-permutation-with-k-inversions
+category: Dynamic Programming
+summary: "Count permutations by placing the largest element in every possible position and accumulating how many new inversions that choice creates."
+description: "Number of permutation with K inversions is the combinatorial DP that counts permutations of `1..n` by distributing inversion contributions from the newest maximum element."
+dataStructures:
+  - Array
+  - Table
+techniques:
+  - Dynamic Programming
+  - Combinatorics
+  - Prefix Sums
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - k inversions permutations
+  - inversion count permutations
+  - count permutations by inversions
+useCases:
+  - Counting ranked arrangements with a prescribed inversion total
+  - Practicing DP transitions over combinatorial insertion choices
+  - Connecting permutation structure to state compression with prefix sums
+complexity:
+  time: O(n * k)
+  space: O(k)
+  notes: "The naive transition sums up to `n` previous states per cell, but a rolling prefix-sum window reduces the total work to O(n * k)."
+interviewSignals:
+  - The permutation must contain exactly `k` inversions.
+  - The count depends on how inserting the next maximum shifts inversion totals.
+relatedSlugs:
+  - permutation-and-combination
+  - binomial-coefficient
+  - all-combinations-of-size-k
+provenance:
+  - title: "GeeksforGeeks - Number of permutation with K inversions"
+    href: https://www.geeksforgeeks.org/dsa/number-of-permutation-with-k-inversions/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem appears when the interviewer wants more than direct factorial counting. The useful viewpoint is to insert the current largest value into every possible position of a shorter permutation, because each insertion position contributes a predictable number of new inversions.
+
+## Worked Example
+
+For `n = 3` and `k = 1`, the valid permutations are `[1, 3, 2]` and `[2, 1, 3]`, so the answer is `2`. Each one contains exactly one out-of-order pair.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function numberOfPermutationWithKInversions(size, inversions) {
+  let previous = new Array(inversions + 1).fill(0);
+  previous[0] = 1;
+
+  for (let length = 1; length <= size; length += 1) {
+    const current = new Array(inversions + 1).fill(0);
+    let windowSum = 0;
+
+    for (let target = 0; target <= inversions; target += 1) {
+      windowSum += previous[target];
+      if (target >= length) {
+        windowSum -= previous[target - length];
+      }
+      current[target] = windowSum;
+    }
+
+    previous = current;
+  }
+
+  return previous[inversions];
+}
+```
+
+```ts
+export function numberOfPermutationWithKInversions(size: number, inversions: number): number {
+  let previous = new Array<number>(inversions + 1).fill(0);
+  previous[0] = 1;
+
+  for (let length = 1; length <= size; length += 1) {
+    const current = new Array<number>(inversions + 1).fill(0);
+    let windowSum = 0;
+
+    for (let target = 0; target <= inversions; target += 1) {
+      windowSum += previous[target];
+      if (target >= length) {
+        windowSum -= previous[target - length];
+      }
+      current[target] = windowSum;
+    }
+
+    previous = current;
+  }
+
+  return previous[inversions];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the answer modulo a large prime.
+- Derive the slower O(n * k * n) transition first, then optimize it.
+- Explain why inserting the maximum value contributes between `0` and `length - 1` new inversions.
+
+## Common Pitfalls
+
+- Mixing inversion counting with ordinary permutation generation.
+- Forgetting that the largest inserted value can create only a bounded number of new inversions.
+- Recomputing every transition range from scratch instead of using a sliding window.

@@ -1,0 +1,107 @@
+---
+title: Word Break
+slug: word-break
+category: Dynamic Programming
+summary: "Decide whether a string can be segmented into dictionary words by marking which prefixes are reachable."
+description: "Word Break is the prefix-dynamic-programming problem where each valid split must end at a prefix that was already segmentable."
+dataStructures:
+  - String
+  - Array
+  - Set
+techniques:
+  - Dynamic Programming
+  - Prefix DP
+  - Hashing
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - word break problem
+  - dictionary segmentation
+  - string segmentation dp
+useCases:
+  - Validating whether text can be decomposed into known dictionary tokens
+  - Practicing prefix-state DP on strings
+  - Connecting boolean reachability to substring lookups
+complexity:
+  time: O(n^2)
+  space: O(n + dictionary)
+  notes: "The basic DP scans every possible split point for each suffix end, while a hash set keeps dictionary membership checks cheap."
+interviewSignals:
+  - The input string must be segmented into whole dictionary words.
+  - The answer is a boolean feasibility result, not the number of segmentations.
+relatedSlugs:
+  - check-word-occurrence
+  - count-possible-decodings-of-a-given-digit-sequence
+  - trie
+provenance:
+  - title: "GeeksforGeeks - Word Break"
+    href: https://www.geeksforgeeks.org/dsa/word-break-problem-dp-32/
+    kind: Implementation
+  - title: "free-programming-books - Algorithm Design"
+    href: https://archive.org/details/AlgorithmDesign1stEditionByJonKleinbergAndEvaTardos2005PDF
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Word Break is the string counterpart to many reachability DPs. Each prefix is either segmentable or not, and a longer prefix becomes valid only if some earlier prefix was already valid and the substring between them is a dictionary word.
+
+## Worked Example
+
+For `text = "leetcode"` and dictionary `{"leet", "code"}`, the answer is true because the valid split after `"leet"` leaves `"code"`, which is also in the dictionary.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function wordBreak(text, words) {
+  const dictionary = new Set(words);
+  const reachable = new Array(text.length + 1).fill(false);
+  reachable[0] = true;
+
+  for (let end = 1; end <= text.length; end += 1) {
+    for (let start = 0; start < end; start += 1) {
+      if (reachable[start] && dictionary.has(text.slice(start, end))) {
+        reachable[end] = true;
+        break;
+      }
+    }
+  }
+
+  return reachable[text.length];
+}
+```
+
+```ts
+export function wordBreak(text: string, words: string[]): boolean {
+  const dictionary = new Set(words);
+  const reachable = new Array<boolean>(text.length + 1).fill(false);
+  reachable[0] = true;
+
+  for (let end = 1; end <= text.length; end += 1) {
+    for (let start = 0; start < end; start += 1) {
+      if (reachable[start] && dictionary.has(text.slice(start, end))) {
+        reachable[end] = true;
+        break;
+      }
+    }
+  }
+
+  return reachable[text.length];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return one valid segmentation instead of only a boolean.
+- Count the number of valid segmentations.
+- Limit the search with the maximum dictionary word length.
+
+## Common Pitfalls
+
+- Forgetting the empty-prefix base case at index `0`.
+- Checking only the latest possible split instead of all earlier segmentable prefixes.
+- Using repeated dictionary scans instead of constant-time membership checks.

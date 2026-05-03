@@ -1,0 +1,135 @@
+---
+title: Box Stacking Problem
+slug: box-stacking-problem
+category: Dynamic Programming
+summary: "Generate all stable box rotations, sort by base area, and compute the tallest stack whose bases shrink strictly downward."
+description: "Box Stacking Problem is the stacking-optimization DP where rotated box orientations form an LIS-style chain under two-dimensional base constraints."
+dataStructures:
+  - Array
+techniques:
+  - Dynamic Programming
+  - Sorting
+  - Sequence Optimization
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - box stacking
+  - rotated box stacking
+  - maximum box stack height
+useCases:
+  - Maximizing stable stack height under width-depth constraints
+  - Practicing LIS-style DP on generated orientations
+  - Reasoning about geometric state expansion before optimization
+complexity:
+  time: O(rotations^2)
+  space: O(rotations)
+  notes: "Each physical box generates three normalized base orientations, and the tallest valid stack becomes a quadratic predecessor scan over those rotations."
+interviewSignals:
+  - Boxes may be rotated so different faces can become the base.
+  - A box can be stacked only on a strictly larger width-and-depth base.
+relatedSlugs:
+  - largest-divisible-subset-in-array
+  - longest-increasing-subsequence
+  - tile-stacking-problem
+provenance:
+  - title: "GeeksforGeeks - Box Stacking Problem"
+    href: https://www.geeksforgeeks.org/dsa/box-stacking-problem-dp-22/
+    kind: Implementation
+  - title: "free-programming-books - Algorithm Design"
+    href: https://archive.org/details/AlgorithmDesign1stEditionByJonKleinbergAndEvaTardos2005PDF
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Box stacking is a classic example of turning geometry into sequence DP. Once every box rotation is normalized into a base width and depth, the tallest stack is just the best predecessor chain where each box fits strictly inside the one below it.
+
+## Worked Example
+
+For one box with dimensions `(4, 6, 7)` and another with `(1, 2, 3)`, the smaller box can sit on top of a rotation of the larger one, so combining compatible rotations increases the total height.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function boxStackingProblem(boxes) {
+  const rotations = [];
+
+  for (const [height, width, depth] of boxes) {
+    const options = [
+      [height, Math.max(width, depth), Math.min(width, depth)],
+      [width, Math.max(height, depth), Math.min(height, depth)],
+      [depth, Math.max(height, width), Math.min(height, width)],
+    ];
+    rotations.push(...options);
+  }
+
+  rotations.sort((left, right) => right[1] * right[2] - left[1] * left[2]);
+  const bestHeight = rotations.map((rotation) => rotation[0]);
+
+  for (let current = 0; current < rotations.length; current += 1) {
+    for (let previous = 0; previous < current; previous += 1) {
+      if (
+        rotations[current][1] < rotations[previous][1] &&
+        rotations[current][2] < rotations[previous][2]
+      ) {
+        bestHeight[current] = Math.max(
+          bestHeight[current],
+          bestHeight[previous] + rotations[current][0],
+        );
+      }
+    }
+  }
+
+  return bestHeight.length === 0 ? 0 : Math.max(...bestHeight);
+}
+```
+
+```ts
+export function boxStackingProblem(boxes: Array<[number, number, number]>): number {
+  const rotations: Array<[number, number, number]> = [];
+
+  for (const [height, width, depth] of boxes) {
+    const options: Array<[number, number, number]> = [
+      [height, Math.max(width, depth), Math.min(width, depth)],
+      [width, Math.max(height, depth), Math.min(height, depth)],
+      [depth, Math.max(height, width), Math.min(height, width)],
+    ];
+    rotations.push(...options);
+  }
+
+  rotations.sort((left, right) => right[1] * right[2] - left[1] * left[2]);
+  const bestHeight = rotations.map((rotation) => rotation[0]);
+
+  for (let current = 0; current < rotations.length; current += 1) {
+    for (let previous = 0; previous < current; previous += 1) {
+      if (
+        rotations[current][1] < rotations[previous][1] &&
+        rotations[current][2] < rotations[previous][2]
+      ) {
+        bestHeight[current] = Math.max(
+          bestHeight[current],
+          bestHeight[previous] + rotations[current][0],
+        );
+      }
+    }
+  }
+
+  return bestHeight.length === 0 ? 0 : Math.max(...bestHeight);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Reconstruct one tallest stack, not only its height.
+- Explain why every rotation should normalize its base dimensions so width >= depth.
+- Discuss whether identical base dimensions should be allowed to stack.
+
+## Common Pitfalls
+
+- Forgetting to generate all three box rotations.
+- Comparing only one base dimension instead of both width and depth.
+- Sorting by raw height instead of a stable base-ordering key before the DP.

@@ -1,0 +1,126 @@
+---
+title: "Minimum insertions to form a palindrome"
+slug: minimum-insertions-to-form-a-palindrome
+category: Dynamic Programming
+summary: "Compute the fewest insertions needed to mirror a string by expanding answers over substring intervals."
+description: "Minimum insertions to form a palindrome is the interval-DP problem where matching ends shrink the window for free and mismatched ends require one insertion plus the better neighboring subproblem."
+dataStructures:
+  - String
+  - Array
+techniques:
+  - Dynamic Programming
+  - Interval DP
+  - Space Optimization
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - minimum insertions for palindrome
+  - make string palindrome by insertions
+  - palindrome insertion count
+useCases:
+  - Measuring how far a string is from palindromic symmetry
+  - Reusing interval-DP structure from edit and subsequence problems
+  - Turning a reconstruction-style string prompt into a minimum-cost recurrence
+complexity:
+  time: O(n^2)
+  space: O(n)
+  notes: "The recurrence depends on the interval directly below, left, and diagonal-left-below, so one rolling row is enough."
+interviewSignals:
+  - You may insert characters anywhere, but deletions and replacements are not allowed.
+  - The answer is a minimum count, not the final palindrome itself.
+relatedSlugs:
+  - longest-palindromic-subsequence
+  - edit-distance
+  - palindrome-partitioning
+provenance:
+  - title: "GeeksforGeeks - Minimum insertions to form a palindrome"
+    href: https://www.geeksforgeeks.org/dsa/minimum-insertions-to-form-a-palindrome-dp-28/
+    kind: Implementation
+  - title: "free-programming-books - Algorithm Design"
+    href: https://archive.org/details/AlgorithmDesign1stEditionByJonKleinbergAndEvaTardos2005PDF
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This prompt usually appears right after someone has seen longest palindromic subsequence or edit distance. The key distinction is that you are not allowed to delete anything, so a mismatch at the ends forces one insertion and then the problem continues from the better of the two adjacent intervals.
+
+## Worked Example
+
+For `"geeks"`, the answer is `3`. One valid result is `"skgeegks"`, which inserts three characters to mirror the original string.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function minimumInsertionsToFormAPalindrome(text) {
+  const size = text.length;
+  if (size <= 1) {
+    return 0;
+  }
+
+  const dp = new Array(size).fill(0);
+
+  for (let left = size - 2; left >= 0; left -= 1) {
+    let diagonal = 0;
+
+    for (let right = left + 1; right < size; right += 1) {
+      const saved = dp[right];
+
+      if (text[left] === text[right]) {
+        dp[right] = diagonal;
+      } else {
+        dp[right] = Math.min(dp[right], dp[right - 1]) + 1;
+      }
+
+      diagonal = saved;
+    }
+  }
+
+  return dp[size - 1];
+}
+```
+
+```ts
+export function minimumInsertionsToFormAPalindrome(text: string): number {
+  const size = text.length;
+  if (size <= 1) {
+    return 0;
+  }
+
+  const dp = new Array<number>(size).fill(0);
+
+  for (let left = size - 2; left >= 0; left -= 1) {
+    let diagonal = 0;
+
+    for (let right = left + 1; right < size; right += 1) {
+      const saved = dp[right];
+
+      if (text[left] === text[right]) {
+        dp[right] = diagonal;
+      } else {
+        dp[right] = Math.min(dp[right], dp[right - 1]) + 1;
+      }
+
+      diagonal = saved;
+    }
+  }
+
+  return dp[size - 1];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Reconstruct one minimum-insertion palindrome, not only the count.
+- Show why the answer is also `text.length - LPS(text)`.
+- Compare this interval DP with edit distance to the reversed string.
+
+## Common Pitfalls
+
+- Solving the deletion version and assuming the same recurrence always applies.
+- Forgetting that matching ends shrink the interval without adding cost.
+- Overwriting the diagonal dependency too early in the space-optimized version.

@@ -1,0 +1,112 @@
+---
+title: "Program to find amount of water in a given glass"
+slug: program-to-find-amount-of-water-in-a-given-glass
+category: Dynamic Programming
+summary: "Simulate overflow down a triangular stack of glasses where each excess amount splits evenly between the two glasses below."
+description: "Program to find amount of water in a given glass is the triangle-state DP that propagates overflow row by row until the requested glass amount is known."
+dataStructures:
+  - Matrix
+  - Array
+techniques:
+  - Dynamic Programming
+  - Simulation
+  - Triangular DP
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - water in a glass
+  - champagne tower dp
+  - glass overflow simulation
+useCases:
+  - Modeling overflow propagation through layered containers
+  - Practicing triangular-state DP where each state splits into two children
+  - Comparing local conservation-style simulation with closed-form counting problems
+complexity:
+  time: O(row^2)
+  space: O(row^2)
+  notes: "Only rows up to the queried glass need to be simulated because overflow never moves upward or sideways outside the triangle."
+interviewSignals:
+  - Every glass holds at most one unit before spilling excess evenly downward.
+  - The query asks for the amount in a specific glass after pouring a fixed total volume.
+relatedSlugs:
+  - minimum-sum-path-in-a-triangle
+  - pascal-triangle
+  - problem018
+provenance:
+  - title: "GeeksforGeeks - Program to find amount of water in a given glass"
+    href: https://www.geeksforgeeks.org/dsa/find-water-in-a-glass/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem looks like a probability or physics puzzle, but the implementation is pure state propagation. Once a glass exceeds one unit, its overflow is split evenly to the two glasses directly below, so the whole triangle can be built row by row.
+
+## Worked Example
+
+If `2` units are poured into the top glass, row `0` keeps `1`, and the extra `1` is split evenly into row `1`, producing `0.5` in both glasses below.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function programToFindAmountOfWaterInAGivenGlass(poured, targetRow, targetGlass) {
+  const glasses = Array.from({ length: targetRow + 2 }, (_, row) => new Array(row + 1).fill(0));
+  glasses[0][0] = poured;
+
+  for (let row = 0; row <= targetRow; row += 1) {
+    for (let glass = 0; glass <= row; glass += 1) {
+      const overflow = Math.max(0, glasses[row][glass] - 1);
+      if (overflow > 0) {
+        glasses[row][glass] = 1;
+        glasses[row + 1][glass] += overflow / 2;
+        glasses[row + 1][glass + 1] += overflow / 2;
+      }
+    }
+  }
+
+  return Math.min(1, glasses[targetRow][targetGlass] ?? 0);
+}
+```
+
+```ts
+export function programToFindAmountOfWaterInAGivenGlass(
+  poured: number,
+  targetRow: number,
+  targetGlass: number,
+): number {
+  const glasses = Array.from({ length: targetRow + 2 }, (_, row) => new Array<number>(row + 1).fill(0));
+  glasses[0][0] = poured;
+
+  for (let row = 0; row <= targetRow; row += 1) {
+    for (let glass = 0; glass <= row; glass += 1) {
+      const overflow = Math.max(0, glasses[row][glass] - 1);
+      if (overflow > 0) {
+        glasses[row][glass] = 1;
+        glasses[row + 1][glass] += overflow / 2;
+        glasses[row + 1][glass + 1] += overflow / 2;
+      }
+    }
+  }
+
+  return Math.min(1, glasses[targetRow][targetGlass] ?? 0);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the whole triangle of fill levels up to the queried row.
+- Use a rolling row representation instead of storing the entire triangle.
+- Explain why no glass ever needs to store more than `1` unit after processing overflow.
+
+## Common Pitfalls
+
+- Forgetting to cap the current glass at `1` before distributing the overflow.
+- Propagating negative overflow when a glass is not full.
+- Allocating too few rows and losing spill data for the queried depth.

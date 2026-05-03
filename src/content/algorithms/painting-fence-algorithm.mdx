@@ -1,0 +1,115 @@
+---
+title: Painting Fence Algorithm
+slug: painting-fence-algorithm
+category: Dynamic Programming
+summary: "Count fence colorings by tracking whether the last two posts match or differ so runs of three equal colors never appear."
+description: "Painting Fence Algorithm is the recurrence-counting problem where each new post can extend a different-color state freely but can only extend a same-color state under tighter rules."
+dataStructures:
+  - Array
+techniques:
+  - Dynamic Programming
+  - Counting DP
+  - Rolling State
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - paint fence
+  - fence coloring
+  - no three adjacent equal colors
+useCases:
+  - Counting valid colorings under local repetition constraints
+  - Practicing state separation between same-ending and different-ending configurations
+  - Comparing counting recurrences with house-robber style exclusion rules
+complexity:
+  time: O(posts)
+  space: O(1)
+  notes: "Only the counts for the previous post matter once the states are split into same-color endings and different-color endings."
+interviewSignals:
+  - There are `k` paint colors for `n` posts.
+  - No more than two adjacent posts may share the same color.
+relatedSlugs:
+  - climbing-stairs
+  - bell-numbers-number-of-ways-to-partition-a-set
+  - count-possible-decodings-of-a-given-digit-sequence
+provenance:
+  - title: "GeeksforGeeks - Painting Fence Algorithm"
+    href: https://www.geeksforgeeks.org/dsa/painting-fence-algorithm/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Painting Fence looks simple until the adjacency rule forces you to separate states. The clean DP insight is to count arrangements that end with the last two posts matching separately from those that end with different colors.
+
+## Worked Example
+
+For `posts = 3` and `colors = 2`, the valid paintings are `AAB`, `ABA`, `ABB`, `BAA`, `BAB`, and `BBA`, so the answer is `6`. `AAA` and `BBB` are excluded because they create a run of three equal posts.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function paintingFenceAlgorithm(posts, colors) {
+  if (posts === 0 || colors === 0) {
+    return 0;
+  }
+
+  if (posts === 1) {
+    return colors;
+  }
+
+  let same = colors;
+  let different = colors * (colors - 1);
+
+  for (let post = 3; post <= posts; post += 1) {
+    const nextSame = different;
+    const nextDifferent = (same + different) * (colors - 1);
+    same = nextSame;
+    different = nextDifferent;
+  }
+
+  return same + different;
+}
+```
+
+```ts
+export function paintingFenceAlgorithm(posts: number, colors: number): number {
+  if (posts === 0 || colors === 0) {
+    return 0;
+  }
+
+  if (posts === 1) {
+    return colors;
+  }
+
+  let same = colors;
+  let different = colors * (colors - 1);
+
+  for (let post = 3; post <= posts; post += 1) {
+    const nextSame = different;
+    const nextDifferent = (same + different) * (colors - 1);
+    same = nextSame;
+    different = nextDifferent;
+  }
+
+  return same + different;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Change the rule so no two adjacent posts may match.
+- Return the answer modulo a large prime.
+- Explain why the `same` state can only come from a previously `different` state.
+
+## Common Pitfalls
+
+- Treating every new post as if it always had `colors` choices.
+- Forgetting that the first two posts need explicit initialization.
+- Collapsing the same-ending and different-ending states too early.

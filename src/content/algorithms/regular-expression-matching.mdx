@@ -1,0 +1,143 @@
+---
+title: "Regular Expression Matching"
+slug: regular-expression-matching
+category: Dynamic Programming
+summary: "Match an entire text against a pattern with `.` and `*` by tabulating prefix matches."
+description: "Regular Expression Matching is the full-string DP matcher where `.` consumes any one character and `*` can eliminate or repeat the preceding token."
+dataStructures:
+  - String
+  - Array
+  - Matrix
+techniques:
+  - Dynamic Programming
+  - Pattern Matching
+  - Table DP
+difficulty: Hard
+interviewFrequency: High
+aliases:
+  - regex matching
+  - implement regular expression matching
+  - dot star pattern matching
+useCases:
+  - Validating simplified regular expressions over full strings
+  - Replacing exponential backtracking with deterministic dynamic programming
+  - Practicing state tables where one operator can match zero or many characters
+complexity:
+  time: O(textLength * patternLength)
+  space: O(textLength * patternLength)
+  notes: "Each DP state asks whether one text prefix matches one pattern prefix, and `*` transitions reuse nearby cells instead of branching recursively."
+interviewSignals:
+  - The pattern supports only lowercase letters plus `.` and `*`.
+  - The match must cover the entire text, not just a substring.
+relatedSlugs:
+  - word-break
+  - trie
+  - longest-common-substring
+provenance:
+  - title: "GeeksforGeeks - Regular Expression Matching"
+    href: https://www.geeksforgeeks.org/dsa/implementing-regular-expression-matching/
+    kind: Implementation
+  - title: "free-programming-books - Algorithm Design"
+    href: https://archive.org/details/AlgorithmDesign1stEditionByJonKleinbergAndEvaTardos2005PDF
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the stripped-down regex question that tests whether you can reason about local operators without writing a full parser. The dynamic-programming version is valuable because `*` creates overlapping subproblems immediately, and the table makes the zero-occurrence and repeat-occurrence cases explicit.
+
+## Worked Example
+
+For `text = "aab"` and `pattern = "c*a*b"`, the answer is true. `c*` disappears, `a*` consumes both `a` characters, and the trailing `b` matches directly.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function regularExpressionMatching(text, pattern) {
+  const rowCount = text.length + 1;
+  const columnCount = pattern.length + 1;
+  const dp = Array.from({ length: rowCount }, () => new Array(columnCount).fill(false));
+  dp[0][0] = true;
+
+  for (let column = 2; column < columnCount; column += 1) {
+    if (pattern[column - 1] === '*') {
+      dp[0][column] = dp[0][column - 2];
+    }
+  }
+
+  for (let row = 1; row < rowCount; row += 1) {
+    for (let column = 1; column < columnCount; column += 1) {
+      const token = pattern[column - 1];
+
+      if (token === '.' || token === text[row - 1]) {
+        dp[row][column] = dp[row - 1][column - 1];
+        continue;
+      }
+
+      if (token === '*' && column > 1) {
+        dp[row][column] = dp[row][column - 2];
+
+        const previousToken = pattern[column - 2];
+        if (previousToken === '.' || previousToken === text[row - 1]) {
+          dp[row][column] = dp[row][column] || dp[row - 1][column];
+        }
+      }
+    }
+  }
+
+  return dp[text.length][pattern.length];
+}
+```
+
+```ts
+export function regularExpressionMatching(text: string, pattern: string): boolean {
+  const rowCount = text.length + 1;
+  const columnCount = pattern.length + 1;
+  const dp = Array.from({ length: rowCount }, () => new Array<boolean>(columnCount).fill(false));
+  dp[0][0] = true;
+
+  for (let column = 2; column < columnCount; column += 1) {
+    if (pattern[column - 1] === '*') {
+      dp[0][column] = dp[0][column - 2];
+    }
+  }
+
+  for (let row = 1; row < rowCount; row += 1) {
+    for (let column = 1; column < columnCount; column += 1) {
+      const token = pattern[column - 1];
+
+      if (token === '.' || token === text[row - 1]) {
+        dp[row][column] = dp[row - 1][column - 1];
+        continue;
+      }
+
+      if (token === '*' && column > 1) {
+        dp[row][column] = dp[row][column - 2];
+
+        const previousToken = pattern[column - 2];
+        if (previousToken === '.' || previousToken === text[row - 1]) {
+          dp[row][column] = dp[row][column] || dp[row - 1][column];
+        }
+      }
+    }
+  }
+
+  return dp[text.length][pattern.length];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Add a `?` operator for zero-or-one matches.
+- Reduce the DP space with rolling rows.
+- Explain why substring matching would need different base conditions.
+
+## Common Pitfalls
+
+- Matching only a prefix when the prompt requires a full-string match.
+- Forgetting that `*` can stand for zero copies of the preceding token.
+- Treating `*` as if it can appear without a valid character before it.

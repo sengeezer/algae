@@ -1,0 +1,107 @@
+---
+title: "Maximize the number of segments of length x, y and z"
+slug: maximize-the-number-of-segments-of-length-x-y-and-z
+category: Dynamic Programming
+summary: "Cut a total length into as many allowed pieces as possible by tabulating the best segment count for every prefix length."
+description: "Maximize the number of segments of length x, y and z is the unbounded-cutting DP where impossible lengths must be tracked separately from valid counts."
+dataStructures:
+  - Array
+techniques:
+  - Dynamic Programming
+  - Unbounded Knapsack
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - maximum segments
+  - maximize cuts
+  - rod segments dp
+useCases:
+  - Splitting rods or ribbons into the most pieces under fixed allowed lengths
+  - Practicing unreachable-state handling with `-Infinity` style sentinels
+  - Comparing count-maximization with rod-cutting revenue optimization
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: "There are only three allowed cut lengths, so each total length checks a constant number of predecessors."
+interviewSignals:
+  - Only the lengths `x`, `y`, and `z` may be used.
+  - The goal is to maximize the number of pieces, not the total value.
+relatedSlugs:
+  - rod-cutting
+  - knapsack-dp
+  - coin-change
+provenance:
+  - title: "GeeksforGeeks - Maximize the number of segments of length x, y and z"
+    href: https://www.geeksforgeeks.org/dsa/maximize-the-number-of-segments-of-length-p-q-and-r/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a good DP test because the state is small but the failure mode is subtle. Some lengths simply cannot be formed, so you need a sentinel that means "unreachable" instead of accidentally treating every prefix as valid.
+
+## Worked Example
+
+For total length `7` and allowed lengths `5`, `2`, and `2`, the best answer is `2` because the rod can be split into `5 + 2`. There is no way to get `3` or more segments without exceeding or missing the target.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function maximizeTheNumberOfSegmentsOfLengthXYZ(totalLength, x, y, z) {
+  const dp = new Array(totalLength + 1).fill(Number.NEGATIVE_INFINITY);
+  dp[0] = 0;
+  const choices = [x, y, z];
+
+  for (let current = 1; current <= totalLength; current += 1) {
+    for (const segmentLength of choices) {
+      if (current >= segmentLength && dp[current - segmentLength] !== Number.NEGATIVE_INFINITY) {
+        dp[current] = Math.max(dp[current], dp[current - segmentLength] + 1);
+      }
+    }
+  }
+
+  return Math.max(0, dp[totalLength]);
+}
+```
+
+```ts
+export function maximizeTheNumberOfSegmentsOfLengthXYZ(
+  totalLength: number,
+  x: number,
+  y: number,
+  z: number,
+): number {
+  const dp = new Array<number>(totalLength + 1).fill(Number.NEGATIVE_INFINITY);
+  dp[0] = 0;
+  const choices = [x, y, z];
+
+  for (let current = 1; current <= totalLength; current += 1) {
+    for (const segmentLength of choices) {
+      if (current >= segmentLength && dp[current - segmentLength] !== Number.NEGATIVE_INFINITY) {
+        dp[current] = Math.max(dp[current], dp[current - segmentLength] + 1);
+      }
+    }
+  }
+
+  return Math.max(0, dp[totalLength]);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return one actual set of cut lengths that achieves the maximum segment count.
+- Generalize from three fixed lengths to an arbitrary allowed-length array.
+- Compare this with rod cutting where each cut length carries profit instead of just piece count.
+
+## Common Pitfalls
+
+- Using `0` as the default for unreachable states and accidentally overcounting impossible lengths.
+- Maximizing total cut length instead of the number of pieces.
+- Forgetting that the same allowed segment length can be reused any number of times.

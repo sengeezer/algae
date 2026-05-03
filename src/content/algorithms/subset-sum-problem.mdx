@@ -1,0 +1,102 @@
+---
+title: Subset Sum Problem
+slug: subset-sum-problem
+category: Dynamic Programming
+summary: "Decide whether any subset hits a target total by tabulating which sums are reachable after each choice."
+description: "Subset Sum Problem is the classic boolean knapsack-style DP where each value can either be taken once or skipped while trying to reach an exact target."
+dataStructures:
+  - Array
+  - Table
+techniques:
+  - Dynamic Programming
+  - 0/1 Knapsack
+  - Boolean DP
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - subset sum
+  - target subset feasibility
+  - exact subset target
+useCases:
+  - Deciding whether a target total is achievable from distinct values
+  - Bridging recursive take-or-skip search to iterative DP
+  - Comparing feasibility DP with counting and optimization variants
+complexity:
+  time: O(n * target)
+  space: O(target)
+  notes: "A one-dimensional reachable-sum array is enough when each input value may be used at most once and the update runs right to left."
+interviewSignals:
+  - Each array value can be used at most once.
+  - The prompt asks whether a target is reachable, not how many ways or what the best score is.
+relatedSlugs:
+  - partition
+  - number-of-subsets-equal-to-given-sum
+  - knapsack-dp
+provenance:
+  - title: "GeeksforGeeks - Subset Sum Problem"
+    href: https://www.geeksforgeeks.org/dsa/subset-sum-problem-dp-25/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Subset sum is one of the standard DP recognition tests. The key observation is that every state answers a yes-or-no question: after considering some prefix of the array, which target sums are still achievable?
+
+## Worked Example
+
+For `values = [3, 34, 4, 12, 5, 2]` and `target = 9`, the answer is true because `4 + 5 = 9`. The DP reaches `9` by first marking `4` reachable and later extending it with `5`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function subsetSumProblem(values, target) {
+  const reachable = new Array(target + 1).fill(false);
+  reachable[0] = true;
+
+  for (const value of values) {
+    for (let current = target; current >= value; current -= 1) {
+      if (reachable[current - value]) {
+        reachable[current] = true;
+      }
+    }
+  }
+
+  return reachable[target];
+}
+```
+
+```ts
+export function subsetSumProblem(values: number[], target: number): boolean {
+  const reachable = new Array<boolean>(target + 1).fill(false);
+  reachable[0] = true;
+
+  for (const value of values) {
+    for (let current = target; current >= value; current -= 1) {
+      if (reachable[current - value]) {
+        reachable[current] = true;
+      }
+    }
+  }
+
+  return reachable[target];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return one actual subset that reaches the target.
+- Count how many subsets hit the target instead of returning a boolean.
+- Explain why the one-dimensional update must run right to left.
+
+## Common Pitfalls
+
+- Updating the reachable array left to right and accidentally reusing an item multiple times.
+- Confusing boolean feasibility with the counting version of subset sum.
+- Forgetting that `0` is always reachable via the empty subset.

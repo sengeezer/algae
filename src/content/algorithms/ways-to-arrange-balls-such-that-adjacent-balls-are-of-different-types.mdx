@@ -1,0 +1,159 @@
+---
+title: "Ways to arrange Balls such that adjacent balls are of different types"
+slug: ways-to-arrange-balls-such-that-adjacent-balls-are-of-different-types
+category: Dynamic Programming
+summary: "Count valid lineups of three ball types by tracking how many of each color remain and which color was placed last."
+description: "Ways to arrange Balls such that adjacent balls are of different types is the counting DP where the remaining inventory of three colors and the previous placement determine the next valid states."
+dataStructures:
+  - Array
+  - Map
+techniques:
+  - Dynamic Programming
+  - Memoization
+  - Counting DP
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - arrange balls without equal neighbors
+  - colored ball arrangements
+  - no adjacent same color balls
+useCases:
+  - Counting schedule or layout permutations with adjacency restrictions
+  - Practicing multi-parameter state compression with memoization
+  - Comparing inventory-constrained counting with simpler coloring recurrences
+complexity:
+  time: O(p * q * r)
+  space: O(p * q * r)
+  notes: "Each state is defined by three remaining counts and one last-color marker, so memoization visits each reachable combination once."
+interviewSignals:
+  - You are given counts of exactly three ball types.
+  - Adjacent equal types are forbidden, so the last placed type matters.
+relatedSlugs:
+  - painting-fence-algorithm
+  - count-derangements
+  - tile-stacking-problem
+provenance:
+  - title: "GeeksforGeeks - Ways to arrange Balls such that adjacent balls are of different types"
+    href: https://www.geeksforgeeks.org/dsa/ways-to-arrange-balls-such-that-adjacent-balls-are-of-different-types/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem looks combinatorial, but the clean implementation is a memoized search over counts. The only extra piece of state beyond the remaining balls is the type of the last placed ball, because that is what blocks one of the three possible next moves.
+
+## Worked Example
+
+For `p = 1`, `q = 1`, and `r = 1`, every permutation of the three distinct types is valid, so the answer is `6`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function waysToArrangeBallsSuchThatAdjacentBallsAreOfDifferentTypes(p, q, r) {
+  const memo = new Map();
+
+  function solve(remainingP, remainingQ, remainingR, lastPlaced) {
+    if (remainingP < 0 || remainingQ < 0 || remainingR < 0) {
+      return 0;
+    }
+
+    if (remainingP === 0 && remainingQ === 0 && remainingR === 0) {
+      return 1;
+    }
+
+    const key = `${remainingP}|${remainingQ}|${remainingR}|${lastPlaced}`;
+    const cached = memo.get(key);
+    if (cached !== undefined) {
+      return cached;
+    }
+
+    let ways = 0;
+
+    if (lastPlaced !== 0 && remainingP > 0) {
+      ways += solve(remainingP - 1, remainingQ, remainingR, 0);
+    }
+
+    if (lastPlaced !== 1 && remainingQ > 0) {
+      ways += solve(remainingP, remainingQ - 1, remainingR, 1);
+    }
+
+    if (lastPlaced !== 2 && remainingR > 0) {
+      ways += solve(remainingP, remainingQ, remainingR - 1, 2);
+    }
+
+    memo.set(key, ways);
+    return ways;
+  }
+
+  return solve(p, q, r, 3);
+}
+```
+
+```ts
+export function waysToArrangeBallsSuchThatAdjacentBallsAreOfDifferentTypes(
+  p: number,
+  q: number,
+  r: number,
+): number {
+  const memo = new Map<string, number>();
+
+  function solve(
+    remainingP: number,
+    remainingQ: number,
+    remainingR: number,
+    lastPlaced: number,
+  ): number {
+    if (remainingP < 0 || remainingQ < 0 || remainingR < 0) {
+      return 0;
+    }
+
+    if (remainingP === 0 && remainingQ === 0 && remainingR === 0) {
+      return 1;
+    }
+
+    const key = `${remainingP}|${remainingQ}|${remainingR}|${lastPlaced}`;
+    const cached = memo.get(key);
+    if (cached !== undefined) {
+      return cached;
+    }
+
+    let ways = 0;
+
+    if (lastPlaced !== 0 && remainingP > 0) {
+      ways += solve(remainingP - 1, remainingQ, remainingR, 0);
+    }
+
+    if (lastPlaced !== 1 && remainingQ > 0) {
+      ways += solve(remainingP, remainingQ - 1, remainingR, 1);
+    }
+
+    if (lastPlaced !== 2 && remainingR > 0) {
+      ways += solve(remainingP, remainingQ, remainingR - 1, 2);
+    }
+
+    memo.set(key, ways);
+    return ways;
+  }
+
+  return solve(p, q, r, 3);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Generalize the solution from three colors to an arbitrary multiset of colors.
+- Return one valid arrangement when the count is non-zero.
+- Add modulo arithmetic when the counts become large.
+
+## Common Pitfalls
+
+- Tracking only the remaining counts and forgetting that the previous color changes what is legal next.
+- Returning zero instead of one when all counts reach zero.
+- Double-counting states by recomputing the same `(p, q, r, last)` combination.

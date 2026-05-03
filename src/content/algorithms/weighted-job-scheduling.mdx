@@ -1,0 +1,141 @@
+---
+title: Weighted Job Scheduling
+slug: weighted-job-scheduling
+category: Dynamic Programming
+summary: "Sort jobs by finish time and decide whether taking each compatible job improves the best profit seen so far."
+description: "Weighted Job Scheduling is the interval-selection dynamic-programming problem where each job has start, finish, and profit, and overlapping jobs cannot both be chosen."
+dataStructures:
+  - Array
+techniques:
+  - Dynamic Programming
+  - Interval Scheduling
+  - Binary Search
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - weighted interval scheduling
+  - weighted job scheduling
+  - job profit scheduling
+useCases:
+  - Choosing the most profitable compatible tasks on a shared timeline
+  - Extending greedy interval scheduling into profit-aware dynamic programming
+  - Practicing predecessor lookup on sorted intervals
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: "After sorting by finish time, each job only needs the best profit up to the latest non-overlapping predecessor, which can be found by binary search."
+interviewSignals:
+  - Each job has a profit and overlapping jobs are mutually exclusive.
+  - The best answer is a maximum total profit, not the largest count of jobs.
+relatedSlugs:
+  - job-sequencing-problem
+  - greedy-interval-scheduling
+  - longest-increasing-subsequence
+provenance:
+  - title: "GeeksforGeeks - Weighted Job Scheduling"
+    href: https://www.geeksforgeeks.org/dsa/weighted-job-scheduling/
+    kind: Implementation
+  - title: "free-programming-books - Algorithm Design"
+    href: https://archive.org/details/AlgorithmDesign1stEditionByJonKleinbergAndEvaTardos2005PDF
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Weighted job scheduling is what interval scheduling becomes once the objective changes from "fit as many as possible" to "maximize total value." The dynamic-programming step is to compare skipping the current job with taking it plus the best compatible profit that ends before it starts.
+
+## Worked Example
+
+For jobs `[(1, 3, 50), (2, 4, 10), (3, 5, 40), (3, 6, 70)]`, the best choice is `(1, 3, 50)` plus `(3, 6, 70)` for a total profit of `120`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function weightedJobScheduling(jobs) {
+  const sortedJobs = [...jobs].sort((left, right) => left.finish - right.finish);
+  const bestProfit = new Array(sortedJobs.length).fill(0);
+
+  function findLatestCompatible(index) {
+    let low = 0;
+    let high = index - 1;
+    let answer = -1;
+
+    while (low <= high) {
+      const mid = Math.floor((low + high) / 2);
+      if (sortedJobs[mid].finish <= sortedJobs[index].start) {
+        answer = mid;
+        low = mid + 1;
+      } else {
+        high = mid - 1;
+      }
+    }
+
+    return answer;
+  }
+
+  for (let index = 0; index < sortedJobs.length; index += 1) {
+    const compatible = findLatestCompatible(index);
+    const take = sortedJobs[index].profit + (compatible === -1 ? 0 : bestProfit[compatible]);
+    const skip = index === 0 ? 0 : bestProfit[index - 1];
+    bestProfit[index] = Math.max(take, skip);
+  }
+
+  return sortedJobs.length === 0 ? 0 : bestProfit[bestProfit.length - 1];
+}
+```
+
+```ts
+type WeightedJob = {
+  start: number;
+  finish: number;
+  profit: number;
+};
+
+export function weightedJobScheduling(jobs: WeightedJob[]): number {
+  const sortedJobs = [...jobs].sort((left, right) => left.finish - right.finish);
+  const bestProfit = new Array<number>(sortedJobs.length).fill(0);
+
+  function findLatestCompatible(index: number): number {
+    let low = 0;
+    let high = index - 1;
+    let answer = -1;
+
+    while (low <= high) {
+      const mid = Math.floor((low + high) / 2);
+      if (sortedJobs[mid].finish <= sortedJobs[index].start) {
+        answer = mid;
+        low = mid + 1;
+      } else {
+        high = mid - 1;
+      }
+    }
+
+    return answer;
+  }
+
+  for (let index = 0; index < sortedJobs.length; index += 1) {
+    const compatible = findLatestCompatible(index);
+    const take = sortedJobs[index].profit + (compatible === -1 ? 0 : bestProfit[compatible]);
+    const skip = index === 0 ? 0 : bestProfit[index - 1];
+    bestProfit[index] = Math.max(take, skip);
+  }
+
+  return sortedJobs.length === 0 ? 0 : bestProfit[bestProfit.length - 1];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Reconstruct the chosen jobs instead of only returning the profit.
+- Replace the binary search with a linear predecessor scan and compare complexity.
+- Explain why sorting by finish time makes the predecessor relation stable.
+
+## Common Pitfalls
+
+- Applying the greedy earliest-finish rule from ordinary interval scheduling and missing higher-profit combinations.
+- Forgetting to add the predecessor's profit when taking a job.
+- Treating touching intervals as overlapping when `finish <= nextStart` is allowed.

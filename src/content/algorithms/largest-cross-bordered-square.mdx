@@ -1,0 +1,173 @@
+---
+title: "Largest Cross Bordered Square"
+slug: largest-cross-bordered-square
+category: Dynamic Programming
+summary: "Precompute how many `X` cells continue rightward and downward so square borders can be checked in constant time per candidate side length."
+description: "Largest Cross Bordered Square is the bordered-square matrix DP where each cell stores consecutive `X` runs to the right and down, making border validation fast."
+dataStructures:
+  - Matrix
+  - Array
+techniques:
+  - Dynamic Programming
+  - Prefix Counting
+  - Matrix DP
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - largest x bordered square
+  - largest subsquare surrounded by x
+  - bordered square of x
+useCases:
+  - Detecting the largest framed square in binary or character grid data
+  - Practicing precomputation that turns repeated border checks into constant-time lookups
+  - Contrasting border-only constraints with full-interior square constraints
+complexity:
+  time: O(rows * cols * min(rows, cols))
+  space: O(rows * cols)
+  notes: "The right-run and down-run tables cost linear space, and every top-left corner then tests candidate side lengths from largest to smallest."
+interviewSignals:
+  - Only the border cells must satisfy the `X` condition; the interior may contain other values.
+  - The prompt asks for the size of the best square, not the number of such squares.
+relatedSlugs:
+  - maximum-size-square-sub-matrix-with-all-1s
+  - max-area-of-island-largest-in-boolean-matrix
+  - shortest-path-in-a-binary-maze
+provenance:
+  - title: "GeeksforGeeks - Largest Cross Bordered Square"
+    href: https://www.geeksforgeeks.org/dsa/given-matrix-o-x-find-largest-subsquare-surrounded-x/
+    kind: Implementation
+  - title: "free-programming-books - Algorithm Design"
+    href: https://archive.org/details/AlgorithmDesign1stEditionByJonKleinbergAndEvaTardos2005PDF
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the square-border variant where checking every border from scratch becomes too expensive. The right answer is to precompute how many consecutive `X` cells extend rightward and downward from every position, then use those counts to validate a candidate border with a couple of comparisons.
+
+## Worked Example
+
+For
+
+```txt
+X X
+X X
+```
+
+the answer is `2`, because the whole matrix is already a square whose entire border is `X`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function largestCrossBorderedSquare(matrix) {
+  const rowCount = matrix.length;
+  if (rowCount === 0) {
+    return 0;
+  }
+
+  const colCount = matrix[0].length;
+  const right = Array.from({ length: rowCount }, () => new Array(colCount).fill(0));
+  const down = Array.from({ length: rowCount }, () => new Array(colCount).fill(0));
+
+  for (let row = rowCount - 1; row >= 0; row -= 1) {
+    for (let col = colCount - 1; col >= 0; col -= 1) {
+      if (matrix[row][col] !== 'X') {
+        continue;
+      }
+
+      right[row][col] = 1 + (col + 1 < colCount ? right[row][col + 1] : 0);
+      down[row][col] = 1 + (row + 1 < rowCount ? down[row + 1][col] : 0);
+    }
+  }
+
+  let best = 0;
+
+  for (let row = 0; row < rowCount; row += 1) {
+    for (let col = 0; col < colCount; col += 1) {
+      const limit = Math.min(right[row][col], down[row][col]);
+
+      for (let side = limit; side > best; side -= 1) {
+        const bottomRow = row + side - 1;
+        const rightCol = col + side - 1;
+
+        if (
+          bottomRow < rowCount
+          && rightCol < colCount
+          && right[bottomRow][col] >= side
+          && down[row][rightCol] >= side
+        ) {
+          best = side;
+          break;
+        }
+      }
+    }
+  }
+
+  return best;
+}
+```
+
+```ts
+export function largestCrossBorderedSquare(matrix: string[][]): number {
+  const rowCount = matrix.length;
+  if (rowCount === 0) {
+    return 0;
+  }
+
+  const colCount = matrix[0].length;
+  const right = Array.from({ length: rowCount }, () => new Array<number>(colCount).fill(0));
+  const down = Array.from({ length: rowCount }, () => new Array<number>(colCount).fill(0));
+
+  for (let row = rowCount - 1; row >= 0; row -= 1) {
+    for (let col = colCount - 1; col >= 0; col -= 1) {
+      if (matrix[row][col] !== 'X') {
+        continue;
+      }
+
+      right[row][col] = 1 + (col + 1 < colCount ? right[row][col + 1] : 0);
+      down[row][col] = 1 + (row + 1 < rowCount ? down[row + 1][col] : 0);
+    }
+  }
+
+  let best = 0;
+
+  for (let row = 0; row < rowCount; row += 1) {
+    for (let col = 0; col < colCount; col += 1) {
+      const limit = Math.min(right[row][col], down[row][col]);
+
+      for (let side = limit; side > best; side -= 1) {
+        const bottomRow = row + side - 1;
+        const rightCol = col + side - 1;
+
+        if (
+          bottomRow < rowCount
+          && rightCol < colCount
+          && right[bottomRow][col] >= side
+          && down[row][rightCol] >= side
+        ) {
+          best = side;
+          break;
+        }
+      }
+    }
+  }
+
+  return best;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the top-left coordinate of one maximum bordered square.
+- Adapt the solution to `0` and `1` grids where the border must be all `1`s.
+- Compare this with the all-1 interior square problem and explain why the recurrences differ.
+
+## Common Pitfalls
+
+- Checking only the top and left borders and forgetting the bottom and right borders.
+- Assuming the matrix must be square when the same precomputation works on rectangular input.
+- Recomputing border scans from scratch for every candidate square.

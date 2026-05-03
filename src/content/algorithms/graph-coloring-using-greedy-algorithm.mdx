@@ -1,0 +1,141 @@
+---
+title: Graph Coloring Using Greedy Algorithm
+slug: graph-coloring-using-greedy-algorithm
+category: Greedy
+summary: "Process vertices in a fixed order and assign each the smallest available color not already used by an adjacent vertex."
+description: "Graph Coloring Using Greedy Algorithm is the fast coloring heuristic that guarantees a valid coloring, but not the minimum number of colors."
+dataStructures:
+  - Graph
+  - Array
+techniques:
+  - Greedy
+  - Graph Traversal
+  - Approximation
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - greedy graph coloring
+  - vertex coloring heuristic
+  - graph coloring
+useCases:
+  - Building quick conflict-free schedules or channel assignments
+  - Explaining why vertex order can change greedy outcomes
+  - Contrasting feasible heuristic coloring with exact NP-complete coloring
+complexity:
+  time: O(vertices^2 + edges)
+  space: O(vertices + edges)
+  notes: "The direct adjacency-list implementation rescans neighbors and the used-color array for every vertex, so the worst case is quadratic even before considering better orderings like Welsh-Powell."
+interviewSignals:
+  - The prompt asks for a valid coloring quickly, not the minimum chromatic number.
+  - The discussion focuses on color assignment order or the d+1 upper bound.
+relatedSlugs:
+  - m-coloring-problem
+  - channel-assignment-problem
+  - bipartite-or-not
+provenance:
+  - title: "GeeksforGeeks - Graph Coloring Using Greedy Algorithm"
+    href: https://www.geeksforgeeks.org/dsa/graph-coloring-set-2-greedy-algorithm/
+    kind: Implementation
+  - title: "free-programming-books - Algorithms, 4th Edition"
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Greedy graph coloring is the interview version of "good enough, fast, and explainable." The important distinction is that the algorithm is only trying to produce a valid coloring in the current vertex order, not solve the NP-complete problem of minimizing colors globally.
+
+## Worked Example
+
+For adjacency list `[[1, 2], [0, 2, 3], [0, 1, 3], [1, 2]]`, vertex `0` gets color `0`, vertex `1` must avoid `0` so it gets `1`, vertex `2` is adjacent to both colors so it gets `2`, and vertex `3` can reuse `0`. The final coloring is `[0, 1, 2, 0]`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function graphColoringUsingGreedyAlgorithm(graph) {
+  const vertexCount = graph.length;
+  if (vertexCount === 0) {
+    return { colorCount: 0, colors: [] };
+  }
+
+  const colors = new Array(vertexCount).fill(-1);
+  colors[0] = 0;
+
+  for (let vertex = 1; vertex < vertexCount; vertex += 1) {
+    const unavailable = new Array(vertexCount).fill(false);
+
+    for (const neighbor of graph[vertex]) {
+      if (colors[neighbor] !== -1) {
+        unavailable[colors[neighbor]] = true;
+      }
+    }
+
+    let color = 0;
+    while (color < unavailable.length && unavailable[color]) {
+      color += 1;
+    }
+
+    colors[vertex] = color;
+  }
+
+  return {
+    colorCount: Math.max(...colors) + 1,
+    colors,
+  };
+}
+```
+
+```ts
+export function graphColoringUsingGreedyAlgorithm(
+  graph: number[][],
+): {
+  colorCount: number;
+  colors: number[];
+} {
+  const vertexCount = graph.length;
+  if (vertexCount === 0) {
+    return { colorCount: 0, colors: [] };
+  }
+
+  const colors = new Array<number>(vertexCount).fill(-1);
+  colors[0] = 0;
+
+  for (let vertex = 1; vertex < vertexCount; vertex += 1) {
+    const unavailable = new Array<boolean>(vertexCount).fill(false);
+
+    for (const neighbor of graph[vertex]) {
+      if (colors[neighbor] !== -1) {
+        unavailable[colors[neighbor]] = true;
+      }
+    }
+
+    let color = 0;
+    while (color < unavailable.length && unavailable[color]) {
+      color += 1;
+    }
+
+    colors[vertex] = color;
+  }
+
+  return {
+    colorCount: Math.max(...colors) + 1,
+    colors,
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Reorder vertices by descending degree and compare the color count.
+- Return the color classes as groups of vertices instead of a per-vertex array.
+- Explain why the algorithm never needs more than `d + 1` colors for maximum degree `d`.
+
+## Common Pitfalls
+
+- Claiming the greedy coloring is guaranteed to use the minimum number of colors.
+- Forgetting that the vertex order can change the result materially.
+- Reusing a color before checking all already-colored neighbors.

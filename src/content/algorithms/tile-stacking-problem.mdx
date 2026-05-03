@@ -1,0 +1,116 @@
+---
+title: Tile Stacking Problem
+slug: tile-stacking-problem
+category: Dynamic Programming
+summary: "Count bounded-height stacks by deciding how many tiles of the current size to place before moving to smaller sizes."
+description: "Tile Stacking Problem is the layered-counting DP where stack height, tile size, and per-size usage limits interact across two dimensions of state."
+dataStructures:
+  - Array
+  - Table
+techniques:
+  - Dynamic Programming
+  - Counting DP
+  - Prefix Sums
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - bounded tile stacking
+  - stack tiles count
+  - tile tower dp
+useCases:
+  - Counting constrained tower configurations with bounded repetition
+  - Practicing multi-parameter DP where one dimension tracks remaining sizes
+  - Using prefix-sum optimization on bounded-choice transitions
+complexity:
+  time: O(height * maxSize * maxRepeat)
+  space: O(height * maxSize)
+  notes: "The straightforward transition tries every allowed count of the current tile size, though prefix sums can shrink the inner loop."
+interviewSignals:
+  - Each tile size may be used only up to a fixed number of times.
+  - The question asks for how many valid stacks reach an exact height.
+relatedSlugs:
+  - painting-fence-algorithm
+  - number-of-permutation-with-k-inversions
+  - bell-numbers-number-of-ways-to-partition-a-set
+provenance:
+  - title: "GeeksforGeeks - Tile Stacking Problem"
+    href: https://www.geeksforgeeks.org/dsa/tile-stacking-problem/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Tile stacking is a good advanced DP exercise because the recurrence is not just about the remaining height. You also have to know which tile sizes are still available and how many copies of the current size you are allowed to place.
+
+## Worked Example
+
+If the target height is `3`, the largest tile size is `2`, and each size may appear at most `2` times, then one valid stack is two size-`1` tiles plus one size-`2` tile arranged under the problem's ordering rules.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function tileStackingProblem(height, maxSize, maxRepeat) {
+  const dp = Array.from({ length: maxSize + 1 }, () => new Array(height + 1).fill(0));
+
+  for (let size = 0; size <= maxSize; size += 1) {
+    dp[size][0] = 1;
+  }
+
+  for (let size = 1; size <= maxSize; size += 1) {
+    for (let currentHeight = 1; currentHeight <= height; currentHeight += 1) {
+      let ways = 0;
+
+      for (let used = 0; used <= maxRepeat && used * size <= currentHeight; used += 1) {
+        ways += dp[size - 1][currentHeight - used * size];
+      }
+
+      dp[size][currentHeight] = ways;
+    }
+  }
+
+  return dp[maxSize][height];
+}
+```
+
+```ts
+export function tileStackingProblem(height: number, maxSize: number, maxRepeat: number): number {
+  const dp = Array.from({ length: maxSize + 1 }, () => new Array<number>(height + 1).fill(0));
+
+  for (let size = 0; size <= maxSize; size += 1) {
+    dp[size][0] = 1;
+  }
+
+  for (let size = 1; size <= maxSize; size += 1) {
+    for (let currentHeight = 1; currentHeight <= height; currentHeight += 1) {
+      let ways = 0;
+
+      for (let used = 0; used <= maxRepeat && used * size <= currentHeight; used += 1) {
+        ways += dp[size - 1][currentHeight - used * size];
+      }
+
+      dp[size][currentHeight] = ways;
+    }
+  }
+
+  return dp[maxSize][height];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Optimize the inner bounded-count loop with prefix sums.
+- Return the count modulo a large prime.
+- Explain how the state changes if tile sizes may be reused without a limit.
+
+## Common Pitfalls
+
+- Ignoring the usage cap for each tile size.
+- Mixing ordered stacks with unordered multiset counting.
+- Forgetting that height `0` has one valid empty-stack base case.

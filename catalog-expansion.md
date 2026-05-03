@@ -896,9 +896,20 @@ This eighty-sixth expansion slice lifts the catalog from 468 to 471 entries.
 - Greedy Approximate Algorithm for Set Cover Problem
 - Bin Packing Problem (Minimize number of used Bins)
 
+## Methodology update
+
+Re-evaluating the workflow after batch 86:
+
+- Future drafting should target 8 net-new entries per batch instead of 3.
+- A batch can stretch to 10 only when the source section is uniform and duplicate risk is low.
+- Drop below 8 only when the live frontier has fewer than 8 clean absences after semantic duplicate checks.
+- Before drafting, pre-validate at least the next 10 source-ordered candidates so alias collisions and provenance-title duplicates are removed before they reach the handoff notes.
+- Keep batches source-ordered and as single-source as practical; only cross into the next source section when the current one is exhausted, theory-only, or reduced to duplicates.
+- Use verified destination article titles in planning notes and provenance metadata once the target page is confirmed.
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 86 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 87 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -910,7 +921,8 @@ All expansion entries from batch 1 through batch 86 now carry explicit per-entry
 - It broadens the catalog across three more interview-relevant decision rules: recognizing when a connected component is exactly one cycle because every vertex has degree `2`, choosing the lowest cost-per-newly-covered set in weighted set cover, and placing descending item sizes into the first bin with enough remaining capacity.
 - It complements nearby local coverage rather than duplicating it: the cycle-component entry adds a structural graph predicate instead of another shortest-path routine, and the set-cover and bin-packing entries add explicit approximation heuristics rather than revisiting exact dynamic-programming formulations.
 - It preserves two verified destination-title details that matter for later handoffs: the Greedy-page labels `Set Cover` and `Bin Packing` resolve to the destination headings `Greedy Approximate Algorithm for Set Cover Problem` and `Bin Packing Problem (Minimize number of used Bins)`, so the catalog uses the verified destination headings instead of the shorter source labels.
-- It preserves the next handoff cleanly: after these three entries, the next exact uncataloged trio on the same source path is `Graph Coloring Using Greedy Algorithm`, `Greedy Approximate Algorithm for K Centers Problem`, and `Shortest Superstring Problem`.
+- It should be treated as the last intentionally small transition batch. The local draft already existed at three entries, but future expansion passes should regroup into eight-entry slices so research, authoring, and validation overhead are amortized across more net-new catalog work.
+- It exposed why the methodology needs tightening: a shallow next-trio handoff was enough to let `Greedy Approximate Algorithm for K Centers Problem` slip back into the queue even though the existing `K Centers Problem` entry already cites that GeeksforGeeks article in its provenance.
 
 ## Supporting study references from the algorithms list
 
@@ -918,6 +930,66 @@ All expansion entries from batch 1 through batch 86 now carry explicit per-entry
 - Algorithms, 4th Edition
 - Competitive Programmer's Handbook
 
+## Batch 87 added
+
+This eighty-seventh expansion slice lifts the catalog from 471 to 479 entries.
+
+- Graph Coloring Using Greedy Algorithm
+- Shortest Superstring Problem
+- Approximate solution for Travelling Salesman Problem using MST
+- Count ways to reach the nth stair using step 1, 2 or 3
+- Minimum Cost to Reach the Top
+- Maximize the number of segments of length x, y and z
+- Minimum Sum Path in a Triangle
+- Minimum Perfect Squares that sums to N
+
+## Batch 88 added
+
+This eighty-eighth expansion slice lifts the catalog from 479 to 487 entries.
+
+- Bell Numbers (Number of ways to Partition a Set)
+- Count Possible Decodings of a given Digit Sequence
+- Subset Sum Problem
+- Painting Fence Algorithm
+- Longest Common Substring
+- Number of permutation with K inversions
+- How to print maximum number of A's using given four keys
+- Program to find amount of water in a given glass
+
+## Batch 89 added
+
+This eighty-ninth expansion slice lifts the catalog from 487 to 495 entries.
+
+- Largest divisible subset in array
+- Weighted Job Scheduling
+- Printing Items in 0/1 Knapsack
+- Unbounded Knapsack (Repetition of items allowed)
+- Word Break
+- Tile Stacking Problem
+- Box Stacking Problem
+- Longest Common Increasing Subsequence (LCS + LIS)
+
+## Batch 90 added
+
+This ninetieth expansion slice lifts the catalog from 495 to 503 entries.
+
+- Count Derangements
+- Minimum insertions to form a palindrome
+- Regular Expression Matching
+- Ways to arrange Balls such that adjacent balls are of different types
+- Longest subsequence such that difference between adjacents is one
+- Maximum Size Square Sub-Matrix with All 1s
+- Max Profit from Two Machines
+- Largest Cross Bordered Square
+
 ## Next candidates from the same sources
 
-- The current GeeksforGeeks Greedy-page frontier now continues with `Graph Coloring Using Greedy Algorithm`, `Greedy Approximate Algorithm for K Centers Problem`, and `Shortest Superstring Problem` after `Bin Packing Problem (Minimize number of used Bins)`.
+- The Greedy-page tail and the Dynamic Programming medium-problem carry-over are now exhausted locally through `Largest Cross Bordered Square`.
+- The local catalog now reaches 503 entries.
+- The Dynamic Programming items skipped between `Program to find amount of water in a given glass` and `Largest Cross Bordered Square` are already represented locally: `Longest Common Subsequence`, `Longest Increasing Subsequence`, `Edit Distance`, `0-1 Knapsack Problem`, `Partition Problem`, `Longest Palindromic Subsequence`, `Bellman-Ford Algorithm`, and `Floyd Warshall Algorithm`.
+- Batch 90 uses verified destination titles where the Dynamic Programming hub labels diverge: `Wildcard Pattern Matching` and `Regular Expression Matching` both resolve to `Regular Expression Matching`, `Maximum Tip Calculator` resolves to `Max Profit from Two Machines`, and `Largest X Bordered Square` resolves to `Largest Cross Bordered Square`.
+- The next verified Dynamic Programming carry-over label is `Egg Dropping Problem`, and its destination article title is `Egg Dropping Puzzle`.
+- The next hard-problem source labels after that on the live GeeksforGeeks Dynamic Programming page are `Palindrome Partitioning`, `Palindromic Substring Count`, `Word Wrap Problem`, `Optimal Strategy for a Game`, `The painter's partition problem`, `Program for Bridge and Torch problem`, `Matrix Chain Multiplication`, `Printing Matrix Chain Multiplication`, and `Maximum sum rectangle`.
+- The live page currently has three duplicate-destination collisions in that stretch and the immediately following stock pair: `Palindrome Partitioning` plus `Palindromic Substring Count` both resolve to `Palindrome Substrings Count`, `Word Wrap Problem` plus `Optimal Strategy for a Game` both resolve to `Optimal Strategy for a Game`, and `Stock Buy and Sell - At-Most k Times` plus `Stock Buy and Sell - At Most 2 Times` both resolve to `Stock Buy and Sell - Max 2 Transactions Allowed`.
+- `The Painter's Partition Problem` is already covered locally by `Find minimum time to finish all jobs with given constraints`, which already carries the alias `painter partition with multiplier`, so it should stay skipped during source-order drafting.
+- The next clean eight source-ordered absences for batch 91 are `Egg Dropping Puzzle`, `Palindrome Substrings Count`, `Optimal Strategy for a Game`, `Program for Bridge and Torch problem`, `Matrix Chain Multiplication`, `Printing brackets in Matrix Chain Multiplication Problem`, `Maximum sum rectangle in a 2D matrix`, and `Stock Buy and Sell - Max 2 Transactions Allowed`.

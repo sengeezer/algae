@@ -1,0 +1,190 @@
+---
+title: "Approximate solution for Travelling Salesman Problem using MST"
+slug: approximate-solution-for-travelling-salesman-problem-using-mst
+category: Greedy
+summary: "Build a minimum spanning tree, visit its vertices in preorder, and shortcut repeats to get a fast TSP tour for metric graphs."
+description: "Approximate solution for Travelling Salesman Problem using MST is the standard 2-approximation for metric TSP based on MST structure and triangle-inequality shortcuts."
+dataStructures:
+  - Graph
+  - Tree
+  - Array
+techniques:
+  - Greedy
+  - Minimum Spanning Tree
+  - Approximation
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - mst tsp approximation
+  - double tree tsp
+  - metric tsp heuristic
+useCases:
+  - Producing fast route plans when exact TSP is too expensive
+  - Demonstrating how MSTs become approximation scaffolding for tours
+  - Explaining why triangle inequality matters in graph optimization
+complexity:
+  time: O(cities^2)
+  space: O(cities^2)
+  notes: "With a dense adjacency matrix, Prim's MST construction dominates the run time, while the preorder walk and tour-cost reconstruction stay quadratic or better."
+interviewSignals:
+  - The distances satisfy triangle inequality, so shortcutting repeated vertices is safe.
+  - The prompt accepts an approximate tour instead of the exact optimum.
+relatedSlugs:
+  - traveling-salesman-problem
+  - prim-mst
+  - minimum-cost-to-connect-all-cities
+provenance:
+  - title: "GeeksforGeeks - Approximate solution for Travelling Salesman Problem using MST"
+    href: https://www.geeksforgeeks.org/dsa/approximate-solution-for-travelling-salesman-problem-using-mst/
+    kind: Implementation
+  - title: "free-programming-books - Algorithms, 4th Edition"
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the practical TSP follow-up after the exact Held-Karp version. Instead of searching every subset state, you build an MST, walk it in preorder, and use triangle inequality to shortcut revisits without making the tour worse than twice the optimum.
+
+## Worked Example
+
+For a metric distance matrix on four cities, suppose Prim's algorithm builds MST edges `(0, 1)`, `(1, 2)`, and `(1, 3)`. A preorder walk from `0` visits cities in order `[0, 1, 2, 3]`, and closing the cycle gives the approximate tour `[0, 1, 2, 3, 0]`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function approximateSolutionForTravellingSalesmanProblemUsingMST(distances) {
+  const cityCount = distances.length;
+  if (cityCount === 0) {
+    return { cost: 0, tour: [] };
+  }
+
+  const key = new Array(cityCount).fill(Number.POSITIVE_INFINITY);
+  const parent = new Array(cityCount).fill(-1);
+  const inMst = new Array(cityCount).fill(false);
+  key[0] = 0;
+
+  for (let added = 0; added < cityCount; added += 1) {
+    let nextCity = -1;
+
+    for (let city = 0; city < cityCount; city += 1) {
+      if (!inMst[city] && (nextCity === -1 || key[city] < key[nextCity])) {
+        nextCity = city;
+      }
+    }
+
+    inMst[nextCity] = true;
+
+    for (let neighbor = 0; neighbor < cityCount; neighbor += 1) {
+      const weight = distances[nextCity][neighbor];
+      if (!inMst[neighbor] && neighbor !== nextCity && weight < key[neighbor]) {
+        key[neighbor] = weight;
+        parent[neighbor] = nextCity;
+      }
+    }
+  }
+
+  const tree = Array.from({ length: cityCount }, () => []);
+  for (let city = 1; city < cityCount; city += 1) {
+    tree[parent[city]].push(city);
+  }
+
+  const preorder = [];
+
+  function dfs(city) {
+    preorder.push(city);
+    for (const neighbor of tree[city]) {
+      dfs(neighbor);
+    }
+  }
+
+  dfs(0);
+  const tour = [...preorder, 0];
+  let cost = 0;
+
+  for (let index = 0; index + 1 < tour.length; index += 1) {
+    cost += distances[tour[index]][tour[index + 1]];
+  }
+
+  return { cost, tour };
+}
+```
+
+```ts
+export function approximateSolutionForTravellingSalesmanProblemUsingMST(
+  distances: number[][],
+): {
+  cost: number;
+  tour: number[];
+} {
+  const cityCount = distances.length;
+  if (cityCount === 0) {
+    return { cost: 0, tour: [] };
+  }
+
+  const key = new Array<number>(cityCount).fill(Number.POSITIVE_INFINITY);
+  const parent = new Array<number>(cityCount).fill(-1);
+  const inMst = new Array<boolean>(cityCount).fill(false);
+  key[0] = 0;
+
+  for (let added = 0; added < cityCount; added += 1) {
+    let nextCity = -1;
+
+    for (let city = 0; city < cityCount; city += 1) {
+      if (!inMst[city] && (nextCity === -1 || key[city] < key[nextCity])) {
+        nextCity = city;
+      }
+    }
+
+    inMst[nextCity] = true;
+
+    for (let neighbor = 0; neighbor < cityCount; neighbor += 1) {
+      const weight = distances[nextCity][neighbor];
+      if (!inMst[neighbor] && neighbor !== nextCity && weight < key[neighbor]) {
+        key[neighbor] = weight;
+        parent[neighbor] = nextCity;
+      }
+    }
+  }
+
+  const tree = Array.from({ length: cityCount }, () => new Array<number>());
+  for (let city = 1; city < cityCount; city += 1) {
+    tree[parent[city]].push(city);
+  }
+
+  const preorder: number[] = [];
+
+  function dfs(city: number): void {
+    preorder.push(city);
+    for (const neighbor of tree[city]) {
+      dfs(neighbor);
+    }
+  }
+
+  dfs(0);
+  const tour = [...preorder, 0];
+  let cost = 0;
+
+  for (let index = 0; index + 1 < tour.length; index += 1) {
+    cost += distances[tour[index]][tour[index + 1]];
+  }
+
+  return { cost, tour };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare this MST-based tour with the exact Held-Karp optimum on a small input.
+- Sort each MST adjacency list by edge weight before the preorder walk and compare tours.
+- Explain why the approximation bound depends on triangle inequality.
+
+## Common Pitfalls
+
+- Applying the guarantee to non-metric graphs where shortcutting can break the bound.
+- Forgetting to return to the starting city after the preorder walk.
+- Mixing this approximation with the exact TSP dynamic-programming solution.

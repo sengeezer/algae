@@ -1,0 +1,108 @@
+---
+title: "Longest subsequence such that difference between adjacents is one"
+slug: longest-subsequence-such-that-difference-between-adjacents-is-one
+category: Dynamic Programming
+summary: "Track the best subsequence ending at each value so new numbers can extend chains ending at their neighbors."
+description: "Longest subsequence such that difference between adjacents is one uses value-indexed DP, because each element extends the best subsequence ending at value - 1 or value + 1."
+dataStructures:
+  - Array
+  - Hash Map
+techniques:
+  - Dynamic Programming
+  - Hashing
+  - Sequence Optimization
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - adjacent difference one subsequence
+  - longest plus-minus-one subsequence
+  - difference-one subsequence
+useCases:
+  - Finding the longest trend that changes by exactly one at each step
+  - Practicing DP keyed by element value rather than only by index
+  - Comparing value-based hashing strategies with classic LIS-style tables
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: "A hash map stores the best subsequence length seen so far for each value, so every new element does constant average-time work."
+interviewSignals:
+  - Adjacent chosen elements in the subsequence must differ by exactly one in absolute value.
+  - The subsequence preserves order, so sorting the array would break the problem.
+relatedSlugs:
+  - longest-increasing-subsequence
+  - longest-common-increasing-subsequence-lcs-lis
+  - largest-divisible-subset-in-array
+provenance:
+  - title: "GeeksforGeeks - Longest subsequence such that difference between adjacents is one"
+    href: https://www.geeksforgeeks.org/dsa/longest-subsequence-such-that-difference-between-adjacents-is-one/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a useful variation on subsequence DP because the state is keyed by value instead of just position. When the next number arrives, only subsequences ending at its immediate numeric neighbors matter, which makes a hash map more natural than a quadratic index-to-index scan.
+
+## Worked Example
+
+For `[10, 9, 4, 5, 4, 8, 6]`, the answer is `3`. Valid subsequences of length `3` include `[10, 9, 8]`, `[4, 5, 4]`, and `[4, 5, 6]`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function longestSubsequenceSuchThatDifferenceBetweenAdjacentsIsOne(values) {
+  const bestEndingAt = new Map();
+  let best = 0;
+
+  for (const value of values) {
+    const candidate = 1 + Math.max(
+      bestEndingAt.get(value - 1) ?? 0,
+      bestEndingAt.get(value + 1) ?? 0,
+    );
+    const updated = Math.max(bestEndingAt.get(value) ?? 0, candidate);
+    bestEndingAt.set(value, updated);
+    best = Math.max(best, updated);
+  }
+
+  return best;
+}
+```
+
+```ts
+export function longestSubsequenceSuchThatDifferenceBetweenAdjacentsIsOne(
+  values: number[],
+): number {
+  const bestEndingAt = new Map<number, number>();
+  let best = 0;
+
+  for (const value of values) {
+    const candidate = 1 + Math.max(
+      bestEndingAt.get(value - 1) ?? 0,
+      bestEndingAt.get(value + 1) ?? 0,
+    );
+    const updated = Math.max(bestEndingAt.get(value) ?? 0, candidate);
+    bestEndingAt.set(value, updated);
+    best = Math.max(best, updated);
+  }
+
+  return best;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Reconstruct one longest valid subsequence instead of only its length.
+- Change the rule to allow adjacent differences up to `k`.
+- Compare the hash-map solution with the slower index-based O(n^2) DP.
+
+## Common Pitfalls
+
+- Sorting the array and accidentally destroying the subsequence constraint.
+- Checking only `value - 1` or only `value + 1` instead of both neighbors.
+- Overwriting a better chain already stored for the same value with a shorter one.

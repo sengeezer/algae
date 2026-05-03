@@ -1,0 +1,143 @@
+---
+title: Printing Items in 0/1 Knapsack
+slug: printing-items-in-0-1-knapsack
+category: Dynamic Programming
+summary: "Build the usual knapsack table, then walk backward through it to recover which items actually form an optimal solution."
+description: "Printing Items in 0/1 Knapsack is the reconstruction variant of knapsack where the DP value table is only half the job because the chosen item set must also be recovered."
+dataStructures:
+  - Array
+  - Table
+techniques:
+  - Dynamic Programming
+  - Backtracking
+  - 0/1 Knapsack
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - reconstruct knapsack items
+  - knapsack item printing
+  - chosen items in knapsack
+useCases:
+  - Recovering one optimal item selection after a max-value DP
+  - Explaining the difference between optimization and reconstruction phases
+  - Practicing reverse traversal through a DP table
+complexity:
+  time: O(n * capacity)
+  space: O(n * capacity)
+  notes: "Reconstruction needs either the full 2D table or a separate predecessor record because the one-row optimization loses enough history to print items."
+interviewSignals:
+  - The prompt asks for which items were chosen, not only the optimal value.
+  - Each item may be used at most once.
+relatedSlugs:
+  - knapsack-dp
+  - subset-sum-problem
+  - unbounded-knapsack-repetition-of-items-allowed
+provenance:
+  - title: "GeeksforGeeks - Printing Items in 0/1 Knapsack"
+    href: https://www.geeksforgeeks.org/dsa/printing-items-01-knapsack/
+    kind: Implementation
+  - title: "free-programming-books - Algorithm Design"
+    href: https://archive.org/details/AlgorithmDesign1stEditionByJonKleinbergAndEvaTardos2005PDF
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Interviewers often accept the knapsack value table first, then immediately ask for the actual chosen items. The recovery step is where you prove that you understand what the DP states mean, not just how to fill them.
+
+## Worked Example
+
+For weights `[1, 3, 4, 5]`, values `[1, 4, 5, 7]`, and capacity `7`, an optimal answer is value `9` from taking the items with weights `3` and `4`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function printingItemsIn01Knapsack(weights, values, capacity) {
+  const itemCount = weights.length;
+  const dp = Array.from({ length: itemCount + 1 }, () => new Array(capacity + 1).fill(0));
+
+  for (let item = 1; item <= itemCount; item += 1) {
+    for (let space = 0; space <= capacity; space += 1) {
+      dp[item][space] = dp[item - 1][space];
+      if (weights[item - 1] <= space) {
+        dp[item][space] = Math.max(
+          dp[item][space],
+          dp[item - 1][space - weights[item - 1]] + values[item - 1],
+        );
+      }
+    }
+  }
+
+  const chosenIndices = [];
+  let remainingCapacity = capacity;
+
+  for (let item = itemCount; item > 0; item -= 1) {
+    if (dp[item][remainingCapacity] !== dp[item - 1][remainingCapacity]) {
+      chosenIndices.push(item - 1);
+      remainingCapacity -= weights[item - 1];
+    }
+  }
+
+  return {
+    maxValue: dp[itemCount][capacity],
+    chosenIndices: chosenIndices.reverse(),
+  };
+}
+```
+
+```ts
+export function printingItemsIn01Knapsack(
+  weights: number[],
+  values: number[],
+  capacity: number,
+): {
+  maxValue: number;
+  chosenIndices: number[];
+} {
+  const itemCount = weights.length;
+  const dp = Array.from({ length: itemCount + 1 }, () => new Array<number>(capacity + 1).fill(0));
+
+  for (let item = 1; item <= itemCount; item += 1) {
+    for (let space = 0; space <= capacity; space += 1) {
+      dp[item][space] = dp[item - 1][space];
+      if (weights[item - 1] <= space) {
+        dp[item][space] = Math.max(
+          dp[item][space],
+          dp[item - 1][space - weights[item - 1]] + values[item - 1],
+        );
+      }
+    }
+  }
+
+  const chosenIndices: number[] = [];
+  let remainingCapacity = capacity;
+
+  for (let item = itemCount; item > 0; item -= 1) {
+    if (dp[item][remainingCapacity] !== dp[item - 1][remainingCapacity]) {
+      chosenIndices.push(item - 1);
+      remainingCapacity -= weights[item - 1];
+    }
+  }
+
+  return {
+    maxValue: dp[itemCount][capacity],
+    chosenIndices: chosenIndices.reverse(),
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the chosen weights and values, not only the indices.
+- Explain why the one-row optimized knapsack table is not enough for straightforward reconstruction.
+- Handle ties by preferring fewer items or lexicographically earlier indices.
+
+## Common Pitfalls
+
+- Reconstructing from a one-dimensional DP array that no longer preserves item history.
+- Forgetting to subtract the chosen item's weight while walking backward.
+- Assuming equal values in adjacent table cells always mean the item was skipped for a unique reason.

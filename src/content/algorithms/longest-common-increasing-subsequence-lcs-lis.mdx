@@ -1,0 +1,110 @@
+---
+title: "Longest Common Increasing Subsequence (LCS + LIS)"
+slug: longest-common-increasing-subsequence-lcs-lis
+category: Dynamic Programming
+summary: "Find a subsequence shared by two arrays that is both order-preserving and strictly increasing."
+description: "Longest Common Increasing Subsequence (LCS + LIS) combines sequence matching with monotonic growth, so each match can only extend smaller matched values seen earlier."
+dataStructures:
+  - Array
+techniques:
+  - Dynamic Programming
+  - Sequence Alignment
+  - Increasing Subsequences
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - lcis
+  - common increasing subsequence
+  - lcs lis hybrid
+useCases:
+  - Comparing ordered numeric sequences under both matching and monotonic constraints
+  - Practicing DP where one sequence provides candidates and the other controls extension state
+  - Contrasting LCIS with standalone LCS and LIS problems
+complexity:
+  time: O(m * n)
+  space: O(n)
+  notes: "For each value in the first sequence, the DP tracks the best LCIS ending at every position in the second sequence while maintaining the best smaller compatible prefix so far."
+interviewSignals:
+  - The subsequence must appear in both sequences and remain strictly increasing.
+  - Matching equal values is not enough unless the previous chosen value is smaller.
+relatedSlugs:
+  - longest-common-subsequence
+  - longest-increasing-subsequence
+  - longest-common-substring
+provenance:
+  - title: "GeeksforGeeks - Longest Common Increasing Subsequence (LCS + LIS)"
+    href: https://www.geeksforgeeks.org/dsa/longest-common-increasing-subsequence-lcs-lis/
+    kind: Implementation
+  - title: "free-programming-books - Algorithm Design"
+    href: https://archive.org/details/AlgorithmDesign1stEditionByJonKleinbergAndEvaTardos2005PDF
+    kind: Reference
+---
+
+## Why It Surfaces
+
+LCIS is the point where knowing LCS and LIS separately is no longer enough. A common value can extend the sequence only if it keeps the result strictly increasing, so the DP has to remember the best compatible smaller match seen so far.
+
+## Worked Example
+
+For `left = [3, 4, 9, 1]` and `right = [5, 3, 8, 9, 10, 2, 1]`, the answer length is `2` because `[3, 9]` is common and increasing.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function longestCommonIncreasingSubsequenceLcsLis(left, right) {
+  const dp = new Array(right.length).fill(0);
+
+  for (let leftIndex = 0; leftIndex < left.length; leftIndex += 1) {
+    let bestSoFar = 0;
+
+    for (let rightIndex = 0; rightIndex < right.length; rightIndex += 1) {
+      if (left[leftIndex] === right[rightIndex]) {
+        dp[rightIndex] = Math.max(dp[rightIndex], bestSoFar + 1);
+      } else if (left[leftIndex] > right[rightIndex]) {
+        bestSoFar = Math.max(bestSoFar, dp[rightIndex]);
+      }
+    }
+  }
+
+  return dp.length === 0 ? 0 : Math.max(...dp);
+}
+```
+
+```ts
+export function longestCommonIncreasingSubsequenceLcsLis(
+  left: number[],
+  right: number[],
+): number {
+  const dp = new Array<number>(right.length).fill(0);
+
+  for (let leftIndex = 0; leftIndex < left.length; leftIndex += 1) {
+    let bestSoFar = 0;
+
+    for (let rightIndex = 0; rightIndex < right.length; rightIndex += 1) {
+      if (left[leftIndex] === right[rightIndex]) {
+        dp[rightIndex] = Math.max(dp[rightIndex], bestSoFar + 1);
+      } else if (left[leftIndex] > right[rightIndex]) {
+        bestSoFar = Math.max(bestSoFar, dp[rightIndex]);
+      }
+    }
+  }
+
+  return dp.length === 0 ? 0 : Math.max(...dp);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Reconstruct one actual LCIS, not only its length.
+- Explain why the running `bestSoFar` must consider only smaller values from the second sequence.
+- Compare the recurrence with separate LCS and LIS tables.
+
+## Common Pitfalls
+
+- Treating LCIS as ordinary LCS and allowing non-increasing matches.
+- Updating `bestSoFar` with values that are not strictly smaller than the current element.
+- Forgetting that equal values in the wrong order still cannot form an increasing subsequence.

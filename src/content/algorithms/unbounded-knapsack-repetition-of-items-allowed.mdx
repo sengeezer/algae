@@ -1,0 +1,102 @@
+---
+title: "Unbounded Knapsack (Repetition of items allowed)"
+slug: unbounded-knapsack-repetition-of-items-allowed
+category: Dynamic Programming
+summary: "Maximize value when each item can be reused any number of times, so the same choice may extend the current state repeatedly."
+description: "Unbounded Knapsack (Repetition of items allowed) is the repeated-choice variant of knapsack where each item's contribution can be used more than once."
+dataStructures:
+  - Array
+techniques:
+  - Dynamic Programming
+  - Unbounded Knapsack
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - unbounded knapsack
+  - complete knapsack
+  - repeated item knapsack
+useCases:
+  - Pricing repeatable resource bundles under a capacity limit
+  - Distinguishing reusable-item DP from 0/1 take-or-skip DP
+  - Connecting rod-cutting style optimization back to the generic knapsack frame
+complexity:
+  time: O(n * capacity)
+  space: O(capacity)
+  notes: "The transition differs from 0/1 knapsack because the same item may contribute again within the same row, so the capacity loop runs forward."
+interviewSignals:
+  - Items may be chosen multiple times.
+  - The target is maximum value under a weight or capacity limit.
+relatedSlugs:
+  - knapsack-dp
+  - rod-cutting
+  - coin-change
+provenance:
+  - title: "GeeksforGeeks - Unbounded Knapsack (Repetition of items allowed)"
+    href: https://www.geeksforgeeks.org/dsa/unbounded-knapsack-repetition-items-allowed/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem is the clean comparison point for 0/1 knapsack. The structure is almost the same, but the loop order changes because taking an item should still leave that same item available again.
+
+## Worked Example
+
+For weights `[2, 3, 4]`, values `[40, 50, 70]`, and capacity `6`, the best answer is `120` by taking the weight-`2` item three times.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function unboundedKnapsackRepetitionOfItemsAllowed(weights, values, capacity) {
+  const dp = new Array(capacity + 1).fill(0);
+
+  for (let space = 0; space <= capacity; space += 1) {
+    for (let item = 0; item < weights.length; item += 1) {
+      if (weights[item] <= space) {
+        dp[space] = Math.max(dp[space], dp[space - weights[item]] + values[item]);
+      }
+    }
+  }
+
+  return dp[capacity];
+}
+```
+
+```ts
+export function unboundedKnapsackRepetitionOfItemsAllowed(
+  weights: number[],
+  values: number[],
+  capacity: number,
+): number {
+  const dp = new Array<number>(capacity + 1).fill(0);
+
+  for (let space = 0; space <= capacity; space += 1) {
+    for (let item = 0; item < weights.length; item += 1) {
+      if (weights[item] <= space) {
+        dp[space] = Math.max(dp[space], dp[space - weights[item]] + values[item]);
+      }
+    }
+  }
+
+  return dp[capacity];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return one optimal multiset of chosen items.
+- Contrast the capacity-loop direction with 0/1 knapsack.
+- Explain how rod cutting becomes a special case of unbounded knapsack.
+
+## Common Pitfalls
+
+- Iterating capacity backward and accidentally turning the problem back into 0/1 knapsack.
+- Confusing unbounded value maximization with coin-change counting.
+- Forgetting that a lower-weight item can dominate by being reusable more times.

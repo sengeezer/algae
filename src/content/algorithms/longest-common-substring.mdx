@@ -1,0 +1,116 @@
+---
+title: Longest Common Substring
+slug: longest-common-substring
+category: Dynamic Programming
+summary: "Track matching suffix lengths for every pair of positions so only contiguous overlap survives each transition."
+description: "Longest Common Substring is the contiguous-match version of sequence alignment, where mismatches reset the local DP state to zero instead of inheriting neighbors."
+dataStructures:
+  - Array
+  - String
+techniques:
+  - Dynamic Programming
+  - Sequence Alignment
+  - Space Optimization
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - longest common contiguous substring
+  - lcsubstring
+  - common substring dp
+useCases:
+  - Finding the longest shared contiguous fragment between two strings
+  - Contrasting contiguous overlap with longest common subsequence
+  - Practicing DP transitions that reset on mismatch
+complexity:
+  time: O(m * n)
+  space: O(n)
+  notes: "Only the previous row is needed because each match extends the diagonal suffix length from one step earlier."
+interviewSignals:
+  - The shared characters must remain contiguous in both strings.
+  - A mismatch resets the running match length instead of allowing a skip.
+relatedSlugs:
+  - longest-common-subsequence
+  - longest-substring-without-repeating-characters
+  - edit-distance
+provenance:
+  - title: "GeeksforGeeks - Longest Common Substring"
+    href: https://www.geeksforgeeks.org/dsa/longest-common-substring-space-optimized-dp-solution/
+    kind: Implementation
+  - title: "free-programming-books - Algorithm Design"
+    href: https://archive.org/details/AlgorithmDesign1stEditionByJonKleinbergAndEvaTardos2005PDF
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Longest Common Substring is the standard trap after someone has learned LCS. The recurrence looks similar, but contiguity changes everything: when the characters stop matching, the current shared suffix length has to reset to zero.
+
+## Worked Example
+
+For `left = "abcdxyz"` and `right = "xyzabcd"`, the answer is `4` because `"abcd"` is the longest contiguous block appearing in both strings.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function longestCommonSubstring(left, right) {
+  const dp = new Array(right.length + 1).fill(0);
+  let best = 0;
+
+  for (let row = 1; row <= left.length; row += 1) {
+    let diagonal = 0;
+
+    for (let col = 1; col <= right.length; col += 1) {
+      const previous = dp[col];
+      if (left[row - 1] === right[col - 1]) {
+        dp[col] = diagonal + 1;
+        best = Math.max(best, dp[col]);
+      } else {
+        dp[col] = 0;
+      }
+      diagonal = previous;
+    }
+  }
+
+  return best;
+}
+```
+
+```ts
+export function longestCommonSubstring(left: string, right: string): number {
+  const dp = new Array<number>(right.length + 1).fill(0);
+  let best = 0;
+
+  for (let row = 1; row <= left.length; row += 1) {
+    let diagonal = 0;
+
+    for (let col = 1; col <= right.length; col += 1) {
+      const previous = dp[col];
+      if (left[row - 1] === right[col - 1]) {
+        dp[col] = diagonal + 1;
+        best = Math.max(best, dp[col]);
+      } else {
+        dp[col] = 0;
+      }
+      diagonal = previous;
+    }
+  }
+
+  return best;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return one actual longest common substring, not only its length.
+- Compare the recurrence directly with longest common subsequence.
+- Extend the solution to case-insensitive matching.
+
+## Common Pitfalls
+
+- Solving longest common subsequence by mistake and allowing gaps.
+- Forgetting to reset the current state to zero on mismatch.
+- Overwriting the diagonal dependency too early in the space-optimized version.

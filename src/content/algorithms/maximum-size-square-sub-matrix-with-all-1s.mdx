@@ -1,0 +1,143 @@
+---
+title: "Maximum Size Square Sub-Matrix with All 1s"
+slug: maximum-size-square-sub-matrix-with-all-1s
+category: Dynamic Programming
+summary: "Compute the largest all-1 square by combining the best square sizes from neighboring cells in a bottom-up pass."
+description: "Maximum Size Square Sub-Matrix with All 1s is the matrix-DP problem where each 1-cell can extend only the smallest square available from its right, down, and diagonal neighbors."
+dataStructures:
+  - Matrix
+  - Array
+techniques:
+  - Dynamic Programming
+  - Matrix DP
+  - Space Optimization
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - largest all-ones square
+  - maximal square side length
+  - square submatrix of ones
+useCases:
+  - Measuring the largest dense square in binary image or grid data
+  - Practicing local matrix transitions that depend on three neighboring states
+  - Contrasting square-only structure with island or rectangle variants
+complexity:
+  time: O(rows * cols)
+  space: O(cols)
+  notes: "A rolling row is enough because each state depends only on the cell below, the cell to the right, and the bottom-right diagonal."
+interviewSignals:
+  - The grid is binary and the answer is the side length of the largest all-1 square.
+  - The interior of the square must also be valid, not just its border.
+relatedSlugs:
+  - max-area-of-island-largest-in-boolean-matrix
+  - max-consecutive-ones
+  - shortest-path-in-a-binary-maze
+provenance:
+  - title: "GeeksforGeeks - Maximum Size Square Sub-Matrix with All 1s"
+    href: https://www.geeksforgeeks.org/dsa/maximum-size-sub-matrix-with-all-1s-in-a-binary-matrix/
+    kind: Implementation
+  - title: "free-programming-books - Algorithm Design"
+    href: https://archive.org/details/AlgorithmDesign1stEditionByJonKleinbergAndEvaTardos2005PDF
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the square-specific counterpart to other binary-matrix problems. A cell can be the top-left corner of a larger all-1 square only when the three dependent smaller squares around it all exist, so the recurrence naturally takes the minimum of those neighboring answers.
+
+## Worked Example
+
+For
+
+```txt
+0 1 1 0 1
+1 1 0 1 0
+0 1 1 1 0
+1 1 1 1 0
+1 1 1 1 1
+0 0 0 0 0
+```
+
+the largest all-1 square has side length `3`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function maximumSizeSquareSubMatrixWithAll1s(matrix) {
+  const rowCount = matrix.length;
+  if (rowCount === 0) {
+    return 0;
+  }
+
+  const colCount = matrix[0].length;
+  const dp = new Array(colCount + 1).fill(0);
+  let best = 0;
+
+  for (let row = rowCount - 1; row >= 0; row -= 1) {
+    let diagonal = 0;
+
+    for (let col = colCount - 1; col >= 0; col -= 1) {
+      const saved = dp[col];
+
+      if (matrix[row][col] === 1) {
+        dp[col] = 1 + Math.min(dp[col], dp[col + 1], diagonal);
+        best = Math.max(best, dp[col]);
+      } else {
+        dp[col] = 0;
+      }
+
+      diagonal = saved;
+    }
+  }
+
+  return best;
+}
+```
+
+```ts
+export function maximumSizeSquareSubMatrixWithAll1s(matrix: number[][]): number {
+  const rowCount = matrix.length;
+  if (rowCount === 0) {
+    return 0;
+  }
+
+  const colCount = matrix[0].length;
+  const dp = new Array<number>(colCount + 1).fill(0);
+  let best = 0;
+
+  for (let row = rowCount - 1; row >= 0; row -= 1) {
+    let diagonal = 0;
+
+    for (let col = colCount - 1; col >= 0; col -= 1) {
+      const saved = dp[col];
+
+      if (matrix[row][col] === 1) {
+        dp[col] = 1 + Math.min(dp[col], dp[col + 1], diagonal);
+        best = Math.max(best, dp[col]);
+      } else {
+        dp[col] = 0;
+      }
+
+      diagonal = saved;
+    }
+  }
+
+  return best;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the top-left coordinate of one maximum square as well as its size.
+- Adapt the recurrence to find the largest all-0 square.
+- Compare this with the largest rectangle of 1s problem.
+
+## Common Pitfalls
+
+- Checking only contiguous rows or columns instead of the full square structure.
+- Using `max` instead of `min` in the recurrence.
+- Overwriting the diagonal dependency before the current cell is updated.

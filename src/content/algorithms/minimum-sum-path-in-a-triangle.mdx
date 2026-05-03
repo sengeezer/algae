@@ -1,0 +1,102 @@
+---
+title: Minimum Sum Path in a Triangle
+slug: minimum-sum-path-in-a-triangle
+category: Dynamic Programming
+summary: "Collapse a triangle bottom-up so each entry stores the cheapest total obtainable from that position to the base."
+description: "Minimum Sum Path in a Triangle is the triangular-grid DP where each state can move only to the two adjacent entries in the next row."
+dataStructures:
+  - Array
+techniques:
+  - Dynamic Programming
+  - Bottom-Up DP
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - min sum in a triangle
+  - triangle minimum path sum
+  - triangle dp minimum
+useCases:
+  - Optimizing top-to-bottom movement through triangular data
+  - Contrasting minimum path sums with the maximum-sum Project Euler triangle variant
+  - Teaching in-place bottom-up state reduction on non-rectangular grids
+complexity:
+  time: O(rows^2)
+  space: O(rows)
+  notes: "A copy of the bottom row is enough because each state only depends on the two entries directly below it."
+interviewSignals:
+  - From each position, you may move only to the same column or the next column in the next row.
+  - The prompt asks for the minimum total, not the path count or maximum sum.
+relatedSlugs:
+  - minimum-cost-path
+  - unique-paths
+  - problem018
+provenance:
+  - title: "GeeksforGeeks - Minimum Sum Path in a Triangle"
+    href: https://www.geeksforgeeks.org/dsa/minimum-sum-path-triangle/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+The triangle layout makes this problem feel unfamiliar at first, but the recurrence is small and local. Every cell only has two legal descendants, so the clean solution is to fold the triangle upward from the base until the top cell becomes the answer.
+
+## Worked Example
+
+For `[[2], [3, 4], [6, 5, 7], [4, 1, 8, 3]]`, the best route is `2 -> 3 -> 5 -> 1`, which totals `11`. A bottom-up pass discovers that by replacing each cell with its own value plus the cheaper of its two children.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function minimumSumPathInATriangle(triangle) {
+  if (triangle.length === 0) {
+    return 0;
+  }
+
+  const dp = triangle[triangle.length - 1].slice();
+
+  for (let row = triangle.length - 2; row >= 0; row -= 1) {
+    for (let col = 0; col < triangle[row].length; col += 1) {
+      dp[col] = triangle[row][col] + Math.min(dp[col], dp[col + 1]);
+    }
+  }
+
+  return dp[0];
+}
+```
+
+```ts
+export function minimumSumPathInATriangle(triangle: number[][]): number {
+  if (triangle.length === 0) {
+    return 0;
+  }
+
+  const dp = triangle[triangle.length - 1].slice();
+
+  for (let row = triangle.length - 2; row >= 0; row -= 1) {
+    for (let col = 0; col < triangle[row].length; col += 1) {
+      dp[col] = triangle[row][col] + Math.min(dp[col], dp[col + 1]);
+    }
+  }
+
+  return dp[0];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Recover the actual minimum-sum path, not only its total.
+- Compare the top-down memoized recurrence with the bottom-up reduction.
+- Adapt the same idea to a rectangular grid with right and down moves.
+
+## Common Pitfalls
+
+- Treating the triangle like a full rectangular matrix and reading invalid neighbors.
+- Solving the maximum-sum variant by mistake.
+- Mutating caller-owned input directly without making it clear.

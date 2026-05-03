@@ -1,0 +1,170 @@
+---
+title: "Max Profit from Two Machines"
+slug: max-profit-from-two-machines
+category: Dynamic Programming
+summary: "Sort tasks by the profit gap between two machines so the costly assignment decisions are made first."
+description: "Max Profit from Two Machines is the two-capacity assignment problem where every task must be routed to one of two machines and the regret from the wrong choice depends on the profit difference."
+dataStructures:
+  - Array
+techniques:
+  - Greedy
+  - Sorting
+  - Assignment Optimization
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - maximum tip calculator
+  - max tip problem
+  - two-machine task assignment
+useCases:
+  - Assigning jobs to two constrained workers while maximizing total reward
+  - Recognizing when profit-difference ordering beats local left-to-right decisions
+  - Comparing greedy assignment with a higher-dimensional DP alternative
+complexity:
+  time: O(tasks * log(tasks))
+  space: O(tasks)
+  notes: "Sorting tasks by absolute profit difference ensures the high-regret choices are fixed before the near-tie tasks."
+interviewSignals:
+  - Each task can go to exactly one of two machines or agents.
+  - Both machines have capacity limits, but total capacity still covers all tasks.
+relatedSlugs:
+  - weighted-job-scheduling
+  - job-sequencing-problem
+  - fractional-knapsack
+provenance:
+  - title: "GeeksforGeeks - Max Profit from Two Machines"
+    href: https://www.geeksforgeeks.org/dsa/maximum-tip-calculator/
+    kind: Implementation
+  - title: "free-programming-books - Algorithms, 4th Edition"
+    href: https://algs4.cs.princeton.edu/home/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem is about constrained assignment, not isolated per-task greed. The crucial observation is that mistakes matter most on tasks where the two machines differ sharply in profit, so you sort by that loss potential first and then spend each remaining capacity slot where it helps most.
+
+## Worked Example
+
+For `a = [1, 2, 3, 4, 5]`, `b = [5, 4, 3, 2, 1]`, `x = 3`, and `y = 3`, the best total is `21`. Machine A takes the three tasks where it gains the most, and Machine B takes the rest.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function maxProfitFromTwoMachines(machineALimit, machineBLimit, machineAProfits, machineBProfits) {
+  if (machineAProfits.length !== machineBProfits.length) {
+    throw new RangeError('profit arrays must have the same length');
+  }
+
+  const taskCount = machineAProfits.length;
+  if (machineALimit + machineBLimit < taskCount) {
+    throw new RangeError('combined machine limits must cover every task');
+  }
+
+  const tasks = machineAProfits
+    .map((profitA, index) => ({
+      profitA,
+      profitB: machineBProfits[index],
+      gap: Math.abs(profitA - machineBProfits[index]),
+    }))
+    .sort((left, right) => right.gap - left.gap);
+
+  let remainingA = machineALimit;
+  let remainingB = machineBLimit;
+  let totalProfit = 0;
+
+  for (const task of tasks) {
+    if (remainingA === 0) {
+      totalProfit += task.profitB;
+      remainingB -= 1;
+      continue;
+    }
+
+    if (remainingB === 0) {
+      totalProfit += task.profitA;
+      remainingA -= 1;
+      continue;
+    }
+
+    if (task.profitA >= task.profitB) {
+      totalProfit += task.profitA;
+      remainingA -= 1;
+    } else {
+      totalProfit += task.profitB;
+      remainingB -= 1;
+    }
+  }
+
+  return totalProfit;
+}
+```
+
+```ts
+export function maxProfitFromTwoMachines(
+  machineALimit: number,
+  machineBLimit: number,
+  machineAProfits: number[],
+  machineBProfits: number[],
+): number {
+  if (machineAProfits.length !== machineBProfits.length) {
+    throw new RangeError('profit arrays must have the same length');
+  }
+
+  const taskCount = machineAProfits.length;
+  if (machineALimit + machineBLimit < taskCount) {
+    throw new RangeError('combined machine limits must cover every task');
+  }
+
+  const tasks = machineAProfits
+    .map((profitA, index) => ({
+      profitA,
+      profitB: machineBProfits[index],
+      gap: Math.abs(profitA - machineBProfits[index]),
+    }))
+    .sort((left, right) => right.gap - left.gap);
+
+  let remainingA = machineALimit;
+  let remainingB = machineBLimit;
+  let totalProfit = 0;
+
+  for (const task of tasks) {
+    if (remainingA === 0) {
+      totalProfit += task.profitB;
+      remainingB -= 1;
+      continue;
+    }
+
+    if (remainingB === 0) {
+      totalProfit += task.profitA;
+      remainingA -= 1;
+      continue;
+    }
+
+    if (task.profitA >= task.profitB) {
+      totalProfit += task.profitA;
+      remainingA -= 1;
+    } else {
+      totalProfit += task.profitB;
+      remainingB -= 1;
+    }
+  }
+
+  return totalProfit;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Solve the same problem with DP over task index and remaining capacities.
+- Reconstruct which machine processes each task.
+- Generalize from two machines to `k` machines and discuss what changes.
+
+## Common Pitfalls
+
+- Processing tasks in input order and losing the high-regret assignments.
+- Forgetting to force tasks onto the remaining machine when one capacity runs out.
+- Mixing up this problem with interval scheduling or one-machine sequencing.

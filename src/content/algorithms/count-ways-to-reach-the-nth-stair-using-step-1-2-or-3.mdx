@@ -1,0 +1,132 @@
+---
+title: "Count ways to reach the nth stair using step 1, 2 or 3"
+slug: count-ways-to-reach-the-nth-stair-using-step-1-2-or-3
+category: Dynamic Programming
+summary: "Count staircase paths when each move may advance one, two, or three steps instead of the usual two-choice version."
+description: "Count ways to reach the nth stair using step 1, 2 or 3 is the tribonacci-shaped extension of the classic climbing-stairs recurrence."
+dataStructures:
+  - Array
+techniques:
+  - Dynamic Programming
+  - Tribonacci Pattern
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - climbing stairs with 3 moves
+  - staircase steps 1 2 3
+  - tribonacci stairs
+useCases:
+  - Extending the standard stair-counting recurrence to one more jump size
+  - Teaching how small move-rule changes alter the DP state transition
+  - Comparing Fibonacci-style and tribonacci-style rolling-state updates
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: "Only the previous three counts are needed, so the full table can be compressed into rolling state." 
+interviewSignals:
+  - The allowed moves are exactly one, two, or three steps.
+  - The prompt asks for the count of ways, not the minimum cost or one concrete path.
+relatedSlugs:
+  - climbing-stairs
+  - tribonacci-number
+  - unique-paths
+provenance:
+  - title: "GeeksforGeeks - Count ways to reach the nth stair using step 1, 2 or 3"
+    href: https://www.geeksforgeeks.org/dsa/count-ways-reach-nth-stair-using-step-1-2-3/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the smallest possible upgrade from classic climbing stairs that still forces you to rethink the recurrence. Instead of summing the previous two states, you now need the previous three, which makes the sequence tribonacci-shaped rather than Fibonacci-shaped.
+
+## Worked Example
+
+For `n = 4`, the valid endings come from stair `3`, stair `2`, or stair `1`, so `ways[4] = ways[3] + ways[2] + ways[1] = 4 + 2 + 1 = 7`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function countWaysToReachTheNthStairUsingStep123(steps) {
+  if (steps < 0) {
+    return 0;
+  }
+
+  if (steps === 0) {
+    return 1;
+  }
+
+  if (steps === 1) {
+    return 1;
+  }
+
+  if (steps === 2) {
+    return 2;
+  }
+
+  let waysMinusThree = 1;
+  let waysMinusTwo = 1;
+  let waysMinusOne = 2;
+
+  for (let current = 3; current <= steps; current += 1) {
+    const waysHere = waysMinusOne + waysMinusTwo + waysMinusThree;
+    waysMinusThree = waysMinusTwo;
+    waysMinusTwo = waysMinusOne;
+    waysMinusOne = waysHere;
+  }
+
+  return waysMinusOne;
+}
+```
+
+```ts
+export function countWaysToReachTheNthStairUsingStep123(steps: number): number {
+  if (steps < 0) {
+    return 0;
+  }
+
+  if (steps === 0) {
+    return 1;
+  }
+
+  if (steps === 1) {
+    return 1;
+  }
+
+  if (steps === 2) {
+    return 2;
+  }
+
+  let waysMinusThree = 1;
+  let waysMinusTwo = 1;
+  let waysMinusOne = 2;
+
+  for (let current = 3; current <= steps; current += 1) {
+    const waysHere = waysMinusOne + waysMinusTwo + waysMinusThree;
+    waysMinusThree = waysMinusTwo;
+    waysMinusTwo = waysMinusOne;
+    waysMinusOne = waysHere;
+  }
+
+  return waysMinusOne;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Allow a blocked stair that cannot be stepped on.
+- Return the count modulo a large prime.
+- Generalize the transition to an arbitrary allowed move set.
+
+## Common Pitfalls
+
+- Reusing the two-step Fibonacci recurrence without adding the third predecessor.
+- Forgetting that `n = 0` has one empty-path base case.
+- Mixing counting questions with minimum-jumps or minimum-cost variants.

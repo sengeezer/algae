@@ -1,0 +1,193 @@
+---
+title: Shortest Superstring Problem
+slug: shortest-superstring-problem
+category: Greedy
+summary: "Repeatedly merge the two strings with the largest overlap to build a compact superstring without exploring every ordering."
+description: "Shortest Superstring Problem is the NP-hard string-merging problem often introduced with a greedy maximum-overlap approximation instead of an exact exponential search."
+dataStructures:
+  - Array
+  - String
+techniques:
+  - Greedy
+  - Approximation
+  - String Matching
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - shortest common superstring
+  - greedy superstring merge
+  - overlap merge
+useCases:
+  - Compressing overlapping fragments into one assembled string
+  - Explaining why local overlap choices can approximate an NP-hard optimization problem
+  - Connecting string overlap graphs with TSP-style formulations
+complexity:
+  time: O(strings^3 * maxLength)
+  space: O(strings * maxLength)
+  notes: "The greedy approximation rescans every pair for the best overlap at each merge round, which matches the article's cubic-in-string-count outer behavior."
+interviewSignals:
+  - The prompt asks for one compact containing string rather than all permutations of concatenation.
+  - The source discussion allows a greedy approximation instead of requiring the true optimum.
+relatedSlugs:
+  - traveling-salesman-problem
+  - rabin-karp
+  - aho-corasick-algorithm
+provenance:
+  - title: "GeeksforGeeks - Shortest Superstring Problem"
+    href: https://www.geeksforgeeks.org/dsa/shortest-superstring-problem/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Shortest superstring is a good interview checkpoint for recognizing when exact optimization is too expensive. The greedy version is easy to explain: at every step, merge the pair of strings with the biggest suffix-prefix overlap and keep going until one string remains.
+
+## Worked Example
+
+For `['catgc', 'ctaagt', 'gcta', 'ttca', 'atgcatc']`, the greedy merge starts by combining `catgc` with `atgcatc` into `catgcatc`, then combines `gcta` with `ctaagt` into `gctaagt`, and continues until one merged answer remains. One valid greedy result is `gctaagttcatgcatc`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function shortestSuperstringProblem(strings) {
+  const pool = strings.filter(Boolean);
+  if (pool.length <= 1) {
+    return pool[0] ?? '';
+  }
+
+  function mergeWithMaximumOverlap(left, right) {
+    let bestOverlap = -1;
+    let merged = left + right;
+    const limit = Math.min(left.length, right.length);
+
+    for (let size = 1; size <= limit; size += 1) {
+      if (left.slice(left.length - size) === right.slice(0, size) && size > bestOverlap) {
+        bestOverlap = size;
+        merged = left + right.slice(size);
+      }
+
+      if (right.slice(right.length - size) === left.slice(0, size) && size > bestOverlap) {
+        bestOverlap = size;
+        merged = right + left.slice(size);
+      }
+    }
+
+    return { bestOverlap, merged };
+  }
+
+  while (pool.length > 1) {
+    let bestLeft = 0;
+    let bestRight = 1;
+    let bestMerged = pool[0] + pool[1];
+    let bestOverlap = -1;
+
+    for (let leftIndex = 0; leftIndex < pool.length; leftIndex += 1) {
+      for (let rightIndex = leftIndex + 1; rightIndex < pool.length; rightIndex += 1) {
+        const candidate = mergeWithMaximumOverlap(pool[leftIndex], pool[rightIndex]);
+
+        if (candidate.bestOverlap > bestOverlap) {
+          bestOverlap = candidate.bestOverlap;
+          bestMerged = candidate.merged;
+          bestLeft = leftIndex;
+          bestRight = rightIndex;
+        }
+      }
+    }
+
+    const nextPool = [];
+    for (let index = 0; index < pool.length; index += 1) {
+      if (index !== bestLeft && index !== bestRight) {
+        nextPool.push(pool[index]);
+      }
+    }
+
+    nextPool.push(bestMerged);
+    pool.splice(0, pool.length, ...nextPool);
+  }
+
+  return pool[0];
+}
+```
+
+```ts
+export function shortestSuperstringProblem(strings: string[]): string {
+  const pool = strings.filter((value) => value.length > 0);
+  if (pool.length <= 1) {
+    return pool[0] ?? "";
+  }
+
+  function mergeWithMaximumOverlap(
+    left: string,
+    right: string,
+  ): { bestOverlap: number; merged: string } {
+    let bestOverlap = -1;
+    let merged = left + right;
+    const limit = Math.min(left.length, right.length);
+
+    for (let size = 1; size <= limit; size += 1) {
+      if (left.slice(left.length - size) === right.slice(0, size) && size > bestOverlap) {
+        bestOverlap = size;
+        merged = left + right.slice(size);
+      }
+
+      if (right.slice(right.length - size) === left.slice(0, size) && size > bestOverlap) {
+        bestOverlap = size;
+        merged = right + left.slice(size);
+      }
+    }
+
+    return { bestOverlap, merged };
+  }
+
+  while (pool.length > 1) {
+    let bestLeft = 0;
+    let bestRight = 1;
+    let bestMerged = pool[0] + pool[1];
+    let bestOverlap = -1;
+
+    for (let leftIndex = 0; leftIndex < pool.length; leftIndex += 1) {
+      for (let rightIndex = leftIndex + 1; rightIndex < pool.length; rightIndex += 1) {
+        const candidate = mergeWithMaximumOverlap(pool[leftIndex], pool[rightIndex]);
+
+        if (candidate.bestOverlap > bestOverlap) {
+          bestOverlap = candidate.bestOverlap;
+          bestMerged = candidate.merged;
+          bestLeft = leftIndex;
+          bestRight = rightIndex;
+        }
+      }
+    }
+
+    const nextPool: string[] = [];
+    for (let index = 0; index < pool.length; index += 1) {
+      if (index !== bestLeft && index !== bestRight) {
+        nextPool.push(pool[index]);
+      }
+    }
+
+    nextPool.push(bestMerged);
+    pool.splice(0, pool.length, ...nextPool);
+  }
+
+  return pool[0];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Remove strings that are already substrings of other strings before merging.
+- Compare the greedy merge with an exact bitmask-DP solution.
+- Return the merge order, not just the final superstring.
+
+## Common Pitfalls
+
+- Assuming the maximum-overlap greedy merge is always optimal.
+- Checking overlap in only one direction instead of both suffix-prefix combinations.
+- Forgetting that substring duplicates can distort the merge order.

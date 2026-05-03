@@ -1,0 +1,96 @@
+---
+title: Minimum Cost to Reach the Top
+slug: minimum-cost-to-reach-the-top
+category: Dynamic Programming
+summary: "Accumulate the cheapest way to stand on each step when you may climb one or two steps and each visited stair adds cost."
+description: "Minimum Cost to Reach the Top is the weighted variant of climbing stairs where the recurrence minimizes path cost instead of counting paths."
+dataStructures:
+  - Array
+techniques:
+  - Dynamic Programming
+  - Rolling State
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - weighted climbing stairs
+  - min cost climbing stairs
+  - staircase minimum cost
+useCases:
+  - Pricing staircase transitions when each landing has a penalty
+  - Contrasting counting DP with cost-minimization DP on the same move rules
+  - Teaching when a recurrence should use `min` instead of `+`
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: "Each step only depends on the cheapest ways to stand on the previous two steps, so a rolling two-value state is enough."
+interviewSignals:
+  - Each stair contributes a cost when stepped on.
+  - The target is the minimum total cost to move past the final stair.
+relatedSlugs:
+  - climbing-stairs
+  - minimum-cost-path
+  - house-robber
+provenance:
+  - title: "GeeksforGeeks - Minimum Cost to Reach the Top"
+    href: https://www.geeksforgeeks.org/dsa/minimum-cost-to-reach-the-top-of-the-floor-by-climbing-stairs/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem looks like ordinary climbing stairs until the objective changes. Once every visited step has a cost, the transition stops adding counts and starts taking the cheaper of the last two ways forward.
+
+## Worked Example
+
+For costs `[10, 15, 20]`, you can start on index `0` or `1`. Taking step `1` for cost `15` and then moving directly to the top beats stepping on both `10` and `20`, so the minimum total is `15`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function minimumCostToReachTheTop(costs) {
+  let previousTwo = 0;
+  let previousOne = 0;
+
+  for (const cost of costs) {
+    const current = cost + Math.min(previousOne, previousTwo);
+    previousTwo = previousOne;
+    previousOne = current;
+  }
+
+  return Math.min(previousOne, previousTwo);
+}
+```
+
+```ts
+export function minimumCostToReachTheTop(costs: number[]): number {
+  let previousTwo = 0;
+  let previousOne = 0;
+
+  for (const cost of costs) {
+    const current = cost + Math.min(previousOne, previousTwo);
+    previousTwo = previousOne;
+    previousOne = current;
+  }
+
+  return Math.min(previousOne, previousTwo);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return one cheapest sequence of step indices, not just the total cost.
+- Allow jumps of one, two, or three steps and update the recurrence.
+- Compare the top-down memoized version with the rolling-state tabulation.
+
+## Common Pitfalls
+
+- Counting ways instead of minimizing accumulated cost.
+- Forgetting that the top sits one move beyond the last index.
+- Paying the top itself as if it had an extra step cost.

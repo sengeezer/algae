@@ -1,0 +1,107 @@
+---
+title: "Minimum Perfect Squares that sums to N"
+slug: minimum-perfect-squares-that-sums-to-n
+category: Dynamic Programming
+summary: "Build the cheapest decomposition of each number using reusable square numbers up to its square root."
+description: "Minimum Perfect Squares that sums to N is the square-denomination version of minimum coin change, where the usable pieces are 1, 4, 9, 16, and so on."
+dataStructures:
+  - Array
+techniques:
+  - Dynamic Programming
+  - Unbounded Knapsack
+  - Number Theory
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - minimum perfect squares
+  - sum of squares dp
+  - square coin change
+useCases:
+  - Minimizing the number of square components in an integer decomposition
+  - Reframing numeric structure problems as unbounded DP
+  - Connecting classic coin change ideas to number-theory flavored prompts
+complexity:
+  time: O(n * sqrt(n))
+  space: O(n)
+  notes: "For every target value, the transition only needs to try square numbers up to its square root."
+interviewSignals:
+  - Perfect squares may be reused any number of times.
+  - The goal is the minimum count of terms, not whether a decomposition exists.
+relatedSlugs:
+  - perfect-square
+  - coin-change
+  - climbing-stairs
+provenance:
+  - title: "GeeksforGeeks - Minimum Perfect Squares that sums to N"
+    href: https://www.geeksforgeeks.org/dsa/minimum-number-of-squares-whose-sum-equals-to-given-number-n/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a good recognition problem because it looks mathematical at first but behaves exactly like an unbounded minimum-coin DP. The only difference is that the available "coins" are all perfect squares up to `n`.
+
+## Worked Example
+
+For `n = 12`, the best answer is `3` because `12 = 4 + 4 + 4`. Using `9` first would leave `3`, which needs three more `1`s and is therefore worse.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function minimumPerfectSquaresThatSumsToN(target) {
+  if (target <= 0) {
+    return 0;
+  }
+
+  const dp = new Array(target + 1).fill(Number.POSITIVE_INFINITY);
+  dp[0] = 0;
+
+  for (let value = 1; value <= target; value += 1) {
+    for (let root = 1; root * root <= value; root += 1) {
+      const square = root * root;
+      dp[value] = Math.min(dp[value], dp[value - square] + 1);
+    }
+  }
+
+  return dp[target];
+}
+```
+
+```ts
+export function minimumPerfectSquaresThatSumsToN(target: number): number {
+  if (target <= 0) {
+    return 0;
+  }
+
+  const dp = new Array<number>(target + 1).fill(Number.POSITIVE_INFINITY);
+  dp[0] = 0;
+
+  for (let value = 1; value <= target; value += 1) {
+    for (let root = 1; root * root <= value; root += 1) {
+      const square = root * root;
+      dp[value] = Math.min(dp[value], dp[value - square] + 1);
+    }
+  }
+
+  return dp[target];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return one actual square decomposition, not only the count.
+- Compare this DP with theorems that characterize answers for special values.
+- Generalize the idea to cubes or other reusable figurate numbers.
+
+## Common Pitfalls
+
+- Treating each square number as usable only once.
+- Greedily taking the largest square first and assuming it must be optimal.
+- Forgetting that `1` is always a valid square fallback.
