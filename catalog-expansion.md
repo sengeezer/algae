@@ -888,9 +888,17 @@ This eighty-fifth expansion slice lifts the catalog from 465 to 468 entries.
 - Job Scheduling with two jobs allowed at a time
 - Optimal Page Replacement Algorithm
 
+## Batch 86 added
+
+This eighty-sixth expansion slice lifts the catalog from 468 to 471 entries.
+
+- Number of single cycle components in an undirected graph
+- Greedy Approximate Algorithm for Set Cover Problem
+- Bin Packing Problem (Minimize number of used Bins)
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 85 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 86 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -898,11 +906,11 @@ All expansion entries from batch 1 through batch 85 now carry explicit per-entry
 
 ## Why this batch
 
-- It continues the GeeksforGeeks Greedy Algorithms page in exact source order after `Program for Worst Fit algorithm in Memory Management`, moving deeper into operating-system greedy routines with shortest-job selection for `Program for Shortest Job First (or SJF) CPU Scheduling | Set 1 (Non- preemptive)`, overlap-capacity checking for `Job Scheduling with two jobs allowed at a time`, and future-farthest eviction for `Optimal Page Replacement Algorithm`.
-- It broadens the catalog across three more greedy control policies: always dispatch the currently shortest available job, accept or reject a schedule based on whether concurrency ever exceeds a small resource budget, and evict the page whose next use is farthest in the future.
-- It complements nearby local coverage rather than duplicating it: these entries shift from mutable block-allocation heuristics to time-ordered execution and cache-replacement decisions, exposing how greedy reasoning applies to CPU scheduling, interval-capacity validation, and theoretical paging benchmarks.
-- It preserves two verified destination-title details that matter for later handoffs: the Greedy-page label `Shortest Job First Scheduling` resolves to the destination heading `Program for Shortest Job First (or SJF) CPU Scheduling | Set 1 (Non- preemptive)`, while the source label `Program for Optimal Page Replacement Algorithm` resolves to the destination heading `Optimal Page Replacement Algorithm`, so the catalog uses the verified destination headings.
-- It preserves the next handoff cleanly across section boundaries: after these three operating-system entries, the Greedy page moves through six already-covered graph implementations, skips the theory-only overview `Max Flow Problem Introduction`, and then reaches the next clean uncataloged trio `Number of single cycle components in an undirected graph`, `Greedy Approximate Algorithm for Set Cover Problem`, and `Bin Packing Problem (Minimize number of used Bins)`.
+- It continues the GeeksforGeeks Greedy Algorithms page in exact source order after `Optimal Page Replacement Algorithm`, moving from the skipped theory-only max-flow overview into a graph-structure check with `Number of single cycle components in an undirected graph`, a weighted coverage heuristic with `Greedy Approximate Algorithm for Set Cover Problem`, and an approximation-oriented packing heuristic with `Bin Packing Problem (Minimize number of used Bins)`.
+- It broadens the catalog across three more interview-relevant decision rules: recognizing when a connected component is exactly one cycle because every vertex has degree `2`, choosing the lowest cost-per-newly-covered set in weighted set cover, and placing descending item sizes into the first bin with enough remaining capacity.
+- It complements nearby local coverage rather than duplicating it: the cycle-component entry adds a structural graph predicate instead of another shortest-path routine, and the set-cover and bin-packing entries add explicit approximation heuristics rather than revisiting exact dynamic-programming formulations.
+- It preserves two verified destination-title details that matter for later handoffs: the Greedy-page labels `Set Cover` and `Bin Packing` resolve to the destination headings `Greedy Approximate Algorithm for Set Cover Problem` and `Bin Packing Problem (Minimize number of used Bins)`, so the catalog uses the verified destination headings instead of the shorter source labels.
+- It preserves the next handoff cleanly: after these three entries, the next exact uncataloged trio on the same source path is `Graph Coloring Using Greedy Algorithm`, `Greedy Approximate Algorithm for K Centers Problem`, and `Shortest Superstring Problem`.
 
 ## Supporting study references from the algorithms list
 
@@ -912,4 +920,4 @@ All expansion entries from batch 1 through batch 85 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- The current GeeksforGeeks Greedy-page frontier now continues with `Number of single cycle components in an undirected graph`, `Greedy Approximate Algorithm for Set Cover Problem`, and `Bin Packing Problem (Minimize number of used Bins)` after `Optimal Page Replacement Algorithm`, with `Max Flow Problem Introduction` skipped as a theory-only overview and the six graph implementations before it already covered locally.
+- The current GeeksforGeeks Greedy-page frontier now continues with `Graph Coloring Using Greedy Algorithm`, `Greedy Approximate Algorithm for K Centers Problem`, and `Shortest Superstring Problem` after `Bin Packing Problem (Minimize number of used Bins)`.

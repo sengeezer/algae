@@ -1,0 +1,160 @@
+---
+title: Number of single cycle components in an undirected graph
+slug: number-of-single-cycle-components-in-an-undirected-graph
+category: Graph
+summary: "Traverse each connected component and count it only when every vertex in that component has degree 2."
+description: "Number of single cycle components in an undirected graph combines component traversal with a degree-two invariant to count components that form exactly one simple cycle."
+dataStructures:
+  - Graph
+  - Array
+techniques:
+  - Depth-First Search
+  - Connected Components
+  - Degree Counting
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - number of simple cyclic components in an undirected graph
+  - single cycle components in an undirected graph
+  - count cycle components
+useCases:
+  - Detecting ring-like connected components inside undirected graphs
+  - Separating pure cycles from trees and mixed graph regions
+  - Validating graph components that should form closed loops
+complexity:
+  time: O(vertices + edges)
+  space: O(vertices + edges)
+  notes: "The reference implementation builds an adjacency list once and then visits each vertex and edge at most once while checking whether every node in a component has degree 2."
+interviewSignals:
+  - A connected undirected component is a single cycle only if every vertex in that component has degree 2.
+  - Degree checks alone are not enough when the graph has multiple disconnected components.
+relatedSlugs:
+  - depth-first-search
+  - breadth-first-search
+provenance:
+  - title: "GeeksforGeeks - Number of single cycle components in an undirected graph"
+    href: https://www.geeksforgeeks.org/dsa/number-of-simple-cyclic-components-in-an-undirected-graph/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem is a good interview twist because it is not asking whether the whole graph has a cycle. Instead, it asks you to classify each connected component and count only the ones that form one clean loop. The decisive invariant is simple: inside an undirected connected component, every vertex must have degree `2` for that component to be exactly one cycle.
+
+## Worked Example
+
+With `vertexCount = 8` and edges `[[0, 1], [1, 2], [2, 0], [3, 4], [4, 5], [5, 6], [6, 3]]`, the graph contains a triangle and a four-cycle, plus isolated vertex `7`. The algorithm returns `2` because only the first two components are single cycles.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function numberOfSingleCycleComponentsInAnUndirectedGraph(vertexCount, edges) {
+  const adjacencyList = Array.from({ length: vertexCount }, () => []);
+
+  for (const [from, to] of edges) {
+    adjacencyList[from].push(to);
+    adjacencyList[to].push(from);
+  }
+
+  const visited = Array(vertexCount).fill(false);
+  let cycleComponents = 0;
+
+  for (let start = 0; start < vertexCount; start += 1) {
+    if (visited[start]) {
+      continue;
+    }
+
+    const stack = [start];
+    visited[start] = true;
+    let isSingleCycle = true;
+
+    while (stack.length > 0) {
+      const node = stack.pop();
+
+      if (adjacencyList[node].length !== 2) {
+        isSingleCycle = false;
+      }
+
+      for (const neighbor of adjacencyList[node]) {
+        if (!visited[neighbor]) {
+          visited[neighbor] = true;
+          stack.push(neighbor);
+        }
+      }
+    }
+
+    if (isSingleCycle) {
+      cycleComponents += 1;
+    }
+  }
+
+  return cycleComponents;
+}
+```
+
+```ts
+export function numberOfSingleCycleComponentsInAnUndirectedGraph(
+  vertexCount: number,
+  edges: Array<[number, number]>,
+): number {
+  const adjacencyList: number[][] = Array.from({ length: vertexCount }, () => []);
+
+  for (const [from, to] of edges) {
+    adjacencyList[from].push(to);
+    adjacencyList[to].push(from);
+  }
+
+  const visited = Array(vertexCount).fill(false);
+  let cycleComponents = 0;
+
+  for (let start = 0; start < vertexCount; start += 1) {
+    if (visited[start]) {
+      continue;
+    }
+
+    const stack = [start];
+    visited[start] = true;
+    let isSingleCycle = true;
+
+    while (stack.length > 0) {
+      const node = stack.pop();
+
+      if (adjacencyList[node].length !== 2) {
+        isSingleCycle = false;
+      }
+
+      for (const neighbor of adjacencyList[node]) {
+        if (!visited[neighbor]) {
+          visited[neighbor] = true;
+          stack.push(neighbor);
+        }
+      }
+    }
+
+    if (isSingleCycle) {
+      cycleComponents += 1;
+    }
+  }
+
+  return cycleComponents;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the actual vertex lists for each cycle component instead of only the count.
+- Adapt the logic to ignore isolated vertices or self-loops under a different graph model.
+- Compare this traversal with a union-find pass that first groups connected components.
+
+## Common Pitfalls
+
+- Counting any component that contains a cycle instead of requiring every vertex to have degree `2`.
+- Forgetting to process disconnected components separately.
+- Treating isolated vertices or path components as valid cycles.

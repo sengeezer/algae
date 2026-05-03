@@ -1,0 +1,199 @@
+---
+title: Greedy Approximate Algorithm for Set Cover Problem
+slug: greedy-approximate-algorithm-for-set-cover-problem
+category: Greedy
+summary: "Repeatedly choose the set with the lowest cost per newly covered element until the universe is covered or no progress remains."
+description: "Greedy Approximate Algorithm for Set Cover Problem applies the classic weighted set-cover heuristic that minimizes cost divided by newly covered elements at each step."
+dataStructures:
+  - Array
+  - Set
+techniques:
+  - Greedy
+  - Approximation
+  - Coverage
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - set cover
+  - weighted set cover greedy
+  - approximate set cover
+useCases:
+  - Choosing low-cost resources that together cover all required features
+  - Building fast approximations for NP-hard coverage problems
+  - Prioritizing facilities, sensors, or audits by marginal cost effectiveness
+complexity:
+  time: O(universe * sets)
+  space: O(universe + totalSetElements)
+  notes: "The straightforward implementation rescans every candidate set against the current uncovered universe each round, matching the article's O(nm) style analysis."
+interviewSignals:
+  - "The greedy score is marginal cost effectiveness: cost divided by newly covered elements."
+  - The heuristic has a logarithmic approximation guarantee and is not always optimal.
+relatedSlugs:
+  - optimal-page-replacement-algorithm
+  - bin-packing-problem-minimize-number-of-used-bins
+provenance:
+  - title: "GeeksforGeeks - Greedy Approximate Algorithm for Set Cover Problem"
+    href: https://www.geeksforgeeks.org/dsa/greedy-approximate-algorithm-for-set-cover-problem/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Set cover is one of the classic NP-hard interview prompts where the exact solution is usually too expensive, so the discussion shifts to a principled approximation. The greedy rule is to keep choosing the set with the best cost-effectiveness ratio, meaning the lowest `cost / newlyCoveredElements` among the remaining candidates.
+
+## Worked Example
+
+Let the universe be `[1, 2, 3, 4, 5]` and the weighted sets be `S1 = {4, 1, 3}` with cost `5`, `S2 = {2, 5}` with cost `10`, and `S3 = {1, 4, 3, 2}` with cost `3`. The greedy heuristic picks `S3` first because `3 / 4` is the best ratio, then adds `S2` to cover `5`, producing a total cost of `13`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function greedyApproximateAlgorithmForSetCoverProblem(universe, sets) {
+  const uncovered = new Set(universe);
+  const selectedSetIds = [];
+  let totalCost = 0;
+
+  while (uncovered.size > 0) {
+    let bestSet = null;
+    let bestNewElements = [];
+    let bestRatio = Number.POSITIVE_INFINITY;
+
+    for (const candidate of sets) {
+      const newElements = candidate.elements.filter((element) => uncovered.has(element));
+
+      if (newElements.length === 0) {
+        continue;
+      }
+
+      const ratio = candidate.cost / newElements.length;
+
+      if (
+        ratio < bestRatio ||
+        (ratio === bestRatio && newElements.length > bestNewElements.length) ||
+        (ratio === bestRatio &&
+          newElements.length === bestNewElements.length &&
+          candidate.cost < bestSet.cost) ||
+        (ratio === bestRatio &&
+          newElements.length === bestNewElements.length &&
+          candidate.cost === bestSet.cost &&
+          candidate.id < bestSet.id)
+      ) {
+        bestSet = candidate;
+        bestNewElements = newElements;
+        bestRatio = ratio;
+      }
+    }
+
+    if (bestSet === null) {
+      break;
+    }
+
+    selectedSetIds.push(bestSet.id);
+    totalCost += bestSet.cost;
+
+    for (const element of bestNewElements) {
+      uncovered.delete(element);
+    }
+  }
+
+  return {
+    selectedSetIds,
+    totalCost,
+    coveredElements: universe.filter((element) => !uncovered.has(element)),
+    uncoveredElements: Array.from(uncovered),
+  };
+}
+```
+
+```ts
+type SetCoverCandidate = {
+  id: string;
+  elements: number[];
+  cost: number;
+};
+
+export function greedyApproximateAlgorithmForSetCoverProblem(
+  universe: number[],
+  sets: SetCoverCandidate[],
+): {
+  selectedSetIds: string[];
+  totalCost: number;
+  coveredElements: number[];
+  uncoveredElements: number[];
+} {
+  const uncovered = new Set(universe);
+  const selectedSetIds: string[] = [];
+  let totalCost = 0;
+
+  while (uncovered.size > 0) {
+    let bestSet: SetCoverCandidate | null = null;
+    let bestNewElements: number[] = [];
+    let bestRatio = Number.POSITIVE_INFINITY;
+
+    for (const candidate of sets) {
+      const newElements = candidate.elements.filter((element) => uncovered.has(element));
+
+      if (newElements.length === 0) {
+        continue;
+      }
+
+      const ratio = candidate.cost / newElements.length;
+
+      if (
+        ratio < bestRatio ||
+        (ratio === bestRatio && newElements.length > bestNewElements.length) ||
+        (ratio === bestRatio &&
+          newElements.length === bestNewElements.length &&
+          bestSet !== null &&
+          candidate.cost < bestSet.cost) ||
+        (ratio === bestRatio &&
+          newElements.length === bestNewElements.length &&
+          bestSet !== null &&
+          candidate.cost === bestSet.cost &&
+          candidate.id < bestSet.id)
+      ) {
+        bestSet = candidate;
+        bestNewElements = newElements;
+        bestRatio = ratio;
+      }
+    }
+
+    if (bestSet === null) {
+      break;
+    }
+
+    selectedSetIds.push(bestSet.id);
+    totalCost += bestSet.cost;
+
+    for (const element of bestNewElements) {
+      uncovered.delete(element);
+    }
+  }
+
+  return {
+    selectedSetIds,
+    totalCost,
+    coveredElements: universe.filter((element) => !uncovered.has(element)),
+    uncoveredElements: Array.from(uncovered),
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the chosen sets themselves, not only their identifiers and total cost.
+- Add support for arbitrary element types instead of assuming numeric universe members.
+- Compare this approximation with an exact bitmask dynamic-programming solution for small universes.
+
+## Common Pitfalls
+
+- Choosing the cheapest set overall instead of the cheapest set per newly covered element.
+- Forgetting to ignore elements that are already covered when recomputing each ratio.
+- Assuming the greedy result is guaranteed to be globally optimal.
