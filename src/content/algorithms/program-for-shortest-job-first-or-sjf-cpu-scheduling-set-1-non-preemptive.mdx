@@ -1,0 +1,150 @@
+---
+title: "Program for Shortest Job First (or SJF) CPU Scheduling | Set 1 (Non- preemptive)"
+slug: program-for-shortest-job-first-or-sjf-cpu-scheduling-set-1-non-preemptive
+category: Greedy
+summary: "Assuming all jobs are ready at time zero, sort by burst time and always execute the shortest remaining whole job next."
+description: "Program for Shortest Job First (or SJF) CPU Scheduling | Set 1 (Non- preemptive) greedily minimizes average waiting time by running the shortest available non-preemptive job first."
+dataStructures:
+  - Array
+techniques:
+  - Greedy
+  - Sorting
+  - Scheduling
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - shortest job first scheduling
+  - sjf scheduling
+  - non preemptive sjf scheduling
+useCases:
+  - Minimizing average waiting time when burst lengths are known in advance
+  - Simulating non-preemptive CPU dispatch order
+  - Comparing greedy scheduling against FCFS-style execution
+complexity:
+  time: O(processes log processes)
+  space: O(processes)
+  notes: "The reference implementation sorts once by burst time and then performs a single cumulative scan to compute waiting and turnaround times."
+interviewSignals:
+  - The simple implementation assumes all processes are available at time zero.
+  - Ties can stay stable by original process index without changing the objective.
+relatedSlugs:
+  - job-scheduling-with-two-jobs-allowed-at-a-time
+  - optimal-page-replacement-algorithm
+provenance:
+  - title: "GeeksforGeeks - Program for Shortest Job First (or SJF) CPU Scheduling | Set 1 (Non- preemptive)"
+    href: https://www.geeksforgeeks.org/dsa/program-for-shortest-job-first-or-sjf-cpu-scheduling-set-1-non-preemptive/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Shortest Job First is a canonical example of greedy scheduling: if every burst time is known before execution begins, the locally best move is always to run the shortest pending job. That single choice repeatedly minimizes how much total waiting time is imposed on the remaining processes.
+
+## Worked Example
+
+For burst times `P1 = 6`, `P2 = 8`, `P3 = 7`, and `P4 = 3`, SJF runs the processes in order `P4 -> P1 -> P3 -> P2`. The waiting times become `[3, 16, 9, 0]`, the turnaround times become `[9, 24, 16, 3]`, and the average waiting time is `7`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function programForShortestJobFirstOrSjfCpuSchedulingSet1NonPreemptive(burstTimes) {
+  const processes = burstTimes.map((burstTime, index) => ({
+    id: index + 1,
+    burstTime,
+  }));
+
+  processes.sort(
+    (left, right) => left.burstTime - right.burstTime || left.id - right.id,
+  );
+
+  let elapsedTime = 0;
+  let totalWaitingTime = 0;
+  let totalTurnaroundTime = 0;
+  const order = [];
+  const waitingTimes = Array(burstTimes.length).fill(0);
+  const turnaroundTimes = Array(burstTimes.length).fill(0);
+
+  for (const process of processes) {
+    order.push(process.id);
+    waitingTimes[process.id - 1] = elapsedTime;
+    totalWaitingTime += elapsedTime;
+
+    elapsedTime += process.burstTime;
+    turnaroundTimes[process.id - 1] = elapsedTime;
+    totalTurnaroundTime += elapsedTime;
+  }
+
+  return {
+    order,
+    waitingTimes,
+    turnaroundTimes,
+    averageWaitingTime: totalWaitingTime / burstTimes.length,
+    averageTurnaroundTime: totalTurnaroundTime / burstTimes.length,
+  };
+}
+```
+
+```ts
+export function programForShortestJobFirstOrSjfCpuSchedulingSet1NonPreemptive(
+  burstTimes: number[],
+): {
+  order: number[];
+  waitingTimes: number[];
+  turnaroundTimes: number[];
+  averageWaitingTime: number;
+  averageTurnaroundTime: number;
+} {
+  const processes = burstTimes.map((burstTime, index) => ({
+    id: index + 1,
+    burstTime,
+  }));
+
+  processes.sort(
+    (left, right) => left.burstTime - right.burstTime || left.id - right.id,
+  );
+
+  let elapsedTime = 0;
+  let totalWaitingTime = 0;
+  let totalTurnaroundTime = 0;
+  const order: number[] = [];
+  const waitingTimes = Array(burstTimes.length).fill(0);
+  const turnaroundTimes = Array(burstTimes.length).fill(0);
+
+  for (const process of processes) {
+    order.push(process.id);
+    waitingTimes[process.id - 1] = elapsedTime;
+    totalWaitingTime += elapsedTime;
+
+    elapsedTime += process.burstTime;
+    turnaroundTimes[process.id - 1] = elapsedTime;
+    totalTurnaroundTime += elapsedTime;
+  }
+
+  return {
+    order,
+    waitingTimes,
+    turnaroundTimes,
+    averageWaitingTime: totalWaitingTime / burstTimes.length,
+    averageTurnaroundTime: totalTurnaroundTime / burstTimes.length,
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Extend the routine to support real arrival times instead of assuming every process is ready at time zero.
+- Return completion times and a Gantt-style execution trace in addition to averages.
+- Compare the starvation risk of SJF against round-robin scheduling.
+
+## Common Pitfalls
+
+- Forgetting that this non-preemptive version cannot interrupt a running job when a shorter one arrives later.
+- Mixing the all-arrivals-zero implementation with formulas that assume arbitrary arrival times.
+- Reordering equal burst times unstably and then expecting deterministic process labels in the output.

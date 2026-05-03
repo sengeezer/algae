@@ -1,0 +1,118 @@
+---
+title: Job Scheduling with two jobs allowed at a time
+slug: job-scheduling-with-two-jobs-allowed-at-a-time
+category: Greedy
+summary: "Sort the job boundaries, scan active overlap counts, and reject the schedule as soon as more than two jobs are concurrent."
+description: "Job Scheduling with two jobs allowed at a time greedily validates a job set by checking whether the overlap count ever exceeds a two-slot execution capacity."
+dataStructures:
+  - Array
+techniques:
+  - Greedy
+  - Sorting
+  - Sweep Line
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - two jobs allowed at a time
+  - schedule jobs with capacity two
+  - maximum overlap at most two
+useCases:
+  - Validating calendars with two identical resources
+  - Checking interval feasibility under small concurrency limits
+  - Detecting when inclusive endpoints create an extra overlap
+complexity:
+  time: O(jobs log jobs)
+  space: O(jobs)
+  notes: "The implementation expands each job into a start event and an end event, ordering starts before ends at the same timestamp because touching endpoints are considered overlapping in this problem." 
+interviewSignals:
+  - If a job starts exactly when another ends, both count as overlapping.
+  - The only decision is whether peak concurrency ever exceeds two.
+relatedSlugs:
+  - greedy-interval-scheduling
+  - minimum-platforms
+provenance:
+  - title: "GeeksforGeeks - Job Scheduling with two jobs allowed at a time"
+    href: https://www.geeksforgeeks.org/dsa/job-scheduling-two-jobs-allowed-time/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This looks like a scheduling-construction problem, but the greedy core is even simpler: once the jobs are ordered in time, only the maximum number of simultaneous intervals matters. If that overlap count never exceeds two, the schedule is feasible; if it ever reaches three, no assignment can save it.
+
+## Worked Example
+
+For `jobs = [[1, 2], [2, 3], [4, 5]]`, the first two jobs overlap at time `2`, so the peak concurrency is exactly `2` and the schedule is feasible. For `jobs = [[1, 5], [2, 4], [2, 6], [1, 7]]`, the overlap count reaches `4`, so the answer is `false`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function jobSchedulingWithTwoJobsAllowedAtATime(jobs) {
+  const events = [];
+
+  for (const [start, end] of jobs) {
+    events.push([start, 1]);
+    events.push([end, -1]);
+  }
+
+  events.sort((left, right) => left[0] - right[0] || right[1] - left[1]);
+
+  let activeJobs = 0;
+
+  for (const [, delta] of events) {
+    activeJobs += delta;
+
+    if (activeJobs > 2) {
+      return false;
+    }
+  }
+
+  return true;
+}
+```
+
+```ts
+export function jobSchedulingWithTwoJobsAllowedAtATime(
+  jobs: Array<[number, number]>,
+): boolean {
+  const events: Array<[number, number]> = [];
+
+  for (const [start, end] of jobs) {
+    events.push([start, 1]);
+    events.push([end, -1]);
+  }
+
+  events.sort((left, right) => left[0] - right[0] || right[1] - left[1]);
+
+  let activeJobs = 0;
+
+  for (const [, delta] of events) {
+    activeJobs += delta;
+
+    if (activeJobs > 2) {
+      return false;
+    }
+  }
+
+  return true;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Generalize the check to support an arbitrary capacity `k` instead of exactly two workers.
+- Return the first time segment that makes the schedule infeasible.
+- Build an explicit assignment of jobs to worker `A` or `B` when the answer is `true`.
+
+## Common Pitfalls
+
+- Processing end events before start events at the same time even though the problem treats touching endpoints as overlapping.
+- Treating this as interval merging instead of a concurrency-bound check.
+- Forgetting that one very long job can overlap many shorter non-overlapping jobs without exceeding capacity two.

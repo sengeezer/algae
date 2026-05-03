@@ -1,0 +1,193 @@
+---
+title: Optimal Page Replacement Algorithm
+slug: optimal-page-replacement-algorithm
+category: Greedy
+summary: "On each page fault, replace the frame whose page is either never used again or used farthest in the future."
+description: "Optimal Page Replacement Algorithm greedily minimizes future page faults by evicting the page with the latest next use among the current frames."
+dataStructures:
+  - Array
+techniques:
+  - Greedy
+  - Simulation
+  - Lookahead
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - program for optimal page replacement algorithm
+  - optimal page replacement in operating systems
+  - optimal paging algorithm
+useCases:
+  - Measuring the theoretical lower bound on page faults
+  - Comparing practical paging strategies against an optimal offline baseline
+  - Simulating frame replacement with perfect future knowledge
+complexity:
+  time: O(references^2 * frames)
+  space: O(frames)
+  notes: "The reference implementation uses the straightforward offline simulation that rescans the future reference string for every page currently in a full frame set." 
+interviewSignals:
+  - The algorithm is optimal only because it assumes exact knowledge of future references.
+  - A page that never appears again should be evicted immediately on a fault.
+relatedSlugs:
+  - lru-cache
+  - program-for-shortest-job-first-or-sjf-cpu-scheduling-set-1-non-preemptive
+provenance:
+  - title: "GeeksforGeeks - Optimal Page Replacement Algorithm"
+    href: https://www.geeksforgeeks.org/dsa/optimal-page-replacement-algorithm/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Optimal page replacement is the textbook offline greedy benchmark: if you can see the future, the safest page to evict is the one needed farthest from now, or never again. Real operating systems cannot do that perfectly, but this algorithm gives the target that practical heuristics try to approximate.
+
+## Worked Example
+
+With `frameCount = 3` and reference string `[7, 0, 1, 2, 0, 3, 0, 4, 2, 3]`, the algorithm records `6` page faults and `4` page hits. One valid final frame state is `[2, 4, 3]`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function optimalPageReplacementAlgorithm(referenceString, frameCount) {
+  const frames = [];
+  let pageHits = 0;
+  let pageFaults = 0;
+
+  for (let index = 0; index < referenceString.length; index += 1) {
+    const page = referenceString[index];
+
+    if (frames.includes(page)) {
+      pageHits += 1;
+      continue;
+    }
+
+    pageFaults += 1;
+
+    if (frames.length < frameCount) {
+      frames.push(page);
+      continue;
+    }
+
+    let replacementIndex = 0;
+    let farthestUse = -1;
+
+    for (let frameIndex = 0; frameIndex < frames.length; frameIndex += 1) {
+      let nextUse = Number.POSITIVE_INFINITY;
+
+      for (
+        let futureIndex = index + 1;
+        futureIndex < referenceString.length;
+        futureIndex += 1
+      ) {
+        if (referenceString[futureIndex] === frames[frameIndex]) {
+          nextUse = futureIndex;
+          break;
+        }
+      }
+
+      if (nextUse === Number.POSITIVE_INFINITY) {
+        replacementIndex = frameIndex;
+        break;
+      }
+
+      if (nextUse > farthestUse) {
+        farthestUse = nextUse;
+        replacementIndex = frameIndex;
+      }
+    }
+
+    frames[replacementIndex] = page;
+  }
+
+  return {
+    pageHits,
+    pageFaults,
+    finalFrames: frames,
+  };
+}
+```
+
+```ts
+export function optimalPageReplacementAlgorithm(
+  referenceString: number[],
+  frameCount: number,
+): {
+  pageHits: number;
+  pageFaults: number;
+  finalFrames: number[];
+} {
+  const frames: number[] = [];
+  let pageHits = 0;
+  let pageFaults = 0;
+
+  for (let index = 0; index < referenceString.length; index += 1) {
+    const page = referenceString[index];
+
+    if (frames.includes(page)) {
+      pageHits += 1;
+      continue;
+    }
+
+    pageFaults += 1;
+
+    if (frames.length < frameCount) {
+      frames.push(page);
+      continue;
+    }
+
+    let replacementIndex = 0;
+    let farthestUse = -1;
+
+    for (let frameIndex = 0; frameIndex < frames.length; frameIndex += 1) {
+      let nextUse = Number.POSITIVE_INFINITY;
+
+      for (
+        let futureIndex = index + 1;
+        futureIndex < referenceString.length;
+        futureIndex += 1
+      ) {
+        if (referenceString[futureIndex] === frames[frameIndex]) {
+          nextUse = futureIndex;
+          break;
+        }
+      }
+
+      if (nextUse === Number.POSITIVE_INFINITY) {
+        replacementIndex = frameIndex;
+        break;
+      }
+
+      if (nextUse > farthestUse) {
+        farthestUse = nextUse;
+        replacementIndex = frameIndex;
+      }
+    }
+
+    frames[replacementIndex] = page;
+  }
+
+  return {
+    pageHits,
+    pageFaults,
+    finalFrames: frames,
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare the miss count against FIFO or LRU on the same reference string.
+- Return the full frame state after each reference, not only the final result.
+- Explain why the algorithm is optimal even though it is unusable online.
+
+## Common Pitfalls
+
+- Replacing the page used soonest instead of the page used farthest in the future.
+- Forgetting that a page with no future reference is always the best eviction choice.
+- Describing the algorithm as deployable in a real OS even though it requires perfect future knowledge.

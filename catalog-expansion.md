@@ -880,9 +880,17 @@ This eighty-fourth expansion slice lifts the catalog from 462 to 465 entries.
 - Program for Best Fit algorithm in Memory Management
 - Program for Worst Fit algorithm in Memory Management
 
+## Batch 85 added
+
+This eighty-fifth expansion slice lifts the catalog from 465 to 468 entries.
+
+- Program for Shortest Job First (or SJF) CPU Scheduling | Set 1 (Non- preemptive)
+- Job Scheduling with two jobs allowed at a time
+- Optimal Page Replacement Algorithm
+
 ## Provenance metadata
 
-All expansion entries from batch 1 through batch 84 now carry explicit per-entry provenance metadata:
+All expansion entries from batch 1 through batch 85 now carry explicit per-entry provenance metadata:
 
 - One implementation link back to TheAlgorithms/JavaScript
 - One study-reference link discovered through the free-programming-books algorithms list
@@ -890,11 +898,11 @@ All expansion entries from batch 1 through batch 84 now carry explicit per-entry
 
 ## Why this batch
 
-- It continues the GeeksforGeeks Greedy Algorithms page in exact source order after `Partition into two subsets of lengths K and (N - k) such that the difference of sums is maximum`, entering the operating-system allocation section with sequential placement for `Program for First Fit algorithm in Memory Management`, smallest-sufficient selection for `Program for Best Fit algorithm in Memory Management`, and largest-sufficient selection for `Program for Worst Fit algorithm in Memory Management`.
-- It broadens the catalog across three more greedy resource-allocation policies: commit each process to the earliest usable block, minimize immediate slack by taking the tightest fit, and preserve mid-sized gaps by carving from the largest feasible block.
-- It complements nearby local coverage rather than duplicating it: these entries model mutable capacity consumption across multiple allocations rather than one-shot array pairing or subset selection, and the contrast among first-fit, best-fit, and worst-fit exposes how different greedy local choices alter later feasibility.
-- It preserves one destination-title detail that matters for later handoffs: the verified GeeksforGeeks article headings for these memory-allocation pages include the `Program for` prefix, so the catalog uses those destination titles verbatim.
-- It preserves the next handoff cleanly: after these three allocation policies, the same source progression continues into operating-system scheduling and paging with `Shortest Job First Scheduling`, `Job Scheduling with two jobs allowed at a time`, and `Program for Optimal Page Replacement Algorithm`.
+- It continues the GeeksforGeeks Greedy Algorithms page in exact source order after `Program for Worst Fit algorithm in Memory Management`, moving deeper into operating-system greedy routines with shortest-job selection for `Program for Shortest Job First (or SJF) CPU Scheduling | Set 1 (Non- preemptive)`, overlap-capacity checking for `Job Scheduling with two jobs allowed at a time`, and future-farthest eviction for `Optimal Page Replacement Algorithm`.
+- It broadens the catalog across three more greedy control policies: always dispatch the currently shortest available job, accept or reject a schedule based on whether concurrency ever exceeds a small resource budget, and evict the page whose next use is farthest in the future.
+- It complements nearby local coverage rather than duplicating it: these entries shift from mutable block-allocation heuristics to time-ordered execution and cache-replacement decisions, exposing how greedy reasoning applies to CPU scheduling, interval-capacity validation, and theoretical paging benchmarks.
+- It preserves two verified destination-title details that matter for later handoffs: the Greedy-page label `Shortest Job First Scheduling` resolves to the destination heading `Program for Shortest Job First (or SJF) CPU Scheduling | Set 1 (Non- preemptive)`, while the source label `Program for Optimal Page Replacement Algorithm` resolves to the destination heading `Optimal Page Replacement Algorithm`, so the catalog uses the verified destination headings.
+- It preserves the next handoff cleanly across section boundaries: after these three operating-system entries, the Greedy page moves through six already-covered graph implementations, skips the theory-only overview `Max Flow Problem Introduction`, and then reaches the next clean uncataloged trio `Number of single cycle components in an undirected graph`, `Greedy Approximate Algorithm for Set Cover Problem`, and `Bin Packing Problem (Minimize number of used Bins)`.
 
 ## Supporting study references from the algorithms list
 
@@ -904,4 +912,4 @@ All expansion entries from batch 1 through batch 84 now carry explicit per-entry
 
 ## Next candidates from the same sources
 
-- The current GeeksforGeeks Greedy-page frontier now continues with `Shortest Job First Scheduling`, `Job Scheduling with two jobs allowed at a time`, and `Program for Optimal Page Replacement Algorithm` after `Program for Worst Fit algorithm in Memory Management`, with no duplicate or label-only skips between those three items.
+- The current GeeksforGeeks Greedy-page frontier now continues with `Number of single cycle components in an undirected graph`, `Greedy Approximate Algorithm for Set Cover Problem`, and `Bin Packing Problem (Minimize number of used Bins)` after `Optimal Page Replacement Algorithm`, with `Max Flow Problem Introduction` skipped as a theory-only overview and the six graph implementations before it already covered locally.
