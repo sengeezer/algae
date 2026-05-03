@@ -1,0 +1,191 @@
+---
+title: Count-based Absolute difference for Array element
+slug: count-based-absolute-difference-for-array-element
+category: Arrays
+summary: Sweep from both directions with Fenwick trees to compare how many larger values lie left and how many smaller values lie right.
+description: "Count-based Absolute difference for Array element becomes two frequency-count passes after coordinate compression: one pass counts smaller elements to the right, and the other counts greater elements to the left."
+dataStructures:
+  - Array
+  - Binary Tree
+techniques:
+  - Fenwick Tree
+  - Coordinate Compression
+  - Counting
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - absolute difference of greater-left and lesser-right counts
+  - count difference around each element
+useCases:
+  - Bidirectional dominance counting
+  - Practicing Fenwick trees on ranked values
+  - Turning pairwise comparisons into prefix counts
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: "Each Fenwick pass performs one prefix query and one point update per element after value compression."
+interviewSignals:
+  - Every index asks for counts on both sides of the array.
+  - Direct comparison against all other elements is quadratic.
+  - Relative order matters more than the original magnitudes.
+relatedSlugs:
+  - fenwick-tree
+provenance:
+  - title: "GeeksforGeeks - Count-based Absolute difference for Array element"
+    href: https://www.geeksforgeeks.org/dsa/count-based-absolute-difference-for-array-element/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+The left-side question asks for counts of values strictly greater than `arr[i]`, while the right-side question asks for counts of values strictly less than `arr[i]`. After coordinate compression, both become ordinary Fenwick prefix-count queries in opposite traversal directions.
+
+## Worked Example
+
+For `[5, 4, 3, 2, 1]`, the first element has `0` greater values on the left and `4` smaller values on the right, so its answer is `|0 - 4| = 4`. The middle element `3` has `2` greater values on the left and `2` smaller values on the right, so its answer is `0`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function countBasedAbsoluteDifferenceForArrayElement(values) {
+  if (!Array.isArray(values) || values.length === 0) {
+    throw new RangeError('Values must be a non-empty array');
+  }
+
+  const sortedValues = [...new Set(values)].sort((left, right) => left - right);
+  const ranks = new Map(sortedValues.map((value, index) => [value, index + 1]));
+  const compressed = values.map((value) => {
+    if (!Number.isFinite(value)) {
+      throw new RangeError('Array values must be finite numbers');
+    }
+
+    return ranks.get(value);
+  });
+
+  const rightTree = new FenwickTree(sortedValues.length);
+  const rightLesser = new Array(values.length).fill(0);
+
+  for (let index = values.length - 1; index >= 0; index -= 1) {
+    const rank = compressed[index];
+    rightLesser[index] = rightTree.query(rank - 1);
+    rightTree.update(rank, 1);
+  }
+
+  const leftTree = new FenwickTree(sortedValues.length);
+  const result = new Array(values.length).fill(0);
+
+  for (let index = 0; index < values.length; index += 1) {
+    const rank = compressed[index];
+    const seen = index;
+    const lessOrEqualOnLeft = leftTree.query(rank);
+    const greaterOnLeft = seen - lessOrEqualOnLeft;
+    result[index] = Math.abs(greaterOnLeft - rightLesser[index]);
+    leftTree.update(rank, 1);
+  }
+
+  return result;
+}
+
+class FenwickTree {
+  constructor(size) {
+    this.tree = new Array(size + 1).fill(0);
+  }
+
+  update(index, delta) {
+    for (let current = index; current < this.tree.length; current += current & -current) {
+      this.tree[current] += delta;
+    }
+  }
+
+  query(index) {
+    let sum = 0;
+
+    for (let current = index; current > 0; current -= current & -current) {
+      sum += this.tree[current];
+    }
+
+    return sum;
+  }
+}
+```
+
+```ts
+class FenwickTree {
+  private readonly tree: number[];
+
+  constructor(size: number) {
+    this.tree = new Array<number>(size + 1).fill(0);
+  }
+
+  update(index: number, delta: number): void {
+    for (let current = index; current < this.tree.length; current += current & -current) {
+      this.tree[current] += delta;
+    }
+  }
+
+  query(index: number): number {
+    let sum = 0;
+
+    for (let current = index; current > 0; current -= current & -current) {
+      sum += this.tree[current];
+    }
+
+    return sum;
+  }
+}
+
+export function countBasedAbsoluteDifferenceForArrayElement(values: number[]): number[] {
+  if (values.length === 0) {
+    throw new RangeError('Values must be a non-empty array');
+  }
+
+  const sortedValues = [...new Set(values)].sort((left, right) => left - right);
+  const ranks = new Map<number, number>(sortedValues.map((value, index) => [value, index + 1]));
+  const compressed = values.map((value) => {
+    if (!Number.isFinite(value)) {
+      throw new RangeError('Array values must be finite numbers');
+    }
+
+    return ranks.get(value) as number;
+  });
+
+  const rightTree = new FenwickTree(sortedValues.length);
+  const rightLesser = new Array<number>(values.length).fill(0);
+
+  for (let index = values.length - 1; index >= 0; index -= 1) {
+    const rank = compressed[index];
+    rightLesser[index] = rightTree.query(rank - 1);
+    rightTree.update(rank, 1);
+  }
+
+  const leftTree = new FenwickTree(sortedValues.length);
+  const result = new Array<number>(values.length).fill(0);
+
+  for (let index = 0; index < values.length; index += 1) {
+    const rank = compressed[index];
+    const seen = index;
+    const lessOrEqualOnLeft = leftTree.query(rank);
+    const greaterOnLeft = seen - lessOrEqualOnLeft;
+    result[index] = Math.abs(greaterOnLeft - rightLesser[index]);
+    leftTree.update(rank, 1);
+  }
+
+  return result;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would the logic change if you needed left-smaller and right-greater counts instead?
+- Why is coordinate compression enough even when the values are sparse or negative?
+- Could you compute both passes with one balanced BST instead of two Fenwick trees?
+
+## Common Pitfalls
+
+- Forgetting the strictness of the comparisons: left counts are strictly greater and right counts are strictly smaller.
+- Using the raw values as Fenwick indices instead of compressed ranks.
+- Counting left-greater as `query(maxRank) - query(rank - 1)`, which incorrectly includes equal values.

@@ -1,0 +1,287 @@
+---
+title: Sum and Update Queries on 3D Matrix in log(N) time
+slug: sum-and-update-queries-on-3d-matrix-in-log-n-time
+category: Matrices
+summary: Extend the Fenwick tree to three dimensions so point assignments and cuboid-sum queries both run in O(log^3 n).
+description: "Sum and Update Queries on 3D Matrix in log(N) time uses a 3D Fenwick tree plus a shadow matrix of current cell values, turning each set-update into an additive delta and each box sum into eight prefix queries."
+dataStructures:
+  - Array
+  - Matrix
+  - Binary Tree
+techniques:
+  - Fenwick Tree
+  - Inclusion-Exclusion
+  - Prefix Sums
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - 3d fenwick tree
+  - cuboid sum with updates
+  - 3d range sum queries
+useCases:
+  - Generalizing 1D and 2D Fenwick trees to higher dimensions
+  - Practicing inclusion-exclusion across multiple axes
+  - Handling mutable cuboid-sum queries
+complexity:
+  time: O(q log^3 n)
+  space: O(n^3)
+  notes: "The BIT stores prefix aggregates, and a shadow cube is required because updates assign new values instead of adding deltas directly."
+interviewSignals:
+  - Queries ask for cuboid sums inside a mutable 3D grid.
+  - Point updates and range queries both need to be fast.
+  - The natural solution is a direct dimensional lift of a Fenwick tree.
+relatedSlugs:
+  - fenwick-tree
+provenance:
+  - title: "GeeksforGeeks - Sum and Update Queries on 3D Matrix in log(N) time"
+    href: https://www.geeksforgeeks.org/dsa/sum-and-update-queries-on-3d-matrix-in-logn-time/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+The one-dimensional Fenwick tree idea survives intact in three dimensions. A prefix sum over `[0..x][0..y][0..z]` is still logarithmic in each axis, and any cuboid can still be reconstructed by inclusion-exclusion over the eight corner prefixes.
+
+## Worked Example
+
+If the only update is setting cell `(0, 0, 0)` to `1` in a `2 x 2 x 2` cube, then the query from `(0, 0, 0)` to `(1, 1, 1)` clearly returns `1`. The 3D BIT reaches that answer by summing the single updated point through its stored partial prefixes.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function sumAndUpdateQueriesOn3DMatrix(size, queries) {
+  const tree = new FenwickTree3D(size);
+  const values = Array.from({ length: size }, () =>
+    Array.from({ length: size }, () => new Array(size).fill(0)),
+  );
+  const answers = [];
+
+  for (const query of queries) {
+    if (!Array.isArray(query) || query.length < 5) {
+      throw new RangeError('Each query must be a valid update or range request');
+    }
+
+    if (query[0] === 1) {
+      const [, x, y, z, nextValue] = query;
+      validatePoint(size, x, y, z);
+      if (!Number.isFinite(nextValue)) {
+        throw new RangeError('Assigned values must be finite numbers');
+      }
+
+      const delta = nextValue - values[x][y][z];
+      values[x][y][z] = nextValue;
+      tree.update(x + 1, y + 1, z + 1, delta);
+    } else if (query[0] === 2) {
+      const [, x1, y1, z1, x2, y2, z2] = query;
+      validatePoint(size, x1, y1, z1);
+      validatePoint(size, x2, y2, z2);
+
+      if (x1 > x2 || y1 > y2 || z1 > z2) {
+        throw new RangeError('Query corners must be ordered');
+      }
+
+      answers.push(tree.rangeSum(x1 + 1, y1 + 1, z1 + 1, x2 + 1, y2 + 1, z2 + 1));
+    } else {
+      throw new RangeError('Query type must be 1 or 2');
+    }
+  }
+
+  return answers;
+}
+
+class FenwickTree3D {
+  constructor(size) {
+    if (!Number.isInteger(size) || size <= 0) {
+      throw new RangeError('Size must be a positive integer');
+    }
+
+    this.size = size;
+    this.tree = Array.from({ length: size + 1 }, () =>
+      Array.from({ length: size + 1 }, () => new Array(size + 1).fill(0)),
+    );
+  }
+
+  update(x, y, z, delta) {
+    for (let i = x; i <= this.size; i += i & -i) {
+      for (let j = y; j <= this.size; j += j & -j) {
+        for (let k = z; k <= this.size; k += k & -k) {
+          this.tree[i][j][k] += delta;
+        }
+      }
+    }
+  }
+
+  prefixSum(x, y, z) {
+    let total = 0;
+
+    for (let i = x; i > 0; i -= i & -i) {
+      for (let j = y; j > 0; j -= j & -j) {
+        for (let k = z; k > 0; k -= k & -k) {
+          total += this.tree[i][j][k];
+        }
+      }
+    }
+
+    return total;
+  }
+
+  rangeSum(x1, y1, z1, x2, y2, z2) {
+    return (
+      this.prefixSum(x2, y2, z2)
+      - this.prefixSum(x1 - 1, y2, z2)
+      - this.prefixSum(x2, y1 - 1, z2)
+      - this.prefixSum(x2, y2, z1 - 1)
+      + this.prefixSum(x1 - 1, y1 - 1, z2)
+      + this.prefixSum(x1 - 1, y2, z1 - 1)
+      + this.prefixSum(x2, y1 - 1, z1 - 1)
+      - this.prefixSum(x1 - 1, y1 - 1, z1 - 1)
+    );
+  }
+}
+
+function validatePoint(size, x, y, z) {
+  if (
+    !Number.isInteger(x) ||
+    !Number.isInteger(y) ||
+    !Number.isInteger(z) ||
+    x < 0 ||
+    y < 0 ||
+    z < 0 ||
+    x >= size ||
+    y >= size ||
+    z >= size
+  ) {
+    throw new RangeError('Coordinates must be valid zero-based indices inside the cube');
+  }
+}
+```
+
+```ts
+class FenwickTree3D {
+  private readonly size: number;
+  private readonly tree: number[][][];
+
+  constructor(size: number) {
+    if (!Number.isInteger(size) || size <= 0) {
+      throw new RangeError('Size must be a positive integer');
+    }
+
+    this.size = size;
+    this.tree = Array.from({ length: size + 1 }, () =>
+      Array.from({ length: size + 1 }, () => new Array<number>(size + 1).fill(0)),
+    );
+  }
+
+  update(x: number, y: number, z: number, delta: number): void {
+    for (let i = x; i <= this.size; i += i & -i) {
+      for (let j = y; j <= this.size; j += j & -j) {
+        for (let k = z; k <= this.size; k += k & -k) {
+          this.tree[i][j][k] += delta;
+        }
+      }
+    }
+  }
+
+  prefixSum(x: number, y: number, z: number): number {
+    let total = 0;
+
+    for (let i = x; i > 0; i -= i & -i) {
+      for (let j = y; j > 0; j -= j & -j) {
+        for (let k = z; k > 0; k -= k & -k) {
+          total += this.tree[i][j][k];
+        }
+      }
+    }
+
+    return total;
+  }
+
+  rangeSum(x1: number, y1: number, z1: number, x2: number, y2: number, z2: number): number {
+    return (
+      this.prefixSum(x2, y2, z2)
+      - this.prefixSum(x1 - 1, y2, z2)
+      - this.prefixSum(x2, y1 - 1, z2)
+      - this.prefixSum(x2, y2, z1 - 1)
+      + this.prefixSum(x1 - 1, y1 - 1, z2)
+      + this.prefixSum(x1 - 1, y2, z1 - 1)
+      + this.prefixSum(x2, y1 - 1, z1 - 1)
+      - this.prefixSum(x1 - 1, y1 - 1, z1 - 1)
+    );
+  }
+}
+
+function validatePoint(size: number, x: number, y: number, z: number): void {
+  if (
+    !Number.isInteger(x) ||
+    !Number.isInteger(y) ||
+    !Number.isInteger(z) ||
+    x < 0 ||
+    y < 0 ||
+    z < 0 ||
+    x >= size ||
+    y >= size ||
+    z >= size
+  ) {
+    throw new RangeError('Coordinates must be valid zero-based indices inside the cube');
+  }
+}
+
+export function sumAndUpdateQueriesOn3DMatrixInLogNTime(
+  size: number,
+  queries: ReadonlyArray<ReadonlyArray<number>>,
+): number[] {
+  const tree = new FenwickTree3D(size);
+  const values = Array.from({ length: size }, () =>
+    Array.from({ length: size }, () => new Array<number>(size).fill(0)),
+  );
+  const answers: number[] = [];
+
+  for (const query of queries) {
+    if (query.length < 5) {
+      throw new RangeError('Each query must be a valid update or range request');
+    }
+
+    if (query[0] === 1) {
+      const [, x, y, z, nextValue] = query;
+      validatePoint(size, x, y, z);
+      if (!Number.isFinite(nextValue)) {
+        throw new RangeError('Assigned values must be finite numbers');
+      }
+
+      const delta = nextValue - values[x][y][z];
+      values[x][y][z] = nextValue;
+      tree.update(x + 1, y + 1, z + 1, delta);
+    } else if (query[0] === 2) {
+      const [, x1, y1, z1, x2, y2, z2] = query;
+      validatePoint(size, x1, y1, z1);
+      validatePoint(size, x2, y2, z2);
+
+      if (x1 > x2 || y1 > y2 || z1 > z2) {
+        throw new RangeError('Query corners must be ordered');
+      }
+
+      answers.push(tree.rangeSum(x1 + 1, y1 + 1, z1 + 1, x2 + 1, y2 + 1, z2 + 1));
+    } else {
+      throw new RangeError('Query type must be 1 or 2');
+    }
+  }
+
+  return answers;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you generalize this idea to 2D rectangle updates with range-sum queries?
+- Why is a shadow matrix necessary when updates assign absolute values instead of adding deltas?
+- When would a sparse map of touched cells be preferable to a dense `n^3` array?
+
+## Common Pitfalls
+
+- Forgetting to convert a set-update into `delta = newValue - oldValue` before touching the BIT.
+- Dropping one of the eight inclusion-exclusion terms in the cuboid sum formula.
+- Mixing zero-based problem coordinates with the one-based indexing used internally by the Fenwick tree.

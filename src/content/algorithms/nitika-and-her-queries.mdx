@@ -1,0 +1,133 @@
+---
+title: Nitika and her queries
+slug: nitika-and-her-queries
+category: Arrays
+summary: Precompute prefix XOR so each query can remove a subarray from the total XOR in constant time.
+description: "Nitika and her queries asks for the XOR of the array after excluding a queried subarray, which collapses to totalXor ^ xor(L..R) once prefix XOR is available."
+dataStructures:
+  - Array
+techniques:
+  - Prefix XOR
+  - Range Queries
+  - Bit Manipulation
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - xor after excluding range
+  - xor outside subarray
+useCases:
+  - Answering many static XOR range questions
+  - Practicing XOR cancellation identities
+  - Reframing exclusion queries as inclusion queries
+complexity:
+  time: O(n + q)
+  space: O(n)
+  notes: "A single prefix XOR pass gives O(1) subarray XOR lookups, and each answer is just totalXor XOR removedXor."
+interviewSignals:
+  - Queries remove a subarray instead of asking for that subarray directly.
+  - XOR is associative and self-canceling, so subtraction becomes another XOR.
+  - The array does not change between queries.
+relatedSlugs:
+  - prefix-sum
+provenance:
+  - title: "GeeksforGeeks - Nitika and her queries"
+    href: https://www.geeksforgeeks.org/dsa/nitika-and-her-queries/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+The trick is to stop thinking about the remaining elements as two separate pieces. If `removed = xor(L..R)` and `total = xor(all values)`, then the answer is just `total ^ removed` because every element inside `[L, R]` cancels exactly once.
+
+## Worked Example
+
+For `[4, 7, 8, 5]` and query `[2, 3]` using one-based indexing, the removed XOR is `7 ^ 8 = 15`. The total XOR is `4 ^ 7 ^ 8 ^ 5 = 14`, so the remaining XOR is `14 ^ 15 = 1`, which matches `4 ^ 5`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function nitikaAndHerQueries(values, queries) {
+  if (!Array.isArray(values) || values.length === 0) {
+    throw new RangeError('Values must be a non-empty array');
+  }
+
+  const prefix = new Array(values.length + 1).fill(0);
+
+  for (let index = 0; index < values.length; index += 1) {
+    const value = values[index];
+    if (!Number.isSafeInteger(value)) {
+      throw new RangeError('Array values must be safe integers');
+    }
+
+    prefix[index + 1] = prefix[index] ^ value;
+  }
+
+  const totalXor = prefix[values.length];
+
+  return queries.map(([left, right]) => {
+    if (!Number.isInteger(left) || !Number.isInteger(right) || left < 1 || right > values.length || left > right) {
+      throw new RangeError('Each query must be a valid one-based inclusive range');
+    }
+
+    if (left === 1 && right === values.length) {
+      throw new RangeError('The resulting array must not be empty');
+    }
+
+    const removedXor = prefix[right] ^ prefix[left - 1];
+    return totalXor ^ removedXor;
+  });
+}
+```
+
+```ts
+export function nitikaAndHerQueries(
+  values: number[],
+  queries: Array<readonly [number, number]>,
+): number[] {
+  if (values.length === 0) {
+    throw new RangeError('Values must be a non-empty array');
+  }
+
+  const prefix = new Array<number>(values.length + 1).fill(0);
+
+  for (let index = 0; index < values.length; index += 1) {
+    const value = values[index];
+    if (!Number.isSafeInteger(value)) {
+      throw new RangeError('Array values must be safe integers');
+    }
+
+    prefix[index + 1] = prefix[index] ^ value;
+  }
+
+  const totalXor = prefix[values.length];
+
+  return queries.map(([left, right]) => {
+    if (!Number.isInteger(left) || !Number.isInteger(right) || left < 1 || right > values.length || left > right) {
+      throw new RangeError('Each query must be a valid one-based inclusive range');
+    }
+
+    if (left === 1 && right === values.length) {
+      throw new RangeError('The resulting array must not be empty');
+    }
+
+    const removedXor = prefix[right] ^ prefix[left - 1];
+    return totalXor ^ removedXor;
+  });
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would the solution change if queries asked for the sum outside `[L, R]` instead of XOR?
+- What if the array allowed point updates between queries?
+- Why does prefix XOR need the same one-extra-slot pattern as prefix sums?
+
+## Common Pitfalls
+
+- Mixing one-based query indices with zero-based array indices.
+- Computing the XOR of the remaining prefix and suffix separately when `total ^ removed` is simpler.
+- Forgetting that removing the whole array is invalid in the original problem statement.

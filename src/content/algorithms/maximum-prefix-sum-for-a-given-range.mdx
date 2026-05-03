@@ -1,0 +1,228 @@
+---
+title: Maximum prefix-sum for a given range
+slug: maximum-prefix-sum-for-a-given-range
+category: Arrays
+summary: Store each segment's total sum and best prefix so range answers can be merged in logarithmic time.
+description: "Maximum prefix-sum for a given range uses a segment tree whose nodes remember both segment sum and maximum prefix sum, which is exactly the state needed to merge adjacent ranges."
+dataStructures:
+  - Array
+  - Binary Tree
+techniques:
+  - Segment Tree
+  - Range Queries
+  - Prefix Sums
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - range maximum prefix sum
+  - max prefix query
+useCases:
+  - Querying the best running total inside many windows
+  - Learning how richer merge state beats a single scalar aggregate
+  - Building intuition for maximum-subarray segment trees
+complexity:
+  time: O((n + q) log n)
+  space: O(n)
+  notes: "Each query merges O(log n) nodes, and every merge only needs the pair (sum, bestPrefix)."
+interviewSignals:
+  - A range answer depends on partial sums, not just the full segment sum.
+  - There are many queries over a fixed array.
+  - A naive scan per query is too slow.
+relatedSlugs:
+  - segment-tree
+provenance:
+  - title: "GeeksforGeeks - Maximum prefix-sum for a given range"
+    href: https://www.geeksforgeeks.org/dsa/maximum-prefix-sum-given-range/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+The best prefix of `left + right` is either entirely inside `left`, or it uses all of `left` and then the best prefix of `right`. That merge rule is local, which makes the problem a clean segment-tree fit.
+
+## Worked Example
+
+For `[-1, 2, 3, -5]` on range `[0, 3]`, the running sums are `[-1, 1, 4, -1]`, so the answer is `4`. A segment tree reaches the same answer by merging child nodes that each store their segment sum and maximum prefix sum.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function maximumPrefixSumForAGivenRange(values, queries) {
+  const tree = new PrefixSegmentTree(values);
+  return queries.map(([left, right]) => tree.query(left, right).prefix);
+}
+
+class PrefixSegmentTree {
+  constructor(values) {
+    if (!Array.isArray(values) || values.length === 0) {
+      throw new RangeError('Values must be a non-empty array');
+    }
+
+    this.values = values.map((value) => {
+      if (!Number.isFinite(value)) {
+        throw new RangeError('Array values must be finite numbers');
+      }
+
+      return value;
+    });
+
+    this.tree = new Array(this.values.length * 4).fill(null);
+    this.build(1, 0, this.values.length - 1);
+  }
+
+  query(left, right) {
+    if (!Number.isInteger(left) || !Number.isInteger(right) || left < 0 || right >= this.values.length || left > right) {
+      throw new RangeError('Each query must be a valid zero-based inclusive range');
+    }
+
+    return this.queryNode(1, 0, this.values.length - 1, left, right);
+  }
+
+  build(node, left, right) {
+    if (left === right) {
+      const value = this.values[left];
+      this.tree[node] = { sum: value, prefix: value };
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    this.build(node * 2, left, mid);
+    this.build(node * 2 + 1, mid + 1, right);
+    this.tree[node] = mergePrefixNodes(this.tree[node * 2], this.tree[node * 2 + 1]);
+  }
+
+  queryNode(node, left, right, queryLeft, queryRight) {
+    if (queryLeft <= left && right <= queryRight) {
+      return this.tree[node];
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    if (queryRight <= mid) {
+      return this.queryNode(node * 2, left, mid, queryLeft, queryRight);
+    }
+
+    if (queryLeft > mid) {
+      return this.queryNode(node * 2 + 1, mid + 1, right, queryLeft, queryRight);
+    }
+
+    return mergePrefixNodes(
+      this.queryNode(node * 2, left, mid, queryLeft, queryRight),
+      this.queryNode(node * 2 + 1, mid + 1, right, queryLeft, queryRight),
+    );
+  }
+}
+
+function mergePrefixNodes(left, right) {
+  return {
+    sum: left.sum + right.sum,
+    prefix: Math.max(left.prefix, left.sum + right.prefix),
+  };
+}
+```
+
+```ts
+type PrefixNode = {
+  sum: number;
+  prefix: number;
+};
+
+class PrefixSegmentTree {
+  private readonly values: number[];
+  private readonly tree: PrefixNode[];
+
+  constructor(values: number[]) {
+    if (values.length === 0) {
+      throw new RangeError('Values must be a non-empty array');
+    }
+
+    this.values = values.map((value) => {
+      if (!Number.isFinite(value)) {
+        throw new RangeError('Array values must be finite numbers');
+      }
+
+      return value;
+    });
+
+    this.tree = new Array<PrefixNode>(this.values.length * 4);
+    this.build(1, 0, this.values.length - 1);
+  }
+
+  query(left: number, right: number): PrefixNode {
+    if (!Number.isInteger(left) || !Number.isInteger(right) || left < 0 || right >= this.values.length || left > right) {
+      throw new RangeError('Each query must be a valid zero-based inclusive range');
+    }
+
+    return this.queryNode(1, 0, this.values.length - 1, left, right);
+  }
+
+  private build(node: number, left: number, right: number): void {
+    if (left === right) {
+      const value = this.values[left];
+      this.tree[node] = { sum: value, prefix: value };
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    this.build(node * 2, left, mid);
+    this.build(node * 2 + 1, mid + 1, right);
+    this.tree[node] = mergePrefixNodes(this.tree[node * 2], this.tree[node * 2 + 1]);
+  }
+
+  private queryNode(
+    node: number,
+    left: number,
+    right: number,
+    queryLeft: number,
+    queryRight: number,
+  ): PrefixNode {
+    if (queryLeft <= left && right <= queryRight) {
+      return this.tree[node];
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    if (queryRight <= mid) {
+      return this.queryNode(node * 2, left, mid, queryLeft, queryRight);
+    }
+
+    if (queryLeft > mid) {
+      return this.queryNode(node * 2 + 1, mid + 1, right, queryLeft, queryRight);
+    }
+
+    return mergePrefixNodes(
+      this.queryNode(node * 2, left, mid, queryLeft, queryRight),
+      this.queryNode(node * 2 + 1, mid + 1, right, queryLeft, queryRight),
+    );
+  }
+}
+
+function mergePrefixNodes(left: PrefixNode, right: PrefixNode): PrefixNode {
+  return {
+    sum: left.sum + right.sum,
+    prefix: Math.max(left.prefix, left.sum + right.prefix),
+  };
+}
+
+export function maximumPrefixSumForAGivenRange(
+  values: number[],
+  queries: Array<readonly [number, number]>,
+): number[] {
+  const tree = new PrefixSegmentTree(values);
+  return queries.map(([left, right]) => tree.query(left, right).prefix);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you extend the node state to answer maximum subarray sum instead of just maximum prefix sum?
+- Would a sparse table work here if the array were static? Why or why not?
+- How would point updates change the difficulty of the problem?
+
+## Common Pitfalls
+
+- Treating the range sum as enough information, when the merge also needs the best prefix.
+- Accidentally using one-based ranges even though the original examples are zero-based.
+- Returning `0` for all-negative ranges instead of the largest valid prefix sum, which can be negative.

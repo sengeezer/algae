@@ -1,0 +1,206 @@
+---
+title: Count Inversions of an Array
+slug: count-inversions-of-an-array
+category: Sorting
+summary: Count pairwise disorder by charging whole left-half suffixes whenever merge sort takes a right-half value first.
+description: "Count Inversions of an Array augments merge sort so each right-half win contributes all remaining left-half elements as cross inversions in one step."
+dataStructures:
+  - Array
+techniques:
+  - Divide and Conquer
+  - Merge Sort
+  - Counting
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - inversion count
+  - count inversions
+  - inversion count in array
+useCases:
+  - Measuring how far an array is from sorted order
+  - Turning an O(n^2) pair count into a merge-time aggregate
+  - Reusing merge sort for cross-half bookkeeping
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: "Each level still performs a linear merge; the only extra work is adding how many left-side items remain when a right-side item jumps ahead."
+interviewSignals:
+  - The prompt asks for pairs i < j with arr[i] > arr[j].
+  - A quadratic nested loop is too slow for the expected constraints.
+  - Cross-half pairs are the only non-local work after you split the array.
+relatedSlugs:
+  - merge-sort
+provenance:
+  - title: "GeeksforGeeks - Count Inversions of an Array"
+    href: https://www.geeksforgeeks.org/dsa/inversion-count-in-array-using-merge-sort/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is the classic example of carrying extra state through merge sort. Once both halves are individually sorted, every time the merge step prefers `right[j]` over `left[i]`, that one comparison certifies inversions with every remaining value from `left[i]` onward.
+
+## Worked Example
+
+For `[4, 3, 2, 1]`, the left half contributes `1` inversion, the right half contributes `1`, and the final merge contributes `4` more because both `1` and `2` jump ahead of two remaining left-half values. The total is `6`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function countInversionsOfAnArray(values) {
+  if (!Array.isArray(values)) {
+    throw new TypeError('Values must be an array');
+  }
+
+  const items = values.map((value) => {
+    if (!Number.isFinite(value)) {
+      throw new RangeError('Array values must be finite numbers');
+    }
+
+    return value;
+  });
+
+  if (items.length <= 1) {
+    return 0;
+  }
+
+  const buffer = new Array(items.length);
+  return sortAndCount(items, buffer, 0, items.length - 1);
+}
+
+function sortAndCount(values, buffer, left, right) {
+  if (left >= right) {
+    return 0;
+  }
+
+  const mid = Math.floor((left + right) / 2);
+  let inversions = 0;
+
+  inversions += sortAndCount(values, buffer, left, mid);
+  inversions += sortAndCount(values, buffer, mid + 1, right);
+  inversions += mergeAndCount(values, buffer, left, mid, right);
+
+  return inversions;
+}
+
+function mergeAndCount(values, buffer, left, mid, right) {
+  let leftIndex = left;
+  let rightIndex = mid + 1;
+  let writeIndex = left;
+  let inversions = 0;
+
+  while (leftIndex <= mid && rightIndex <= right) {
+    if (values[leftIndex] <= values[rightIndex]) {
+      buffer[writeIndex++] = values[leftIndex++];
+    } else {
+      buffer[writeIndex++] = values[rightIndex++];
+      inversions += mid - leftIndex + 1;
+    }
+  }
+
+  while (leftIndex <= mid) {
+    buffer[writeIndex++] = values[leftIndex++];
+  }
+
+  while (rightIndex <= right) {
+    buffer[writeIndex++] = values[rightIndex++];
+  }
+
+  for (let index = left; index <= right; index += 1) {
+    values[index] = buffer[index];
+  }
+
+  return inversions;
+}
+```
+
+```ts
+export function countInversionsOfAnArray(values: number[]): number {
+  const items = values.map((value) => {
+    if (!Number.isFinite(value)) {
+      throw new RangeError('Array values must be finite numbers');
+    }
+
+    return value;
+  });
+
+  if (items.length <= 1) {
+    return 0;
+  }
+
+  const buffer = new Array<number>(items.length);
+  return sortAndCount(items, buffer, 0, items.length - 1);
+}
+
+function sortAndCount(
+  values: number[],
+  buffer: number[],
+  left: number,
+  right: number,
+): number {
+  if (left >= right) {
+    return 0;
+  }
+
+  const mid = Math.floor((left + right) / 2);
+  let inversions = 0;
+
+  inversions += sortAndCount(values, buffer, left, mid);
+  inversions += sortAndCount(values, buffer, mid + 1, right);
+  inversions += mergeAndCount(values, buffer, left, mid, right);
+
+  return inversions;
+}
+
+function mergeAndCount(
+  values: number[],
+  buffer: number[],
+  left: number,
+  mid: number,
+  right: number,
+): number {
+  let leftIndex = left;
+  let rightIndex = mid + 1;
+  let writeIndex = left;
+  let inversions = 0;
+
+  while (leftIndex <= mid && rightIndex <= right) {
+    if (values[leftIndex] <= values[rightIndex]) {
+      buffer[writeIndex++] = values[leftIndex++];
+    } else {
+      buffer[writeIndex++] = values[rightIndex++];
+      inversions += mid - leftIndex + 1;
+    }
+  }
+
+  while (leftIndex <= mid) {
+    buffer[writeIndex++] = values[leftIndex++];
+  }
+
+  while (rightIndex <= right) {
+    buffer[writeIndex++] = values[rightIndex++];
+  }
+
+  for (let index = left; index <= right; index += 1) {
+    values[index] = buffer[index];
+  }
+
+  return inversions;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you adapt the same merge-time counting idea to count reverse pairs under a different inequality?
+- When would you want to preserve the input array instead of sorting it in place during the count?
+- Can you explain exactly why duplicates do not contribute inversions here?
+
+## Common Pitfalls
+
+- Forgetting that only `arr[i] > arr[j]` counts, so equal values are not inversions.
+- Adding only `1` inversion on a right-half win instead of all remaining left-half items.
+- Mutating the caller's array accidentally when the function is expected to be pure.

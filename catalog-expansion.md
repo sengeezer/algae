@@ -1135,9 +1135,22 @@ This one-hundred-fifth expansion slice lifts the catalog from 580 to 581 entries
 
 - Reconstructing Segment Tree
 
+## Batch 106 added
+
+This one-hundred-sixth expansion slice lifts the catalog from 581 to 589 entries.
+
+- Count Inversions of an Array
+- Nitika and her queries
+- Maximum prefix-sum for a given range
+- Smallest Subarray with given GCD
+- Increasing Decreasing Update Queries (Akku and Arrays)
+- Kth smallest element in a subarray
+- Count-based Absolute difference for Array element
+- Sum and Update Queries on 3D Matrix in log(N) time
+
 ## Next candidates from the same sources
 
-- The published catalog now reaches 581 entries on `main` after the final Segment Tree slice.
+- The published catalog now reaches 589 entries on `main` after the first Binary Indexed Tree example-problem slice.
 - Batch 92 carries the vetted Dynamic Programming hard stretch through `Longest repeating and non-overlapping substring` and then consumes the clean `Advanced Concepts` absences `Count Ways To Assign Unique Cap To Every Person`, `Digit DP | Introduction`, and `Sum over Subsets | Dynamic Programming`.
 - The Dynamic Programming items skipped between `Program to find amount of water in a given glass` and `Largest Cross Bordered Square` remain already represented locally: `Longest Common Subsequence`, `Longest Increasing Subsequence`, `Edit Distance`, `0-1 Knapsack Problem`, `Partition Problem`, `Longest Palindromic Subsequence`, `Bellman-Ford Algorithm`, and `Floyd Warshall Algorithm`.
 - `The painter's partition problem` remains skipped because the local `Find minimum time to finish all jobs with given constraints` entry already covers that partition-minimax problem and includes the alias `painter partition with multiplier`.
@@ -1173,5 +1186,11 @@ This one-hundred-fifth expansion slice lifts the catalog from 580 to 581 entries
 - The source label `Count number of increasing sub-sequences : O(NlogN)` is normalized locally to `Count number of increasing sub-sequences`, and `Cartesian tree from inorder traversal` is drafted without the destination page suffix `| Segment Tree` because the suffix is only sectional context.
 - `Longest Increasing Subsequences (LIS)` and `LIS using Segment Tree` remain semantic duplicates of the published `Longest Increasing Subsequence` entry, and `Maximum of all subarrays of size K` remains a semantic duplicate of the published sliding-window maximum coverage in `Sliding Window` and `Monotonic Queue`.
 - Batch 105 uses the destination title `Reconstructing Segment Tree` verbatim.
-- The GeeksforGeeks Segment Tree page is now exhausted in source order after the local `Reconstructing Segment Tree` draft; the remaining `Applications of Segment Tree` section is theory-only overview material and should stay skipped during drafting.
+- The GeeksforGeeks Segment Tree page is now exhausted in source order after the published `Reconstructing Segment Tree` entry; the remaining `Applications of Segment Tree` section is theory-only overview material and should stay skipped during drafting.
 - The next vetted source branch after the exhausted Segment Tree page is the GeeksforGeeks Binary Indexed Tree page: https://www.geeksforgeeks.org/dsa/binary-indexed-tree-or-fenwick-tree-2/
+- The Binary Indexed Tree overview article itself remains a semantic duplicate of the published `Fenwick Tree` entry.
+- `Range Minimum Query` remains duplicate-level foundational coverage and should stay skipped on the Binary Indexed Tree page.
+- Batch 106 uses the verified destination title cleanup `Count Inversions` -> `Count Inversions of an Array` and `Akku and Arrays` -> `Increasing Decreasing Update Queries (Akku and Arrays)`.
+- `Nitika and her queries`, `Maximum prefix-sum for a given range`, `Smallest Subarray with given GCD`, `Kth smallest element in a subarray`, `Count-based Absolute difference for Array element`, and `Sum and Update Queries on 3D Matrix in log(N) time` already match their destination titles.
+- The GeeksforGeeks Binary Indexed Tree page is now exhausted in source order after the published batch-106 slice.
+- The next vetted source branch after the exhausted Binary Indexed Tree page is the GeeksforGeeks Trie Data Structure page: https://www.geeksforgeeks.org/dsa/trie-insert-and-search/

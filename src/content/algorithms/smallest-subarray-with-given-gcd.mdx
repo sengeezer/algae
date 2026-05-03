@@ -1,0 +1,297 @@
+---
+title: Smallest Subarray with given GCD
+slug: smallest-subarray-with-given-gcd
+category: Arrays
+summary: Use a GCD segment tree and binary search to find the first endpoint where each start index drops to the target gcd.
+description: "Smallest Subarray with given GCD relies on the fact that range gcd can only stay the same or decrease as you extend a subarray, so each start index supports a binary search over the right endpoint."
+dataStructures:
+  - Array
+  - Binary Tree
+techniques:
+  - Segment Tree
+  - Binary Search
+  - Euclidean Algorithm
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - minimum length subarray with gcd k
+  - smallest gcd-k window
+useCases:
+  - Finding the shortest window with an exact algebraic aggregate
+  - Combining monotone range queries with binary search
+  - Practicing range GCD beyond a single query
+complexity:
+  time: O(n log^2 n)
+  space: O(n)
+  notes: "Each start index performs O(log n) range-gcd checks inside a binary search over possible end positions."
+interviewSignals:
+  - You need the shortest subarray, not just whether one exists.
+  - The aggregate is gcd, which only decreases as a range grows.
+  - Brute-forcing all subarrays is too slow.
+relatedSlugs:
+  - get-euclid-gcd
+  - segment-tree
+provenance:
+  - title: "GeeksforGeeks - Smallest Subarray with given GCD"
+    href: https://www.geeksforgeeks.org/dsa/smallest-subarray-with-given-gcd/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+Once the left endpoint is fixed, `gcd(left, right)` is monotone as `right` moves rightward: it can only stay the same or decrease. That monotonicity is enough to binary-search the earliest endpoint where the gcd falls to `k` or below.
+
+## Worked Example
+
+For `[6, 9, 7, 10, 12, 24, 36, 27]` with `k = 3`, starting at index `0` gives gcds `6, 3, 1, ...` as the window expands. The first time the gcd reaches `3` is the window `[6, 9]`, so the best answer is `2`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function smallestSubarrayWithGivenGcd(values, target) {
+  if (!Array.isArray(values) || values.length === 0) {
+    throw new RangeError('Values must be a non-empty array');
+  }
+
+  if (!Number.isSafeInteger(target) || target <= 0) {
+    throw new RangeError('Target gcd must be a positive safe integer');
+  }
+
+  const normalized = values.map((value) => {
+    if (!Number.isSafeInteger(value) || value === 0) {
+      throw new RangeError('Array values must be non-zero safe integers');
+    }
+
+    return Math.abs(value);
+  });
+
+  if (normalized.some((value) => value === target)) {
+    return 1;
+  }
+
+  const tree = new GcdSegmentTree(normalized);
+  let best = Infinity;
+
+  for (let left = 0; left < normalized.length; left += 1) {
+    if (normalized[left] % target !== 0) {
+      continue;
+    }
+
+    let low = left;
+    let high = normalized.length - 1;
+    let firstAtMost = -1;
+
+    while (low <= high) {
+      const mid = Math.floor((low + high) / 2);
+      const currentGcd = tree.query(left, mid);
+
+      if (currentGcd <= target) {
+        firstAtMost = mid;
+        high = mid - 1;
+      } else {
+        low = mid + 1;
+      }
+    }
+
+    if (firstAtMost !== -1 && tree.query(left, firstAtMost) === target) {
+      best = Math.min(best, firstAtMost - left + 1);
+    }
+  }
+
+  return best === Infinity ? -1 : best;
+}
+
+class GcdSegmentTree {
+  constructor(values) {
+    this.values = values;
+    this.tree = new Array(values.length * 4).fill(0);
+    this.build(1, 0, values.length - 1);
+  }
+
+  query(left, right) {
+    return this.queryNode(1, 0, this.values.length - 1, left, right);
+  }
+
+  build(node, left, right) {
+    if (left === right) {
+      this.tree[node] = this.values[left];
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    this.build(node * 2, left, mid);
+    this.build(node * 2 + 1, mid + 1, right);
+    this.tree[node] = gcd(this.tree[node * 2], this.tree[node * 2 + 1]);
+  }
+
+  queryNode(node, left, right, queryLeft, queryRight) {
+    if (queryLeft <= left && right <= queryRight) {
+      return this.tree[node];
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    if (queryRight <= mid) {
+      return this.queryNode(node * 2, left, mid, queryLeft, queryRight);
+    }
+
+    if (queryLeft > mid) {
+      return this.queryNode(node * 2 + 1, mid + 1, right, queryLeft, queryRight);
+    }
+
+    return gcd(
+      this.queryNode(node * 2, left, mid, queryLeft, queryRight),
+      this.queryNode(node * 2 + 1, mid + 1, right, queryLeft, queryRight),
+    );
+  }
+}
+
+function gcd(a, b) {
+  let left = Math.abs(a);
+  let right = Math.abs(b);
+
+  while (right !== 0) {
+    const next = left % right;
+    left = right;
+    right = next;
+  }
+
+  return left;
+}
+```
+
+```ts
+class GcdSegmentTree {
+  private readonly values: number[];
+  private readonly tree: number[];
+
+  constructor(values: number[]) {
+    this.values = values;
+    this.tree = new Array<number>(values.length * 4).fill(0);
+    this.build(1, 0, values.length - 1);
+  }
+
+  query(left: number, right: number): number {
+    return this.queryNode(1, 0, this.values.length - 1, left, right);
+  }
+
+  private build(node: number, left: number, right: number): void {
+    if (left === right) {
+      this.tree[node] = this.values[left];
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    this.build(node * 2, left, mid);
+    this.build(node * 2 + 1, mid + 1, right);
+    this.tree[node] = gcd(this.tree[node * 2], this.tree[node * 2 + 1]);
+  }
+
+  private queryNode(
+    node: number,
+    left: number,
+    right: number,
+    queryLeft: number,
+    queryRight: number,
+  ): number {
+    if (queryLeft <= left && right <= queryRight) {
+      return this.tree[node];
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    if (queryRight <= mid) {
+      return this.queryNode(node * 2, left, mid, queryLeft, queryRight);
+    }
+
+    if (queryLeft > mid) {
+      return this.queryNode(node * 2 + 1, mid + 1, right, queryLeft, queryRight);
+    }
+
+    return gcd(
+      this.queryNode(node * 2, left, mid, queryLeft, queryRight),
+      this.queryNode(node * 2 + 1, mid + 1, right, queryLeft, queryRight),
+    );
+  }
+}
+
+function gcd(a: number, b: number): number {
+  let left = Math.abs(a);
+  let right = Math.abs(b);
+
+  while (right !== 0) {
+    const next = left % right;
+    left = right;
+    right = next;
+  }
+
+  return left;
+}
+
+export function smallestSubarrayWithGivenGcd(values: number[], target: number): number {
+  if (values.length === 0) {
+    throw new RangeError('Values must be a non-empty array');
+  }
+
+  if (!Number.isSafeInteger(target) || target <= 0) {
+    throw new RangeError('Target gcd must be a positive safe integer');
+  }
+
+  const normalized = values.map((value) => {
+    if (!Number.isSafeInteger(value) || value === 0) {
+      throw new RangeError('Array values must be non-zero safe integers');
+    }
+
+    return Math.abs(value);
+  });
+
+  if (normalized.some((value) => value === target)) {
+    return 1;
+  }
+
+  const tree = new GcdSegmentTree(normalized);
+  let best = Infinity;
+
+  for (let left = 0; left < normalized.length; left += 1) {
+    if (normalized[left] % target !== 0) {
+      continue;
+    }
+
+    let low = left;
+    let high = normalized.length - 1;
+    let firstAtMost = -1;
+
+    while (low <= high) {
+      const mid = Math.floor((low + high) / 2);
+      const currentGcd = tree.query(left, mid);
+
+      if (currentGcd <= target) {
+        firstAtMost = mid;
+        high = mid - 1;
+      } else {
+        low = mid + 1;
+      }
+    }
+
+    if (firstAtMost !== -1 && tree.query(left, firstAtMost) === target) {
+      best = Math.min(best, firstAtMost - left + 1);
+    }
+  }
+
+  return best === Infinity ? -1 : best;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Can you replace the segment tree with a sparse table if the array is static?
+- How would you solve this with gcd-state compression over subarrays ending at each index?
+- Why is checking `arr[i] % k === 0` a valid quick filter for candidate starts?
+
+## Common Pitfalls
+
+- Assuming numeric monotonicity alone guarantees the gcd will hit `k`; you still need to check equality after the binary search.
+- Forgetting that negative inputs should be normalized with absolute values before taking gcd.
+- Returning `0` when no valid subarray exists instead of the required `-1`.

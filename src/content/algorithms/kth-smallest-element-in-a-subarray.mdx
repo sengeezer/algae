@@ -1,0 +1,249 @@
+---
+title: Kth smallest element in a subarray
+slug: kth-smallest-element-in-a-subarray
+category: Arrays
+summary: Build persistent prefix frequency trees over compressed values and descend by counts to recover each range order statistic.
+description: "Kth smallest element in a subarray can be answered offline with a persistent segment tree: each prefix version stores value frequencies, and a query compares two versions to walk toward the k-th rank."
+dataStructures:
+  - Array
+  - Binary Tree
+techniques:
+  - Persistent Segment Tree
+  - Coordinate Compression
+  - Order Statistics
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - range kth smallest
+  - kth order statistic in subarray
+useCases:
+  - Immutable range order-statistic queries
+  - Practicing prefix-version differencing
+  - Compressing arbitrary values into a searchable rank space
+complexity:
+  time: O((n + q) log n)
+  space: O(n log n)
+  notes: "Each new prefix copies only one root-to-leaf path, and each query descends one path by comparing left-child counts."
+interviewSignals:
+  - Queries ask for ranks inside many different subarrays.
+  - The array is static, so offline preprocessing is attractive.
+  - Sorting each queried subarray separately is too expensive.
+relatedSlugs:
+  - persistent-segment-tree
+  - segment-tree
+provenance:
+  - title: "GeeksforGeeks - Kth smallest element in a subarray"
+    href: https://www.geeksforgeeks.org/dsa/kth-smallest-element-in-a-subarray/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+If `root[r]` stores frequencies for the first `r` values, then the multiset inside `[l, r]` is just `root[r] - root[l - 1]` node by node. Once you have that difference, the k-th smallest value is found by descending the value tree and checking how many elements lie in the left half.
+
+## Worked Example
+
+For `[3, 2, 5, 4, 7, 1, 9]` and query `(2, 6, 3)` using one-based indices, the subarray is `[2, 5, 4, 7, 1]`. Sorted, that becomes `[1, 2, 4, 5, 7]`, so the third smallest value is `4`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function kthSmallestElementInASubarray(values, queries) {
+  if (!Array.isArray(values) || values.length === 0) {
+    throw new RangeError('Values must be a non-empty array');
+  }
+
+  const sortedValues = [...new Set(values)].sort((left, right) => left - right);
+  const valueToRank = new Map(sortedValues.map((value, index) => [value, index]));
+  const baseRoot = buildEmptyTree(0, sortedValues.length - 1);
+  const roots = [baseRoot];
+
+  for (const value of values) {
+    if (!Number.isFinite(value)) {
+      throw new RangeError('Array values must be finite numbers');
+    }
+
+    roots.push(updateTree(roots[roots.length - 1], 0, sortedValues.length - 1, valueToRank.get(value)));
+  }
+
+  return queries.map(([left, right, k]) => {
+    if (
+      !Number.isInteger(left) ||
+      !Number.isInteger(right) ||
+      !Number.isInteger(k) ||
+      left < 1 ||
+      right > values.length ||
+      left > right ||
+      k < 1 ||
+      k > right - left + 1
+    ) {
+      throw new RangeError('Each query must be a valid one-based range with 1 <= k <= length');
+    }
+
+    const rank = kthRank(roots[left - 1], roots[right], 0, sortedValues.length - 1, k);
+    return sortedValues[rank];
+  });
+}
+
+function buildEmptyTree(left, right) {
+  if (left === right) {
+    return { count: 0, left: null, right: null };
+  }
+
+  const mid = Math.floor((left + right) / 2);
+  return {
+    count: 0,
+    left: buildEmptyTree(left, mid),
+    right: buildEmptyTree(mid + 1, right),
+  };
+}
+
+function updateTree(node, left, right, target) {
+  if (left === right) {
+    return { count: node.count + 1, left: null, right: null };
+  }
+
+  const mid = Math.floor((left + right) / 2);
+  if (target <= mid) {
+    const nextLeft = updateTree(node.left, left, mid, target);
+    return { count: node.count + 1, left: nextLeft, right: node.right };
+  }
+
+  const nextRight = updateTree(node.right, mid + 1, right, target);
+  return { count: node.count + 1, left: node.left, right: nextRight };
+}
+
+function kthRank(beforeRoot, afterRoot, left, right, k) {
+  if (left === right) {
+    return left;
+  }
+
+  const leftCount = afterRoot.left.count - beforeRoot.left.count;
+  const mid = Math.floor((left + right) / 2);
+
+  if (k <= leftCount) {
+    return kthRank(beforeRoot.left, afterRoot.left, left, mid, k);
+  }
+
+  return kthRank(beforeRoot.right, afterRoot.right, mid + 1, right, k - leftCount);
+}
+```
+
+```ts
+type PersistentNode = {
+  count: number;
+  left: PersistentNode | null;
+  right: PersistentNode | null;
+};
+
+function buildEmptyTree(left: number, right: number): PersistentNode {
+  if (left === right) {
+    return { count: 0, left: null, right: null };
+  }
+
+  const mid = Math.floor((left + right) / 2);
+  return {
+    count: 0,
+    left: buildEmptyTree(left, mid),
+    right: buildEmptyTree(mid + 1, right),
+  };
+}
+
+function updateTree(node: PersistentNode, left: number, right: number, target: number): PersistentNode {
+  if (left === right) {
+    return { count: node.count + 1, left: null, right: null };
+  }
+
+  const mid = Math.floor((left + right) / 2);
+  if (target <= mid) {
+    const nextLeft = updateTree(node.left as PersistentNode, left, mid, target);
+    return { count: node.count + 1, left: nextLeft, right: node.right };
+  }
+
+  const nextRight = updateTree(node.right as PersistentNode, mid + 1, right, target);
+  return { count: node.count + 1, left: node.left, right: nextRight };
+}
+
+function kthRank(
+  beforeRoot: PersistentNode,
+  afterRoot: PersistentNode,
+  left: number,
+  right: number,
+  k: number,
+): number {
+  if (left === right) {
+    return left;
+  }
+
+  const leftCount = (afterRoot.left as PersistentNode).count - (beforeRoot.left as PersistentNode).count;
+  const mid = Math.floor((left + right) / 2);
+
+  if (k <= leftCount) {
+    return kthRank(beforeRoot.left as PersistentNode, afterRoot.left as PersistentNode, left, mid, k);
+  }
+
+  return kthRank(
+    beforeRoot.right as PersistentNode,
+    afterRoot.right as PersistentNode,
+    mid + 1,
+    right,
+    k - leftCount,
+  );
+}
+
+export function kthSmallestElementInASubarray(
+  values: number[],
+  queries: Array<readonly [number, number, number]>,
+): number[] {
+  if (values.length === 0) {
+    throw new RangeError('Values must be a non-empty array');
+  }
+
+  const sortedValues = [...new Set(values)].sort((left, right) => left - right);
+  const valueToRank = new Map<number, number>(sortedValues.map((value, index) => [value, index]));
+  const baseRoot = buildEmptyTree(0, sortedValues.length - 1);
+  const roots: PersistentNode[] = [baseRoot];
+
+  for (const value of values) {
+    if (!Number.isFinite(value)) {
+      throw new RangeError('Array values must be finite numbers');
+    }
+
+    roots.push(updateTree(roots[roots.length - 1], 0, sortedValues.length - 1, valueToRank.get(value) as number));
+  }
+
+  return queries.map(([left, right, k]) => {
+    if (
+      !Number.isInteger(left) ||
+      !Number.isInteger(right) ||
+      !Number.isInteger(k) ||
+      left < 1 ||
+      right > values.length ||
+      left > right ||
+      k < 1 ||
+      k > right - left + 1
+    ) {
+      throw new RangeError('Each query must be a valid one-based range with 1 <= k <= length');
+    }
+
+    const rank = kthRank(roots[left - 1], roots[right], 0, sortedValues.length - 1, k);
+    return sortedValues[rank];
+  });
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you answer the same queries online if updates were allowed?
+- Why is coordinate compression safe even when the original values are large or negative?
+- Could a merge-sort tree solve this too, and how would the complexity differ?
+
+## Common Pitfalls
+
+- Confusing one-based query indices with zero-based array positions.
+- Forgetting that a range multiset is the difference between two prefix versions.
+- Using the raw values as segment-tree indices instead of compressing them first.
