@@ -1,0 +1,116 @@
+---
+title: Russian Peasant (Multiply two numbers using bitwise operators)
+slug: russian-peasant-multiply-two-numbers-using-bitwise-operators
+category: Bit Manipulation
+summary: Multiply two non-negative integers by halving the multiplier, doubling the multiplicand, and adding only when the current low bit is set.
+description: Russian Peasant is the shift-and-add multiplication routine where the binary digits of one factor decide which doubled copies of the other factor contribute to the result.
+dataStructures:
+  - Number
+techniques:
+  - Bit Manipulation
+  - Repeated Doubling
+  - Binary Decomposition
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - russian peasant multiplication
+  - ancient egyptian multiplication
+  - multiply without multiplication operator
+useCases:
+  - Replacing multiplication with addition plus halving and doubling
+  - Explaining how binary digits select partial sums
+  - Building intuition for shift-and-add arithmetic routines
+complexity:
+  time: O(log b)
+  space: O(1)
+  notes: Each iteration consumes one binary digit of the multiplier, so the loop count depends on the multiplier's bit length.
+interviewSignals:
+  - The prompt bans the multiplication operator.
+  - The expected answer repeatedly doubles one value and halves the other while checking odd steps.
+relatedSlugs:
+  - binary-exponentiation
+  - pow-logarithmic
+  - check-for-integer-overflow
+provenance:
+  - title: "GeeksforGeeks - Russian Peasant (Multiply two numbers using bitwise operators)"
+    href: https://www.geeksforgeeks.org/dsa/russian-peasant-multiply-two-numbers-using-bitwise-operators/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem shows whether you can read multiplication through the binary expansion of one operand. Instead of forming every partial product directly, you double one side, halve the other, and add only when the current low bit says that partial product is needed.
+
+## Worked Example
+
+For `2` and `5`, the multiplier `5` is binary `101`, so the algorithm adds `2` on the first step, skips the middle doubled value, then adds `8` on the last step. The final result is `10`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function russianPeasantMultiplyTwoNumbersUsingBitwiseOperators(left, right) {
+  if (!Number.isInteger(left) || !Number.isInteger(right) || left < 0 || right < 0) {
+    throw new TypeError('Inputs must be non-negative integers');
+  }
+
+  let multiplicand = left;
+  let multiplier = right;
+  let result = 0;
+
+  while (multiplier > 0) {
+    if ((multiplier & 1) === 1) {
+      result += multiplicand;
+    }
+
+    multiplicand <<= 1;
+    multiplier >>= 1;
+  }
+
+  return result;
+}
+```
+
+```ts
+export function russianPeasantMultiplyTwoNumbersUsingBitwiseOperators(
+  left: number,
+  right: number,
+): number {
+  if (!Number.isInteger(left) || !Number.isInteger(right) || left < 0 || right < 0) {
+    throw new TypeError('Inputs must be non-negative integers');
+  }
+
+  let multiplicand = left;
+  let multiplier = right;
+  let result = 0;
+
+  while (multiplier > 0) {
+    if ((multiplier & 1) === 1) {
+      result += multiplicand;
+    }
+
+    multiplicand <<= 1;
+    multiplier >>= 1;
+  }
+
+  return result;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Extend the routine to support negative inputs cleanly.
+- Compare the shift-and-add loop with grade-school multiplication by binary partial products.
+- Add a modulus so the same idea can power fast modular multiplication.
+
+## Common Pitfalls
+
+- Forgetting to add the current multiplicand when the multiplier is odd.
+- Shifting the wrong operand and breaking the halving-doubling invariant.
+- Ignoring that JavaScript bitwise shifts operate on signed 32-bit integers.

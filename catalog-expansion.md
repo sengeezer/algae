@@ -1021,9 +1021,17 @@ This ninety-third expansion slice lifts the catalog from 519 to 527 entries.
 - Find XOR of two number without using XOR operator
 - Check if two numbers are equal without using arithmetic and comparison operators
 
+## Batch 94 added
+
+This ninety-fourth expansion slice lifts the catalog from 527 to 530 entries.
+
+- Detect if two integers have opposite signs
+- Swap Two Numbers
+- Russian Peasant (Multiply two numbers using bitwise operators)
+
 ## Next candidates from the same sources
 
-- The published catalog now reaches 527 entries on `main` after the completed batch-93 Bitwise slice.
+- The published catalog now reaches 530 entries on `main` after the opening batch-94 Bitwise slice.
 - Batch 92 carries the vetted Dynamic Programming hard stretch through `Longest repeating and non-overlapping substring` and then consumes the clean `Advanced Concepts` absences `Count Ways To Assign Unique Cap To Every Person`, `Digit DP | Introduction`, and `Sum over Subsets | Dynamic Programming`.
 - The Dynamic Programming items skipped between `Program to find amount of water in a given glass` and `Largest Cross Bordered Square` remain already represented locally: `Longest Common Subsequence`, `Longest Increasing Subsequence`, `Edit Distance`, `0-1 Knapsack Problem`, `Partition Problem`, `Longest Palindromic Subsequence`, `Bellman-Ford Algorithm`, and `Floyd Warshall Algorithm`.
 - `The painter's partition problem` remains skipped because the local `Find minimum time to finish all jobs with given constraints` entry already covers that partition-minimax problem and includes the alias `painter partition with multiplier`.
@@ -1035,5 +1043,5 @@ This ninety-third expansion slice lifts the catalog from 519 to 527 entries.
 - On that Bitwise page, the `Basics` and `Bit Manipulation Tips and Tricks` sections are theory or language-specific pages and should stay skipped during drafting.
 - Inside `Easy Problems on Bit Algorithms`, `Binary Representation` is already covered semantically by `Binary Equivalent`, `Set the K-th Bit` by `Set Bit`, `Odd Occurring Number` by the existing XOR-singleton coverage in `Unique Element In An Array`, and `Power of two` by `Is Power Of Two`.
 - Batch 93 uses the verified destination article titles for the source labels `Check if K-th Bit Set` -> `K-th bit is set or not`, `Modulus division by 2's Power` -> `Compute modulus division by a power-of-2-number`, `The only set bit` -> `Position of the only set bit`, and `Check for Equal` -> `Check if two numbers are equal without using arithmetic and comparison operators`.
-- The next clean source-ordered absences for batch 94 are `Detect if two integers have opposite signs`, `Swap Two Numbers`, and `Russian Peasant (Multiply two numbers using bitwise operators)`; no local title, alias, or semantic phrase matches were found during duplicate vetting for that three-item slice.
-- After those three Easy Bitwise items, the page enters `Medium Problems on Bit Algorithms`, where a fresh duplicate-vetting pass is still needed before drafting the rest of batch 94.
+- Batch 94 uses the verified destination titles `Check for opposite signs` -> `Detect if two integers have opposite signs` and `Russian Peasant` -> `Russian Peasant (Multiply two numbers using bitwise operators)`; that three-item Easy Bitwise slice was duplicate-free during vetting and is now published.
+- The next unresolved frontier is `Most Significant Set Bit`, the first item in `Medium Problems on Bit Algorithms`; that section still needs a fresh duplicate-vetting pass before the rest of batch 94 is drafted.

@@ -1,0 +1,88 @@
+---
+title: Detect if two integers have opposite signs
+slug: detect-if-two-integers-have-opposite-signs
+category: Bit Manipulation
+summary: Decide whether two integers land on opposite sides of zero by checking whether their XOR is negative.
+description: Detect if two integers have opposite signs is the sign-bit test where XOR exposes whether one operand is negative and the other is non-negative.
+dataStructures:
+  - Bitmask
+  - Number
+techniques:
+  - Bit Manipulation
+  - XOR Test
+  - Sign Analysis
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - detect opposite signs
+  - opposite sign integers
+  - sign mismatch test
+useCases:
+  - Classifying whether two signed integers fall on different sides of zero
+  - Reusing sign-bit logic inside arithmetic guard code
+  - Handling interview prompts that ask for a branch-light sign check
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: Under the signed 32-bit semantics used by JavaScript bitwise operators, differing sign bits make `(left ^ right)` negative.
+interviewSignals:
+  - The prompt asks for a boolean answer about sign difference rather than the sign itself.
+  - The interviewer hints at a bit trick or wants to avoid a longer conditional split.
+relatedSlugs:
+  - signum
+  - find-xor-of-two-number-without-using-xor-operator
+  - swap-two-numbers
+provenance:
+  - title: "GeeksforGeeks - Detect if two integers have opposite signs"
+    href: https://www.geeksforgeeks.org/dsa/detect-if-two-integers-have-opposite-signs/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a compact sign-bit question dressed up as a comparison problem. Interviewers use it to check whether you understand that XOR highlights exactly the bit positions where two integers differ, including the high sign bit.
+
+## Worked Example
+
+`-5` and `10` have opposite signs, so the function returns `true`. By contrast, `7` and `15` are both non-negative, so the function returns `false`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function detectIfTwoIntegersHaveOppositeSigns(left, right) {
+  if (!Number.isInteger(left) || !Number.isInteger(right)) {
+    throw new TypeError('Inputs must be integers');
+  }
+
+  return (left ^ right) < 0;
+}
+```
+
+```ts
+export function detectIfTwoIntegersHaveOppositeSigns(left: number, right: number): boolean {
+  if (!Number.isInteger(left) || !Number.isInteger(right)) {
+    throw new TypeError('Inputs must be integers');
+  }
+
+  return (left ^ right) < 0;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare the XOR test with a direct relational check such as `left < 0 ? right >= 0 : right < 0`.
+- Explain how zero is treated in this signed-versus-non-negative framing.
+- Show how the same sign-bit idea appears in overflow detection and signed comparisons.
+
+## Common Pitfalls
+
+- Forgetting that JavaScript bitwise operators coerce values to signed 32-bit integers.
+- Assuming the prompt always excludes zero even though many formulations treat negative versus non-negative as opposite.
+- Replacing the XOR test with multiplication and risking overflow in fixed-width languages.

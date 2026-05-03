@@ -1,0 +1,102 @@
+---
+title: Swap Two Numbers
+slug: swap-two-numbers
+category: Bit Manipulation
+summary: Swap a pair of integers without a temporary variable by applying the XOR update sequence three times.
+description: Swap Two Numbers is the operator-ban interview puzzle where XOR cancellation lets two integer values trade places without an explicit temporary slot.
+dataStructures:
+  - Number
+  - Tuple
+techniques:
+  - XOR Swap
+  - Bit Manipulation
+  - Reversible Update
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - swap without temporary variable
+  - xor swap
+  - swap two integers
+useCases:
+  - Handling prompts that ban an explicit temporary variable
+  - Demonstrating how XOR can encode and recover two values reversibly
+  - Comparing clever bit tricks with clearer high-level swap syntax
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The XOR sequence is reversible, so each assignment preserves enough information to recover the other operand and complete the swap.
+interviewSignals:
+  - The prompt asks you to swap values without using a temporary variable.
+  - The expected answer is a constant-space update rather than a container copy.
+relatedSlugs:
+  - detect-if-two-integers-have-opposite-signs
+  - find-xor-of-two-number-without-using-xor-operator
+  - check-for-integer-overflow
+provenance:
+  - title: "GeeksforGeeks - Swap Two Numbers"
+    href: https://www.geeksforgeeks.org/dsa/swap-two-numbers-without-using-temporary-variable/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a classic interview constraint question. The real test is whether you understand that XOR can both combine and later separate bit patterns, not whether you can remember JavaScript destructuring syntax.
+
+## Worked Example
+
+Start with `10` and `20`. After the three XOR assignments, the function returns `[20, 10]`, which is the original pair in reversed order.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function swapTwoNumbers(left, right) {
+  if (!Number.isInteger(left) || !Number.isInteger(right)) {
+    throw new TypeError('Inputs must be integers');
+  }
+
+  let first = left;
+  let second = right;
+
+  first ^= second;
+  second ^= first;
+  first ^= second;
+
+  return [first, second];
+}
+```
+
+```ts
+export function swapTwoNumbers(left: number, right: number): [number, number] {
+  if (!Number.isInteger(left) || !Number.isInteger(right)) {
+    throw new TypeError('Inputs must be integers');
+  }
+
+  let first = left;
+  let second = right;
+
+  first ^= second;
+  second ^= first;
+  first ^= second;
+
+  return [first, second];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare the XOR version with the arithmetic-swap version and explain the overflow tradeoff.
+- Rewrite the swap for array positions instead of two standalone inputs.
+- Explain why a temporary variable or destructuring assignment is usually clearer in production code.
+
+## Common Pitfalls
+
+- Forgetting that JavaScript bitwise operators coerce values to signed 32-bit integers.
+- Updating the two variables in the wrong order and losing one of the original values.
+- Treating the XOR trick as automatically better than a simple temporary-variable swap.
