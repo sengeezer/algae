@@ -1047,9 +1047,18 @@ This ninety-sixth expansion slice lifts the catalog from 534 to 538 entries.
 - Program to find parity
 - Check if binary representation is palindrome
 
+## Batch 97 added
+
+This ninety-seventh expansion slice lifts the catalog from 538 to 542 entries.
+
+- Check if a given number is sparse or not
+- Euclid's Algorithm when % and / operations are costly
+- Calculate square of a number without using *, / and pow()
+- Cyclic Redundancy Check and Modulo-2 Division
+
 ## Next candidates from the same sources
 
-- The published catalog now reaches 538 entries on `main` after the second Medium Bitwise slice.
+- The published catalog now reaches 542 entries on `main` after the next Medium Bitwise slice.
 - Batch 92 carries the vetted Dynamic Programming hard stretch through `Longest repeating and non-overlapping substring` and then consumes the clean `Advanced Concepts` absences `Count Ways To Assign Unique Cap To Every Person`, `Digit DP | Introduction`, and `Sum over Subsets | Dynamic Programming`.
 - The Dynamic Programming items skipped between `Program to find amount of water in a given glass` and `Largest Cross Bordered Square` remain already represented locally: `Longest Common Subsequence`, `Longest Increasing Subsequence`, `Edit Distance`, `0-1 Knapsack Problem`, `Partition Problem`, `Longest Palindromic Subsequence`, `Bellman-Ford Algorithm`, and `Floyd Warshall Algorithm`.
 - `The painter's partition problem` remains skipped because the local `Find minimum time to finish all jobs with given constraints` entry already covers that partition-minimax problem and includes the alias `painter partition with multiplier`.
@@ -1062,7 +1071,7 @@ This ninety-sixth expansion slice lifts the catalog from 534 to 538 entries.
 - Inside `Easy Problems on Bit Algorithms`, `Binary Representation` is already covered semantically by `Binary Equivalent`, `Set the K-th Bit` by `Set Bit`, `Odd Occurring Number` by the existing XOR-singleton coverage in `Unique Element In An Array`, and `Power of two` by `Is Power Of Two`.
 - Batch 93 uses the verified destination article titles for the source labels `Check if K-th Bit Set` -> `K-th bit is set or not`, `Modulus division by 2's Power` -> `Compute modulus division by a power-of-2-number`, `The only set bit` -> `Position of the only set bit`, and `Check for Equal` -> `Check if two numbers are equal without using arithmetic and comparison operators`.
 - Batch 94 uses the verified destination titles `Check for opposite signs` -> `Detect if two integers have opposite signs` and `Russian Peasant` -> `Russian Peasant (Multiply two numbers using bitwise operators)`; that three-item Easy Bitwise slice was duplicate-free during vetting and is now published.
-- The Medium Bitwise section is now published through `Check if binary representation is palindrome`.
-- Destination-title cleanup in that stretch is `Most Significant Set Bit` -> `Find most significant set bit of a number`, `Rightmost Set Bit` -> `Position of rightmost set bit`, `Swap Bits` -> `Swap bits in a given number`, `Rotate Bits` -> `Rotate bits of a number`, `Smallest of Three` -> `Smallest of three integers without comparison operators`, `Minimum without branching` -> `Compute the minimum or maximum of two integers without branching`, and `Check if binary is palindrome` -> `Check if binary representation is palindrome`.
-- `Count Set Bits` remains a duplicate of local `Binary Count Set Bits`, `Smallest power of 2 greater than or equal to n` remains a duplicate of `Next Power Of Two`, and `Generate n-bit Gray Codes` remains a duplicate of `Gray Codes`. `Program to find parity` is now drafted as a separate set-bit-parity entry; local `Is Even` still only checks divisibility by two.
-- The next clean source-ordered absences after the published batch-96 slice are `Check for Sparse`, `Euclid when % and / are costly`, `Square without using *, / and pow()`, `Cyclic Redundancy Check and Modulo-2 Division`, `Set Bits in a Range`, `Check for Bleak`, and `Gray to Binary and Vice Versa`.
+- The Medium Bitwise section is now published through `Cyclic Redundancy Check and Modulo-2 Division`.
+- Destination-title cleanup in that stretch is `Most Significant Set Bit` -> `Find most significant set bit of a number`, `Rightmost Set Bit` -> `Position of rightmost set bit`, `Swap Bits` -> `Swap bits in a given number`, `Rotate Bits` -> `Rotate bits of a number`, `Smallest of Three` -> `Smallest of three integers without comparison operators`, `Minimum without branching` -> `Compute the minimum or maximum of two integers without branching`, `Check if binary is palindrome` -> `Check if binary representation is palindrome`, `Check for Sparse` -> `Check if a given number is sparse or not`, `Euclid when % and / are costly` -> `Euclid's Algorithm when % and / operations are costly`, and `Square without using *, / and pow()` -> `Calculate square of a number without using *, / and pow()`.
+- `Count Set Bits` remains a duplicate of local `Binary Count Set Bits`, `Smallest power of 2 greater than or equal to n` remains a duplicate of `Next Power Of Two`, and `Generate n-bit Gray Codes` remains a duplicate of `Gray Codes`. `Program to find parity` remains distinct from local `Is Even` because it computes parity of the set-bit count, `Euclid's Algorithm when % and / operations are costly` remains distinct from `Get Euclid GCD` because it captures Stein's bitwise operator-constrained variant, and `Calculate square of a number without using *, / and pow()` remains distinct from `Binary Exponentiation` because it is a square-specific shift-and-add construction under a multiplication ban.
+- The next clean source-ordered absences after the published batch-97 slice are `Set Bits in a Range`, `Check for Bleak`, and `Gray to Binary and Vice Versa`.

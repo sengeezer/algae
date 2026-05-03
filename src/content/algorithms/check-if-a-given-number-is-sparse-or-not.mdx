@@ -1,0 +1,90 @@
+---
+title: Check if a given number is sparse or not
+slug: check-if-a-given-number-is-sparse-or-not
+category: Bit Manipulation
+summary: Determine whether a non-negative integer has no adjacent set bits by intersecting it with its right-shifted self.
+description: Check if a given number is sparse or not is the consecutive-bit predicate where `n & (n >> 1)` reveals whether any neighboring `1` bits overlap.
+dataStructures:
+  - Bitmask
+  - Number
+techniques:
+  - Bit Manipulation
+  - Adjacency Check
+  - Right Shift
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - sparse number check
+  - consecutive set bits test
+  - sparse bit pattern
+useCases:
+  - Validating bitmasks that require gaps between active flags
+  - Filtering integers whose binary form has no adjacent `1` bits
+  - Demonstrating how one shift can expose local bit adjacency
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The reference implementation constrains the input to unsigned 32-bit integers so JavaScript bitwise coercion matches the intended binary model.
+interviewSignals:
+  - The prompt asks whether the binary representation contains consecutive set bits.
+  - The expected shortcut avoids converting the number to a string or scanning every bit manually.
+relatedSlugs:
+  - program-to-find-parity
+  - is-power-of-two
+  - check-if-binary-representation-is-palindrome
+provenance:
+  - title: "GeeksforGeeks - Check if a given number is sparse or not"
+    href: https://www.geeksforgeeks.org/dsa/check-if-a-given-number-is-sparse-or-not/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Sparse-number questions reward knowing a compact bit identity rather than reaching for string conversion or a manual scan. The key observation is that any adjacent `1` bits survive one right shift and then overlap in an AND.
+
+## Worked Example
+
+`72` is `1001000` in binary, so no adjacent `1` bits overlap and the function returns `true`. `12` is `1100`, so the leading `11` creates an overlap and the function returns `false`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function checkIfAGivenNumberIsSparseOrNot(value) {
+  if (!Number.isInteger(value) || value < 0 || value > 0xffffffff) {
+    throw new RangeError('Value must be an unsigned 32-bit integer');
+  }
+
+  const number = value >>> 0;
+  return (number & (number >>> 1)) === 0;
+}
+```
+
+```ts
+export function checkIfAGivenNumberIsSparseOrNot(value: number): boolean {
+  if (!Number.isInteger(value) || value < 0 || value > 0xffffffff) {
+    throw new RangeError('Value must be an unsigned 32-bit integer');
+  }
+
+  const number = value >>> 0;
+  return (number & (number >>> 1)) === 0;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the positions of the first adjacent set-bit pair instead of only a boolean.
+- Compare this bitwise identity with a loop that inspects bits one by one.
+- Count how many sparse numbers exist in a bounded range.
+
+## Common Pitfalls
+
+- Forgetting that `0` is sparse because it contains no adjacent set bits.
+- Converting to a string when a constant-time bit test is available.
+- Letting JavaScript bitwise coercion silently truncate values outside the unsigned 32-bit range.

@@ -1,0 +1,158 @@
+---
+title: Euclid's Algorithm when % and / operations are costly
+slug: euclids-algorithm-when-percent-and-division-operations-are-costly
+category: Bit Manipulation
+summary: Compute the gcd without `%` or `/` by removing shared powers of two and repeatedly subtracting odd residues.
+description: Euclid's Algorithm when % and / operations are costly is the binary-gcd variant that replaces remainder steps with shifts, parity checks, and subtraction.
+dataStructures:
+  - Number
+techniques:
+  - Bit Manipulation
+  - Binary GCD
+  - Stein's Algorithm
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - binary gcd
+  - stein algorithm
+  - gcd without modulo
+useCases:
+  - Computing gcd when division and modulo are unavailable or expensive
+  - Translating Euclid's idea into parity-based bit operations
+  - Reusing low-level arithmetic identities in number-theory helpers
+complexity:
+  time: O(log(max(a, b)))
+  space: O(1)
+  notes: The implementation uses `BigInt` internally so JavaScript can apply shifts and subtraction safely across the full safe-integer input range without falling back to `%` or `/`.
+interviewSignals:
+  - The prompt asks for gcd under an operator ban on modulo or division.
+  - The expected solution distinguishes even and odd cases with shifts and subtraction.
+relatedSlugs:
+  - get-euclid-gcd
+  - eulers-totient
+  - binary-count-set-bits
+provenance:
+  - title: "GeeksforGeeks - Euclid's Algorithm when % and / operations are costly"
+    href: https://www.geeksforgeeks.org/dsa/euclids-algorithm-when-and-operations-are-costly/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem tests whether you know Euclid's algorithm deeply enough to re-express it without remainder arithmetic. The replacement is Stein's algorithm: strip common factors of two, keep values odd when possible, and use subtraction to keep shrinking the pair.
+
+## Worked Example
+
+For `48` and `18`, both numbers share one factor of `2`, leaving `24` and `9`. Repeating the shift-and-subtract process eventually reaches `3`, and restoring the shared factor gives a gcd of `6`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function euclidsAlgorithmWhenPercentAndDivisionOperationsAreCostly(left, right) {
+  if (!Number.isSafeInteger(left) || !Number.isSafeInteger(right)) {
+    throw new TypeError('Inputs must be safe integers');
+  }
+
+  let a = BigInt(Math.abs(left));
+  let b = BigInt(Math.abs(right));
+
+  if (a === 0n) {
+    return Number(b);
+  }
+
+  if (b === 0n) {
+    return Number(a);
+  }
+
+  let sharedTwos = 0n;
+  while (((a | b) & 1n) === 0n) {
+    a >>= 1n;
+    b >>= 1n;
+    sharedTwos += 1n;
+  }
+
+  while ((a & 1n) === 0n) {
+    a >>= 1n;
+  }
+
+  while (b !== 0n) {
+    while ((b & 1n) === 0n) {
+      b >>= 1n;
+    }
+
+    if (a > b) {
+      [a, b] = [b, a];
+    }
+
+    b -= a;
+  }
+
+  return Number(a << sharedTwos);
+}
+```
+
+```ts
+export function euclidsAlgorithmWhenPercentAndDivisionOperationsAreCostly(
+  left: number,
+  right: number,
+): number {
+  if (!Number.isSafeInteger(left) || !Number.isSafeInteger(right)) {
+    throw new TypeError('Inputs must be safe integers');
+  }
+
+  let a = BigInt(Math.abs(left));
+  let b = BigInt(Math.abs(right));
+
+  if (a === 0n) {
+    return Number(b);
+  }
+
+  if (b === 0n) {
+    return Number(a);
+  }
+
+  let sharedTwos = 0n;
+  while (((a | b) & 1n) === 0n) {
+    a >>= 1n;
+    b >>= 1n;
+    sharedTwos += 1n;
+  }
+
+  while ((a & 1n) === 0n) {
+    a >>= 1n;
+  }
+
+  while (b !== 0n) {
+    while ((b & 1n) === 0n) {
+      b >>= 1n;
+    }
+
+    if (a > b) {
+      [a, b] = [b, a];
+    }
+
+    b -= a;
+  }
+
+  return Number(a << sharedTwos);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare the binary-gcd recurrence with the standard remainder-based Euclidean algorithm.
+- Extend the routine to `BigInt` inputs end to end instead of converting back to `number`.
+- Explain why removing common powers of two first simplifies the remaining work.
+
+## Common Pitfalls
+
+- Reintroducing `%` or `/` even though the constraint is the whole point of the problem.
+- Forgetting to restore the common factor of two that was removed from both inputs.
+- Handling even and odd cases inconsistently and getting stuck in a non-decreasing loop.

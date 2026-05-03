@@ -1,0 +1,125 @@
+---
+title: Calculate square of a number without using *, / and pow()
+slug: calculate-square-of-a-number-without-using-multiplication-division-or-pow
+category: Bit Manipulation
+summary: Compute `n^2` by decomposing one factor into powers of two and accumulating shifted copies with addition.
+description: Calculate square of a number without using *, / and pow() is the square-specific shift-and-add construction where the binary expansion of one factor drives which doubled copies of the other factor contribute.
+dataStructures:
+  - Number
+techniques:
+  - Bit Manipulation
+  - Shift and Add
+  - Binary Decomposition
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - square without multiplication
+  - square without division or pow
+  - bitwise square
+useCases:
+  - Handling operator-ban arithmetic prompts
+  - Demonstrating how binary decomposition simulates multiplication
+  - Reusing doubling logic in low-level numeric helpers
+complexity:
+  time: O(log n)
+  space: O(1)
+  notes: The implementation uses `BigInt` internally to avoid 32-bit truncation from JavaScript shift operators, then rejects outputs that exceed the safe-integer range.
+interviewSignals:
+  - The prompt bans `*`, `/`, and `pow()` but only asks for squaring a single integer.
+  - The expected answer replaces multiplication with shifts and repeated addition.
+relatedSlugs:
+  - binary-exponentiation
+  - russian-peasant-multiply-two-numbers-using-bitwise-operators
+  - perfect-square
+provenance:
+  - title: "GeeksforGeeks - Calculate square of a number without using *, / and pow()"
+    href: https://www.geeksforgeeks.org/dsa/calculate-square-of-a-number-without-using-and-pow/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is an operator-ban arithmetic prompt, not a general fast-power problem. The interviewer usually wants to see whether you can treat multiplication as repeated shifted additions once one factor is written in binary.
+
+## Worked Example
+
+For `12`, the square is `144`. One factor of `12` is `1100` in binary, so only the shifted copies for the `8` and `4` places contribute: `12 << 3` plus `12 << 2`, which sums to `96 + 48 = 144`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function calculateSquareOfANumberWithoutUsingMultiplicationDivisionOrPow(value) {
+  if (!Number.isSafeInteger(value)) {
+    throw new TypeError('Value must be a safe integer');
+  }
+
+  let multiplier = BigInt(Math.abs(value));
+  let multiplicand = multiplier;
+  let result = 0n;
+
+  while (multiplier > 0n) {
+    if ((multiplier & 1n) === 1n) {
+      result += multiplicand;
+    }
+
+    multiplicand <<= 1n;
+    multiplier >>= 1n;
+  }
+
+  const square = Number(result);
+  if (!Number.isSafeInteger(square)) {
+    throw new RangeError('Square exceeds JavaScript safe integer range');
+  }
+
+  return square;
+}
+```
+
+```ts
+export function calculateSquareOfANumberWithoutUsingMultiplicationDivisionOrPow(
+  value: number,
+): number {
+  if (!Number.isSafeInteger(value)) {
+    throw new TypeError('Value must be a safe integer');
+  }
+
+  let multiplier = BigInt(Math.abs(value));
+  let multiplicand = multiplier;
+  let result = 0n;
+
+  while (multiplier > 0n) {
+    if ((multiplier & 1n) === 1n) {
+      result += multiplicand;
+    }
+
+    multiplicand <<= 1n;
+    multiplier >>= 1n;
+  }
+
+  const square = Number(result);
+  if (!Number.isSafeInteger(square)) {
+    throw new RangeError('Square exceeds JavaScript safe integer range');
+  }
+
+  return square;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare this square-specific helper with full binary exponentiation.
+- Adapt the same shift-and-add idea to multiply two different numbers.
+- Return a `BigInt` instead of throwing when the square exceeds the safe-integer range.
+
+## Common Pitfalls
+
+- Treating this as ordinary fast power and reintroducing multiplication.
+- Forgetting that negative inputs square to the same result as their absolute value.
+- Using JavaScript `<<` on large `number` values and silently truncating to 32 bits.

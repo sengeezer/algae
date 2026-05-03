@@ -1,0 +1,215 @@
+---
+title: Cyclic Redundancy Check and Modulo-2 Division
+slug: cyclic-redundancy-check-and-modulo-2-division
+category: Bit Manipulation
+summary: Generate CRC check bits and verify received codewords by replaying polynomial long division with XOR instead of subtraction.
+description: Cyclic Redundancy Check and Modulo-2 Division is the bitstring error-detection routine where binary long division over `GF(2)` produces a remainder that is appended for transmission and checked on receipt.
+dataStructures:
+  - String
+techniques:
+  - Modulo-2 Division
+  - XOR
+  - Error Detection
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - crc
+  - modulo-2 binary division
+  - crc remainder check
+useCases:
+  - Generating transmitted codewords with redundancy bits
+  - Detecting accidental transmission errors in binary frames
+  - Explaining why CRC uses XOR instead of subtraction
+complexity:
+  time: O(n * k)
+  space: O(k)
+  notes: With `n` bits in the data or codeword and `k` bits in the generator key, each long-division step can touch up to `k` bits; the implementation keeps only the current division window plus output strings.
+interviewSignals:
+  - The prompt mentions CRC, generator polynomials, or modulo-2 binary division.
+  - The expected answer distinguishes sender-side encoding from receiver-side verification.
+relatedSlugs:
+  - add-two-bit-strings
+  - find-xor-of-two-number-without-using-xor-operator
+  - binary-equivalent
+provenance:
+  - title: "GeeksforGeeks - Cyclic Redundancy Check and Modulo-2 Division"
+    href: https://www.geeksforgeeks.org/dsa/modulo-2-binary-division/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+CRC questions test whether you can reason about bit-level error detection rather than only about ordinary arithmetic. The key shift is that subtraction becomes XOR, because the division happens over binary coefficients modulo `2`.
+
+## Worked Example
+
+For data `100100` and key `1101`, modulo-2 division produces remainder `001`, so the transmitted codeword is `100100001`. Running the same division on `100100001` returns all zeros, so the received data is valid.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function validateBinaryString(value, name) {
+  if (typeof value !== 'string' || !/^[01]+$/.test(value)) {
+    throw new TypeError(`${name} must be a non-empty binary string`);
+  }
+}
+
+function xorFromSecondBit(left, right) {
+  let result = '';
+
+  for (let index = 1; index < right.length; index += 1) {
+    result += left[index] === right[index] ? '0' : '1';
+  }
+
+  return result;
+}
+
+function mod2div(dividend, divisor) {
+  let pick = divisor.length;
+  let window = dividend.slice(0, pick);
+  const zeroBlock = '0'.repeat(divisor.length);
+
+  while (pick < dividend.length) {
+    if (window[0] === '1') {
+      window = xorFromSecondBit(divisor, window) + dividend[pick];
+    } else {
+      window = xorFromSecondBit(zeroBlock, window) + dividend[pick];
+    }
+
+    pick += 1;
+  }
+
+  return window[0] === '1'
+    ? xorFromSecondBit(divisor, window)
+    : xorFromSecondBit(zeroBlock, window);
+}
+
+function encodeCyclicRedundancyCheck(data, key) {
+  validateBinaryString(data, 'data');
+  validateBinaryString(key, 'key');
+
+  if (!key.includes('1') || key.length < 2) {
+    throw new RangeError('key must contain at least one 1-bit and have length >= 2');
+  }
+
+  const paddedData = data + '0'.repeat(key.length - 1);
+  const remainder = mod2div(paddedData, key).padStart(key.length - 1, '0');
+
+  return {
+    remainder,
+    encodedData: data + remainder,
+  };
+}
+
+function verifyCyclicRedundancyCheck(codeword, key) {
+  validateBinaryString(codeword, 'codeword');
+  validateBinaryString(key, 'key');
+
+  if (codeword.length < key.length) {
+    throw new RangeError('codeword length must be at least the key length');
+  }
+
+  const remainder = mod2div(codeword, key).padStart(key.length - 1, '0');
+
+  return {
+    remainder,
+    isValid: !remainder.includes('1'),
+  };
+}
+```
+
+```ts
+function validateBinaryString(value: string, name: string): void {
+  if (!/^[01]+$/.test(value)) {
+    throw new TypeError(`${name} must be a non-empty binary string`);
+  }
+}
+
+function xorFromSecondBit(left: string, right: string): string {
+  let result = '';
+
+  for (let index = 1; index < right.length; index += 1) {
+    result += left[index] === right[index] ? '0' : '1';
+  }
+
+  return result;
+}
+
+function mod2div(dividend: string, divisor: string): string {
+  let pick = divisor.length;
+  let window = dividend.slice(0, pick);
+  const zeroBlock = '0'.repeat(divisor.length);
+
+  while (pick < dividend.length) {
+    if (window[0] === '1') {
+      window = xorFromSecondBit(divisor, window) + dividend[pick];
+    } else {
+      window = xorFromSecondBit(zeroBlock, window) + dividend[pick];
+    }
+
+    pick += 1;
+  }
+
+  return window[0] === '1'
+    ? xorFromSecondBit(divisor, window)
+    : xorFromSecondBit(zeroBlock, window);
+}
+
+export function encodeCyclicRedundancyCheck(
+  data: string,
+  key: string,
+): { remainder: string; encodedData: string } {
+  validateBinaryString(data, 'data');
+  validateBinaryString(key, 'key');
+
+  if (!key.includes('1') || key.length < 2) {
+    throw new RangeError('key must contain at least one 1-bit and have length >= 2');
+  }
+
+  const paddedData = data + '0'.repeat(key.length - 1);
+  const remainder = mod2div(paddedData, key).padStart(key.length - 1, '0');
+
+  return {
+    remainder,
+    encodedData: data + remainder,
+  };
+}
+
+export function verifyCyclicRedundancyCheck(
+  codeword: string,
+  key: string,
+): { remainder: string; isValid: boolean } {
+  validateBinaryString(codeword, 'codeword');
+  validateBinaryString(key, 'key');
+
+  if (codeword.length < key.length) {
+    throw new RangeError('codeword length must be at least the key length');
+  }
+
+  const remainder = mod2div(codeword, key).padStart(key.length - 1, '0');
+
+  return {
+    remainder,
+    isValid: !remainder.includes('1'),
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Accept a generator polynomial like `x^3 + x^2 + 1` and convert it to a binary key.
+- Compare CRC with simpler parity-bit error detection.
+- Stream the modulo-2 division one bit at a time instead of materializing full strings.
+
+## Common Pitfalls
+
+- Using ordinary subtraction instead of XOR during the long-division steps.
+- Forgetting to append `key.length - 1` zeros before sender-side division.
+- Treating a non-zero receiver remainder as valid data.
