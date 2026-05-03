@@ -1,0 +1,87 @@
+---
+title: Turn off the rightmost set bit
+slug: turn-off-the-rightmost-set-bit
+category: Bit Manipulation
+summary: Clear the lowest `1` bit in an integer with the standard `value & (value - 1)` trick.
+description: Turn off the rightmost set bit is the one-step bit manipulation routine that clears the lowest set bit while leaving every higher bit unchanged.
+dataStructures:
+  - Bitmask
+  - Number
+techniques:
+  - Bit Manipulation
+  - Brian Kernighan Trick
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - clear lowest set bit
+  - unset rightmost set bit
+  - remove lowest one bit
+useCases:
+  - Dropping the lowest active flag in a mask
+  - Building popcount and power-of-two style bit tricks
+  - Simplifying loops that consume one set bit at a time
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: Subtracting `1` flips the trailing zero-free suffix starting at the lowest set bit, so `value & (value - 1)` preserves every higher bit and clears exactly that one position.
+interviewSignals:
+  - The prompt asks to unset or remove the rightmost set bit of an integer.
+  - The interviewer expects a direct bit trick instead of scanning positions from right to left.
+relatedSlugs:
+  - binary-count-set-bits
+  - set-bit
+  - is-power-of-two
+provenance:
+  - title: "GeeksforGeeks - Turn off the rightmost set bit"
+    href: https://www.geeksforgeeks.org/dsa/turn-off-the-rightmost-set-bit/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is one of the core bit-manipulation identities interviewers expect you to recognize on sight. The same update powers faster set-bit counting, subset iteration, and power-of-two checks, so it is more useful than the small problem statement suggests.
+
+## Worked Example
+
+`12` is `1100` in binary. Subtracting `1` gives `1011`, and `1100 & 1011 = 1000`, which is `8`, so the rightmost set bit has been cleared.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function turnOffTheRightmostSetBit(value) {
+  if (!Number.isInteger(value) || value < 0) {
+    throw new TypeError('Value must be a non-negative integer');
+  }
+
+  return value & (value - 1);
+}
+```
+
+```ts
+export function turnOffTheRightmostSetBit(value: number): number {
+  if (!Number.isInteger(value) || value < 0) {
+    throw new TypeError('Value must be a non-negative integer');
+  }
+
+  return value & (value - 1);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why the same trick makes `value === 0 || (value & (value - 1)) === 0` a power-of-two test.
+- Use repeated lowest-bit clearing to count set bits in `O(k)` time.
+- Compare this constant-time trick with a loop that searches for the first `1` bit manually.
+
+## Common Pitfalls
+
+- Forgetting that `0` should stay `0` because there is no set bit to clear.
+- Confusing this clear-bit trick with XOR-based toggling.
+- Ignoring that JavaScript bitwise operators coerce numbers to 32-bit signed integers.

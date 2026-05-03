@@ -1010,7 +1010,7 @@ This ninety-second expansion slice lifts the catalog from 511 to 519 entries.
 
 ## Next candidates from the same sources
 
-- The published catalog now reaches 519 entries on `main`.
+- The published catalog now reaches 520 entries on `main`.
 - Batch 92 carries the vetted Dynamic Programming hard stretch through `Longest repeating and non-overlapping substring` and then consumes the clean `Advanced Concepts` absences `Count Ways To Assign Unique Cap To Every Person`, `Digit DP | Introduction`, and `Sum over Subsets | Dynamic Programming`.
 - The Dynamic Programming items skipped between `Program to find amount of water in a given glass` and `Largest Cross Bordered Square` remain already represented locally: `Longest Common Subsequence`, `Longest Increasing Subsequence`, `Edit Distance`, `0-1 Knapsack Problem`, `Partition Problem`, `Longest Palindromic Subsequence`, `Bellman-Ford Algorithm`, and `Floyd Warshall Algorithm`.
 - `The painter's partition problem` remains skipped because the local `Find minimum time to finish all jobs with given constraints` entry already covers that partition-minimax problem and includes the alias `painter partition with multiplier`.
@@ -1021,5 +1021,6 @@ This ninety-second expansion slice lifts the catalog from 511 to 519 entries.
 - Batch 93 should shift to the GeeksforGeeks Bitwise Algorithms page: https://www.geeksforgeeks.org/dsa/bitwise-algorithms/
 - On that Bitwise page, the `Basics` and `Bit Manipulation Tips and Tricks` sections are theory or language-specific pages and should stay skipped during drafting.
 - Inside `Easy Problems on Bit Algorithms`, `Binary Representation` is already covered semantically by `Binary Equivalent`, `Set the K-th Bit` by `Set Bit`, `Odd Occurring Number` by the existing XOR-singleton coverage in `Unique Element In An Array`, and `Power of two` by `Is Power Of Two`.
-- The next clean eight source-ordered absences for batch 93 are `Turn off the rightmost set bit`, `Check if K-th Bit Set`, `Modulus division by 2's Power`, `The only set bit`, `Add Bit Strings`, `Check for Integer Overflow`, `XOR without using XOR`, and `Check for Equal`.
-- The immediate follow-ons after that vetted eight-entry queue are `Check for opposite signs`, `Swap Two Numbers`, and `Russian Peasant`.
+- Batch 93 is now started on `main` with the published probe entry `Turn off the rightmost set bit`.
+- The next clean seven source-ordered absences for the rest of batch 93 are `Check if K-th Bit Set`, `Modulus division by 2's Power`, `The only set bit`, `Add Bit Strings`, `Check for Integer Overflow`, `XOR without using XOR`, and `Check for Equal`.
+- The immediate follow-ons after that are `Check for opposite signs`, `Swap Two Numbers`, and `Russian Peasant`.
