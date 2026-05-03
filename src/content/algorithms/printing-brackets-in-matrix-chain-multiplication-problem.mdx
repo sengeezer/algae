@@ -1,0 +1,162 @@
+---
+title: "Printing brackets in Matrix Chain Multiplication Problem"
+slug: printing-brackets-in-matrix-chain-multiplication-problem
+category: Dynamic Programming
+summary: "Track the best split point for every matrix interval so the optimal parenthesization can be reconstructed after the cost DP finishes."
+description: "Printing brackets in Matrix Chain Multiplication Problem is the reconstruction form of matrix-chain DP where every interval stores both its minimum cost and the split that achieved it."
+dataStructures:
+  - Array
+  - Matrix
+techniques:
+  - Dynamic Programming
+  - Reconstruction
+  - Interval DP
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - print matrix chain order
+  - optimal parenthesization
+  - matrix chain brackets
+useCases:
+  - Recovering the actual multiplication order after computing matrix-chain cost
+  - Demonstrating why optimization tables often need predecessor information
+  - Pairing interval DP with structured output reconstruction
+complexity:
+  time: O(n^3)
+  space: O(n^2)
+  notes: "The cost table gives the optimum value, and a second split table preserves which midpoint produced that optimum for later reconstruction."
+interviewSignals:
+  - The prompt asks for the bracket layout itself, not only the minimum multiplication count.
+  - Matrix labels appear in order and must remain in order within the final parenthesization.
+relatedSlugs:
+  - matrix-chain-multiplication
+  - matrix-multiplication
+  - printing-items-in-0-1-knapsack
+provenance:
+  - title: "GeeksforGeeks - Printing brackets in Matrix Chain Multiplication Problem"
+    href: https://www.geeksforgeeks.org/dsa/printing-brackets-matrix-chain-multiplication-problem/
+    kind: Implementation
+  - title: "free-programming-books - Algorithm Design"
+    href: https://archive.org/details/AlgorithmDesign1stEditionByJonKleinbergAndEvaTardos2005PDF
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Computing the optimum cost is only half of the interview question when the caller also wants to see the actual multiplication order. The fix is to store the midpoint that won for each interval so the final bracket structure can be rebuilt afterward.
+
+## Worked Example
+
+For `dimensions = [40, 20, 30, 10, 30]`, the optimal parenthesization is `((A(BC))D)`. That order achieves the minimum multiplication cost among all valid bracketings.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function printingBracketsInMatrixChainMultiplicationProblem(dimensions) {
+  const matrixCount = dimensions.length - 1;
+  if (matrixCount <= 0) {
+    return '';
+  }
+
+  const cost = Array.from({ length: matrixCount }, () => new Array(matrixCount).fill(0));
+  const split = Array.from({ length: matrixCount }, () => new Array(matrixCount).fill(0));
+
+  for (let chainLength = 2; chainLength <= matrixCount; chainLength += 1) {
+    for (let left = 0; left + chainLength - 1 < matrixCount; left += 1) {
+      const right = left + chainLength - 1;
+      cost[left][right] = Number.POSITIVE_INFINITY;
+
+      for (let mid = left; mid < right; mid += 1) {
+        const current =
+          cost[left][mid]
+          + cost[mid + 1][right]
+          + dimensions[left] * dimensions[mid + 1] * dimensions[right + 1];
+
+        if (current < cost[left][right]) {
+          cost[left][right] = current;
+          split[left][right] = mid;
+        }
+      }
+    }
+  }
+
+  function label(index) {
+    return index < 26 ? String.fromCharCode(65 + index) : `M${index + 1}`;
+  }
+
+  function build(left, right) {
+    if (left === right) {
+      return label(left);
+    }
+
+    const mid = split[left][right];
+    return `(${build(left, mid)}${build(mid + 1, right)})`;
+  }
+
+  return build(0, matrixCount - 1);
+}
+```
+
+```ts
+export function printingBracketsInMatrixChainMultiplicationProblem(
+  dimensions: number[],
+): string {
+  const matrixCount = dimensions.length - 1;
+  if (matrixCount <= 0) {
+    return '';
+  }
+
+  const cost = Array.from({ length: matrixCount }, () => new Array<number>(matrixCount).fill(0));
+  const split = Array.from({ length: matrixCount }, () => new Array<number>(matrixCount).fill(0));
+
+  for (let chainLength = 2; chainLength <= matrixCount; chainLength += 1) {
+    for (let left = 0; left + chainLength - 1 < matrixCount; left += 1) {
+      const right = left + chainLength - 1;
+      cost[left][right] = Number.POSITIVE_INFINITY;
+
+      for (let mid = left; mid < right; mid += 1) {
+        const current =
+          cost[left][mid]
+          + cost[mid + 1][right]
+          + dimensions[left] * dimensions[mid + 1] * dimensions[right + 1];
+
+        if (current < cost[left][right]) {
+          cost[left][right] = current;
+          split[left][right] = mid;
+        }
+      }
+    }
+  }
+
+  function label(index: number): string {
+    return index < 26 ? String.fromCharCode(65 + index) : `M${index + 1}`;
+  }
+
+  function build(left: number, right: number): string {
+    if (left === right) {
+      return label(left);
+    }
+
+    const mid = split[left][right];
+    return `(${build(left, mid)}${build(mid + 1, right)})`;
+  }
+
+  return build(0, matrixCount - 1);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return both the bracket order and the minimum cost together.
+- Explain why a one-row optimized cost DP is not enough to reconstruct the order directly.
+- Switch matrix labels from letters to numbered tokens when the chain grows beyond `26` matrices.
+
+## Common Pitfalls
+
+- Recomputing the whole cost DP during reconstruction instead of storing split points.
+- Mixing matrix indices with dimension indices and shifting the multiplication formula off by one.
+- Forgetting that a single matrix should print without extra parentheses.

@@ -982,14 +982,24 @@ This ninetieth expansion slice lifts the catalog from 495 to 503 entries.
 - Max Profit from Two Machines
 - Largest Cross Bordered Square
 
+## Batch 91 added
+
+This ninety-first expansion slice lifts the catalog from 503 to 511 entries.
+
+- Egg Dropping Puzzle
+- Palindrome Substrings Count
+- Optimal Strategy for a Game
+- Program for Bridge and Torch problem
+- Matrix Chain Multiplication
+- Printing brackets in Matrix Chain Multiplication Problem
+- Maximum sum rectangle in a 2D matrix
+- Stock Buy and Sell - Max 2 Transactions Allowed
+
 ## Next candidates from the same sources
 
-- The Greedy-page tail and the Dynamic Programming medium-problem carry-over are now exhausted locally through `Largest Cross Bordered Square`.
-- The local catalog now reaches 503 entries.
+- The Greedy-page tail and the Dynamic Programming hard-problem carry-over now reach `Stock Buy and Sell - Max 2 Transactions Allowed`.
+- The local catalog now reaches 511 entries.
 - The Dynamic Programming items skipped between `Program to find amount of water in a given glass` and `Largest Cross Bordered Square` are already represented locally: `Longest Common Subsequence`, `Longest Increasing Subsequence`, `Edit Distance`, `0-1 Knapsack Problem`, `Partition Problem`, `Longest Palindromic Subsequence`, `Bellman-Ford Algorithm`, and `Floyd Warshall Algorithm`.
-- Batch 90 uses verified destination titles where the Dynamic Programming hub labels diverge: `Wildcard Pattern Matching` and `Regular Expression Matching` both resolve to `Regular Expression Matching`, `Maximum Tip Calculator` resolves to `Max Profit from Two Machines`, and `Largest X Bordered Square` resolves to `Largest Cross Bordered Square`.
-- The next verified Dynamic Programming carry-over label is `Egg Dropping Problem`, and its destination article title is `Egg Dropping Puzzle`.
-- The next hard-problem source labels after that on the live GeeksforGeeks Dynamic Programming page are `Palindrome Partitioning`, `Palindromic Substring Count`, `Word Wrap Problem`, `Optimal Strategy for a Game`, `The painter's partition problem`, `Program for Bridge and Torch problem`, `Matrix Chain Multiplication`, `Printing Matrix Chain Multiplication`, and `Maximum sum rectangle`.
-- The live page currently has three duplicate-destination collisions in that stretch and the immediately following stock pair: `Palindrome Partitioning` plus `Palindromic Substring Count` both resolve to `Palindrome Substrings Count`, `Word Wrap Problem` plus `Optimal Strategy for a Game` both resolve to `Optimal Strategy for a Game`, and `Stock Buy and Sell - At-Most k Times` plus `Stock Buy and Sell - At Most 2 Times` both resolve to `Stock Buy and Sell - Max 2 Transactions Allowed`.
-- `The Painter's Partition Problem` is already covered locally by `Find minimum time to finish all jobs with given constraints`, which already carries the alias `painter partition with multiplier`, so it should stay skipped during source-order drafting.
-- The next clean eight source-ordered absences for batch 91 are `Egg Dropping Puzzle`, `Palindrome Substrings Count`, `Optimal Strategy for a Game`, `Program for Bridge and Torch problem`, `Matrix Chain Multiplication`, `Printing brackets in Matrix Chain Multiplication Problem`, `Maximum sum rectangle in a 2D matrix`, and `Stock Buy and Sell - Max 2 Transactions Allowed`.
+- Batch 91 continues the verified destination-title cleanup in the Dynamic Programming hard stretch: `Egg Dropping Problem` resolves to `Egg Dropping Puzzle`, `Palindrome Partitioning` plus `Palindromic Substring Count` both resolve to `Palindrome Substrings Count`, `Word Wrap Problem` plus `Optimal Strategy for a Game` both resolve to `Optimal Strategy for a Game`, and `Stock Buy and Sell - At-Most k Times` plus `Stock Buy and Sell - At Most 2 Times` both resolve to `Stock Buy and Sell - Max 2 Transactions Allowed`.
+- `The painter's partition problem` remains skipped because the local `Find minimum time to finish all jobs with given constraints` entry already covers that partition-minimax problem and includes the alias `painter partition with multiplier`.
+- The next raw source-order labels after the stock pair on the live GeeksforGeeks Dynamic Programming page are `Min cost to sort strings using Reversals`, `Count of AP Subsequences`, `DP on Trees`, `Max Height of Tree when any Node can be Root`, and `Longest repeating and non-overlapping substring`.

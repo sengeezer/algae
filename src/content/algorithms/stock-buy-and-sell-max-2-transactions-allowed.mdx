@@ -1,0 +1,103 @@
+---
+title: "Stock Buy and Sell - Max 2 Transactions Allowed"
+slug: stock-buy-and-sell-max-2-transactions-allowed
+category: Dynamic Programming
+summary: "Track the best profit after each of four states: first buy, first sell, second buy, and second sell."
+description: "Stock Buy and Sell - Max 2 Transactions Allowed is the two-transaction trading DP where each new price can improve one of the four rolling states that represent progress through up to two complete trades."
+dataStructures:
+  - Array
+techniques:
+  - Dynamic Programming
+  - State Compression
+  - Finance Simulation
+difficulty: Hard
+interviewFrequency: High
+aliases:
+  - buy and sell a share at most twice
+  - best time to buy and sell stock iii
+  - max 2 transactions
+useCases:
+  - Bounding the number of non-overlapping trades in a price series
+  - Compressing a small transaction-state DP into constant memory
+  - Comparing prefix-postfix and state-machine solutions for trading problems
+complexity:
+  time: O(days)
+  space: O(1)
+  notes: "The four scalar states represent the best profit after each milestone in the trade sequence, so no full DP table is necessary."
+interviewSignals:
+  - A new buy cannot start before the previous sell finishes.
+  - The limit is exactly two transactions, not unlimited trading.
+relatedSlugs:
+  - buy-maximum-stocks
+  - max-profit-from-two-machines
+  - weighted-job-scheduling
+provenance:
+  - title: "GeeksforGeeks - Stock Buy and Sell - Max 2 Transactions Allowed"
+    href: https://www.geeksforgeeks.org/dsa/maximum-profit-by-buying-and-selling-a-share-at-most-twice/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the smallest stock-trading variant that needs real state instead of a single running minimum. The insight is that each price only needs to improve one of four milestones: after the first buy, after the first sell, after the second buy, or after the second sell.
+
+## Worked Example
+
+For `prices = [10, 22, 5, 75, 65, 80]`, the answer is `87`. The best plan is buy at `10`, sell at `22`, then buy at `5` and sell at `80`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function stockBuyAndSellMax2TransactionsAllowed(prices) {
+  let firstBuy = Number.NEGATIVE_INFINITY;
+  let firstSell = 0;
+  let secondBuy = Number.NEGATIVE_INFINITY;
+  let secondSell = 0;
+
+  for (const price of prices) {
+    firstBuy = Math.max(firstBuy, -price);
+    firstSell = Math.max(firstSell, firstBuy + price);
+    secondBuy = Math.max(secondBuy, firstSell - price);
+    secondSell = Math.max(secondSell, secondBuy + price);
+  }
+
+  return secondSell;
+}
+```
+
+```ts
+export function stockBuyAndSellMax2TransactionsAllowed(prices: number[]): number {
+  let firstBuy = Number.NEGATIVE_INFINITY;
+  let firstSell = 0;
+  let secondBuy = Number.NEGATIVE_INFINITY;
+  let secondSell = 0;
+
+  for (const price of prices) {
+    firstBuy = Math.max(firstBuy, -price);
+    firstSell = Math.max(firstSell, firstBuy + price);
+    secondBuy = Math.max(secondBuy, firstSell - price);
+    secondSell = Math.max(secondSell, secondBuy + price);
+  }
+
+  return secondSell;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Rewrite the solution with prefix and postfix profit arrays and compare readability.
+- Generalize from two transactions to `k` transactions.
+- Reconstruct the actual buy and sell days from the compressed state machine.
+
+## Common Pitfalls
+
+- Allowing overlapping transactions by buying again before selling the previous stock.
+- Resetting the second buy state as if it were independent of the first completed sell.
+- Solving the unlimited-transactions variant by mistake.

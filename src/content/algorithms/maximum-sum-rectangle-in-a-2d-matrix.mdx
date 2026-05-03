@@ -1,0 +1,153 @@
+---
+title: "Maximum sum rectangle in a 2D matrix"
+slug: maximum-sum-rectangle-in-a-2d-matrix
+category: Dynamic Programming
+summary: "Fix column boundaries, compress the rows between them, and run Kadane's algorithm on the resulting one-dimensional sums."
+description: "Maximum sum rectangle in a 2D matrix is the 2D Kadane optimization where each column window is reduced to row sums and then solved as a maximum subarray problem."
+dataStructures:
+  - Matrix
+  - Array
+techniques:
+  - Dynamic Programming
+  - Kadane Algorithm
+  - Matrix Compression
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - max sum rectangle
+  - maximum submatrix sum
+  - 2d kadane
+useCases:
+  - Finding the highest-scoring contiguous region in a weighted grid
+  - Extending one-dimensional maximum-subarray logic to matrices
+  - Practicing dimension compression before applying a known subroutine
+complexity:
+  time: O(rows * cols^2)
+  space: O(rows)
+  notes: "For each left-right column pair, the algorithm keeps one compressed row-sum array and runs a one-dimensional maximum-subarray scan on it."
+interviewSignals:
+  - The answer is a contiguous rectangular submatrix, not an arbitrary subset of cells.
+  - Negative values matter, so the best rectangle may still contain only one cell.
+relatedSlugs:
+  - maximum-size-square-sub-matrix-with-all-1s
+  - minimum-cost-path
+  - matrix-chain-multiplication
+provenance:
+  - title: "GeeksforGeeks - Maximum sum rectangle in a 2D matrix"
+    href: https://www.geeksforgeeks.org/dsa/maximum-sum-rectangle-in-a-2d-matrix/
+    kind: Implementation
+  - title: "free-programming-books - Algorithm Design"
+    href: https://archive.org/details/AlgorithmDesign1stEditionByJonKleinbergAndEvaTardos2005PDF
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the standard way to show that Kadane's algorithm is bigger than one dimension. Once two column boundaries are fixed, every valid rectangle inside that strip becomes a contiguous range of compressed row sums, so the 2D problem reduces to the 1D maximum-subarray problem.
+
+## Worked Example
+
+For
+
+```txt
+1   2  -1  -4  -20
+-8 -3   4   2    1
+3   8  10   1    3
+-4 -1   1   7   -6
+```
+
+the answer is `29`, produced by the rectangle covering the middle block with row sums driven by `3 + 8 + 10 + 1 + 3 + 7`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function maximumSumRectangleInA2DMatrix(matrix) {
+  const rowCount = matrix.length;
+  const colCount = rowCount === 0 ? 0 : matrix[0].length;
+  if (rowCount === 0 || colCount === 0) {
+    return 0;
+  }
+
+  function kadane(values) {
+    let current = values[0];
+    let best = values[0];
+
+    for (let index = 1; index < values.length; index += 1) {
+      current = Math.max(values[index], current + values[index]);
+      best = Math.max(best, current);
+    }
+
+    return best;
+  }
+
+  let best = Number.NEGATIVE_INFINITY;
+
+  for (let left = 0; left < colCount; left += 1) {
+    const compressed = new Array(rowCount).fill(0);
+
+    for (let right = left; right < colCount; right += 1) {
+      for (let row = 0; row < rowCount; row += 1) {
+        compressed[row] += matrix[row][right];
+      }
+
+      best = Math.max(best, kadane(compressed));
+    }
+  }
+
+  return best;
+}
+```
+
+```ts
+export function maximumSumRectangleInA2DMatrix(matrix: number[][]): number {
+  const rowCount = matrix.length;
+  const colCount = rowCount === 0 ? 0 : matrix[0].length;
+  if (rowCount === 0 || colCount === 0) {
+    return 0;
+  }
+
+  function kadane(values: number[]): number {
+    let current = values[0];
+    let best = values[0];
+
+    for (let index = 1; index < values.length; index += 1) {
+      current = Math.max(values[index], current + values[index]);
+      best = Math.max(best, current);
+    }
+
+    return best;
+  }
+
+  let best = Number.NEGATIVE_INFINITY;
+
+  for (let left = 0; left < colCount; left += 1) {
+    const compressed = new Array<number>(rowCount).fill(0);
+
+    for (let right = left; right < colCount; right += 1) {
+      for (let row = 0; row < rowCount; row += 1) {
+        compressed[row] += matrix[row][right];
+      }
+
+      best = Math.max(best, kadane(compressed));
+    }
+  }
+
+  return best;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the rectangle coordinates as well as its sum.
+- Compare this compression method with a prefix-sum solution over all top-left and bottom-right pairs.
+- Explain how the algorithm behaves when every entry is negative.
+
+## Common Pitfalls
+
+- Reusing a Kadane variant that incorrectly returns `0` for all-negative input.
+- Compressing rows once and forgetting to reset them when the left boundary moves.
+- Searching arbitrary cell subsets instead of contiguous rectangles.

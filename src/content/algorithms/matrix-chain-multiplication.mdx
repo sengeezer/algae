@@ -1,0 +1,130 @@
+---
+title: Matrix Chain Multiplication
+slug: matrix-chain-multiplication
+category: Dynamic Programming
+summary: "Choose parenthesis positions that minimize scalar multiplications when multiplying a chain of compatible matrices."
+description: "Matrix Chain Multiplication is the interval-DP optimization where each split point yields two smaller chain costs plus the scalar work caused by combining their results."
+dataStructures:
+  - Array
+  - Matrix
+techniques:
+  - Dynamic Programming
+  - Interval DP
+  - Table DP
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - matrix chain order
+  - minimum matrix multiplication cost
+  - matrix parenthesization cost
+useCases:
+  - Optimizing the evaluation order of associative matrix products
+  - Practicing diagonal interval-table filling
+  - Separating operation order from final mathematical equivalence
+complexity:
+  time: O(n^3)
+  space: O(n^2)
+  notes: "The DP fills intervals in increasing chain length, because every parenthesization of a larger range depends on smaller ranges already being solved."
+interviewSignals:
+  - The input is a dimension array where matrix `i` has size `arr[i - 1] x arr[i]`.
+  - The objective is to minimize scalar multiplications, not to perform the multiplication itself.
+relatedSlugs:
+  - matrix-multiplication
+  - printing-brackets-in-matrix-chain-multiplication-problem
+  - minimum-cost-path
+provenance:
+  - title: "GeeksforGeeks - Matrix Chain Multiplication"
+    href: https://www.geeksforgeeks.org/dsa/matrix-chain-multiplication-dp-8/
+    kind: Implementation
+  - title: "free-programming-books - Algorithm Design"
+    href: https://archive.org/details/AlgorithmDesign1stEditionByJonKleinbergAndEvaTardos2005PDF
+    kind: Reference
+---
+
+## Why It Surfaces
+
+The matrices multiply to the same final result regardless of grouping, but the intermediate dimensions can make one order dramatically cheaper than another. The interview test is whether you can model that choice as an interval DP instead of brute-forcing every parenthesization.
+
+## Worked Example
+
+For `dimensions = [1, 2, 3, 4, 3]`, the best answer is `30`. The cheapest order is `(((A B) C) D)`, which beats the alternatives because it keeps the intermediate matrices small.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function matrixChainMultiplication(dimensions) {
+  const size = dimensions.length;
+  if (size <= 2) {
+    return 0;
+  }
+
+  const dp = Array.from({ length: size }, () => new Array(size).fill(0));
+
+  for (let length = 2; length < size; length += 1) {
+    for (let left = 0; left + length < size; left += 1) {
+      const right = left + length;
+      dp[left][right] = Number.POSITIVE_INFINITY;
+
+      for (let mid = left + 1; mid < right; mid += 1) {
+        const cost =
+          dp[left][mid]
+          + dp[mid][right]
+          + dimensions[left] * dimensions[mid] * dimensions[right];
+
+        if (cost < dp[left][right]) {
+          dp[left][right] = cost;
+        }
+      }
+    }
+  }
+
+  return dp[0][size - 1];
+}
+```
+
+```ts
+export function matrixChainMultiplication(dimensions: number[]): number {
+  const size = dimensions.length;
+  if (size <= 2) {
+    return 0;
+  }
+
+  const dp = Array.from({ length: size }, () => new Array<number>(size).fill(0));
+
+  for (let length = 2; length < size; length += 1) {
+    for (let left = 0; left + length < size; left += 1) {
+      const right = left + length;
+      dp[left][right] = Number.POSITIVE_INFINITY;
+
+      for (let mid = left + 1; mid < right; mid += 1) {
+        const cost =
+          dp[left][mid]
+          + dp[mid][right]
+          + dimensions[left] * dimensions[mid] * dimensions[right];
+
+        if (cost < dp[left][right]) {
+          dp[left][right] = cost;
+        }
+      }
+    }
+  }
+
+  return dp[0][size - 1];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the optimal parenthesization, not only the minimum cost.
+- Explain why the DP table is filled diagonally instead of row by row.
+- Compare the bottom-up table with a memoized recursive solution.
+
+## Common Pitfalls
+
+- Treating the problem like ordinary matrix multiplication instead of order optimization.
+- Using matrix indices directly instead of the dimension array boundaries.
+- Forgetting that a single matrix has zero multiplication cost.

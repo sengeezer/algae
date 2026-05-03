@@ -1,0 +1,117 @@
+---
+title: Egg Dropping Puzzle
+slug: egg-dropping-puzzle
+category: Dynamic Programming
+summary: "Count how many floors can be resolved with a fixed number of moves and eggs until that coverage reaches the target building height."
+description: "Egg Dropping Puzzle is the worst-case decision DP where each move splits into a break case and a survive case, and the optimized state tracks how many floors can be distinguished with a given move budget."
+dataStructures:
+  - Array
+techniques:
+  - Dynamic Programming
+  - State Compression
+  - Worst-Case Analysis
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - egg dropping problem
+  - egg drop
+  - critical floor puzzle
+useCases:
+  - Minimizing the worst-case number of experiments needed to find a threshold
+  - Reframing a quadratic floor-scan recurrence into a move-based DP
+  - Comparing naive recursion with compressed dynamic programming
+complexity:
+  time: O(eggs * floors)
+  space: O(eggs)
+  notes: "The compressed DP increments the move count until the reachable-floor total for the available eggs covers the building height."
+interviewSignals:
+  - Every trial has two outcomes, and the objective is the worst-case number of moves.
+  - More eggs reduce the branching penalty, but the answer still depends on preserving certainty.
+relatedSlugs:
+  - memoization-dp
+  - binary-search
+  - binomial-coefficient
+provenance:
+  - title: "GeeksforGeeks - Egg Dropping Puzzle"
+    href: https://www.geeksforgeeks.org/dsa/egg-dropping-puzzle-dp-11/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the classic worst-case experiment-design problem. The usual floor-by-floor recurrence is easy to describe but too slow, so the real interview move is to switch perspective and ask how many floors can already be resolved with a certain number of moves and eggs.
+
+## Worked Example
+
+For `eggs = 2` and `floors = 10`, the answer is `4`. With four moves and two eggs, the optimized DP can distinguish up to ten floors in the worst case, so that is the first move budget that guarantees certainty.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function eggDroppingPuzzle(eggs, floors) {
+  if (!Number.isInteger(eggs) || !Number.isInteger(floors) || eggs < 0 || floors < 0) {
+    throw new RangeError('eggs and floors must be non-negative integers');
+  }
+
+  if (eggs === 0 || floors <= 1) {
+    return floors;
+  }
+
+  const dp = new Array(eggs + 1).fill(0);
+  let moves = 0;
+
+  while (dp[eggs] < floors) {
+    moves += 1;
+
+    for (let egg = eggs; egg >= 1; egg -= 1) {
+      dp[egg] = dp[egg] + dp[egg - 1] + 1;
+    }
+  }
+
+  return moves;
+}
+```
+
+```ts
+export function eggDroppingPuzzle(eggs: number, floors: number): number {
+  if (!Number.isInteger(eggs) || !Number.isInteger(floors) || eggs < 0 || floors < 0) {
+    throw new RangeError('eggs and floors must be non-negative integers');
+  }
+
+  if (eggs === 0 || floors <= 1) {
+    return floors;
+  }
+
+  const dp = new Array<number>(eggs + 1).fill(0);
+  let moves = 0;
+
+  while (dp[eggs] < floors) {
+    moves += 1;
+
+    for (let egg = eggs; egg >= 1; egg -= 1) {
+      dp[egg] = dp[egg] + dp[egg - 1] + 1;
+    }
+  }
+
+  return moves;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Derive why `dp[egg] = dp[egg] + dp[egg - 1] + 1` matches the break and survive branches.
+- Compare this move-based DP with the older O(eggs * floors^2) floor-scan recurrence.
+- Return a concrete dropping schedule for the two-egg case.
+
+## Common Pitfalls
+
+- Minimizing the average case when the prompt asks for the worst case.
+- Updating the compressed `dp` array left to right instead of right to left.
+- Returning the number of reachable floors instead of the move count that achieves them.

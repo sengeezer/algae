@@ -1,0 +1,141 @@
+---
+title: "Program for Bridge and Torch problem"
+slug: program-for-bridge-and-torch-problem
+category: Dynamic Programming
+summary: "Sort crossing times and repeatedly choose the cheaper of the two standard ways to move the slowest remaining pair across."
+description: "Program for Bridge and Torch problem is the crossing-time optimization where each reduced state depends on the better of two ways to shuttle the torch while sending the slowest people over."
+dataStructures:
+  - Array
+techniques:
+  - Dynamic Programming
+  - Sorting
+  - State Compression
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - bridge and torch problem
+  - bridge crossing puzzle
+  - torch crossing time
+useCases:
+  - Minimizing total crossing time under a one-torch bottleneck
+  - Comparing two canonical transfer strategies on the slowest remaining people
+  - Turning a puzzle recurrence into a small rolling-state DP
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: "Sorting dominates the runtime, and the rolling recurrence only needs the solutions for groups of size `n - 1` and `n - 2` as it expands."
+interviewSignals:
+  - At most two people may cross together, and the torch must return every time until the end.
+  - The total time is governed by the slower person in each crossing pair.
+relatedSlugs:
+  - tower-of-hanoi
+  - optimal-strategy-for-a-game
+  - minimum-platforms-required
+provenance:
+  - title: "GeeksforGeeks - Program for Bridge and Torch problem"
+    href: https://www.geeksforgeeks.org/dsa/program-bridge-torch-problem/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This puzzle is really about choosing between two repeatable transfer patterns. Once the crossing times are sorted, each step asks whether it is cheaper to have the two fastest shuttle the torch or to let the fastest person escort each of the two slowest separately.
+
+## Worked Example
+
+For `times = [1, 2, 5, 8]`, the best total is `15`. The optimal sequence is `(1, 2) -> 2`, `1` returns, `(5, 8) -> 8`, `2` returns, then `(1, 2) -> 2` again.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function programForBridgeAndTorchProblem(times) {
+  const sorted = [...times].sort((left, right) => left - right);
+  const size = sorted.length;
+
+  if (size === 0) {
+    return 0;
+  }
+
+  if (size === 1) {
+    return sorted[0];
+  }
+
+  if (size === 2) {
+    return sorted[1];
+  }
+
+  if (size === 3) {
+    return sorted[0] + sorted[1] + sorted[2];
+  }
+
+  let prevTwo = sorted[1];
+  let prevOne = sorted[0] + sorted[1] + sorted[2];
+  let current = prevOne;
+
+  for (let count = 4; count <= size; count += 1) {
+    const optionOne = sorted[1] + sorted[0] + sorted[count - 1] + sorted[1];
+    const optionTwo = sorted[count - 1] + sorted[0] + sorted[count - 2] + sorted[0];
+    current = Math.min(prevTwo + optionOne, prevTwo + optionTwo);
+    prevTwo = prevOne;
+    prevOne = current;
+  }
+
+  return current;
+}
+```
+
+```ts
+export function programForBridgeAndTorchProblem(times: number[]): number {
+  const sorted = [...times].sort((left, right) => left - right);
+  const size = sorted.length;
+
+  if (size === 0) {
+    return 0;
+  }
+
+  if (size === 1) {
+    return sorted[0];
+  }
+
+  if (size === 2) {
+    return sorted[1];
+  }
+
+  if (size === 3) {
+    return sorted[0] + sorted[1] + sorted[2];
+  }
+
+  let prevTwo = sorted[1];
+  let prevOne = sorted[0] + sorted[1] + sorted[2];
+  let current = prevOne;
+
+  for (let count = 4; count <= size; count += 1) {
+    const optionOne = sorted[1] + sorted[0] + sorted[count - 1] + sorted[1];
+    const optionTwo = sorted[count - 1] + sorted[0] + sorted[count - 2] + sorted[0];
+    current = Math.min(prevTwo + optionOne, prevTwo + optionTwo);
+    prevTwo = prevOne;
+    prevOne = current;
+  }
+
+  return current;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Print the actual crossing schedule, not only the minimum total time.
+- Explain why sorting is enough before the recurrence begins.
+- Compare this recurrence with the common greedy proof for the same puzzle.
+
+## Common Pitfalls
+
+- Pairing people greedily without considering the torch-return cost.
+- Forgetting the special base cases for one, two, and three people.
+- Updating the rolling state as if the recurrence depended on every earlier group size.

@@ -1,0 +1,111 @@
+---
+title: Palindrome Substrings Count
+slug: palindrome-substrings-count
+category: Dynamic Programming
+summary: "Count palindromic substrings of length at least two by expanding valid palindrome intervals from shorter substrings to longer ones."
+description: "Palindrome Substrings Count is the interval-DP string problem where matching ends and a known inner palindrome certify that a larger substring is also palindromic."
+dataStructures:
+  - String
+  - Array
+  - Matrix
+techniques:
+  - Dynamic Programming
+  - Interval DP
+  - Table DP
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - palindromic substring count
+  - count palindrome substrings
+  - count all palindromic substrings
+useCases:
+  - Measuring repeated symmetric spans in strings
+  - Distinguishing substring counting from palindromic subsequence problems
+  - Practicing interval growth recurrences on string ranges
+complexity:
+  time: O(n^2)
+  space: O(n^2)
+  notes: "The boolean table records whether each interval is palindromic, and every successful interval longer than one contributes to the final count."
+interviewSignals:
+  - The answer counts contiguous palindromic substrings, not subsequences.
+  - Length-one substrings usually do not count unless the prompt says otherwise.
+relatedSlugs:
+  - palindrome-partitioning
+  - minimum-insertions-to-form-a-palindrome
+  - longest-palindromic-subsequence
+provenance:
+  - title: "GeeksforGeeks - Palindrome Substrings Count"
+    href: https://www.geeksforgeeks.org/dsa/count-palindrome-sub-strings-string/
+    kind: Implementation
+  - title: "free-programming-books - Algorithm Design"
+    href: https://archive.org/details/AlgorithmDesign1stEditionByJonKleinbergAndEvaTardos2005PDF
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This prompt usually appears right after a palindrome-recognition question stops being enough. The important distinction is that the count is over contiguous ranges, so once a mismatch appears the current interval cannot be rescued by skipping characters.
+
+## Worked Example
+
+For `text = "abbaeae"`, the answer is `4`. The palindromic substrings of length greater than `1` are `"bb"`, `"abba"`, `"aea"`, and `"eae"`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function palindromeSubstringsCount(text) {
+  const size = text.length;
+  const dp = Array.from({ length: size }, () => new Array(size).fill(false));
+  let count = 0;
+
+  for (let left = size - 1; left >= 0; left -= 1) {
+    dp[left][left] = true;
+
+    for (let right = left + 1; right < size; right += 1) {
+      if (text[left] === text[right] && (right === left + 1 || dp[left + 1][right - 1])) {
+        dp[left][right] = true;
+        count += 1;
+      }
+    }
+  }
+
+  return count;
+}
+```
+
+```ts
+export function palindromeSubstringsCount(text: string): number {
+  const size = text.length;
+  const dp = Array.from({ length: size }, () => new Array<boolean>(size).fill(false));
+  let count = 0;
+
+  for (let left = size - 1; left >= 0; left -= 1) {
+    dp[left][left] = true;
+
+    for (let right = left + 1; right < size; right += 1) {
+      if (text[left] === text[right] && (right === left + 1 || dp[left + 1][right - 1])) {
+        dp[left][right] = true;
+        count += 1;
+      }
+    }
+  }
+
+  return count;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the distinct palindromic substrings instead of only the count.
+- Reduce the memory footprint with center expansion and compare tradeoffs.
+- Explain why the interval iteration order must move from shorter inner substrings to longer outer ones.
+
+## Common Pitfalls
+
+- Counting single characters when the prompt starts at length `2`.
+- Confusing contiguous substrings with palindromic subsequences.
+- Filling the DP table in an order that reads `dp[left + 1][right - 1]` before it exists.

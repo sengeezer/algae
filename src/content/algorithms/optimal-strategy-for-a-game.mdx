@@ -1,0 +1,119 @@
+---
+title: "Optimal Strategy for a Game"
+slug: optimal-strategy-for-a-game
+category: Dynamic Programming
+summary: "Choose from either end of a coin row while maximizing the guaranteed amount against an optimal opponent."
+description: "Optimal Strategy for a Game is the interval game DP where taking the left or right coin changes the score difference the opponent can force on the remaining subarray."
+dataStructures:
+  - Array
+techniques:
+  - Dynamic Programming
+  - Interval DP
+  - Game Theory
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - coin row game
+  - optimal coin game
+  - pick from ends game
+useCases:
+  - Maximizing the guaranteed score in an adversarial take-from-ends game
+  - Showing why greedy first picks can fail under optimal opposition
+  - Rewriting minimax reasoning into a compact interval DP
+complexity:
+  time: O(n^2)
+  space: O(n)
+  notes: "The compressed DP stores the score difference the current player can force on each interval, which is enough to recover the first player's final amount."
+interviewSignals:
+  - On each turn, the player may pick only the first or last coin.
+  - The prompt asks for a guaranteed best total assuming the opponent also plays optimally.
+relatedSlugs:
+  - minimax
+  - max-non-adjacent-sum
+  - minimum-insertions-to-form-a-palindrome
+provenance:
+  - title: "GeeksforGeeks - Optimal Strategy for a Game"
+    href: https://www.geeksforgeeks.org/dsa/optimal-strategy-for-a-game-dp-31/
+    kind: Implementation
+  - title: "free-programming-books - Algorithm Design"
+    href: https://archive.org/details/AlgorithmDesign1stEditionByJonKleinbergAndEvaTardos2005PDF
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the classic coin-row counterexample to greedy reasoning. Picking the larger visible coin is not enough because the right move is the one that leaves the opponent with the weakest future position, not the one with the largest immediate reward.
+
+## Worked Example
+
+For `coins = [8, 15, 3, 7]`, the best guaranteed answer is `22`. Taking `7` first is stronger than taking `8` because it leads to the winning path `7 + 15` under optimal play.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function optimalStrategyForAGame(coins) {
+  const size = coins.length;
+  if (size === 0) {
+    return 0;
+  }
+
+  const dp = new Array(size).fill(0);
+  let total = 0;
+
+  for (let left = size - 1; left >= 0; left -= 1) {
+    total += coins[left];
+
+    for (let right = left; right < size; right += 1) {
+      if (left === right) {
+        dp[right] = coins[right];
+      } else {
+        dp[right] = Math.max(coins[left] - dp[right], coins[right] - dp[right - 1]);
+      }
+    }
+  }
+
+  return (total + dp[size - 1]) / 2;
+}
+```
+
+```ts
+export function optimalStrategyForAGame(coins: number[]): number {
+  const size = coins.length;
+  if (size === 0) {
+    return 0;
+  }
+
+  const dp = new Array<number>(size).fill(0);
+  let total = 0;
+
+  for (let left = size - 1; left >= 0; left -= 1) {
+    total += coins[left];
+
+    for (let right = left; right < size; right += 1) {
+      if (left === right) {
+        dp[right] = coins[right];
+      } else {
+        dp[right] = Math.max(coins[left] - dp[right], coins[right] - dp[right - 1]);
+      }
+    }
+  }
+
+  return (total + dp[size - 1]) / 2;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Reconstruct one optimal sequence of left-right choices, not only the final amount.
+- Compare the score-difference DP with the more direct 2D recurrence that uses `min` on the opponent's response.
+- Explain why the final score equals `(total + difference) / 2`.
+
+## Common Pitfalls
+
+- Assuming the locally larger end coin is always the right first move.
+- Forgetting that the opponent is also optimal, not random or greedy.
+- Returning the score difference instead of the first player's actual amount.
