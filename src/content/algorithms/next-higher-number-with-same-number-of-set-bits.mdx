@@ -1,0 +1,116 @@
+---
+title: Next higher number with same number of set bits
+slug: next-higher-number-with-same-number-of-set-bits
+category: Bit Manipulation
+summary: Find the next larger unsigned 32-bit integer with the same popcount by moving the rightmost movable `1` left and compacting the trailing pattern.
+description: Next higher number with same number of set bits is the bit-pattern successor problem where the rightmost run of ones is advanced just enough to preserve the total count of set bits.
+dataStructures:
+  - Bitmask
+  - Number
+techniques:
+  - Bit Manipulation
+  - Popcount Preservation
+  - Bit Pattern Successor
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - next higher with same set bits
+  - same number of one bits
+  - snoob
+useCases:
+  - Generating the next subset encoding with the same cardinality
+  - Enumerating fixed-popcount bitmasks in sorted numeric order
+  - Practicing compact rearrangements of trailing bit patterns
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The implementation uses `BigInt` internally so the two's-complement low-bit trick and correction step stay exact for the full unsigned 32-bit range.
+interviewSignals:
+  - The prompt asks for the next larger value with the same number of `1` bits.
+  - The expected solution manipulates the rightmost set-bit pattern instead of scanning upward one integer at a time.
+relatedSlugs:
+  - binary-count-set-bits
+  - gray-codes
+  - copy-set-bits-in-a-range
+provenance:
+  - title: "GeeksforGeeks - Next higher number with same number of set bits"
+    href: https://www.geeksforgeeks.org/dsa/next-higher-number-with-same-number-of-set-bits/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem shows up when subsets are encoded as bitmasks and you need the next mask with the same number of chosen elements. The key is not to increment blindly, but to relocate the rightmost movable `1` and then repack the trailing ones as far right as possible.
+
+## Worked Example
+
+`12` is `1100` in binary and has two set bits. The next higher number with two set bits is `17`, which is `10001`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function nextHigherNumberWithSameNumberOfSetBits(value) {
+  if (!Number.isInteger(value) || value < 0 || value > 0xffffffff) {
+    throw new RangeError('Value must be an unsigned 32-bit integer');
+  }
+
+  const number = BigInt(value >>> 0);
+  if (number === 0n) {
+    throw new RangeError('Value must be positive');
+  }
+
+  const rightOne = number & -number;
+  const nextHigherOneBit = number + rightOne;
+  const rightOnesPattern = ((number ^ nextHigherOneBit) / rightOne) >> 2n;
+  const next = nextHigherOneBit | rightOnesPattern;
+
+  if (next > 0xffffffffn) {
+    throw new RangeError('No higher unsigned 32-bit integer has the same number of set bits');
+  }
+
+  return Number(next);
+}
+```
+
+```ts
+export function nextHigherNumberWithSameNumberOfSetBits(value: number): number {
+  if (!Number.isInteger(value) || value < 0 || value > 0xffffffff) {
+    throw new RangeError('Value must be an unsigned 32-bit integer');
+  }
+
+  const number = BigInt(value >>> 0);
+  if (number === 0n) {
+    throw new RangeError('Value must be positive');
+  }
+
+  const rightOne = number & -number;
+  const nextHigherOneBit = number + rightOne;
+  const rightOnesPattern = ((number ^ nextHigherOneBit) / rightOne) >> 2n;
+  const next = nextHigherOneBit | rightOnesPattern;
+
+  if (next > 0xffffffffn) {
+    throw new RangeError('No higher unsigned 32-bit integer has the same number of set bits');
+  }
+
+  return Number(next);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Find the previous smaller number with the same number of set bits.
+- Use the same successor logic to iterate through all `k`-element subsets of an `n`-element set.
+- Explain why the correction shift by two positions is necessary.
+
+## Common Pitfalls
+
+- Incrementing upward linearly until the popcount matches again.
+- Forgetting that some inputs near the top of the 32-bit range have no valid higher answer.
+- Breaking the trailing one-bit pattern instead of packing it back to the far right.

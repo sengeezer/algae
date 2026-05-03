@@ -1,0 +1,195 @@
+---
+title: Maximum Subarray XOR
+slug: maximum-subarray-xor
+category: Bit Manipulation
+summary: Find the largest XOR over all contiguous subarrays by combining prefix XORs with a bitwise trie.
+description: Maximum Subarray XOR is the prefix-XOR optimization where every subarray XOR becomes the XOR of two prefixes and a trie greedily finds the best partner for each prefix.
+dataStructures:
+  - Array
+  - Trie
+  - Bitmask
+techniques:
+  - Prefix XOR
+  - Trie
+  - Greedy Bit Selection
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - max subarray xor
+  - contiguous xor maximum
+  - prefix xor trie
+useCases:
+  - Optimizing brute-force subarray XOR scans
+  - Applying binary tries to maximize XOR against a running prefix
+  - Reusing prefix transformations to turn subarray problems into pair problems
+complexity:
+  time: O(n * w)
+  space: O(n * w)
+  notes: With fixed-width `w = 32` bits, each array element inserts and queries one trie path, so the implementation behaves like linear time in practice.
+interviewSignals:
+  - The prompt asks for the best XOR over all contiguous subarrays.
+  - The expected solution rewrites subarray XOR as the XOR of two prefix values.
+relatedSlugs:
+  - find-xor-of-two-number-without-using-xor-operator
+  - copy-set-bits-in-a-range
+  - binary-equivalent
+provenance:
+  - title: "GeeksforGeeks - Maximum Subarray XOR"
+    href: https://www.geeksforgeeks.org/dsa/find-the-maximum-subarray-xor-in-a-given-array/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem is a classic example of using a trie for something other than strings. Once you rewrite every subarray XOR as `prefix[j] ^ prefix[i - 1]`, the whole task becomes: for each prefix, find a previous prefix that maximizes XOR with it.
+
+## Worked Example
+
+For `[1, 2, 3, 4]`, the subarray `[3, 4]` has XOR `7`, which is the maximum among all contiguous subarrays, so the function returns `7`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function createTrieNode() {
+  return { children: [null, null] };
+}
+
+function insertTrieValue(root, value) {
+  let node = root;
+
+  for (let bit = 31; bit >= 0; bit -= 1) {
+    const currentBit = (value >>> bit) & 1;
+    if (!node.children[currentBit]) {
+      node.children[currentBit] = createTrieNode();
+    }
+    node = node.children[currentBit];
+  }
+}
+
+function queryMaximumXor(root, value) {
+  let node = root;
+  let result = 0;
+
+  for (let bit = 31; bit >= 0; bit -= 1) {
+    const currentBit = (value >>> bit) & 1;
+    const preferredBit = currentBit ^ 1;
+
+    if (node.children[preferredBit]) {
+      result = (result | ((1 << bit) >>> 0)) >>> 0;
+      node = node.children[preferredBit];
+    } else {
+      node = node.children[currentBit];
+    }
+  }
+
+  return result >>> 0;
+}
+
+function maximumSubarrayXor(values) {
+  if (!Array.isArray(values) || values.length === 0) {
+    throw new RangeError('values must be a non-empty array');
+  }
+
+  if (!values.every((value) => Number.isInteger(value) && value >= 0 && value <= 0xffffffff)) {
+    throw new RangeError('values must contain unsigned 32-bit integers');
+  }
+
+  const root = createTrieNode();
+  insertTrieValue(root, 0);
+
+  let prefixXor = 0;
+  let best = 0;
+
+  for (const value of values) {
+    prefixXor = (prefixXor ^ (value >>> 0)) >>> 0;
+    best = Math.max(best, queryMaximumXor(root, prefixXor));
+    insertTrieValue(root, prefixXor);
+  }
+
+  return best >>> 0;
+}
+```
+
+```ts
+type TrieNode = {
+  children: [TrieNode | null, TrieNode | null];
+};
+
+function createTrieNode(): TrieNode {
+  return { children: [null, null] };
+}
+
+function insertTrieValue(root: TrieNode, value: number): void {
+  let node = root;
+
+  for (let bit = 31; bit >= 0; bit -= 1) {
+    const currentBit = (value >>> bit) & 1;
+    if (!node.children[currentBit]) {
+      node.children[currentBit] = createTrieNode();
+    }
+    node = node.children[currentBit] as TrieNode;
+  }
+}
+
+function queryMaximumXor(root: TrieNode, value: number): number {
+  let node = root;
+  let result = 0;
+
+  for (let bit = 31; bit >= 0; bit -= 1) {
+    const currentBit = (value >>> bit) & 1;
+    const preferredBit = currentBit ^ 1;
+
+    if (node.children[preferredBit]) {
+      result = (result | ((1 << bit) >>> 0)) >>> 0;
+      node = node.children[preferredBit] as TrieNode;
+    } else {
+      node = node.children[currentBit] as TrieNode;
+    }
+  }
+
+  return result >>> 0;
+}
+
+export function maximumSubarrayXor(values: number[]): number {
+  if (!Array.isArray(values) || values.length === 0) {
+    throw new RangeError('values must be a non-empty array');
+  }
+
+  if (!values.every((value) => Number.isInteger(value) && value >= 0 && value <= 0xffffffff)) {
+    throw new RangeError('values must contain unsigned 32-bit integers');
+  }
+
+  const root = createTrieNode();
+  insertTrieValue(root, 0);
+
+  let prefixXor = 0;
+  let best = 0;
+
+  for (const value of values) {
+    prefixXor = (prefixXor ^ (value >>> 0)) >>> 0;
+    best = Math.max(best, queryMaximumXor(root, prefixXor));
+    insertTrieValue(root, prefixXor);
+  }
+
+  return best >>> 0;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the start and end indices of a maximizing subarray as well as its XOR value.
+- Compare this trie-based approach with brute force on short arrays.
+- Extend the same idea to maximum pair XOR over an array.
+
+## Common Pitfalls
+
+- Recomputing every subarray XOR from scratch instead of using prefix XORs.
+- Forgetting to insert prefix `0`, which misses subarrays that start at index `0`.
+- Treating negative signed bitwise results as if they were already normalized unsigned values.

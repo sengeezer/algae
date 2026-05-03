@@ -1,0 +1,132 @@
+---
+title: Find longest sequence of 1's in binary representation with one flip
+slug: find-longest-sequence-of-1s-in-binary-representation-with-one-flip
+category: Bit Manipulation
+summary: Maximize the length of a contiguous run of `1` bits by flipping exactly one bit and merging adjacent runs when possible.
+description: Find longest sequence of 1's in binary representation with one flip is the run-length merge problem where one flipped zero can bridge two neighboring one-blocks if no extra zero separates them.
+dataStructures:
+  - Bitmask
+  - Number
+techniques:
+  - Bit Manipulation
+  - Run Tracking
+  - One-Flip Optimization
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - longest ones with one flip
+  - flip one bit to win
+  - max consecutive ones after one flip
+useCases:
+  - Measuring how much one local bit correction can improve a bit pattern
+  - Practicing adjacent-run bookkeeping without materializing a binary string
+  - Translating one-edit optimization logic into a constant-space bit scan
+complexity:
+  time: O(log n)
+  space: O(1)
+  notes: The scan keeps only the current run of ones, the previous run that could be joined across a single zero, and the best merged length seen so far.
+interviewSignals:
+  - The prompt allows exactly one bit flip and asks for the longest resulting run of ones.
+  - The expected solution tracks two neighboring one-runs instead of brute-forcing every possible flip position.
+relatedSlugs:
+  - check-if-a-given-number-is-sparse-or-not
+  - binary-count-set-bits
+  - check-if-binary-representation-is-palindrome
+provenance:
+  - title: "GeeksforGeeks - Find longest sequence of 1's in binary representation with one flip"
+    href: https://www.geeksforgeeks.org/dsa/find-longest-sequence-1s-binary-representation-one-flip/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a one-edit optimization problem disguised as a bit question. The insight is that one zero only helps if it can connect the one-run on its left with the one-run on its right, so you never need to track more than two adjacent runs at once.
+
+## Worked Example
+
+`1775` is `11011101111` in binary. Flipping the zero between `110111` and `01111` produces a run of `8` consecutive `1` bits, so the function returns `8`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function findLongestSequenceOf1sInBinaryRepresentationWithOneFlip(value) {
+  if (!Number.isInteger(value) || value < 0 || value > 0xffffffff) {
+    throw new RangeError('Value must be an unsigned 32-bit integer');
+  }
+
+  const number = value >>> 0;
+  if (number === 0xffffffff) {
+    return 32;
+  }
+
+  let working = number;
+  let currentLength = 0;
+  let previousLength = 0;
+  let best = 1;
+
+  while (working !== 0) {
+    if ((working & 1) === 1) {
+      currentLength += 1;
+    } else {
+      previousLength = (working & 2) === 0 ? 0 : currentLength;
+      currentLength = 0;
+    }
+
+    best = Math.max(best, previousLength + currentLength + 1);
+    working >>>= 1;
+  }
+
+  return Math.min(best, 32);
+}
+```
+
+```ts
+export function findLongestSequenceOf1sInBinaryRepresentationWithOneFlip(value: number): number {
+  if (!Number.isInteger(value) || value < 0 || value > 0xffffffff) {
+    throw new RangeError('Value must be an unsigned 32-bit integer');
+  }
+
+  const number = value >>> 0;
+  if (number === 0xffffffff) {
+    return 32;
+  }
+
+  let working = number;
+  let currentLength = 0;
+  let previousLength = 0;
+  let best = 1;
+
+  while (working !== 0) {
+    if ((working & 1) === 1) {
+      currentLength += 1;
+    } else {
+      previousLength = (working & 2) === 0 ? 0 : currentLength;
+      currentLength = 0;
+    }
+
+    best = Math.max(best, previousLength + currentLength + 1);
+    working >>>= 1;
+  }
+
+  return Math.min(best, 32);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the bit position that should be flipped, not only the resulting length.
+- Compare this constant-space scan with a sliding-window pass over a binary string.
+- Generalize the problem to allow up to `k` flips.
+
+## Common Pitfalls
+
+- Treating every zero as if it could always connect two one-runs.
+- Forgetting the all-ones case, where the answer is the full word width.
+- Building a full binary string even though the bit scan only needs local run lengths.

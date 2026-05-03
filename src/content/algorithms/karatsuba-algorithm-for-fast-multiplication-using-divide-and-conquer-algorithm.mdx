@@ -1,0 +1,179 @@
+---
+title: Karatsuba algorithm for fast multiplication using Divide and Conquer algorithm
+slug: karatsuba-algorithm-for-fast-multiplication-using-divide-and-conquer-algorithm
+category: Divide and Conquer
+summary: Multiply two binary-string integers faster than schoolbook multiplication by reducing four half-size products to three.
+description: Karatsuba algorithm for fast multiplication using Divide and Conquer algorithm is the subquadratic multiplication recurrence where the middle cross terms are reconstructed from one extra product instead of two.
+dataStructures:
+  - String
+  - Number
+techniques:
+  - Divide and Conquer
+  - Karatsuba Multiplication
+  - Binary Splitting
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - karatsuba multiplication
+  - fast multiplication
+  - divide and conquer multiplication
+useCases:
+  - Multiplying very large integers represented as binary strings
+  - Demonstrating how algebra can reduce recursive subproblem count
+  - Contrasting schoolbook multiplication with subquadratic alternatives
+complexity:
+  time: O(n^(log_2 3))
+  space: O(n)
+  notes: Here `n` is the bit length of the larger input. The recursive split performs three half-size multiplications plus linear-time splitting and recombination work at each level.
+interviewSignals:
+  - The prompt asks for faster multiplication than the usual quadratic digit-by-digit method.
+  - The answer relies on rewriting the cross term `(a+b)(c+d) - ac - bd`.
+relatedSlugs:
+  - russian-peasant-multiply-two-numbers-using-bitwise-operators
+  - binary-exponentiation
+  - calculate-square-of-a-number-without-using-multiplication-division-or-pow
+provenance:
+  - title: "GeeksforGeeks - Karatsuba algorithm for fast multiplication using Divide and Conquer algorithm"
+    href: https://www.geeksforgeeks.org/dsa/karatsuba-algorithm-for-fast-multiplication-using-divide-and-conquer-algorithm/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Karatsuba is one of the cleanest examples of an algebraic trick changing a recurrence. The interview value is understanding why three recursive products are enough, not memorizing another multiplication routine.
+
+## Worked Example
+
+The binary strings `1100` and `1010` represent `12` and `10`, so their product is `120`. The function returns `120n` as an exact `BigInt` product.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function validateBinaryOperand(value, name) {
+  if (typeof value !== 'string' || !/^[01]+$/.test(value)) {
+    throw new TypeError(`${name} must be a non-empty binary string`);
+  }
+}
+
+function bitLength(value) {
+  let number = value;
+  let length = 0;
+
+  while (number > 0n) {
+    number >>= 1n;
+    length += 1;
+  }
+
+  return length || 1;
+}
+
+function karatsubaMultiply(left, right) {
+  if (left === 0n || right === 0n) {
+    return 0n;
+  }
+
+  if (left < 2n || right < 2n) {
+    return left * right;
+  }
+
+  const length = Math.max(bitLength(left), bitLength(right));
+  const half = BigInt(Math.ceil(length / 2));
+  const mask = (1n << half) - 1n;
+  const highLeft = left >> half;
+  const lowLeft = left & mask;
+  const highRight = right >> half;
+  const lowRight = right & mask;
+
+  const z0 = karatsubaMultiply(lowLeft, lowRight);
+  const z2 = karatsubaMultiply(highLeft, highRight);
+  const z1 = karatsubaMultiply(lowLeft + highLeft, lowRight + highRight) - z2 - z0;
+
+  return (z2 << (half * 2n)) + (z1 << half) + z0;
+}
+
+function karatsubaAlgorithmForFastMultiplicationUsingDivideAndConquerAlgorithm(left, right) {
+  validateBinaryOperand(left, 'left');
+  validateBinaryOperand(right, 'right');
+
+  const leftValue = BigInt(`0b${left}`);
+  const rightValue = BigInt(`0b${right}`);
+
+  return karatsubaMultiply(leftValue, rightValue);
+}
+```
+
+```ts
+function validateBinaryOperand(value: string, name: string): void {
+  if (!/^[01]+$/.test(value)) {
+    throw new TypeError(`${name} must be a non-empty binary string`);
+  }
+}
+
+function bitLength(value: bigint): number {
+  let number = value;
+  let length = 0;
+
+  while (number > 0n) {
+    number >>= 1n;
+    length += 1;
+  }
+
+  return length || 1;
+}
+
+function karatsubaMultiply(left: bigint, right: bigint): bigint {
+  if (left === 0n || right === 0n) {
+    return 0n;
+  }
+
+  if (left < 2n || right < 2n) {
+    return left * right;
+  }
+
+  const length = Math.max(bitLength(left), bitLength(right));
+  const half = BigInt(Math.ceil(length / 2));
+  const mask = (1n << half) - 1n;
+  const highLeft = left >> half;
+  const lowLeft = left & mask;
+  const highRight = right >> half;
+  const lowRight = right & mask;
+
+  const z0 = karatsubaMultiply(lowLeft, lowRight);
+  const z2 = karatsubaMultiply(highLeft, highRight);
+  const z1 = karatsubaMultiply(lowLeft + highLeft, lowRight + highRight) - z2 - z0;
+
+  return (z2 << (half * 2n)) + (z1 << half) + z0;
+}
+
+export function karatsubaAlgorithmForFastMultiplicationUsingDivideAndConquerAlgorithm(
+  left: string,
+  right: string,
+): bigint {
+  validateBinaryOperand(left, 'left');
+  validateBinaryOperand(right, 'right');
+
+  const leftValue = BigInt(`0b${left}`);
+  const rightValue = BigInt(`0b${right}`);
+
+  return karatsubaMultiply(leftValue, rightValue);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the product as a binary string instead of a `BigInt`.
+- Compare Karatsuba with schoolbook multiplication and FFT-based multiplication.
+- Explain why the middle term only needs one additional recursive product.
+
+## Common Pitfalls
+
+- Recursing into four half-size products and losing the whole point of Karatsuba.
+- Mishandling odd bit lengths during splitting.
+- Using built-in big-number multiplication for the full recursive step instead of only the base case.
