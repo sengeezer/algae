@@ -1,0 +1,87 @@
+---
+title: Find XOR of two number without using XOR operator
+slug: find-xor-of-two-number-without-using-xor-operator
+category: Bit Manipulation
+summary: Recreate XOR from other bitwise primitives, such as `(a | b) & (~a | ~b)`, when the `^` operator is off limits.
+description: Find XOR of two number without using XOR operator is the Boolean-algebra problem where XOR is reconstructed from OR, AND, and NOT so bits stay set only when the inputs differ.
+dataStructures:
+  - Bitmask
+  - Number
+techniques:
+  - Bit Manipulation
+  - Boolean Algebra
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - xor without caret
+  - simulate xor operator
+  - xor from and or not
+useCases:
+  - Demonstrating that bitwise operators can be derived from one another
+  - Practicing Boolean identities on integer masks
+  - Handling constrained interview prompts that ban one obvious operator
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The expression `(a | b) & (~a | ~b)` keeps positions where at least one bit is set but removes positions where both bits are set.
+interviewSignals:
+  - The prompt bans the `^` operator explicitly.
+  - The expected answer uses Boolean identities rather than per-bit loops.
+relatedSlugs:
+  - unique-element-in-an-array
+  - check-if-two-numbers-are-equal-without-using-arithmetic-and-comparison-operators
+  - k-th-bit-is-set-or-not
+provenance:
+  - title: "GeeksforGeeks - Find XOR of two number without using XOR operator"
+    href: https://www.geeksforgeeks.org/dsa/find-xor-of-two-number-without-using-xor-operator/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a small Boolean-algebra check disguised as a programming problem. The interviewer wants to know whether you understand what XOR means at the bit level, not just whether you remember the symbol for it.
+
+## Worked Example
+
+For `1` and `2`, the binary forms are `01` and `10`. Their XOR is `11`, so the answer is `3`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function findXorOfTwoNumberWithoutUsingXorOperator(left, right) {
+  if (!Number.isInteger(left) || !Number.isInteger(right)) {
+    throw new TypeError('Inputs must be integers');
+  }
+
+  return (left | right) & (~left | ~right);
+}
+```
+
+```ts
+export function findXorOfTwoNumberWithoutUsingXorOperator(left: number, right: number): number {
+  if (!Number.isInteger(left) || !Number.isInteger(right)) {
+    throw new TypeError('Inputs must be integers');
+  }
+
+  return (left | right) & (~left | ~right);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Derive the same result using arithmetic and `a & b` instead.
+- Explain why `x ^ x = 0` still follows from the derived formula.
+- Compare the constant-time Boolean identity with the slower per-bit scan.
+
+## Common Pitfalls
+
+- Reintroducing the `^` operator in a helper and defeating the point of the prompt.
+- Forgetting that JavaScript bitwise operators work on 32-bit signed integers.
+- Mixing up XOR with OR and leaving shared `1` bits in the answer.

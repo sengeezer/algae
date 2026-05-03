@@ -1,0 +1,112 @@
+---
+title: Position of the only set bit
+slug: position-of-the-only-set-bit
+category: Bit Manipulation
+summary: Return the one-based position of the single set bit, or `-1` if the number has zero or multiple ones.
+description: Position of the only set bit is the one-hot bit-position problem where you first verify the number is a power of two and then count from the least-significant side to locate the lone `1`.
+dataStructures:
+  - Bitmask
+  - Number
+techniques:
+  - Bit Manipulation
+  - Bit Test
+  - Power Of Two Check
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - find position of only set bit
+  - lone set bit position
+  - one hot bit index
+useCases:
+  - Mapping one-hot masks back to an index
+  - Combining a structural bit test with a small counting loop
+  - Reusing power-of-two logic in a follow-up question
+complexity:
+  time: O(log n)
+  space: O(1)
+  notes: The key gate is checking that the number has exactly one set bit; after that, right shifts count how far the bit sits from the least-significant end.
+interviewSignals:
+  - The prompt says there should be exactly one set bit or asks you to return `-1` otherwise.
+  - The required answer is one-based from the least-significant bit side.
+relatedSlugs:
+  - is-power-of-two
+  - k-th-bit-is-set-or-not
+  - turn-off-the-rightmost-set-bit
+provenance:
+  - title: "GeeksforGeeks - Position of the only set bit"
+    href: https://www.geeksforgeeks.org/dsa/find-position-of-the-only-set-bit/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This question is really a power-of-two test with one extra step. Once you know the number is one-hot, the remaining work is just counting how many shifts it takes to move that bit to position zero.
+
+## Worked Example
+
+`2` is `10` in binary, so it has exactly one set bit and that bit is at position `2` when counting from the least-significant side starting at `1`. For `5`, the binary form is `101`, which has two set bits, so the correct answer is `-1`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function positionOfTheOnlySetBit(value) {
+  if (!Number.isInteger(value) || value < 0) {
+    throw new TypeError('Value must be a non-negative integer');
+  }
+
+  if (value === 0 || (value & (value - 1)) !== 0) {
+    return -1;
+  }
+
+  let position = 1;
+  let remaining = value;
+
+  while ((remaining & 1) === 0) {
+    remaining >>= 1;
+    position += 1;
+  }
+
+  return position;
+}
+```
+
+```ts
+export function positionOfTheOnlySetBit(value: number): number {
+  if (!Number.isInteger(value) || value < 0) {
+    throw new TypeError('Value must be a non-negative integer');
+  }
+
+  if (value === 0 || (value & (value - 1)) !== 0) {
+    return -1;
+  }
+
+  let position = 1;
+  let remaining = value;
+
+  while ((remaining & 1) === 0) {
+    remaining >>= 1;
+    position += 1;
+  }
+
+  return position;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Replace the shift loop with `Math.log2` and explain the tradeoff.
+- Connect this result to the broader power-of-two identity.
+- Adjust the function if the interviewer wants zero-based indexing instead.
+
+## Common Pitfalls
+
+- Forgetting to reject `0` and numbers with more than one set bit.
+- Returning a zero-based position when the prompt wants one-based counting.
+- Using floating-point logs without first enforcing the one-set-bit condition.

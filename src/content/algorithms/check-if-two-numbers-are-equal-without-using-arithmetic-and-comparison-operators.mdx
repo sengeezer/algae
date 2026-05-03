@@ -1,0 +1,90 @@
+---
+title: Check if two numbers are equal without using arithmetic and comparison operators
+slug: check-if-two-numbers-are-equal-without-using-arithmetic-and-comparison-operators
+category: Bit Manipulation
+summary: Decide equality by observing that identical integers produce zero when XORed together.
+description: Check if two numbers are equal without using arithmetic and comparison operators is the bitwise equality test where differing bits produce a non-zero XOR and identical numbers collapse to zero.
+dataStructures:
+  - Bitmask
+  - Number
+techniques:
+  - Bit Manipulation
+  - XOR Test
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - check numbers equal without comparison
+  - equality test with xor
+  - bitwise equality check
+useCases:
+  - Showing that equality can be inferred from bit patterns rather than direct comparison
+  - Reusing XOR cancellation in a boolean-style prompt
+  - Handling contrived operator-ban interview questions succinctly
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: XOR is zero exactly when every corresponding bit matches, so a zero result can be converted directly into a boolean answer.
+interviewSignals:
+  - The prompt explicitly bans arithmetic and ordinary comparison operators.
+  - The simplest clean solution depends on the zero-result property of XOR.
+relatedSlugs:
+  - find-xor-of-two-number-without-using-xor-operator
+  - unique-element-in-an-array
+  - k-th-bit-is-set-or-not
+provenance:
+  - title: "GeeksforGeeks - Check if two numbers are equal without using arithmetic and comparison operators"
+    href: https://www.geeksforgeeks.org/dsa/check-if-two-numbers-are-equal-without-using-arithmetic-and-comparison-operators/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is another operator-ban puzzle whose real purpose is to test whether you know a small XOR identity. Once you see that equal numbers have no differing bits, the whole problem reduces to checking whether the XOR result is zero.
+
+## Worked Example
+
+`10` and `10` are equal, so `10 ^ 10` becomes `0` and the function returns `true`. For `10` and `20`, the XOR is non-zero, so the answer is `false`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function checkIfTwoNumbersAreEqualWithoutUsingArithmeticAndComparisonOperators(left, right) {
+  if (!Number.isInteger(left) || !Number.isInteger(right)) {
+    throw new TypeError('Inputs must be integers');
+  }
+
+  return !(left ^ right);
+}
+```
+
+```ts
+export function checkIfTwoNumbersAreEqualWithoutUsingArithmeticAndComparisonOperators(
+  left: number,
+  right: number,
+): boolean {
+  if (!Number.isInteger(left) || !Number.isInteger(right)) {
+    throw new TypeError('Inputs must be integers');
+  }
+
+  return !(left ^ right);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Rework the answer without using XOR either.
+- Explain why the same idea works for any fixed-width integer representation.
+- Contrast this with string-based equality, where the inputs are not yet parsed as numbers.
+
+## Common Pitfalls
+
+- Using a regular equality operator even though the prompt bans it.
+- Forgetting that bitwise operators in JavaScript coerce to 32-bit signed integers.
+- Overcomplicating a constant-time identity with a full bit-by-bit scan.

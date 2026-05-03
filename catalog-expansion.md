@@ -1008,9 +1008,22 @@ This ninety-second expansion slice lifts the catalog from 511 to 519 entries.
 - Digit DP | Introduction
 - Sum over Subsets | Dynamic Programming
 
+## Batch 93 added
+
+This ninety-third expansion slice lifts the catalog from 519 to 527 entries.
+
+- Turn off the rightmost set bit
+- K-th bit is set or not
+- Compute modulus division by a power-of-2-number
+- Position of the only set bit
+- Add two bit strings
+- Check for Integer Overflow
+- Find XOR of two number without using XOR operator
+- Check if two numbers are equal without using arithmetic and comparison operators
+
 ## Next candidates from the same sources
 
-- The published catalog now reaches 520 entries on `main`.
+- The published catalog now reaches 527 entries on `main` after the completed batch-93 Bitwise slice.
 - Batch 92 carries the vetted Dynamic Programming hard stretch through `Longest repeating and non-overlapping substring` and then consumes the clean `Advanced Concepts` absences `Count Ways To Assign Unique Cap To Every Person`, `Digit DP | Introduction`, and `Sum over Subsets | Dynamic Programming`.
 - The Dynamic Programming items skipped between `Program to find amount of water in a given glass` and `Largest Cross Bordered Square` remain already represented locally: `Longest Common Subsequence`, `Longest Increasing Subsequence`, `Edit Distance`, `0-1 Knapsack Problem`, `Partition Problem`, `Longest Palindromic Subsequence`, `Bellman-Ford Algorithm`, and `Floyd Warshall Algorithm`.
 - `The painter's partition problem` remains skipped because the local `Find minimum time to finish all jobs with given constraints` entry already covers that partition-minimax problem and includes the alias `painter partition with multiplier`.
@@ -1018,9 +1031,8 @@ This ninety-second expansion slice lifts the catalog from 511 to 519 entries.
 - The `Problems Sorted by Topic / Dimensions` trio (`DP Standard Problems and Variations.`, `DP Problems Dimension Wise (1D, 2D and 3D)`, and `DP Problems Topic Wise`) remain aggregator pages and should stay skipped during source-order drafting.
 - `Traveling Salesman Problem` remains a duplicate of the published exact TSP entry despite appearing inside `Advanced Concepts`.
 - The GeeksforGeeks Dynamic Programming page is now exhausted in source order: `Sum over Subsets | Dynamic Programming` is the last `Advanced Concepts` item, and the surrounding tail is duplicate-only or intentionally skipped.
-- Batch 93 should shift to the GeeksforGeeks Bitwise Algorithms page: https://www.geeksforgeeks.org/dsa/bitwise-algorithms/
+- The next source branch after the exhausted Dynamic Programming page is the GeeksforGeeks Bitwise Algorithms page: https://www.geeksforgeeks.org/dsa/bitwise-algorithms/
 - On that Bitwise page, the `Basics` and `Bit Manipulation Tips and Tricks` sections are theory or language-specific pages and should stay skipped during drafting.
 - Inside `Easy Problems on Bit Algorithms`, `Binary Representation` is already covered semantically by `Binary Equivalent`, `Set the K-th Bit` by `Set Bit`, `Odd Occurring Number` by the existing XOR-singleton coverage in `Unique Element In An Array`, and `Power of two` by `Is Power Of Two`.
-- Batch 93 is now started on `main` with the published probe entry `Turn off the rightmost set bit`.
-- The next clean seven source-ordered absences for the rest of batch 93 are `Check if K-th Bit Set`, `Modulus division by 2's Power`, `The only set bit`, `Add Bit Strings`, `Check for Integer Overflow`, `XOR without using XOR`, and `Check for Equal`.
-- The immediate follow-ons after that are `Check for opposite signs`, `Swap Two Numbers`, and `Russian Peasant`.
+- Batch 93 uses the verified destination article titles for the source labels `Check if K-th Bit Set` -> `K-th bit is set or not`, `Modulus division by 2's Power` -> `Compute modulus division by a power-of-2-number`, `The only set bit` -> `Position of the only set bit`, and `Check for Equal` -> `Check if two numbers are equal without using arithmetic and comparison operators`.
+- The immediate follow-ons after the published batch-93 slice are `Check for opposite signs`, `Swap Two Numbers`, and `Russian Peasant`; the page then enters `Medium Problems on Bit Algorithms`, where a fresh duplicate-vetting pass is still needed before drafting batch 94.

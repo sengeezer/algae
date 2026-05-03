@@ -1,0 +1,95 @@
+---
+title: Compute modulus division by a power-of-2-number
+slug: compute-modulus-division-by-a-power-of-2-number
+category: Bit Manipulation
+summary: Replace `n % d` with `n & (d - 1)` when the divisor is a positive power of two.
+description: Compute modulus division by a power-of-2-number is the masking trick that extracts the low bits of a number to compute its remainder under a power-of-two divisor.
+dataStructures:
+  - Bitmask
+  - Number
+techniques:
+  - Bit Manipulation
+  - Arithmetic Shortcut
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - modulus by power of two
+  - remainder with bit mask
+  - modulo without division by power of two
+useCases:
+  - Fast remainder computations for aligned buffer or table sizes
+  - Explaining why powers of two map cleanly to low-bit masks
+  - Recognizing when a numeric constraint allows a bitwise shortcut
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: If `d = 2^k`, then `d - 1` has its lowest `k` bits set, so `n & (d - 1)` preserves exactly the bits that determine the remainder.
+interviewSignals:
+  - The divisor is explicitly guaranteed to be a power of two.
+  - The prompt forbids or discourages division and modulo operators.
+relatedSlugs:
+  - is-power-of-two
+  - binary-equivalent
+  - turn-off-the-rightmost-set-bit
+provenance:
+  - title: "GeeksforGeeks - Compute modulus division by a power-of-2-number"
+    href: https://www.geeksforgeeks.org/dsa/compute-modulus-division-by-a-power-of-2-number/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the classic example of how binary structure can replace arithmetic. Once the divisor is a power of two, the remainder depends only on the low bits, so a mask gives the answer immediately.
+
+## Worked Example
+
+For `n = 6` and `d = 4`, compute `6 & (4 - 1)`, which is `110 & 011 = 010`, so the remainder is `2`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function computeModulusDivisionByAPowerOf2Number(value, divisor) {
+  if (!Number.isInteger(value) || value < 0 || !Number.isInteger(divisor) || divisor <= 0) {
+    throw new TypeError('Value must be a non-negative integer and divisor must be a positive integer');
+  }
+
+  if ((divisor & (divisor - 1)) !== 0) {
+    throw new RangeError('Divisor must be a power of two');
+  }
+
+  return value & (divisor - 1);
+}
+```
+
+```ts
+export function computeModulusDivisionByAPowerOf2Number(value: number, divisor: number): number {
+  if (!Number.isInteger(value) || value < 0 || !Number.isInteger(divisor) || divisor <= 0) {
+    throw new TypeError('Value must be a non-negative integer and divisor must be a positive integer');
+  }
+
+  if ((divisor & (divisor - 1)) !== 0) {
+    throw new RangeError('Divisor must be a power of two');
+  }
+
+  return value & (divisor - 1);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why the shortcut fails for divisors that are not powers of two.
+- Compare this remainder trick with right shifts for division by powers of two.
+- Extend the reasoning to ring-buffer indexing where the capacity is a power of two.
+
+## Common Pitfalls
+
+- Applying the mask trick when the divisor is not a power of two.
+- Forgetting that `divisor = 0` is invalid.
+- Treating the trick as a general replacement for modulo instead of a constrained shortcut.

@@ -1,0 +1,109 @@
+---
+title: Check for Integer Overflow
+slug: check-for-integer-overflow
+category: Bit Manipulation
+summary: Add two signed 32-bit integers safely by checking whether the result would move outside the allowed range.
+description: Check for Integer Overflow is the fixed-width integer addition guard where same-sign inputs can overflow only if their sum would cross the signed 32-bit boundary.
+dataStructures:
+  - Number
+techniques:
+  - Overflow Detection
+  - Boundary Checks
+  - Sign Analysis
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - detect addition overflow
+  - safe integer addition
+  - check 32 bit overflow
+useCases:
+  - Guarding arithmetic in fixed-width integer environments
+  - Explaining why overflow only matters for same-sign addition
+  - Turning an implementation constraint into an explicit boundary check
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: This entry models signed 32-bit integer overflow explicitly, because JavaScript numbers themselves do not overflow at those bounds.
+interviewSignals:
+  - The prompt asks you to detect overflow without switching to a larger integer type.
+  - Both positive and negative overflow cases must be handled correctly.
+relatedSlugs:
+  - reverse-number
+  - add-two-bit-strings
+  - find-xor-of-two-number-without-using-xor-operator
+provenance:
+  - title: "GeeksforGeeks - Check for Integer Overflow"
+    href: https://www.geeksforgeeks.org/dsa/check-for-integer-overflow/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This question is about respecting fixed-width arithmetic rules instead of relying on a language runtime to save you. The core observation is that overflow during addition only happens when both inputs have the same sign and the mathematical sum moves past the signed boundary.
+
+## Worked Example
+
+Under signed 32-bit rules, `1000000000 + 1000000000` is safe and returns `2000000000`, but `-2000000000 + -500000000` falls below `-2147483648`, so the function should return `-1` to signal overflow.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function checkForIntegerOverflow(left, right) {
+  if (!Number.isInteger(left) || !Number.isInteger(right)) {
+    throw new TypeError('Inputs must be integers');
+  }
+
+  const minInt = -(2 ** 31);
+  const maxInt = 2 ** 31 - 1;
+
+  if (left < minInt || left > maxInt || right < minInt || right > maxInt) {
+    throw new RangeError('Inputs must fit in a signed 32-bit integer');
+  }
+
+  if ((left >= 0 && right >= 0 && left > maxInt - right) || (left < 0 && right < 0 && left < minInt - right)) {
+    return -1;
+  }
+
+  return left + right;
+}
+```
+
+```ts
+export function checkForIntegerOverflow(left: number, right: number): number {
+  if (!Number.isInteger(left) || !Number.isInteger(right)) {
+    throw new TypeError('Inputs must be integers');
+  }
+
+  const minInt = -(2 ** 31);
+  const maxInt = 2 ** 31 - 1;
+
+  if (left < minInt || left > maxInt || right < minInt || right > maxInt) {
+    throw new RangeError('Inputs must fit in a signed 32-bit integer');
+  }
+
+  if ((left >= 0 && right >= 0 && left > maxInt - right) || (left < 0 && right < 0 && left < minInt - right)) {
+    return -1;
+  }
+
+  return left + right;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Detect overflow for subtraction or multiplication under the same 32-bit model.
+- Explain why opposite-sign addition cannot overflow.
+- Compare the pre-check against the sign-flip observation after performing the sum in a fixed-width language.
+
+## Common Pitfalls
+
+- Forgetting that JavaScript `number` does not overflow at 32-bit integer limits by itself.
+- Checking only positive overflow and missing the negative case.
+- Accepting inputs that are already outside the modeled integer range.

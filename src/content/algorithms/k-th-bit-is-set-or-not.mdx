@@ -1,0 +1,87 @@
+---
+title: K-th bit is set or not
+slug: k-th-bit-is-set-or-not
+category: Bit Manipulation
+summary: Check whether a zero-based bit position is `1` by shifting it into the least-significant place or masking it directly.
+description: K-th bit is set or not is the standard bit-test routine for checking one chosen bit position without scanning the entire binary representation.
+dataStructures:
+  - Bitmask
+  - Number
+techniques:
+  - Bit Manipulation
+  - Bit Test
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - check kth bit
+  - is kth bit set
+  - test bit position
+useCases:
+  - Inspecting feature flags stored in an integer mask
+  - Reusing a single-bit test inside subset or state-compression logic
+  - Distinguishing direct bit inspection from full binary conversion
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: Shifting or masking one bit position is a constant-time operation on the fixed-width integers used by JavaScript bitwise operators.
+interviewSignals:
+  - The prompt gives an integer and a bit index and asks for a boolean answer.
+  - The bit index is counted from the least-significant bit side.
+relatedSlugs:
+  - set-bit
+  - turn-off-the-rightmost-set-bit
+  - binary-count-set-bits
+provenance:
+  - title: "GeeksforGeeks - K-th bit is set or not"
+    href: https://www.geeksforgeeks.org/dsa/check-whether-k-th-bit-set-not/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the smallest reusable bit-inspection question. Interviewers use it to check whether you understand how masks and shifts isolate a single position without converting the whole number into a binary string first.
+
+## Worked Example
+
+`7` is `111` in binary. At zero-based position `2`, the bit is `1`, so the answer is `true`. By contrast, `5` is `101`, so position `1` is `0` and the answer is `false`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function kThBitIsSetOrNot(value, bitPosition) {
+  if (!Number.isInteger(value) || value < 0 || !Number.isInteger(bitPosition) || bitPosition < 0) {
+    throw new TypeError('Value must be a non-negative integer and bitPosition must be a non-negative integer');
+  }
+
+  return ((value >> bitPosition) & 1) === 1;
+}
+```
+
+```ts
+export function kThBitIsSetOrNot(value: number, bitPosition: number): boolean {
+  if (!Number.isInteger(value) || value < 0 || !Number.isInteger(bitPosition) || bitPosition < 0) {
+    throw new TypeError('Value must be a non-negative integer and bitPosition must be a non-negative integer');
+  }
+
+  return ((value >> bitPosition) & 1) === 1;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Rewrite the same test with a left-shifted mask instead of a right shift.
+- Adjust the function if the interviewer uses one-based bit indexing.
+- Use the same logic to set, clear, or toggle the chosen bit.
+
+## Common Pitfalls
+
+- Mixing up zero-based and one-based bit positions.
+- Forgetting that negative values and bitwise coercion interact awkwardly in JavaScript.
+- Converting the whole integer to a binary string for a one-bit check.

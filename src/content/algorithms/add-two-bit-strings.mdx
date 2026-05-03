@@ -1,0 +1,124 @@
+---
+title: Add two bit strings
+slug: add-two-bit-strings
+category: Bit Manipulation
+summary: Add two binary strings from right to left while carrying into the next column, then trim leading zeros from the result.
+description: Add two bit strings is the binary-string addition problem where each digit pair and carry are combined exactly like grade-school addition, but in base two.
+dataStructures:
+  - String
+  - Array
+techniques:
+  - Carry Propagation
+  - String Processing
+  - Bit Manipulation
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - add binary strings
+  - binary string sum
+  - binary addition with carry
+useCases:
+  - Adding binary values too large to convert safely into native integers
+  - Practicing carry logic in base two instead of base ten
+  - Normalizing binary input that may contain leading zeros
+complexity:
+  time: O(max(m, n))
+  space: O(max(m, n))
+  notes: The result is built one binary digit at a time from right to left, and one final carry may extend the output by a single extra digit.
+interviewSignals:
+  - The inputs are binary strings rather than integers.
+  - The prompt warns about leading zeros or implies you should not convert the whole strings to numbers first.
+relatedSlugs:
+  - add-two-numbers
+  - binary-equivalent
+  - count-possible-decodings-of-a-given-digit-sequence
+provenance:
+  - title: "GeeksforGeeks - Add two bit strings"
+    href: https://www.geeksforgeeks.org/dsa/add-two-bit-strings/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the binary-string version of column addition. Interviewers use it to check carry handling, pointer movement from right to left, and whether you can avoid unnecessary numeric conversion.
+
+## Worked Example
+
+Adding `"1101"` and `"111"` gives `"10100"`. The digit-wise sum is `13 + 7 = 20`, and `20` in binary is `10100`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function addTwoBitStrings(left, right) {
+  if (typeof left !== 'string' || typeof right !== 'string' || /[^01]/.test(left) || /[^01]/.test(right)) {
+    throw new TypeError('Inputs must be binary strings');
+  }
+
+  const normalizedLeft = left.replace(/^0+(?!$)/, '');
+  const normalizedRight = right.replace(/^0+(?!$)/, '');
+  let leftIndex = normalizedLeft.length - 1;
+  let rightIndex = normalizedRight.length - 1;
+  let carry = 0;
+  const digits = [];
+
+  while (leftIndex >= 0 || rightIndex >= 0 || carry > 0) {
+    const leftDigit = leftIndex >= 0 ? normalizedLeft.charCodeAt(leftIndex) - 48 : 0;
+    const rightDigit = rightIndex >= 0 ? normalizedRight.charCodeAt(rightIndex) - 48 : 0;
+    const sum = leftDigit + rightDigit + carry;
+
+    digits.push(String(sum & 1));
+    carry = sum >> 1;
+    leftIndex -= 1;
+    rightIndex -= 1;
+  }
+
+  return digits.reverse().join('').replace(/^0+(?!$)/, '');
+}
+```
+
+```ts
+export function addTwoBitStrings(left: string, right: string): string {
+  if (typeof left !== 'string' || typeof right !== 'string' || /[^01]/.test(left) || /[^01]/.test(right)) {
+    throw new TypeError('Inputs must be binary strings');
+  }
+
+  const normalizedLeft = left.replace(/^0+(?!$)/, '');
+  const normalizedRight = right.replace(/^0+(?!$)/, '');
+  let leftIndex = normalizedLeft.length - 1;
+  let rightIndex = normalizedRight.length - 1;
+  let carry = 0;
+  const digits: string[] = [];
+
+  while (leftIndex >= 0 || rightIndex >= 0 || carry > 0) {
+    const leftDigit = leftIndex >= 0 ? normalizedLeft.charCodeAt(leftIndex) - 48 : 0;
+    const rightDigit = rightIndex >= 0 ? normalizedRight.charCodeAt(rightIndex) - 48 : 0;
+    const sum = leftDigit + rightDigit + carry;
+
+    digits.push(String(sum & 1));
+    carry = sum >> 1;
+    leftIndex -= 1;
+    rightIndex -= 1;
+  }
+
+  return digits.reverse().join('').replace(/^0+(?!$)/, '');
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Extend the same carry logic to base-`k` strings instead of base two.
+- Explain why converting the entire strings to integers can be unsafe for long inputs.
+- Compare this with the linked-list variant in `Add Two Numbers`.
+
+## Common Pitfalls
+
+- Forgetting to keep a final carry digit after both strings are exhausted.
+- Returning leading zeros even though the prompt asks to trim them.
+- Converting long binary strings into `Number` values and losing precision.
