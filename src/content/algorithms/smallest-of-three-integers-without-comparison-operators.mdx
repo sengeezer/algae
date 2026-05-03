@@ -1,0 +1,119 @@
+---
+title: Smallest of three integers without comparison operators
+slug: smallest-of-three-integers-without-comparison-operators
+category: Bit Manipulation
+summary: Find the minimum of three signed 32-bit integers by reusing a branch-light two-number minimum based on the sign bit of their difference.
+description: Smallest of three integers without comparison operators is the chained bitwise-min problem where sign extraction from pairwise differences lets you avoid ordinary comparison operators.
+dataStructures:
+  - Number
+techniques:
+  - Bit Manipulation
+  - Branchless Minimum
+  - Sign Extraction
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - smallest of three without comparisons
+  - min of three branchless
+  - bitwise minimum of three
+useCases:
+  - Handling operator-ban interview prompts about minimum selection
+  - Extending a branchless two-number primitive to larger groups
+  - Demonstrating how sign bits can drive conditional-looking logic
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: This entry models signed 32-bit inputs explicitly and uses `BigInt` for the intermediate difference so the branchless sign-mask trick stays correct at the range extremes in JavaScript.
+interviewSignals:
+  - The prompt bans comparison operators when finding a minimum.
+  - The expected answer reduces the three-number case to a reusable two-number primitive.
+relatedSlugs:
+  - compute-the-minimum-or-maximum-of-two-integers-without-branching
+  - detect-if-two-integers-have-opposite-signs
+  - signum
+provenance:
+  - title: "GeeksforGeeks - Smallest of three integers without comparison operators"
+    href: https://www.geeksforgeeks.org/dsa/smallest-of-three-integers-without-comparison-operators/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the multi-input extension of branchless minimum tricks. The interview value is less about production style and more about showing that you can turn a sign-bit observation into a reusable primitive.
+
+## Worked Example
+
+For `2`, `5`, and `7`, the smallest value is `2`, so the function returns `2`. For `14`, `13`, and `10`, it returns `10`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function smallestOfThreeIntegersWithoutComparisonOperators(first, second, third) {
+  if (![first, second, third].every(Number.isInteger)) {
+    throw new TypeError('Inputs must be integers');
+  }
+
+  const minInt = -(2 ** 31);
+  const maxInt = 2 ** 31 - 1;
+  if ([first, second, third].some((value) => value < minInt || value > maxInt)) {
+    throw new RangeError('Inputs must fit in a signed 32-bit integer');
+  }
+
+  function bitwiseMin(left, right) {
+    const leftValue = BigInt(left);
+    const rightValue = BigInt(right);
+    const difference = leftValue - rightValue;
+    const signMask = difference >> 63n;
+    return Number(rightValue + (difference & signMask));
+  }
+
+  return bitwiseMin(first, bitwiseMin(second, third));
+}
+```
+
+```ts
+export function smallestOfThreeIntegersWithoutComparisonOperators(
+  first: number,
+  second: number,
+  third: number,
+): number {
+  if (![first, second, third].every(Number.isInteger)) {
+    throw new TypeError('Inputs must be integers');
+  }
+
+  const minInt = -(2 ** 31);
+  const maxInt = 2 ** 31 - 1;
+  if ([first, second, third].some((value) => value < minInt || value > maxInt)) {
+    throw new RangeError('Inputs must fit in a signed 32-bit integer');
+  }
+
+  function bitwiseMin(left: number, right: number): number {
+    const leftValue = BigInt(left);
+    const rightValue = BigInt(right);
+    const difference = leftValue - rightValue;
+    const signMask = difference >> 63n;
+    return Number(rightValue + (difference & signMask));
+  }
+
+  return bitwiseMin(first, bitwiseMin(second, third));
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Extend the same idea to the largest of three numbers.
+- Explain when the subtraction-based sign extraction can overflow in fixed-width languages.
+- Compare this branchless trick with a normal `Math.min` implementation.
+
+## Common Pitfalls
+
+- Forgetting that subtraction-based sign extraction can break at signed 32-bit extremes if the intermediate difference is allowed to overflow.
+- Solving only the two-number case and not composing it correctly for three inputs.
+- Treating this interview trick as universally clearer than an ordinary comparison-based minimum.

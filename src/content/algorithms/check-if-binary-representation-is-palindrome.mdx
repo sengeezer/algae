@@ -1,0 +1,131 @@
+---
+title: Check if binary representation is palindrome
+slug: check-if-binary-representation-is-palindrome
+category: Bit Manipulation
+summary: Determine whether a number's binary form reads the same forward and backward by comparing mirrored bit positions.
+description: Check if binary representation is palindrome is the mirrored-bit test where the least-significant and most-significant live bits are compared inward until a mismatch appears or the scan converges.
+dataStructures:
+  - Bitmask
+  - Number
+techniques:
+  - Bit Manipulation
+  - Two-Pointer Scan
+  - Symmetry Check
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - binary palindrome check
+  - palindrome binary representation
+  - mirrored bit pattern test
+useCases:
+  - Testing whether a bit pattern is symmetric without converting to a string
+  - Practicing mirrored comparisons in a fixed binary representation
+  - Distinguishing raw binary structure from decimal palindrome checks
+complexity:
+  time: O(log n)
+  space: O(1)
+  notes: The loop compares one low bit and one high bit per step, and the reference implementation constrains inputs to unsigned 32-bit integers so the JavaScript bitwise operators stay faithful to the intended binary model.
+interviewSignals:
+  - The prompt asks about the binary representation rather than decimal digits.
+  - The expected answer compares mirrored bit positions or reverses the live binary suffix.
+relatedSlugs:
+  - program-to-find-parity
+  - gray-codes
+  - binary-equivalent
+provenance:
+  - title: "GeeksforGeeks - Check if binary representation is palindrome"
+    href: https://www.geeksforgeeks.org/dsa/check-binary-representation-number-palindrome/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This question checks whether you can reason about the live bit pattern directly instead of treating binary as just another display format. The clean solution mirrors a string palindrome check, but it does so with shifts and masks.
+
+## Worked Example
+
+`9` is `1001` in binary, which reads the same from both ends, so the function returns `true`. `10` is `1010`, which is not symmetric, so the function returns `false`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function checkIfBinaryRepresentationIsPalindrome(value) {
+  if (!Number.isInteger(value) || value < 0 || value > 0xffffffff) {
+    throw new RangeError('Value must be an unsigned 32-bit integer');
+  }
+
+  const number = value >>> 0;
+
+  if (number === 0) {
+    return true;
+  }
+
+  let left = 0;
+  let right = Math.floor(Math.log2(number));
+
+  while (left < right) {
+    const leftBit = (number >>> left) & 1;
+    const rightBit = (number >>> right) & 1;
+
+    if (leftBit !== rightBit) {
+      return false;
+    }
+
+    left += 1;
+    right -= 1;
+  }
+
+  return true;
+}
+```
+
+```ts
+export function checkIfBinaryRepresentationIsPalindrome(value: number): boolean {
+  if (!Number.isInteger(value) || value < 0 || value > 0xffffffff) {
+    throw new RangeError('Value must be an unsigned 32-bit integer');
+  }
+
+  const number = value >>> 0;
+
+  if (number === 0) {
+    return true;
+  }
+
+  let left = 0;
+  let right = Math.floor(Math.log2(number));
+
+  while (left < right) {
+    const leftBit = (number >>> left) & 1;
+    const rightBit = (number >>> right) & 1;
+
+    if (leftBit !== rightBit) {
+      return false;
+    }
+
+    left += 1;
+    right -= 1;
+  }
+
+  return true;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Implement the same check by reversing the live binary suffix and comparing it with the original number.
+- Explain why leading zeros are not part of the palindrome check here.
+- Adapt the idea to decimal digits or fixed-width bitstrings.
+
+## Common Pitfalls
+
+- Treating leading zeros as significant when the prompt refers to the usual binary representation.
+- Comparing decimal digits instead of binary bits.
+- Forgetting that `0` should count as a binary palindrome here.
+- Letting JavaScript bitwise coercion silently truncate values outside the unsigned 32-bit range.

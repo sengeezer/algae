@@ -1,0 +1,104 @@
+---
+title: Program to find parity
+slug: program-to-find-parity
+category: Bit Manipulation
+summary: Return whether an integer has odd or even parity by toggling a parity bit while clearing one set bit at a time.
+description: Program to find parity is the bit-count parity problem where only the parity of the number of `1` bits matters, not the full popcount itself.
+dataStructures:
+  - Bitmask
+  - Number
+techniques:
+  - Bit Manipulation
+  - Parity Computation
+  - Brian Kernighan Trick
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - compute bit parity
+  - odd even parity of set bits
+  - parity of binary representation
+useCases:
+  - Building error-detection and checksum style helpers
+  - Reducing a full set-bit count to a single odd-versus-even decision
+  - Reusing lowest-set-bit clearing in a different aggregate computation
+complexity:
+  time: O(k)
+  space: O(1)
+  notes: The loop runs once per set bit because each iteration clears exactly one `1` and flips the parity state.
+interviewSignals:
+  - The prompt asks whether the number of set bits is odd or even.
+  - A full popcount is unnecessary because only the parity of that count matters.
+relatedSlugs:
+  - binary-count-set-bits
+  - is-even
+  - turn-off-the-rightmost-set-bit
+provenance:
+  - title: "GeeksforGeeks - Program to find parity"
+    href: https://www.geeksforgeeks.org/dsa/program-to-find-parity/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the streamlined version of bit counting. Instead of caring how many set bits exist, you only care whether that count is odd or even, which means a single toggled state is enough.
+
+## Worked Example
+
+`13` is `1101` in binary, which contains three `1` bits. Three is odd, so the function returns `'odd'`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function programToFindParity(value) {
+  if (!Number.isInteger(value) || value < 0 || value > 0xffffffff) {
+    throw new RangeError('Value must be an unsigned 32-bit integer');
+  }
+
+  let number = value >>> 0;
+  let oddParity = false;
+
+  while (number !== 0) {
+    oddParity = !oddParity;
+    number &= number - 1;
+  }
+
+  return oddParity ? 'odd' : 'even';
+}
+```
+
+```ts
+export function programToFindParity(value: number): 'odd' | 'even' {
+  if (!Number.isInteger(value) || value < 0 || value > 0xffffffff) {
+    throw new RangeError('Value must be an unsigned 32-bit integer');
+  }
+
+  let number = value >>> 0;
+  let oddParity = false;
+
+  while (number !== 0) {
+    oddParity = !oddParity;
+    number &= number - 1;
+  }
+
+  return oddParity ? 'odd' : 'even';
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return `1` and `0` instead of string labels for odd and even parity.
+- Compare the toggling approach with computing the full popcount and taking `% 2`.
+- Use nibble lookup tables to reduce the number of arithmetic steps further.
+
+## Common Pitfalls
+
+- Confusing parity of the value with parity of its count of set bits.
+- Counting every bit position even though only set bits need to drive the loop.
+- Returning a boolean without clarifying how it maps to odd versus even parity.

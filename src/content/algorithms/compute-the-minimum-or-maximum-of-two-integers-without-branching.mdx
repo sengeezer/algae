@@ -1,0 +1,109 @@
+---
+title: Compute the minimum or maximum of two integers without branching
+slug: compute-the-minimum-or-maximum-of-two-integers-without-branching
+category: Bit Manipulation
+summary: Compute both the minimum and maximum of two signed 32-bit integers with bitwise formulas instead of branch-heavy conditionals.
+description: Compute the minimum or maximum of two integers without branching is the branchless selection trick where XOR or sign-bit masks choose between two values without an explicit `if`.
+dataStructures:
+  - Number
+  - Tuple
+techniques:
+  - Bit Manipulation
+  - Branchless Selection
+  - XOR Masking
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - min max without branching
+  - branchless min max
+  - bitwise min max
+useCases:
+  - Exploring conditional-free selection on fixed-width integers
+  - Comparing branchless formulas with ordinary minimum and maximum helpers
+  - Reusing the same mask logic in performance-oriented or operator-ban prompts
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: This entry models signed 32-bit integer behavior explicitly because the formulas rely on fixed-width bitwise coercion in JavaScript.
+interviewSignals:
+  - The prompt asks for min or max while discouraging `if`, ternary logic, or branching.
+  - The answer is expected to derive both values from the same mask idea.
+relatedSlugs:
+  - smallest-of-three-integers-without-comparison-operators
+  - detect-if-two-integers-have-opposite-signs
+  - check-for-integer-overflow
+provenance:
+  - title: "GeeksforGeeks - Compute the minimum or maximum of two integers without branching"
+    href: https://www.geeksforgeeks.org/dsa/compute-the-minimum-or-maximum-max-of-two-integers-without-branching/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the compact version of branchless selection. The interesting part is not replacing an `if` for its own sake; it is showing that a boolean-style mask can select a value algebraically.
+
+## Worked Example
+
+For `15` and `6`, the minimum is `6` and the maximum is `15`, so the function returns `[6, 15]`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function computeTheMinimumOrMaximumOfTwoIntegersWithoutBranching(left, right) {
+  if (!Number.isInteger(left) || !Number.isInteger(right)) {
+    throw new TypeError('Inputs must be integers');
+  }
+
+  const minInt = -(2 ** 31);
+  const maxInt = 2 ** 31 - 1;
+  if ([left, right].some((value) => value < minInt || value > maxInt)) {
+    throw new RangeError('Inputs must fit in a signed 32-bit integer');
+  }
+
+  const minimum = (right ^ ((left ^ right) & -Number(left < right))) | 0;
+  const maximum = (left ^ ((left ^ right) & -Number(left < right))) | 0;
+
+  return [minimum, maximum];
+}
+```
+
+```ts
+export function computeTheMinimumOrMaximumOfTwoIntegersWithoutBranching(
+  left: number,
+  right: number,
+): [number, number] {
+  if (!Number.isInteger(left) || !Number.isInteger(right)) {
+    throw new TypeError('Inputs must be integers');
+  }
+
+  const minInt = -(2 ** 31);
+  const maxInt = 2 ** 31 - 1;
+  if ([left, right].some((value) => value < minInt || value > maxInt)) {
+    throw new RangeError('Inputs must fit in a signed 32-bit integer');
+  }
+
+  const minimum = (right ^ ((left ^ right) & -Number(left < right))) | 0;
+  const maximum = (left ^ ((left ^ right) & -Number(left < right))) | 0;
+
+  return [minimum, maximum];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Rewrite the formulas using subtraction and sign shifts instead of XOR masks.
+- Explain why branchless tricks do not always outperform ordinary comparisons on modern runtimes.
+- Extend the same mask idea to clamp a value into a range.
+
+## Common Pitfalls
+
+- Returning only the minimum when the source prompt asks for both values.
+- Ignoring the fixed-width integer model behind the bitwise formulas.
+- Assuming “without branching” automatically means “faster” in JavaScript.
