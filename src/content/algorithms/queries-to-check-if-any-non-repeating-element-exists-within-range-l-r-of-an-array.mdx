@@ -1,0 +1,389 @@
+---
+title: Queries to Check If Any Non-Repeating Element Exists Within Range [L, R] of an Array
+slug: queries-to-check-if-any-non-repeating-element-exists-within-range-l-r-of-an-array
+category: Range Queries
+summary: Track previous and next occurrences, then use a merge sort tree to decide whether a queried subarray contains any value with frequency exactly one.
+description: Queries to Check If Any Non-Repeating Element Exists Within Range [L, R] of an Array turns uniqueness inside a subarray into an occurrence-boundary search over a merge sort tree.
+dataStructures:
+  - Array
+  - Merge Sort Tree
+  - Hash Map
+techniques:
+  - Range Queries
+  - Occurrence Tracking
+  - Binary Search
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - subarray has unique element query
+  - range query for any frequency-one value
+  - merge sort tree uniqueness query
+useCases:
+  - Answering many subarray uniqueness checks without rescanning each interval
+  - Combining previous and next occurrence metadata with range queries
+  - Practicing merge sort tree design beyond order statistics
+complexity:
+  time: O(n log n) build, O(log^2 n) per query
+  space: O(n log n)
+  notes: Each node stores entries sorted by previous occurrence together with prefix maxima of next occurrence, so a query reduces to a binary search inside every visited node.
+interviewSignals:
+  - The prompt asks only whether a qualifying element exists, not which one it is.
+  - There are many range queries, making per-query frequency maps too slow.
+  - The condition for uniqueness can be restated using previous and next occurrences.
+relatedSlugs:
+  - segment-tree
+  - unique-element-in-an-array
+provenance:
+  - title: "GeeksforGeeks - Queries to check if any non-repeating element exists within range [L, R] of an Array"
+    href: https://www.geeksforgeeks.org/dsa/queries-to-check-if-any-non-repeating-element-exists-within-range-l-r-of-an-array/
+    kind: Implementation
+  - title: cp-algorithms - Segment Tree
+    href: https://cp-algorithms.com/data_structures/segment_tree.html
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a range-query problem that looks like frequency counting at first, but repeated maps over every interval are too slow. The trick is to notice that an index is unique inside `[L, R]` exactly when its previous occurrence is before `L` and its next occurrence is after `R`.
+
+## Worked Example
+
+For `[1, 2, 1, 2, 3, 4]`, the interval `[0, 3]` has no non-repeating element, but `[0, 4]` does because the value `3` appears once. The merge sort tree answers both checks by searching occurrence metadata rather than recomputing frequencies.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class NonRepeatingElementRangeQuery {
+  constructor(values) {
+    if (!Array.isArray(values) || values.length === 0) {
+      throw new RangeError('Values must be a non-empty array');
+    }
+
+    this.size = values.length;
+    this.tree = new Array(this.size * 4);
+    const entries = this.buildOccurrenceEntries(values);
+    this.build(entries, 1, 0, this.size - 1);
+  }
+
+  buildOccurrenceEntries(values) {
+    const previous = new Array(values.length).fill(-1);
+    const next = new Array(values.length).fill(values.length);
+    const lastSeen = new Map();
+
+    for (let index = 0; index < values.length; index += 1) {
+      if (lastSeen.has(values[index])) {
+        previous[index] = lastSeen.get(values[index]);
+      }
+
+      lastSeen.set(values[index], index);
+    }
+
+    lastSeen.clear();
+    for (let index = values.length - 1; index >= 0; index -= 1) {
+      if (lastSeen.has(values[index])) {
+        next[index] = lastSeen.get(values[index]);
+      }
+
+      lastSeen.set(values[index], index);
+    }
+
+    return previous.map((prev, index) => ({ prev, next: next[index] }));
+  }
+
+  build(entries, node, left, right) {
+    if (left === right) {
+      this.tree[node] = this.makeNode([entries[left]]);
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    this.build(entries, node * 2, left, mid);
+    this.build(entries, node * 2 + 1, mid + 1, right);
+    this.tree[node] = this.makeNode(this.mergeEntries(this.tree[node * 2].entries, this.tree[node * 2 + 1].entries));
+  }
+
+  makeNode(entries) {
+    const prevs = new Array(entries.length);
+    const prefixMaxNext = new Array(entries.length);
+    let runningMaximum = -Infinity;
+
+    for (let index = 0; index < entries.length; index += 1) {
+      prevs[index] = entries[index].prev;
+      runningMaximum = Math.max(runningMaximum, entries[index].next);
+      prefixMaxNext[index] = runningMaximum;
+    }
+
+    return { entries, prevs, prefixMaxNext };
+  }
+
+  mergeEntries(leftEntries, rightEntries) {
+    const merged = [];
+    let leftIndex = 0;
+    let rightIndex = 0;
+
+    while (leftIndex < leftEntries.length && rightIndex < rightEntries.length) {
+      if (leftEntries[leftIndex].prev <= rightEntries[rightIndex].prev) {
+        merged.push(leftEntries[leftIndex]);
+        leftIndex += 1;
+      } else {
+        merged.push(rightEntries[rightIndex]);
+        rightIndex += 1;
+      }
+    }
+
+    while (leftIndex < leftEntries.length) {
+      merged.push(leftEntries[leftIndex]);
+      leftIndex += 1;
+    }
+
+    while (rightIndex < rightEntries.length) {
+      merged.push(rightEntries[rightIndex]);
+      rightIndex += 1;
+    }
+
+    return merged;
+  }
+
+  hasNonRepeating(queryLeft, queryRight) {
+    this.validateRange(queryLeft, queryRight);
+    return this.queryNode(1, 0, this.size - 1, queryLeft, queryRight);
+  }
+
+  queryNode(node, left, right, queryLeft, queryRight) {
+    if (queryRight < left || right < queryLeft) {
+      return false;
+    }
+
+    if (queryLeft <= left && right <= queryRight) {
+      return this.nodeHasCandidate(this.tree[node], queryLeft, queryRight);
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    return (
+      this.queryNode(node * 2, left, mid, queryLeft, queryRight)
+      || this.queryNode(node * 2 + 1, mid + 1, right, queryLeft, queryRight)
+    );
+  }
+
+  nodeHasCandidate(node, queryLeft, queryRight) {
+    const candidateCount = this.upperBound(node.prevs, queryLeft - 1);
+    if (candidateCount === 0) {
+      return false;
+    }
+
+    return node.prefixMaxNext[candidateCount - 1] > queryRight;
+  }
+
+  upperBound(values, target) {
+    let low = 0;
+    let high = values.length;
+
+    while (low < high) {
+      const mid = Math.floor((low + high) / 2);
+      if (values[mid] <= target) {
+        low = mid + 1;
+      } else {
+        high = mid;
+      }
+    }
+
+    return low;
+  }
+
+  validateRange(queryLeft, queryRight) {
+    if (
+      !Number.isInteger(queryLeft)
+      || !Number.isInteger(queryRight)
+      || queryLeft < 0
+      || queryRight < queryLeft
+      || queryRight >= this.size
+    ) {
+      throw new RangeError('Query range is invalid');
+    }
+  }
+}
+```
+
+```ts
+interface OccurrenceEntry {
+  prev: number;
+  next: number;
+}
+
+interface MergeSortTreeNode {
+  entries: OccurrenceEntry[];
+  prevs: number[];
+  prefixMaxNext: number[];
+}
+
+export class NonRepeatingElementRangeQuery {
+  private readonly size: number;
+  private readonly tree: MergeSortTreeNode[];
+
+  constructor(values: number[]) {
+    if (values.length === 0) {
+      throw new RangeError('Values must be a non-empty array');
+    }
+
+    this.size = values.length;
+    this.tree = new Array<MergeSortTreeNode>(this.size * 4);
+    const entries = this.buildOccurrenceEntries(values);
+    this.build(entries, 1, 0, this.size - 1);
+  }
+
+  hasNonRepeating(queryLeft: number, queryRight: number): boolean {
+    this.validateRange(queryLeft, queryRight);
+    return this.queryNode(1, 0, this.size - 1, queryLeft, queryRight);
+  }
+
+  private buildOccurrenceEntries(values: number[]): OccurrenceEntry[] {
+    const previous = new Array<number>(values.length).fill(-1);
+    const next = new Array<number>(values.length).fill(values.length);
+    const lastSeen = new Map<number, number>();
+
+    for (let index = 0; index < values.length; index += 1) {
+      const prior = lastSeen.get(values[index]);
+      if (prior !== undefined) {
+        previous[index] = prior;
+      }
+
+      lastSeen.set(values[index], index);
+    }
+
+    lastSeen.clear();
+    for (let index = values.length - 1; index >= 0; index -= 1) {
+      const upcoming = lastSeen.get(values[index]);
+      if (upcoming !== undefined) {
+        next[index] = upcoming;
+      }
+
+      lastSeen.set(values[index], index);
+    }
+
+    return previous.map((prev, index) => ({ prev, next: next[index] }));
+  }
+
+  private build(entries: OccurrenceEntry[], node: number, left: number, right: number): void {
+    if (left === right) {
+      this.tree[node] = this.makeNode([entries[left]]);
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    this.build(entries, node * 2, left, mid);
+    this.build(entries, node * 2 + 1, mid + 1, right);
+    this.tree[node] = this.makeNode(this.mergeEntries(this.tree[node * 2].entries, this.tree[node * 2 + 1].entries));
+  }
+
+  private makeNode(entries: OccurrenceEntry[]): MergeSortTreeNode {
+    const prevs = new Array<number>(entries.length);
+    const prefixMaxNext = new Array<number>(entries.length);
+    let runningMaximum = -Infinity;
+
+    for (let index = 0; index < entries.length; index += 1) {
+      prevs[index] = entries[index].prev;
+      runningMaximum = Math.max(runningMaximum, entries[index].next);
+      prefixMaxNext[index] = runningMaximum;
+    }
+
+    return { entries, prevs, prefixMaxNext };
+  }
+
+  private mergeEntries(leftEntries: OccurrenceEntry[], rightEntries: OccurrenceEntry[]): OccurrenceEntry[] {
+    const merged: OccurrenceEntry[] = [];
+    let leftIndex = 0;
+    let rightIndex = 0;
+
+    while (leftIndex < leftEntries.length && rightIndex < rightEntries.length) {
+      if (leftEntries[leftIndex].prev <= rightEntries[rightIndex].prev) {
+        merged.push(leftEntries[leftIndex]);
+        leftIndex += 1;
+      } else {
+        merged.push(rightEntries[rightIndex]);
+        rightIndex += 1;
+      }
+    }
+
+    while (leftIndex < leftEntries.length) {
+      merged.push(leftEntries[leftIndex]);
+      leftIndex += 1;
+    }
+
+    while (rightIndex < rightEntries.length) {
+      merged.push(rightEntries[rightIndex]);
+      rightIndex += 1;
+    }
+
+    return merged;
+  }
+
+  private queryNode(node: number, left: number, right: number, queryLeft: number, queryRight: number): boolean {
+    if (queryRight < left || right < queryLeft) {
+      return false;
+    }
+
+    if (queryLeft <= left && right <= queryRight) {
+      return this.nodeHasCandidate(this.tree[node], queryLeft, queryRight);
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    return (
+      this.queryNode(node * 2, left, mid, queryLeft, queryRight)
+      || this.queryNode(node * 2 + 1, mid + 1, right, queryLeft, queryRight)
+    );
+  }
+
+  private nodeHasCandidate(node: MergeSortTreeNode, queryLeft: number, queryRight: number): boolean {
+    const candidateCount = this.upperBound(node.prevs, queryLeft - 1);
+    if (candidateCount === 0) {
+      return false;
+    }
+
+    return node.prefixMaxNext[candidateCount - 1] > queryRight;
+  }
+
+  private upperBound(values: number[], target: number): number {
+    let low = 0;
+    let high = values.length;
+
+    while (low < high) {
+      const mid = Math.floor((low + high) / 2);
+      if (values[mid] <= target) {
+        low = mid + 1;
+      } else {
+        high = mid;
+      }
+    }
+
+    return low;
+  }
+
+  private validateRange(queryLeft: number, queryRight: number): void {
+    if (
+      !Number.isInteger(queryLeft)
+      || !Number.isInteger(queryRight)
+      || queryLeft < 0
+      || queryRight < queryLeft
+      || queryRight >= this.size
+    ) {
+      throw new RangeError('Query range is invalid');
+    }
+  }
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Modify the query to return one valid index instead of only a boolean answer.
+- Compare this merge sort tree approach with Mo's algorithm for the same question.
+- Explain why the condition `previous < L` and `next > R` captures frequency one.
+
+## Common Pitfalls
+
+- Mixing 1-based query descriptions from the prompt with 0-based array indices in code.
+- Forgetting to store prefix maxima of next occurrences, which forces a slower scan inside each node.
+- Checking only previous occurrences or only next occurrences when both boundaries matter.

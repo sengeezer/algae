@@ -1,0 +1,222 @@
+---
+title: Iterative Segment Tree
+slug: iterative-segment-tree
+category: Range Queries
+summary: Flatten a segment tree into a size-2n array so range maxima and point updates stay logarithmic without recursion.
+description: Iterative Segment Tree is the bottom-up range-query structure where leaves live in the second half of an array and parents are maintained by climbing upward.
+dataStructures:
+  - Array
+techniques:
+  - Range Queries
+  - Bottom-Up Construction
+  - Point Update
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - bottom-up segment tree
+  - flat segment tree
+  - iterative range maximum tree
+useCases:
+  - Answering range maximum queries with frequent point updates
+  - Avoiding recursion depth concerns in segment tree implementations
+  - Using a cache-friendly layout for interval aggregation
+complexity:
+  time: O(log n)
+  space: O(n)
+  notes: The flat representation builds in linear time and updates or queries only the ancestor chain and the overlapping interval boundaries.
+interviewSignals:
+  - The interviewer asks for a non-recursive segment tree implementation.
+  - Range queries and point updates are both required.
+  - The combine operation is associative, such as max, min, or sum.
+relatedSlugs:
+  - segment-tree
+  - fenwick-tree
+provenance:
+  - title: "GeeksforGeeks - Iterative Segment Tree (Range Maximum Query with Node Update)"
+    href: https://www.geeksforgeeks.org/dsa/iterative-segment-tree-range-maximum-query-with-node-update/
+    kind: Implementation
+  - title: cp-algorithms - Segment Tree
+    href: https://cp-algorithms.com/data_structures/segment_tree.html
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Interviewers sometimes want the segment tree idea without recursive bookkeeping. The iterative layout stores leaves at indices `[n, 2n)` and lets queries walk inward from both ends while updates climb back to the root.
+
+## Worked Example
+
+For `[2, 6, 7, 5, 18, 86, 54, 2]`, querying `[2, 7]` returns `86`. If index `3` is updated from `5` to `90`, a second query over `[2, 6]` returns `90` after only the affected parent chain is recomputed.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class IterativeSegmentTree {
+  constructor(values) {
+    if (!Array.isArray(values) || values.length === 0) {
+      throw new RangeError('Values must be a non-empty array');
+    }
+
+    this.size = values.length;
+    this.tree = new Array(this.size * 2).fill(-Infinity);
+
+    for (let index = 0; index < this.size; index += 1) {
+      this.tree[this.size + index] = values[index];
+    }
+
+    for (let index = this.size - 1; index > 0; index -= 1) {
+      this.tree[index] = Math.max(this.tree[index * 2], this.tree[index * 2 + 1]);
+    }
+  }
+
+  update(index, value) {
+    this.validateIndex(index);
+
+    let position = index + this.size;
+    this.tree[position] = value;
+
+    while (position > 1) {
+      position = Math.floor(position / 2);
+      this.tree[position] = Math.max(this.tree[position * 2], this.tree[position * 2 + 1]);
+    }
+  }
+
+  query(queryLeft, queryRight) {
+    this.validateRange(queryLeft, queryRight);
+
+    let left = queryLeft + this.size;
+    let right = queryRight + this.size;
+    let answer = -Infinity;
+
+    while (left <= right) {
+      if (left % 2 === 1) {
+        answer = Math.max(answer, this.tree[left]);
+        left += 1;
+      }
+
+      if (right % 2 === 0) {
+        answer = Math.max(answer, this.tree[right]);
+        right -= 1;
+      }
+
+      left = Math.floor(left / 2);
+      right = Math.floor(right / 2);
+    }
+
+    return answer;
+  }
+
+  validateIndex(index) {
+    if (!Number.isInteger(index) || index < 0 || index >= this.size) {
+      throw new RangeError('Index is out of bounds');
+    }
+  }
+
+  validateRange(queryLeft, queryRight) {
+    if (
+      !Number.isInteger(queryLeft)
+      || !Number.isInteger(queryRight)
+      || queryLeft < 0
+      || queryRight < queryLeft
+      || queryRight >= this.size
+    ) {
+      throw new RangeError('Query range is invalid');
+    }
+  }
+}
+```
+
+```ts
+export class IterativeSegmentTree {
+  private readonly size: number;
+  private readonly tree: number[];
+
+  constructor(values: number[]) {
+    if (values.length === 0) {
+      throw new RangeError('Values must be a non-empty array');
+    }
+
+    this.size = values.length;
+    this.tree = new Array<number>(this.size * 2).fill(-Infinity);
+
+    for (let index = 0; index < this.size; index += 1) {
+      this.tree[this.size + index] = values[index];
+    }
+
+    for (let index = this.size - 1; index > 0; index -= 1) {
+      this.tree[index] = Math.max(this.tree[index * 2], this.tree[index * 2 + 1]);
+    }
+  }
+
+  update(index: number, value: number): void {
+    this.validateIndex(index);
+
+    let position = index + this.size;
+    this.tree[position] = value;
+
+    while (position > 1) {
+      position = Math.floor(position / 2);
+      this.tree[position] = Math.max(this.tree[position * 2], this.tree[position * 2 + 1]);
+    }
+  }
+
+  query(queryLeft: number, queryRight: number): number {
+    this.validateRange(queryLeft, queryRight);
+
+    let left = queryLeft + this.size;
+    let right = queryRight + this.size;
+    let answer = -Infinity;
+
+    while (left <= right) {
+      if (left % 2 === 1) {
+        answer = Math.max(answer, this.tree[left]);
+        left += 1;
+      }
+
+      if (right % 2 === 0) {
+        answer = Math.max(answer, this.tree[right]);
+        right -= 1;
+      }
+
+      left = Math.floor(left / 2);
+      right = Math.floor(right / 2);
+    }
+
+    return answer;
+  }
+
+  private validateIndex(index: number): void {
+    if (!Number.isInteger(index) || index < 0 || index >= this.size) {
+      throw new RangeError('Index is out of bounds');
+    }
+  }
+
+  private validateRange(queryLeft: number, queryRight: number): void {
+    if (
+      !Number.isInteger(queryLeft)
+      || !Number.isInteger(queryRight)
+      || queryLeft < 0
+      || queryRight < queryLeft
+      || queryRight >= this.size
+    ) {
+      throw new RangeError('Query range is invalid');
+    }
+  }
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Swap `Math.max` for sums, minimums, or bitwise OR and explain what changes.
+- Compare the bottom-up layout with the classic `4n` recursive array layout.
+- Extend the structure to answer half-open ranges `[l, r)` if that is the team's house style.
+
+## Common Pitfalls
+
+- Mixing inclusive ranges with the half-open style used in some iterative templates.
+- Forgetting to rebuild every parent after a point update.
+- Choosing a neutral element that breaks the combine operation.

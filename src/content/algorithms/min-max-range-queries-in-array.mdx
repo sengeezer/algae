@@ -1,0 +1,214 @@
+---
+title: Min-Max Range Queries in Array
+slug: min-max-range-queries-in-array
+category: Range Queries
+summary: Store both interval minima and maxima in each node so a single segment tree query returns both extremes.
+description: Min-Max Range Queries in Array is the dual-aggregate segment tree problem where every combine step carries a minimum and a maximum together.
+dataStructures:
+  - Array
+  - Binary Tree
+techniques:
+  - Range Queries
+  - Dual Aggregation
+  - Segment Tree
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - range min max query
+  - segment tree for minimum and maximum
+  - dual aggregate interval query
+useCases:
+  - Reporting the spread of values inside many intervals
+  - Reusing one tree for multiple associative aggregates
+  - Preparing for richer segment tree nodes that store more than one metric
+complexity:
+  time: O(log n)
+  space: O(n)
+  notes: Each node stores a pair of aggregates, so querying combines only logarithmically many partial answers while preserving both extremes.
+interviewSignals:
+  - The prompt asks for both minimum and maximum inside the same interval.
+  - There are repeated queries over a static or slowly changing array.
+  - Separate scans for min and max would be too slow across many queries.
+relatedSlugs:
+  - segment-tree
+  - iterative-segment-tree
+provenance:
+  - title: "GeeksforGeeks - Min-Max Range Queries in Array"
+    href: https://www.geeksforgeeks.org/dsa/min-max-range-queries-array/
+    kind: Implementation
+  - title: cp-algorithms - Segment Tree
+    href: https://cp-algorithms.com/data_structures/segment_tree.html
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the simplest example of a segment tree node carrying more than one statistic. Once the node stores both `minimum` and `maximum`, the query logic is the same overlap pattern as any other segment tree; only the combine step changes.
+
+## Worked Example
+
+For `[1, 8, 5, 9, 6, 14, 2, 4, 3, 7]`, querying `[3, 7]` returns `{ minimum: 2, maximum: 14 }`. The tree gets that result by merging only the segments that intersect the query range.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class MinMaxRangeQuery {
+  constructor(values) {
+    if (!Array.isArray(values) || values.length === 0) {
+      throw new RangeError('Values must be a non-empty array');
+    }
+
+    this.size = values.length;
+    this.tree = new Array(this.size * 4);
+    this.build(values, 1, 0, this.size - 1);
+  }
+
+  build(values, node, left, right) {
+    if (left === right) {
+      this.tree[node] = { minimum: values[left], maximum: values[left] };
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    this.build(values, node * 2, left, mid);
+    this.build(values, node * 2 + 1, mid + 1, right);
+    this.tree[node] = this.combine(this.tree[node * 2], this.tree[node * 2 + 1]);
+  }
+
+  combine(leftNode, rightNode) {
+    return {
+      minimum: Math.min(leftNode.minimum, rightNode.minimum),
+      maximum: Math.max(leftNode.maximum, rightNode.maximum),
+    };
+  }
+
+  query(queryLeft, queryRight) {
+    this.validateRange(queryLeft, queryRight);
+    return this.queryNode(1, 0, this.size - 1, queryLeft, queryRight);
+  }
+
+  queryNode(node, left, right, queryLeft, queryRight) {
+    if (queryRight < left || right < queryLeft) {
+      return { minimum: Infinity, maximum: -Infinity };
+    }
+
+    if (queryLeft <= left && right <= queryRight) {
+      return this.tree[node];
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    return this.combine(
+      this.queryNode(node * 2, left, mid, queryLeft, queryRight),
+      this.queryNode(node * 2 + 1, mid + 1, right, queryLeft, queryRight),
+    );
+  }
+
+  validateRange(queryLeft, queryRight) {
+    if (
+      !Number.isInteger(queryLeft)
+      || !Number.isInteger(queryRight)
+      || queryLeft < 0
+      || queryRight < queryLeft
+      || queryRight >= this.size
+    ) {
+      throw new RangeError('Query range is invalid');
+    }
+  }
+}
+```
+
+```ts
+interface MinMaxNode {
+  minimum: number;
+  maximum: number;
+}
+
+export class MinMaxRangeQuery {
+  private readonly size: number;
+  private readonly tree: MinMaxNode[];
+
+  constructor(values: number[]) {
+    if (values.length === 0) {
+      throw new RangeError('Values must be a non-empty array');
+    }
+
+    this.size = values.length;
+    this.tree = new Array<MinMaxNode>(this.size * 4);
+    this.build(values, 1, 0, this.size - 1);
+  }
+
+  query(queryLeft: number, queryRight: number): MinMaxNode {
+    this.validateRange(queryLeft, queryRight);
+    return this.queryNode(1, 0, this.size - 1, queryLeft, queryRight);
+  }
+
+  private build(values: number[], node: number, left: number, right: number): void {
+    if (left === right) {
+      this.tree[node] = { minimum: values[left], maximum: values[left] };
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    this.build(values, node * 2, left, mid);
+    this.build(values, node * 2 + 1, mid + 1, right);
+    this.tree[node] = this.combine(this.tree[node * 2], this.tree[node * 2 + 1]);
+  }
+
+  private combine(leftNode: MinMaxNode, rightNode: MinMaxNode): MinMaxNode {
+    return {
+      minimum: Math.min(leftNode.minimum, rightNode.minimum),
+      maximum: Math.max(leftNode.maximum, rightNode.maximum),
+    };
+  }
+
+  private queryNode(
+    node: number,
+    left: number,
+    right: number,
+    queryLeft: number,
+    queryRight: number,
+  ): MinMaxNode {
+    if (queryRight < left || right < queryLeft) {
+      return { minimum: Infinity, maximum: -Infinity };
+    }
+
+    if (queryLeft <= left && right <= queryRight) {
+      return this.tree[node];
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    return this.combine(
+      this.queryNode(node * 2, left, mid, queryLeft, queryRight),
+      this.queryNode(node * 2 + 1, mid + 1, right, queryLeft, queryRight),
+    );
+  }
+
+  private validateRange(queryLeft: number, queryRight: number): void {
+    if (
+      !Number.isInteger(queryLeft)
+      || !Number.isInteger(queryRight)
+      || queryLeft < 0
+      || queryRight < queryLeft
+      || queryRight >= this.size
+    ) {
+      throw new RangeError('Query range is invalid');
+    }
+  }
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Add point updates and explain why only the combine step still matters.
+- Return the spread `maximum - minimum` directly and discuss whether storing both fields is still enough.
+- Compare the segment tree answer with a sparse table when the array is static.
+
+## Common Pitfalls
+
+- Using one neutral element for both min and max even though they need opposite infinities.
+- Combining child nodes incorrectly by mixing minimum from one side with maximum from the other.
+- Forgetting that the dual-aggregate pattern generalizes to many other segment tree problems.

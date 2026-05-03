@@ -1,0 +1,290 @@
+---
+title: Querying Maximum Number of Divisors That a Number in a Given Range Has
+slug: querying-maximum-number-of-divisors-that-a-number-in-a-given-range-has
+category: Range Queries
+summary: Precompute divisor counts with a smallest-prime-factor sieve, then answer maximum-divisor-count interval queries with a max segment tree.
+description: Querying Maximum Number of Divisors That a Number in a Given Range Has combines number-theory preprocessing with range maxima so repeated queries do not need to factor numbers again and again.
+dataStructures:
+  - Array
+  - Segment Tree
+  - Sieve
+techniques:
+  - Range Queries
+  - Number Theory
+  - Prime Factorization
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - range query on divisor counts
+  - maximum divisor count interval query
+  - segment tree over divisor counts
+useCases:
+  - Answering many analytics queries about divisor richness across numeric ranges
+  - Combining heavy preprocessing with fast online interval maxima
+  - Practicing smallest-prime-factor sieves in an applied query setting
+complexity:
+  time: O(limit log log limit) preprocess, O(log limit) per query
+  space: O(limit)
+  notes: The sieve supplies smallest prime factors for every value, divisor counts are derived once, and the segment tree then answers range maxima in logarithmic time.
+interviewSignals:
+  - Many queries ask for a range summary over arithmetic properties of integers.
+  - Factoring every value per query is obviously too slow.
+  - The result is the maximum divisor count, not necessarily the number that attains it.
+relatedSlugs:
+  - segment-tree
+  - aliquot-sum
+provenance:
+  - title: "GeeksforGeeks - Querying maximum number of divisors that a number in a given range has"
+    href: https://www.geeksforgeeks.org/dsa/querying-maximum-number-divisors-number-given-range/
+    kind: Implementation
+  - title: cp-algorithms - Sieve of Eratosthenes
+    href: https://cp-algorithms.com/algebra/sieve-of-eratosthenes.html
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a good hybrid problem when interviewers want both preprocessing and fast online queries. Once divisor counts are computed for every number up to a limit, the rest is just a maximum-range query over a static array.
+
+## Worked Example
+
+In `[1, 10]`, the largest divisor count is `4` because the numbers `6`, `8`, and `10` each have four divisors. In `[10, 48]`, the maximum becomes `10`, and a segment tree can return that without refactoring every number in the range.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class MaximumDivisorCountQuery {
+  constructor(limit) {
+    if (!Number.isInteger(limit) || limit < 1) {
+      throw new RangeError('Limit must be a positive integer');
+    }
+
+    this.limit = limit;
+    const smallestPrimeFactor = this.buildSmallestPrimeFactor(limit);
+    this.divisorCounts = this.buildDivisorCounts(limit, smallestPrimeFactor);
+    this.size = limit;
+    this.tree = new Array(this.size * 2).fill(0);
+
+    for (let value = 1; value <= limit; value += 1) {
+      this.tree[this.size + value - 1] = this.divisorCounts[value];
+    }
+
+    for (let index = this.size - 1; index > 0; index -= 1) {
+      this.tree[index] = Math.max(this.tree[index * 2], this.tree[index * 2 + 1]);
+    }
+  }
+
+  buildSmallestPrimeFactor(limit) {
+    const smallestPrimeFactor = new Array(limit + 1).fill(0);
+
+    for (let value = 2; value <= limit; value += 1) {
+      if (smallestPrimeFactor[value] !== 0) {
+        continue;
+      }
+
+      smallestPrimeFactor[value] = value;
+      if (value <= Math.floor(limit / value)) {
+        for (let multiple = value * value; multiple <= limit; multiple += value) {
+          if (smallestPrimeFactor[multiple] === 0) {
+            smallestPrimeFactor[multiple] = value;
+          }
+        }
+      }
+    }
+
+    return smallestPrimeFactor;
+  }
+
+  buildDivisorCounts(limit, smallestPrimeFactor) {
+    const divisorCounts = new Array(limit + 1).fill(0);
+    divisorCounts[1] = 1;
+
+    for (let value = 2; value <= limit; value += 1) {
+      let remaining = value;
+      let total = 1;
+
+      while (remaining > 1) {
+        const prime = smallestPrimeFactor[remaining];
+        let exponent = 0;
+
+        while (remaining % prime === 0) {
+          remaining /= prime;
+          exponent += 1;
+        }
+
+        total *= exponent + 1;
+      }
+
+      divisorCounts[value] = total;
+    }
+
+    return divisorCounts;
+  }
+
+  query(queryLeft, queryRight) {
+    this.validateRange(queryLeft, queryRight);
+
+    let left = queryLeft - 1 + this.size;
+    let right = queryRight - 1 + this.size;
+    let answer = 0;
+
+    while (left <= right) {
+      if (left % 2 === 1) {
+        answer = Math.max(answer, this.tree[left]);
+        left += 1;
+      }
+
+      if (right % 2 === 0) {
+        answer = Math.max(answer, this.tree[right]);
+        right -= 1;
+      }
+
+      left = Math.floor(left / 2);
+      right = Math.floor(right / 2);
+    }
+
+    return answer;
+  }
+
+  validateRange(queryLeft, queryRight) {
+    if (
+      !Number.isInteger(queryLeft)
+      || !Number.isInteger(queryRight)
+      || queryLeft < 1
+      || queryRight < queryLeft
+      || queryRight > this.limit
+    ) {
+      throw new RangeError('Query range is invalid');
+    }
+  }
+}
+```
+
+```ts
+export class MaximumDivisorCountQuery {
+  private readonly limit: number;
+  private readonly divisorCounts: number[];
+  private readonly size: number;
+  private readonly tree: number[];
+
+  constructor(limit: number) {
+    if (!Number.isInteger(limit) || limit < 1) {
+      throw new RangeError('Limit must be a positive integer');
+    }
+
+    this.limit = limit;
+    const smallestPrimeFactor = this.buildSmallestPrimeFactor(limit);
+    this.divisorCounts = this.buildDivisorCounts(limit, smallestPrimeFactor);
+    this.size = limit;
+    this.tree = new Array<number>(this.size * 2).fill(0);
+
+    for (let value = 1; value <= limit; value += 1) {
+      this.tree[this.size + value - 1] = this.divisorCounts[value];
+    }
+
+    for (let index = this.size - 1; index > 0; index -= 1) {
+      this.tree[index] = Math.max(this.tree[index * 2], this.tree[index * 2 + 1]);
+    }
+  }
+
+  query(queryLeft: number, queryRight: number): number {
+    this.validateRange(queryLeft, queryRight);
+
+    let left = queryLeft - 1 + this.size;
+    let right = queryRight - 1 + this.size;
+    let answer = 0;
+
+    while (left <= right) {
+      if (left % 2 === 1) {
+        answer = Math.max(answer, this.tree[left]);
+        left += 1;
+      }
+
+      if (right % 2 === 0) {
+        answer = Math.max(answer, this.tree[right]);
+        right -= 1;
+      }
+
+      left = Math.floor(left / 2);
+      right = Math.floor(right / 2);
+    }
+
+    return answer;
+  }
+
+  private buildSmallestPrimeFactor(limit: number): number[] {
+    const smallestPrimeFactor = new Array<number>(limit + 1).fill(0);
+
+    for (let value = 2; value <= limit; value += 1) {
+      if (smallestPrimeFactor[value] !== 0) {
+        continue;
+      }
+
+      smallestPrimeFactor[value] = value;
+      if (value <= Math.floor(limit / value)) {
+        for (let multiple = value * value; multiple <= limit; multiple += value) {
+          if (smallestPrimeFactor[multiple] === 0) {
+            smallestPrimeFactor[multiple] = value;
+          }
+        }
+      }
+    }
+
+    return smallestPrimeFactor;
+  }
+
+  private buildDivisorCounts(limit: number, smallestPrimeFactor: number[]): number[] {
+    const divisorCounts = new Array<number>(limit + 1).fill(0);
+    divisorCounts[1] = 1;
+
+    for (let value = 2; value <= limit; value += 1) {
+      let remaining = value;
+      let total = 1;
+
+      while (remaining > 1) {
+        const prime = smallestPrimeFactor[remaining];
+        let exponent = 0;
+
+        while (remaining % prime === 0) {
+          remaining /= prime;
+          exponent += 1;
+        }
+
+        total *= exponent + 1;
+      }
+
+      divisorCounts[value] = total;
+    }
+
+    return divisorCounts;
+  }
+
+  private validateRange(queryLeft: number, queryRight: number): void {
+    if (
+      !Number.isInteger(queryLeft)
+      || !Number.isInteger(queryRight)
+      || queryLeft < 1
+      || queryRight < queryLeft
+      || queryRight > this.limit
+    ) {
+      throw new RangeError('Query range is invalid');
+    }
+  }
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return one number that achieves the maximum divisor count, not just the count itself.
+- Replace the segment tree with a sparse table when the limit is fixed and there are no updates.
+- Explain why the smallest-prime-factor sieve speeds up divisor counting compared with trial division.
+
+## Common Pitfalls
+
+- Recomputing prime factorizations from scratch for every query.
+- Confusing the divisor count with the number that attains the count.
+- Forgetting that the numeric range here is 1-based while the tree storage is 0-based.

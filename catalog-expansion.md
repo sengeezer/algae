@@ -1090,9 +1090,22 @@ This one-hundred-first expansion slice lifts the catalog from 553 to 556 entries
 - Nth Binary Palindrome
 - Find two non-repeating elements in an array of repeating elements
 
+## Batch 102 added
+
+This one-hundred-second expansion slice lifts the catalog from 556 to 564 entries.
+
+- Persistent Segment Tree
+- Iterative Segment Tree
+- Dynamic Segment Trees
+- Lazy Propagation in Segment Tree
+- Flipping Sign Problem
+- Queries to Check If Any Non-Repeating Element Exists Within Range [L, R] of an Array
+- Querying Maximum Number of Divisors That a Number in a Given Range Has
+- Min-Max Range Queries in Array
+
 ## Next candidates from the same sources
 
-- The published catalog now reaches 556 entries on `main` after the final Bitwise slice.
+- The published catalog now reaches 564 entries on `main` after the opening Segment Tree slice.
 - Batch 92 carries the vetted Dynamic Programming hard stretch through `Longest repeating and non-overlapping substring` and then consumes the clean `Advanced Concepts` absences `Count Ways To Assign Unique Cap To Every Person`, `Digit DP | Introduction`, and `Sum over Subsets | Dynamic Programming`.
 - The Dynamic Programming items skipped between `Program to find amount of water in a given glass` and `Largest Cross Bordered Square` remain already represented locally: `Longest Common Subsequence`, `Longest Increasing Subsequence`, `Edit Distance`, `0-1 Knapsack Problem`, `Partition Problem`, `Longest Palindromic Subsequence`, `Bellman-Ford Algorithm`, and `Floyd Warshall Algorithm`.
 - `The painter's partition problem` remains skipped because the local `Find minimum time to finish all jobs with given constraints` entry already covers that partition-minimax problem and includes the alias `painter partition with multiplier`.
@@ -1117,5 +1130,10 @@ This one-hundred-first expansion slice lifts the catalog from 553 to 556 entries
 - The next Hard Problems destination-title cleanup in that stretch is `Closest Smaller and greater with same set bits` -> `Closest (or Next) smaller and greater numbers with same number of set bits`, `Count pairs with at least one digit common` -> `Count pairs in an array which have at least one digit common`, and `Booth’s Multiplication Algorithm` -> `Booth's Multiplication Algorithm`.
 - Batch 101 is now published through `Find two non-repeating elements in an array of repeating elements`.
 - The final Hard Problems destination-title cleanup is `n-th number whose binary is a palindrome` -> `Nth Binary Palindrome` and `Two non-repeating in an array of repeating` -> `Find two non-repeating elements in an array of repeating elements`.
-- The GeeksforGeeks Bitwise page is now exhausted in source order after the published batch-101 draft.
-- No next source branch has been vetted yet after finishing the Bitwise page.
+- The GeeksforGeeks Bitwise page is now exhausted in source order after the published batch-101 slice.
+- The next vetted source branch after Bitwise is the GeeksforGeeks Segment Tree page: https://www.geeksforgeeks.org/dsa/segment-tree-data-structure/
+- On that Segment Tree page, `Introduction to Segment Trees` remains a duplicate of the published `Segment Tree` entry, `Efficient implementation of segment trees` is now covered semantically by `Iterative Segment Tree`, `Range Sum and Update in Array` remains a duplicate of the published segment-tree fundamentals, and `Applications, Advantages and Disadvantages of Segment Trees` remains a theory-only overview to skip.
+- Batch 102 uses the verified destination titles `Persistent Segment Tree | Set 1 (Introduction)` -> `Persistent Segment Tree`, `Iterative Segment Tree (Range Maximum Query with Node Update)` -> `Iterative Segment Tree`, `Dynamic Segment Trees : Online Queries for Range Sum with Point Updates` -> `Dynamic Segment Trees`, `Flipping Sign Problem | Lazy Propagation Segment Tree` -> `Flipping Sign Problem`, and `Querying maximum number of divisors that a number in a given range has` -> `Querying Maximum Number of Divisors That a Number in a Given Range Has`.
+- `Lazy propagation in segment tree` and `Min-Max Range Queries in Array` already match their destination titles, and `Queries to check if any non-repeating element exists within range [L, R] of an Array` is used verbatim.
+- `Lazy Propagation | Set 2` remains deferred as a near-duplicate follow-up to the published lazy-propagation entry, and `Range Minimum Query` remains a likely duplicate-level foundational segment-tree use case to skip unless a later gap appears.
+- The next source-order Segment Tree candidates to vet begin at `Range LCM Queries`, then continue through `Number of primes in a subarray` and the later specialized range-query stretch.

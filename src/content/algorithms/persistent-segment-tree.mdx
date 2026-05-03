@@ -1,0 +1,297 @@
+---
+title: Persistent Segment Tree
+slug: persistent-segment-tree
+category: Range Queries
+summary: Keep every historical version of a segment tree by path-copying only the nodes touched by each point update.
+description: Persistent Segment Tree is the versioned range-query structure where every update creates a new root, untouched branches are shared, and old versions remain queryable.
+dataStructures:
+  - Binary Tree
+  - Array
+techniques:
+  - Range Queries
+  - Path Copying
+  - Persistence
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - path-copying segment tree
+  - versioned segment tree
+  - persistent range sum tree
+useCases:
+  - Answering range queries against older snapshots after updates
+  - Supporting rollback or time-travel queries in immutable workflows
+  - Reusing untouched branches instead of rebuilding the whole tree
+complexity:
+  time: O(log n)
+  space: O(log n)
+  notes: Each point update creates one new node per level on the update path, while range queries still walk only the overlapping branches.
+interviewSignals:
+  - The prompt asks for queries on older versions after multiple updates.
+  - Rebuilding the whole segment tree for every change is too expensive.
+  - The solution needs immutable snapshots without copying the full array each time.
+relatedSlugs:
+  - segment-tree
+  - fenwick-tree
+provenance:
+  - title: "GeeksforGeeks - Persistent Segment Tree | Set 1 (Introduction)"
+    href: https://www.geeksforgeeks.org/dsa/persistent-segment-tree-set-1-introduction/
+    kind: Implementation
+  - title: cp-algorithms - Segment Tree
+    href: https://cp-algorithms.com/data_structures/segment_tree.html
+    kind: Reference
+---
+
+## Why It Surfaces
+
+The ordinary segment tree already gives fast range queries and point updates, but it overwrites history. Persistent segment trees appear when the interviewer wants both logarithmic updates and the ability to ask what an older version of the array looked like.
+
+## Worked Example
+
+Start with `[2, 1, 3, 4]` as version `0`. If you update index `2` to `10`, the new version only rebuilds the nodes on the root-to-leaf path for that index. Querying `[0, 3]` on version `0` still returns `10`, while the same query on version `1` returns `17`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class PersistentSegmentTreeNode {
+  constructor(value = 0, left = null, right = null) {
+    this.value = value;
+    this.left = left;
+    this.right = right;
+  }
+}
+
+class PersistentSegmentTree {
+  constructor(values) {
+    if (!Array.isArray(values) || values.length === 0) {
+      throw new RangeError('Values must be a non-empty array');
+    }
+
+    this.size = values.length;
+    this.versions = [this.build(values, 0, this.size - 1)];
+  }
+
+  build(values, left, right) {
+    if (left === right) {
+      return new PersistentSegmentTreeNode(values[left]);
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    const leftChild = this.build(values, left, mid);
+    const rightChild = this.build(values, mid + 1, right);
+
+    return new PersistentSegmentTreeNode(leftChild.value + rightChild.value, leftChild, rightChild);
+  }
+
+  update(index, value, version = this.versions.length - 1) {
+    this.validateIndex(index);
+    this.validateVersion(version);
+
+    const nextRoot = this.updateNode(this.versions[version], 0, this.size - 1, index, value);
+    this.versions.push(nextRoot);
+
+    return this.versions.length - 1;
+  }
+
+  updateNode(node, left, right, index, value) {
+    if (left === right) {
+      return new PersistentSegmentTreeNode(value);
+    }
+
+    const mid = Math.floor((left + right) / 2);
+
+    if (index <= mid) {
+      const nextLeft = this.updateNode(node.left, left, mid, index, value);
+      return new PersistentSegmentTreeNode(nextLeft.value + node.right.value, nextLeft, node.right);
+    }
+
+    const nextRight = this.updateNode(node.right, mid + 1, right, index, value);
+    return new PersistentSegmentTreeNode(node.left.value + nextRight.value, node.left, nextRight);
+  }
+
+  query(version, queryLeft, queryRight) {
+    this.validateVersion(version);
+    this.validateRange(queryLeft, queryRight);
+    return this.queryNode(this.versions[version], 0, this.size - 1, queryLeft, queryRight);
+  }
+
+  queryNode(node, left, right, queryLeft, queryRight) {
+    if (queryRight < left || right < queryLeft) {
+      return 0;
+    }
+
+    if (queryLeft <= left && right <= queryRight) {
+      return node.value;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    return (
+      this.queryNode(node.left, left, mid, queryLeft, queryRight)
+      + this.queryNode(node.right, mid + 1, right, queryLeft, queryRight)
+    );
+  }
+
+  validateIndex(index) {
+    if (!Number.isInteger(index) || index < 0 || index >= this.size) {
+      throw new RangeError('Index is out of bounds');
+    }
+  }
+
+  validateRange(queryLeft, queryRight) {
+    if (
+      !Number.isInteger(queryLeft)
+      || !Number.isInteger(queryRight)
+      || queryLeft < 0
+      || queryRight < queryLeft
+      || queryRight >= this.size
+    ) {
+      throw new RangeError('Query range is invalid');
+    }
+  }
+
+  validateVersion(version) {
+    if (!Number.isInteger(version) || version < 0 || version >= this.versions.length) {
+      throw new RangeError('Version is invalid');
+    }
+  }
+}
+```
+
+```ts
+class PersistentSegmentTreeNode {
+  constructor(
+    readonly value: number,
+    readonly left: PersistentSegmentTreeNode | null = null,
+    readonly right: PersistentSegmentTreeNode | null = null,
+  ) {}
+}
+
+export class PersistentSegmentTree {
+  private readonly size: number;
+  private readonly versions: PersistentSegmentTreeNode[];
+
+  constructor(values: number[]) {
+    if (values.length === 0) {
+      throw new RangeError('Values must be a non-empty array');
+    }
+
+    this.size = values.length;
+    this.versions = [this.build(values, 0, this.size - 1)];
+  }
+
+  update(index: number, value: number, version = this.versions.length - 1): number {
+    this.validateIndex(index);
+    this.validateVersion(version);
+
+    const nextRoot = this.updateNode(this.versions[version], 0, this.size - 1, index, value);
+    this.versions.push(nextRoot);
+
+    return this.versions.length - 1;
+  }
+
+  query(version: number, queryLeft: number, queryRight: number): number {
+    this.validateVersion(version);
+    this.validateRange(queryLeft, queryRight);
+    return this.queryNode(this.versions[version], 0, this.size - 1, queryLeft, queryRight);
+  }
+
+  versionCount(): number {
+    return this.versions.length;
+  }
+
+  private build(values: number[], left: number, right: number): PersistentSegmentTreeNode {
+    if (left === right) {
+      return new PersistentSegmentTreeNode(values[left]);
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    const leftChild = this.build(values, left, mid);
+    const rightChild = this.build(values, mid + 1, right);
+
+    return new PersistentSegmentTreeNode(leftChild.value + rightChild.value, leftChild, rightChild);
+  }
+
+  private updateNode(
+    node: PersistentSegmentTreeNode,
+    left: number,
+    right: number,
+    index: number,
+    value: number,
+  ): PersistentSegmentTreeNode {
+    if (left === right) {
+      return new PersistentSegmentTreeNode(value);
+    }
+
+    const mid = Math.floor((left + right) / 2);
+
+    if (index <= mid) {
+      const nextLeft = this.updateNode(node.left!, left, mid, index, value);
+      return new PersistentSegmentTreeNode(nextLeft.value + node.right!.value, nextLeft, node.right);
+    }
+
+    const nextRight = this.updateNode(node.right!, mid + 1, right, index, value);
+    return new PersistentSegmentTreeNode(node.left!.value + nextRight.value, node.left, nextRight);
+  }
+
+  private queryNode(
+    node: PersistentSegmentTreeNode,
+    left: number,
+    right: number,
+    queryLeft: number,
+    queryRight: number,
+  ): number {
+    if (queryRight < left || right < queryLeft) {
+      return 0;
+    }
+
+    if (queryLeft <= left && right <= queryRight) {
+      return node.value;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    return (
+      this.queryNode(node.left!, left, mid, queryLeft, queryRight)
+      + this.queryNode(node.right!, mid + 1, right, queryLeft, queryRight)
+    );
+  }
+
+  private validateIndex(index: number): void {
+    if (!Number.isInteger(index) || index < 0 || index >= this.size) {
+      throw new RangeError('Index is out of bounds');
+    }
+  }
+
+  private validateRange(queryLeft: number, queryRight: number): void {
+    if (
+      !Number.isInteger(queryLeft)
+      || !Number.isInteger(queryRight)
+      || queryLeft < 0
+      || queryRight < queryLeft
+      || queryRight >= this.size
+    ) {
+      throw new RangeError('Query range is invalid');
+    }
+  }
+
+  private validateVersion(version: number): void {
+    if (!Number.isInteger(version) || version < 0 || version >= this.versions.length) {
+      throw new RangeError('Version is invalid');
+    }
+  }
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you extend this from point updates to k-th order statistics across versions?
+- When is a Fenwick tree plus offline processing enough instead of full persistence?
+- What changes if the interviewer wants lazy propagation and persistence together?
+
+## Common Pitfalls
+
+- Copying the entire tree for every update instead of only the nodes on the affected path.
+- Forgetting that each version is identified only by its root pointer.
+- Mutating shared nodes and accidentally corrupting older versions.

@@ -1,0 +1,286 @@
+---
+title: Flipping Sign Problem
+slug: flipping-sign-problem
+category: Range Queries
+summary: Use a lazy segment tree with toggle bits so range sign inversions and range sum queries both stay logarithmic.
+description: Flipping Sign Problem is the interval-update problem where each update multiplies every value in a range by `-1`, so the tree stores sums while lazy flags track whether an odd number of flips is still pending.
+dataStructures:
+  - Array
+  - Binary Tree
+techniques:
+  - Range Queries
+  - Lazy Propagation
+  - Toggle State
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - range negate queries
+  - lazy sign flip segment tree
+  - interval sign inversion
+useCases:
+  - Handling batches of sign inversions over an array
+  - Modeling toggles where applying the same update twice cancels out
+  - Extending lazy propagation beyond simple additive updates
+complexity:
+  time: O(log n)
+  space: O(n)
+  notes: Each update toggles a lazy bit and negates the stored segment sum, so repeated flips compose by parity instead of by addition.
+interviewSignals:
+  - An update applies a reversible toggle to every element in a range.
+  - The query asks for range sums after many interval modifications.
+  - Applying updates element by element is too slow.
+relatedSlugs:
+  - lazy-propagation-in-segment-tree
+  - segment-tree
+provenance:
+  - title: "GeeksforGeeks - Flipping Sign Problem | Lazy Propagation Segment Tree"
+    href: https://www.geeksforgeeks.org/dsa/flipping-sign-problem-lazy-propagation-segment-tree/
+    kind: Implementation
+  - title: cp-algorithms - Segment Tree
+    href: https://cp-algorithms.com/data_structures/segment_tree.html
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a good interview extension once lazy propagation is already on the table. The key twist is that the pending operation is not an increment but a sign inversion, so two pending flips cancel and the lazy state becomes a boolean toggle instead of a numeric delta.
+
+## Worked Example
+
+For `[1, 2, 3, 4, 5]`, flipping `[0, 2]` gives `[-1, -2, -3, 4, 5]`, whose full-range sum is `3`. Flipping `[0, 4]` once more turns the array into `[1, 2, 3, -4, -5]`, and the tree handles that by toggling lazy flags rather than revisiting every leaf.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class FlippingSignSegmentTree {
+  constructor(values) {
+    if (!Array.isArray(values) || values.length === 0) {
+      throw new RangeError('Values must be a non-empty array');
+    }
+
+    this.size = values.length;
+    this.tree = new Array(this.size * 4).fill(0);
+    this.lazy = new Array(this.size * 4).fill(false);
+    this.build(values, 1, 0, this.size - 1);
+  }
+
+  build(values, node, left, right) {
+    if (left === right) {
+      this.tree[node] = values[left];
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    this.build(values, node * 2, left, mid);
+    this.build(values, node * 2 + 1, mid + 1, right);
+    this.tree[node] = this.tree[node * 2] + this.tree[node * 2 + 1];
+  }
+
+  flip(updateLeft, updateRight) {
+    this.validateRange(updateLeft, updateRight);
+    this.flipNode(1, 0, this.size - 1, updateLeft, updateRight);
+  }
+
+  query(queryLeft, queryRight) {
+    this.validateRange(queryLeft, queryRight);
+    return this.queryNode(1, 0, this.size - 1, queryLeft, queryRight);
+  }
+
+  apply(node) {
+    this.tree[node] = -this.tree[node];
+    this.lazy[node] = !this.lazy[node];
+  }
+
+  push(node, left, right) {
+    if (!this.lazy[node]) {
+      return;
+    }
+
+    if (left !== right) {
+      this.apply(node * 2);
+      this.apply(node * 2 + 1);
+    }
+
+    this.lazy[node] = false;
+  }
+
+  flipNode(node, left, right, updateLeft, updateRight) {
+    if (updateRight < left || right < updateLeft) {
+      return;
+    }
+
+    if (updateLeft <= left && right <= updateRight) {
+      this.apply(node);
+      return;
+    }
+
+    this.push(node, left, right);
+    const mid = Math.floor((left + right) / 2);
+    this.flipNode(node * 2, left, mid, updateLeft, updateRight);
+    this.flipNode(node * 2 + 1, mid + 1, right, updateLeft, updateRight);
+    this.tree[node] = this.tree[node * 2] + this.tree[node * 2 + 1];
+  }
+
+  queryNode(node, left, right, queryLeft, queryRight) {
+    if (queryRight < left || right < queryLeft) {
+      return 0;
+    }
+
+    if (queryLeft <= left && right <= queryRight) {
+      return this.tree[node];
+    }
+
+    this.push(node, left, right);
+    const mid = Math.floor((left + right) / 2);
+    return (
+      this.queryNode(node * 2, left, mid, queryLeft, queryRight)
+      + this.queryNode(node * 2 + 1, mid + 1, right, queryLeft, queryRight)
+    );
+  }
+
+  validateRange(queryLeft, queryRight) {
+    if (
+      !Number.isInteger(queryLeft)
+      || !Number.isInteger(queryRight)
+      || queryLeft < 0
+      || queryRight < queryLeft
+      || queryRight >= this.size
+    ) {
+      throw new RangeError('Query range is invalid');
+    }
+  }
+}
+```
+
+```ts
+export class FlippingSignSegmentTree {
+  private readonly size: number;
+  private readonly tree: number[];
+  private readonly lazy: boolean[];
+
+  constructor(values: number[]) {
+    if (values.length === 0) {
+      throw new RangeError('Values must be a non-empty array');
+    }
+
+    this.size = values.length;
+    this.tree = new Array<number>(this.size * 4).fill(0);
+    this.lazy = new Array<boolean>(this.size * 4).fill(false);
+    this.build(values, 1, 0, this.size - 1);
+  }
+
+  flip(updateLeft: number, updateRight: number): void {
+    this.validateRange(updateLeft, updateRight);
+    this.flipNode(1, 0, this.size - 1, updateLeft, updateRight);
+  }
+
+  query(queryLeft: number, queryRight: number): number {
+    this.validateRange(queryLeft, queryRight);
+    return this.queryNode(1, 0, this.size - 1, queryLeft, queryRight);
+  }
+
+  private build(values: number[], node: number, left: number, right: number): void {
+    if (left === right) {
+      this.tree[node] = values[left];
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    this.build(values, node * 2, left, mid);
+    this.build(values, node * 2 + 1, mid + 1, right);
+    this.tree[node] = this.tree[node * 2] + this.tree[node * 2 + 1];
+  }
+
+  private apply(node: number): void {
+    this.tree[node] = -this.tree[node];
+    this.lazy[node] = !this.lazy[node];
+  }
+
+  private push(node: number, left: number, right: number): void {
+    if (!this.lazy[node]) {
+      return;
+    }
+
+    if (left !== right) {
+      this.apply(node * 2);
+      this.apply(node * 2 + 1);
+    }
+
+    this.lazy[node] = false;
+  }
+
+  private flipNode(
+    node: number,
+    left: number,
+    right: number,
+    updateLeft: number,
+    updateRight: number,
+  ): void {
+    if (updateRight < left || right < updateLeft) {
+      return;
+    }
+
+    if (updateLeft <= left && right <= updateRight) {
+      this.apply(node);
+      return;
+    }
+
+    this.push(node, left, right);
+    const mid = Math.floor((left + right) / 2);
+    this.flipNode(node * 2, left, mid, updateLeft, updateRight);
+    this.flipNode(node * 2 + 1, mid + 1, right, updateLeft, updateRight);
+    this.tree[node] = this.tree[node * 2] + this.tree[node * 2 + 1];
+  }
+
+  private queryNode(
+    node: number,
+    left: number,
+    right: number,
+    queryLeft: number,
+    queryRight: number,
+  ): number {
+    if (queryRight < left || right < queryLeft) {
+      return 0;
+    }
+
+    if (queryLeft <= left && right <= queryRight) {
+      return this.tree[node];
+    }
+
+    this.push(node, left, right);
+    const mid = Math.floor((left + right) / 2);
+    return (
+      this.queryNode(node * 2, left, mid, queryLeft, queryRight)
+      + this.queryNode(node * 2 + 1, mid + 1, right, queryLeft, queryRight)
+    );
+  }
+
+  private validateRange(queryLeft: number, queryRight: number): void {
+    if (
+      !Number.isInteger(queryLeft)
+      || !Number.isInteger(queryRight)
+      || queryLeft < 0
+      || queryRight < queryLeft
+      || queryRight >= this.size
+    ) {
+      throw new RangeError('Query range is invalid');
+    }
+  }
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Add point assignments on top of the flip update and discuss operation ordering.
+- Generalize the toggle logic to support bit flips on a binary array.
+- Explain why two flips on the same interval compose to the identity.
+
+## Common Pitfalls
+
+- Forgetting that a second pending flip cancels the first instead of stacking additively.
+- Negating leaves but not the stored segment sums at internal nodes.
+- Propagating toggles eagerly and losing the logarithmic benefit of lazy propagation.

@@ -1,0 +1,249 @@
+---
+title: Dynamic Segment Trees
+slug: dynamic-segment-trees
+category: Range Queries
+summary: Materialize segment tree nodes only for touched intervals so sparse updates over huge coordinate ranges stay practical.
+description: Dynamic Segment Trees are sparse segment trees that create nodes on demand, making range sums and point updates feasible when the coordinate universe is too large for an array-backed tree.
+dataStructures:
+  - Binary Tree
+  - Sparse Tree
+techniques:
+  - Range Queries
+  - Sparse Allocation
+  - Point Update
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - sparse segment tree
+  - implicit segment tree
+  - online segment tree
+useCases:
+  - Processing online updates over very large index ranges
+  - Avoiding an enormous preallocated array for mostly empty coordinates
+  - Tracking sparse point assignments with interval sums
+complexity:
+  time: O(log U)
+  space: O(k log U)
+  notes: Queries and updates depend on the height of the coordinate universe `U`, while memory grows with the number of touched paths `k` instead of the full range size.
+interviewSignals:
+  - The index range is huge, but only a small fraction of positions are updated.
+  - Queries are online, so coordinate compression is awkward or unavailable.
+  - A normal array-backed segment tree would be too large to allocate.
+relatedSlugs:
+  - segment-tree
+  - persistent-segment-tree
+provenance:
+  - title: "GeeksforGeeks - Dynamic Segment Trees : Online Queries for Range Sum with Point Updates"
+    href: https://www.geeksforgeeks.org/dsa/dynamic-segment-trees-online-queries-for-range-sum-with-point-updates/
+    kind: Implementation
+  - title: cp-algorithms - Segment Tree
+    href: https://cp-algorithms.com/data_structures/segment_tree.html
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This variant shows up when the coordinate space is massive but the actual updates are sparse. Instead of building every segment up front, a dynamic tree treats missing nodes as zero-valued intervals and only allocates the branches a query or update actually reaches.
+
+## Worked Example
+
+Suppose the valid index range is `[1, 8]`, but only positions `2`, `1`, `3`, and `4` are ever assigned. A dynamic tree creates nodes only on those four root-to-leaf paths, and querying `[3, 4]` still returns `12n` after storing `5n` at `3` and `7n` at `4`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class DynamicSegmentTreeNode {
+  constructor(value = 0n, left = null, right = null) {
+    this.value = value;
+    this.left = left;
+    this.right = right;
+  }
+}
+
+class DynamicSegmentTree {
+  constructor(lowerBound, upperBound) {
+    if (typeof lowerBound !== 'bigint' || typeof upperBound !== 'bigint' || lowerBound > upperBound) {
+      throw new RangeError('Bounds must be valid bigint values');
+    }
+
+    this.lowerBound = lowerBound;
+    this.upperBound = upperBound;
+    this.root = null;
+  }
+
+  update(index, value) {
+    this.validateIndex(index);
+    if (typeof value !== 'bigint') {
+      throw new TypeError('Value must be a bigint');
+    }
+
+    this.root = this.updateNode(this.root, this.lowerBound, this.upperBound, index, value);
+  }
+
+  updateNode(node, left, right, index, value) {
+    const current = node ?? new DynamicSegmentTreeNode();
+
+    if (left === right) {
+      current.value = value;
+      return current;
+    }
+
+    const mid = left + (right - left) / 2n;
+    if (index <= mid) {
+      current.left = this.updateNode(current.left, left, mid, index, value);
+    } else {
+      current.right = this.updateNode(current.right, mid + 1n, right, index, value);
+    }
+
+    current.value = (current.left?.value ?? 0n) + (current.right?.value ?? 0n);
+    return current;
+  }
+
+  query(queryLeft, queryRight) {
+    this.validateRange(queryLeft, queryRight);
+    return this.queryNode(this.root, this.lowerBound, this.upperBound, queryLeft, queryRight);
+  }
+
+  queryNode(node, left, right, queryLeft, queryRight) {
+    if (node === null || queryRight < left || right < queryLeft) {
+      return 0n;
+    }
+
+    if (queryLeft <= left && right <= queryRight) {
+      return node.value;
+    }
+
+    const mid = left + (right - left) / 2n;
+    return (
+      this.queryNode(node.left, left, mid, queryLeft, queryRight)
+      + this.queryNode(node.right, mid + 1n, right, queryLeft, queryRight)
+    );
+  }
+
+  validateIndex(index) {
+    if (typeof index !== 'bigint' || index < this.lowerBound || index > this.upperBound) {
+      throw new RangeError('Index is out of bounds');
+    }
+  }
+
+  validateRange(queryLeft, queryRight) {
+    if (
+      typeof queryLeft !== 'bigint'
+      || typeof queryRight !== 'bigint'
+      || queryLeft < this.lowerBound
+      || queryRight > this.upperBound
+      || queryRight < queryLeft
+    ) {
+      throw new RangeError('Query range is invalid');
+    }
+  }
+}
+```
+
+```ts
+class DynamicSegmentTreeNode {
+  constructor(
+    public value = 0n,
+    public left: DynamicSegmentTreeNode | null = null,
+    public right: DynamicSegmentTreeNode | null = null,
+  ) {}
+}
+
+export class DynamicSegmentTree {
+  private root: DynamicSegmentTreeNode | null = null;
+
+  constructor(
+    private readonly lowerBound: bigint,
+    private readonly upperBound: bigint,
+  ) {
+    if (lowerBound > upperBound) {
+      throw new RangeError('Bounds must be valid bigint values');
+    }
+  }
+
+  update(index: bigint, value: bigint): void {
+    this.validateIndex(index);
+    this.root = this.updateNode(this.root, this.lowerBound, this.upperBound, index, value);
+  }
+
+  query(queryLeft: bigint, queryRight: bigint): bigint {
+    this.validateRange(queryLeft, queryRight);
+    return this.queryNode(this.root, this.lowerBound, this.upperBound, queryLeft, queryRight);
+  }
+
+  private updateNode(
+    node: DynamicSegmentTreeNode | null,
+    left: bigint,
+    right: bigint,
+    index: bigint,
+    value: bigint,
+  ): DynamicSegmentTreeNode {
+    const current = node ?? new DynamicSegmentTreeNode();
+
+    if (left === right) {
+      current.value = value;
+      return current;
+    }
+
+    const mid = left + (right - left) / 2n;
+    if (index <= mid) {
+      current.left = this.updateNode(current.left, left, mid, index, value);
+    } else {
+      current.right = this.updateNode(current.right, mid + 1n, right, index, value);
+    }
+
+    current.value = (current.left?.value ?? 0n) + (current.right?.value ?? 0n);
+    return current;
+  }
+
+  private queryNode(
+    node: DynamicSegmentTreeNode | null,
+    left: bigint,
+    right: bigint,
+    queryLeft: bigint,
+    queryRight: bigint,
+  ): bigint {
+    if (node === null || queryRight < left || right < queryLeft) {
+      return 0n;
+    }
+
+    if (queryLeft <= left && right <= queryRight) {
+      return node.value;
+    }
+
+    const mid = left + (right - left) / 2n;
+    return (
+      this.queryNode(node.left, left, mid, queryLeft, queryRight)
+      + this.queryNode(node.right, mid + 1n, right, queryLeft, queryRight)
+    );
+  }
+
+  private validateIndex(index: bigint): void {
+    if (index < this.lowerBound || index > this.upperBound) {
+      throw new RangeError('Index is out of bounds');
+    }
+  }
+
+  private validateRange(queryLeft: bigint, queryRight: bigint): void {
+    if (queryLeft < this.lowerBound || queryRight > this.upperBound || queryRight < queryLeft) {
+      throw new RangeError('Query range is invalid');
+    }
+  }
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- When is coordinate compression simpler than a dynamic tree?
+- How would you turn this into a sparse tree that supports range add with lazy propagation?
+- What changes if updates add to the existing point instead of replacing it?
+
+## Common Pitfalls
+
+- Preallocating the whole tree and defeating the point of the dynamic variant.
+- Treating missing nodes as errors instead of zero-valued ranges.
+- Using `number` when the coordinate bounds can exceed safe integer precision.
