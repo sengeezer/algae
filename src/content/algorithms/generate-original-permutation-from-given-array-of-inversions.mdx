@@ -1,0 +1,259 @@
+---
+title: Generate original permutation from given array of inversions
+slug: generate-original-permutation-from-given-array-of-inversions
+category: Permutations
+summary: Reconstruct the permutation from right to left by querying the k-th remaining number in an order-statistic segment tree.
+description: Generate original permutation from given array of inversions turns inversion counts into repeated k-th element lookups over the still-unused values from 1 through N.
+dataStructures:
+  - Array
+  - Binary Tree
+techniques:
+  - Segment Tree
+  - Order Statistics
+  - Greedy Construction
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - reconstruct permutation from inversion array
+  - inversion vector to permutation
+  - kth available number reconstruction
+useCases:
+  - Rebuilding an ordering from compressed positional constraints
+  - Practicing order-statistic queries on a static value universe
+  - Turning inversion counts into repeated k-th free slot selection
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: Every position performs one k-th order-statistic lookup and one point update in the segment tree.
+interviewSignals:
+  - The input tells you how many greater elements lie to the left of each position.
+  - You need the actual permutation, not just the inversion count total.
+  - The natural reconstruction direction is from right to left.
+relatedSlugs:
+  - number-of-permutation-with-k-inversions
+  - segment-tree
+provenance:
+  - title: "GeeksforGeeks - Generate original permutation from given array of inversions"
+    href: https://www.geeksforgeeks.org/dsa/generate-original-permutation-from-given-array-of-inversions/
+    kind: Implementation
+  - title: cp-algorithms - Segment Tree
+    href: https://cp-algorithms.com/data_structures/segment_tree.html
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is an order-statistics reconstruction problem dressed up as inversion logic. Once you walk from right to left, each `arr[i]` tells you which remaining number must be placed there: specifically, the `(i + 1 - arr[i])`-th smallest still-unused value.
+
+## Worked Example
+
+For `[0, 1, 1, 0, 3]`, start from the end. At index `4`, there are `5` numbers still available and `3` larger elements must end up on the left, so you need the `2`-nd smallest unused value, which is `2`. Repeating this process backward reconstructs `[4, 1, 3, 5, 2]`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class OrderStatisticSegmentTree {
+  constructor(size) {
+    if (!Number.isInteger(size) || size <= 0) {
+      throw new RangeError('Size must be a positive integer');
+    }
+
+    this.size = size;
+    this.tree = new Array(size * 4).fill(0);
+    this.build(1, 1, size);
+  }
+
+  build(node, left, right) {
+    if (left === right) {
+      this.tree[node] = 1;
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    this.build(node * 2, left, mid);
+    this.build(node * 2 + 1, mid + 1, right);
+    this.tree[node] = this.tree[node * 2] + this.tree[node * 2 + 1];
+  }
+
+  kth(k) {
+    if (!Number.isInteger(k) || k < 1 || k > this.tree[1]) {
+      throw new RangeError('k is outside the remaining value range');
+    }
+
+    return this.kthNode(1, 1, this.size, k);
+  }
+
+  kthNode(node, left, right, k) {
+    if (left === right) {
+      return left;
+    }
+
+    const leftCount = this.tree[node * 2];
+    const mid = Math.floor((left + right) / 2);
+
+    if (k <= leftCount) {
+      return this.kthNode(node * 2, left, mid, k);
+    }
+
+    return this.kthNode(node * 2 + 1, mid + 1, right, k - leftCount);
+  }
+
+  remove(value) {
+    this.update(1, 1, this.size, value);
+  }
+
+  update(node, left, right, target) {
+    if (left === right) {
+      this.tree[node] = 0;
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    if (target <= mid) {
+      this.update(node * 2, left, mid, target);
+    } else {
+      this.update(node * 2 + 1, mid + 1, right, target);
+    }
+
+    this.tree[node] = this.tree[node * 2] + this.tree[node * 2 + 1];
+  }
+}
+
+function generateOriginalPermutationFromGivenArrayOfInversions(inversions) {
+  if (!Array.isArray(inversions) || inversions.length === 0) {
+    throw new RangeError('Inversion array must be non-empty');
+  }
+
+  const size = inversions.length;
+  const tree = new OrderStatisticSegmentTree(size);
+  const permutation = new Array(size);
+
+  for (let index = size - 1; index >= 0; index -= 1) {
+    const inversionsOnLeft = inversions[index];
+    if (!Number.isInteger(inversionsOnLeft) || inversionsOnLeft < 0 || inversionsOnLeft > index) {
+      throw new RangeError('Inversion array is invalid');
+    }
+
+    const kthSmallest = index + 1 - inversionsOnLeft;
+    const value = tree.kth(kthSmallest);
+    permutation[index] = value;
+    tree.remove(value);
+  }
+
+  return permutation;
+}
+```
+
+```ts
+class OrderStatisticSegmentTree {
+  private readonly size: number;
+  private readonly tree: number[];
+
+  constructor(size: number) {
+    if (!Number.isInteger(size) || size <= 0) {
+      throw new RangeError('Size must be a positive integer');
+    }
+
+    this.size = size;
+    this.tree = new Array<number>(size * 4).fill(0);
+    this.build(1, 1, size);
+  }
+
+  kth(k: number): number {
+    if (!Number.isInteger(k) || k < 1 || k > this.tree[1]) {
+      throw new RangeError('k is outside the remaining value range');
+    }
+
+    return this.kthNode(1, 1, this.size, k);
+  }
+
+  remove(value: number): void {
+    this.update(1, 1, this.size, value);
+  }
+
+  private build(node: number, left: number, right: number): void {
+    if (left === right) {
+      this.tree[node] = 1;
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    this.build(node * 2, left, mid);
+    this.build(node * 2 + 1, mid + 1, right);
+    this.tree[node] = this.tree[node * 2] + this.tree[node * 2 + 1];
+  }
+
+  private kthNode(node: number, left: number, right: number, k: number): number {
+    if (left === right) {
+      return left;
+    }
+
+    const leftCount = this.tree[node * 2];
+    const mid = Math.floor((left + right) / 2);
+
+    if (k <= leftCount) {
+      return this.kthNode(node * 2, left, mid, k);
+    }
+
+    return this.kthNode(node * 2 + 1, mid + 1, right, k - leftCount);
+  }
+
+  private update(node: number, left: number, right: number, target: number): void {
+    if (left === right) {
+      this.tree[node] = 0;
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    if (target <= mid) {
+      this.update(node * 2, left, mid, target);
+    } else {
+      this.update(node * 2 + 1, mid + 1, right, target);
+    }
+
+    this.tree[node] = this.tree[node * 2] + this.tree[node * 2 + 1];
+  }
+}
+
+export function generateOriginalPermutationFromGivenArrayOfInversions(
+  inversions: number[],
+): number[] {
+  if (inversions.length === 0) {
+    throw new RangeError('Inversion array must be non-empty');
+  }
+
+  const size = inversions.length;
+  const tree = new OrderStatisticSegmentTree(size);
+  const permutation = new Array<number>(size);
+
+  for (let index = size - 1; index >= 0; index -= 1) {
+    const inversionsOnLeft = inversions[index];
+    if (!Number.isInteger(inversionsOnLeft) || inversionsOnLeft < 0 || inversionsOnLeft > index) {
+      throw new RangeError('Inversion array is invalid');
+    }
+
+    const kthSmallest = index + 1 - inversionsOnLeft;
+    const value = tree.kth(kthSmallest);
+    permutation[index] = value;
+    tree.remove(value);
+  }
+
+  return permutation;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you solve the same reconstruction with a Fenwick tree instead of a segment tree?
+- Why does the backward traversal make the k-th selection formula natural?
+- What validation would you add when the inversion array does not correspond to any permutation?
+
+## Common Pitfalls
+
+- Reconstructing from left to right and losing the correct remaining-value interpretation.
+- Mixing zero-based and one-based indexing in the k-th order-statistic query.
+- Forgetting to remove a chosen value from the remaining set before the next step.

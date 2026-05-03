@@ -1116,9 +1116,22 @@ This one-hundred-third expansion slice lifts the catalog from 564 to 572 entries
 - String Range Queries to find the number of subsets equal to a given String
 - Binary Array Range Queries to find the minimum distance between two Zeros
 
+## Batch 104 added
+
+This one-hundred-fourth expansion slice lifts the catalog from 572 to 580 entries.
+
+- Queries to evaluate the given equation in a range [L, R]
+- Find element with maximum weight in given price range for Q queries
+- Maximize length of longest subarray consisting of same elements by at most K decrements
+- Generate original permutation from given array of inversions
+- Build a segment tree for N-ary rooted tree
+- Count number of increasing sub-sequences
+- Calculate the Sum of GCD over all subarrays
+- Cartesian tree from inorder traversal
+
 ## Next candidates from the same sources
 
-- The published catalog now reaches 572 entries on `main` after the second Segment Tree slice.
+- The published catalog now reaches 580 entries on `main` after the third Segment Tree slice.
 - Batch 92 carries the vetted Dynamic Programming hard stretch through `Longest repeating and non-overlapping substring` and then consumes the clean `Advanced Concepts` absences `Count Ways To Assign Unique Cap To Every Person`, `Digit DP | Introduction`, and `Sum over Subsets | Dynamic Programming`.
 - The Dynamic Programming items skipped between `Program to find amount of water in a given glass` and `Largest Cross Bordered Square` remain already represented locally: `Longest Common Subsequence`, `Longest Increasing Subsequence`, `Edit Distance`, `0-1 Knapsack Problem`, `Partition Problem`, `Longest Palindromic Subsequence`, `Bellman-Ford Algorithm`, and `Floyd Warshall Algorithm`.
 - `The painter's partition problem` remains skipped because the local `Find minimum time to finish all jobs with given constraints` entry already covers that partition-minimax problem and includes the alias `painter partition with multiplier`.
@@ -1150,4 +1163,7 @@ This one-hundred-third expansion slice lifts the catalog from 564 to 572 entries
 - `Lazy propagation in segment tree` and `Min-Max Range Queries in Array` already match their destination titles, and `Queries to check if any non-repeating element exists within range [L, R] of an Array` is used verbatim.
 - Batch 103 uses the verified destination title `Queries to find maximum product pair in range with updates` verbatim; `Range LCM Queries`, `Number of primes in a subarray (with updates)`, `Range Queries for Longest Correct Bracket Subsequence`, `Maximum Occurrence in a Given Range`, `Range and Update Query for Chessboard Pieces`, `String Range Queries to find the number of subsets equal to a given String`, and `Binary Array Range Queries to find the minimum distance between two Zeros` already match their destination titles.
 - `Lazy Propagation | Set 2` remains deferred as a near-duplicate follow-up to the published lazy-propagation entry, `Range Minimum Query` remains a duplicate-level foundational segment-tree use case to skip, and `Largest Sum Contiguous Subarray` remains a semantic duplicate of the published `Kadane's Algorithm` entry.
-- The next source-order Segment Tree candidates to vet now begin at `Queries to evaluate the given equation in a range [L, R]`, then `Maximum weight in given price range for Q queries`, before the `Some interesting problem on Segment Tree` section.
+- Batch 104 uses the verified destination title cleanup `Maximum weight in given price range for Q queries` -> `Find element with maximum weight in given price range for Q queries` and `Longest subarray consisting of same elements by at most K decrements` -> `Maximize length of longest subarray consisting of same elements by at most K decrements`; `Queries to evaluate the given equation in a range [L, R]`, `Generate original permutation from given array of inversions`, `Build a segment tree for N-ary rooted tree`, and `Calculate the Sum of GCD over all subarrays` already match their destination titles.
+- The source label `Count number of increasing sub-sequences : O(NlogN)` is normalized locally to `Count number of increasing sub-sequences`, and `Cartesian tree from inorder traversal` is drafted without the destination page suffix `| Segment Tree` because the suffix is only sectional context.
+- `Longest Increasing Subsequences (LIS)` and `LIS using Segment Tree` remain semantic duplicates of the published `Longest Increasing Subsequence` entry, and `Maximum of all subarrays of size K` remains a semantic duplicate of the published sliding-window maximum coverage in `Sliding Window` and `Monotonic Queue`.
+- The next source-order Segment Tree candidate to vet is `Reconstructing Segment Tree`; after that, the remaining page tail is the `Applications of Segment Tree` overview section rather than another implementation queue.

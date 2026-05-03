@@ -1,0 +1,322 @@
+---
+title: Build a segment tree for N-ary rooted tree
+slug: build-a-segment-tree-for-n-ary-rooted-tree
+category: Trees
+summary: Flatten each subtree with an Euler tour so subtree updates and queries become ordinary range operations on a segment tree.
+description: Build a segment tree for N-ary rooted tree is the subtree-query pattern where DFS entry and exit times turn every rooted subtree into one contiguous interval.
+dataStructures:
+  - Tree
+  - Array
+  - Binary Tree
+techniques:
+  - Segment Tree
+  - Depth-First Search
+  - Euler Tour
+  - Lazy Propagation
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - subtree segment tree
+  - euler tour subtree updates
+  - rooted tree range mapping
+useCases:
+  - Supporting repeated subtree sum queries on a rooted tree
+  - Applying the same update to every node in a subtree efficiently
+  - Converting tree structure into a range-query problem
+complexity:
+  time: O((n + q) log n)
+  space: O(n)
+  notes: DFS flattening is linear, and every subtree query or update becomes one interval operation on the flattened array.
+interviewSignals:
+  - The prompt asks for subtree updates or subtree aggregates many times.
+  - Rooting the tree makes every subtree a contiguous DFS interval.
+  - The real trick is not the segment tree itself but the Euler-tour mapping.
+relatedSlugs:
+  - depth-first-search
+  - segment-tree
+provenance:
+  - title: "GeeksforGeeks - Build a segment tree for N-ary rooted tree"
+    href: https://www.geeksforgeeks.org/dsa/build-a-segment-tree-for-n-ary-rooted-tree/
+    kind: Implementation
+  - title: cp-algorithms - Segment Tree
+    href: https://cp-algorithms.com/data_structures/segment_tree.html
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Tree queries often become much easier once the tree is flattened. A rooted subtree is contiguous in Euler-tour order, so subtree sum queries and subtree-wide updates can be handled by the same interval machinery used on arrays.
+
+## Worked Example
+
+Take the rooted tree `1 -> [2, 3, 4]` and `3 -> [5, 6, 7]` with node values `{1: 1, 2: 2, 3: 2, 4: 1, 5: 4, 6: 3, 7: 6}`. The subtree of node `3` sums to `15`. If you add `2` to every node in that subtree, its sum becomes `23`, and the whole tree sum becomes `27`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class LazyRangeSumSegmentTree {
+  constructor(values) {
+    this.size = values.length;
+    this.tree = new Array(this.size * 4).fill(0);
+    this.lazy = new Array(this.size * 4).fill(0);
+    this.build(1, 0, this.size - 1, values);
+  }
+
+  build(node, left, right, values) {
+    if (left === right) {
+      this.tree[node] = values[left];
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    this.build(node * 2, left, mid, values);
+    this.build(node * 2 + 1, mid + 1, right, values);
+    this.tree[node] = this.tree[node * 2] + this.tree[node * 2 + 1];
+  }
+
+  apply(node, left, right, delta) {
+    this.tree[node] += (right - left + 1) * delta;
+    this.lazy[node] += delta;
+  }
+
+  push(node, left, right) {
+    if (this.lazy[node] === 0 || left === right) {
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    this.apply(node * 2, left, mid, this.lazy[node]);
+    this.apply(node * 2 + 1, mid + 1, right, this.lazy[node]);
+    this.lazy[node] = 0;
+  }
+
+  rangeAdd(queryLeft, queryRight, delta) {
+    this.rangeAddNode(1, 0, this.size - 1, queryLeft, queryRight, delta);
+  }
+
+  rangeAddNode(node, left, right, queryLeft, queryRight, delta) {
+    if (queryRight < left || right < queryLeft) {
+      return;
+    }
+
+    if (queryLeft <= left && right <= queryRight) {
+      this.apply(node, left, right, delta);
+      return;
+    }
+
+    this.push(node, left, right);
+    const mid = Math.floor((left + right) / 2);
+    this.rangeAddNode(node * 2, left, mid, queryLeft, queryRight, delta);
+    this.rangeAddNode(node * 2 + 1, mid + 1, right, queryLeft, queryRight, delta);
+    this.tree[node] = this.tree[node * 2] + this.tree[node * 2 + 1];
+  }
+
+  rangeSum(queryLeft, queryRight) {
+    return this.rangeSumNode(1, 0, this.size - 1, queryLeft, queryRight);
+  }
+
+  rangeSumNode(node, left, right, queryLeft, queryRight) {
+    if (queryRight < left || right < queryLeft) {
+      return 0;
+    }
+
+    if (queryLeft <= left && right <= queryRight) {
+      return this.tree[node];
+    }
+
+    this.push(node, left, right);
+    const mid = Math.floor((left + right) / 2);
+    return (
+      this.rangeSumNode(node * 2, left, mid, queryLeft, queryRight)
+      + this.rangeSumNode(node * 2 + 1, mid + 1, right, queryLeft, queryRight)
+    );
+  }
+}
+
+class NaryRootedTreeSegmentTree {
+  constructor(adjacency, values, root = 1) {
+    this.adjacency = adjacency;
+    this.values = values;
+    this.order = [];
+    this.tin = {};
+    this.tout = {};
+
+    this.flatten(root, 0);
+    const flattenedValues = this.order.map((node) => this.values[node]);
+    this.segmentTree = new LazyRangeSumSegmentTree(flattenedValues);
+  }
+
+  flatten(node, parent) {
+    this.tin[node] = this.order.length;
+    this.order.push(node);
+
+    for (const child of this.adjacency[node] ?? []) {
+      if (child !== parent) {
+        this.flatten(child, node);
+      }
+    }
+
+    this.tout[node] = this.order.length - 1;
+  }
+
+  addToSubtree(node, delta) {
+    this.segmentTree.rangeAdd(this.tin[node], this.tout[node], delta);
+  }
+
+  querySubtree(node) {
+    return this.segmentTree.rangeSum(this.tin[node], this.tout[node]);
+  }
+}
+```
+
+```ts
+class LazyRangeSumSegmentTree {
+  private readonly size: number;
+  private readonly tree: number[];
+  private readonly lazy: number[];
+
+  constructor(values: number[]) {
+    this.size = values.length;
+    this.tree = new Array<number>(this.size * 4).fill(0);
+    this.lazy = new Array<number>(this.size * 4).fill(0);
+    this.build(1, 0, this.size - 1, values);
+  }
+
+  rangeAdd(queryLeft: number, queryRight: number, delta: number): void {
+    this.rangeAddNode(1, 0, this.size - 1, queryLeft, queryRight, delta);
+  }
+
+  rangeSum(queryLeft: number, queryRight: number): number {
+    return this.rangeSumNode(1, 0, this.size - 1, queryLeft, queryRight);
+  }
+
+  private build(node: number, left: number, right: number, values: number[]): void {
+    if (left === right) {
+      this.tree[node] = values[left];
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    this.build(node * 2, left, mid, values);
+    this.build(node * 2 + 1, mid + 1, right, values);
+    this.tree[node] = this.tree[node * 2] + this.tree[node * 2 + 1];
+  }
+
+  private apply(node: number, left: number, right: number, delta: number): void {
+    this.tree[node] += (right - left + 1) * delta;
+    this.lazy[node] += delta;
+  }
+
+  private push(node: number, left: number, right: number): void {
+    if (this.lazy[node] === 0 || left === right) {
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    this.apply(node * 2, left, mid, this.lazy[node]);
+    this.apply(node * 2 + 1, mid + 1, right, this.lazy[node]);
+    this.lazy[node] = 0;
+  }
+
+  private rangeAddNode(
+    node: number,
+    left: number,
+    right: number,
+    queryLeft: number,
+    queryRight: number,
+    delta: number,
+  ): void {
+    if (queryRight < left || right < queryLeft) {
+      return;
+    }
+
+    if (queryLeft <= left && right <= queryRight) {
+      this.apply(node, left, right, delta);
+      return;
+    }
+
+    this.push(node, left, right);
+    const mid = Math.floor((left + right) / 2);
+    this.rangeAddNode(node * 2, left, mid, queryLeft, queryRight, delta);
+    this.rangeAddNode(node * 2 + 1, mid + 1, right, queryLeft, queryRight, delta);
+    this.tree[node] = this.tree[node * 2] + this.tree[node * 2 + 1];
+  }
+
+  private rangeSumNode(
+    node: number,
+    left: number,
+    right: number,
+    queryLeft: number,
+    queryRight: number,
+  ): number {
+    if (queryRight < left || right < queryLeft) {
+      return 0;
+    }
+
+    if (queryLeft <= left && right <= queryRight) {
+      return this.tree[node];
+    }
+
+    this.push(node, left, right);
+    const mid = Math.floor((left + right) / 2);
+    return (
+      this.rangeSumNode(node * 2, left, mid, queryLeft, queryRight)
+      + this.rangeSumNode(node * 2 + 1, mid + 1, right, queryLeft, queryRight)
+    );
+  }
+}
+
+export class NaryRootedTreeSegmentTree {
+  private readonly adjacency: Record<number, number[]>;
+  private readonly values: Record<number, number>;
+  private readonly order: number[] = [];
+  private readonly tin: Record<number, number> = {};
+  private readonly tout: Record<number, number> = {};
+  private readonly segmentTree: LazyRangeSumSegmentTree;
+
+  constructor(adjacency: Record<number, number[]>, values: Record<number, number>, root = 1) {
+    this.adjacency = adjacency;
+    this.values = values;
+    this.flatten(root, 0);
+    const flattenedValues = this.order.map((node) => this.values[node]);
+    this.segmentTree = new LazyRangeSumSegmentTree(flattenedValues);
+  }
+
+  addToSubtree(node: number, delta: number): void {
+    this.segmentTree.rangeAdd(this.tin[node], this.tout[node], delta);
+  }
+
+  querySubtree(node: number): number {
+    return this.segmentTree.rangeSum(this.tin[node], this.tout[node]);
+  }
+
+  private flatten(node: number, parent: number): void {
+    this.tin[node] = this.order.length;
+    this.order.push(node);
+
+    for (const child of this.adjacency[node] ?? []) {
+      if (child !== parent) {
+        this.flatten(child, node);
+      }
+    }
+
+    this.tout[node] = this.order.length - 1;
+  }
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you answer path queries instead of subtree queries?
+- When do you need lazy propagation here, and when are point updates enough?
+- What changes if the rooted tree is dynamic and edges can be added or removed?
+
+## Common Pitfalls
+
+- Forgetting that subtree intervals depend on a fixed root choice.
+- Building the Euler order but not storing both entry and exit positions.
+- Trying to query or update the tree structure directly instead of the flattened interval.

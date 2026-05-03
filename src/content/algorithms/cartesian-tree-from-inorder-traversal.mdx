@@ -1,0 +1,262 @@
+---
+title: Cartesian tree from inorder traversal
+slug: cartesian-tree-from-inorder-traversal
+category: Trees
+summary: Answer range-maximum queries quickly so each recursive step can choose the root of the next Cartesian-tree interval.
+description: Cartesian tree from inorder traversal rebuilds the max Cartesian tree by repeatedly selecting the maximum element of the current inorder interval and recursing on both sides.
+dataStructures:
+  - Array
+  - Tree
+  - Binary Tree
+techniques:
+  - Segment Tree
+  - Divide and Conquer
+  - Tree Construction
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - build cartesian tree from inorder array
+  - max cartesian tree reconstruction
+  - segment tree for cartesian construction
+useCases:
+  - Reconstructing a tree when the inorder order is fixed and the heap property chooses the root
+  - Turning repeated interval-maximum lookups into a reusable preprocessed structure
+  - Comparing range-query-based construction with the linear monotonic-stack alternative
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: The segment tree answers each range-maximum query in logarithmic time, and every element becomes the root of exactly one recursive subproblem.
+interviewSignals:
+  - The prompt gives you an inorder traversal and asks for the corresponding Cartesian tree.
+  - Each recursive step needs the maximum value in a range, not just the value at one end.
+  - There is a classic linear monotonic-stack solution, but the range-query view is still worth recognizing.
+relatedSlugs:
+  - segment-tree
+provenance:
+  - title: "GeeksforGeeks - Cartesian tree from inorder traversal | Segment Tree"
+    href: https://www.geeksforgeeks.org/dsa/cartesian-tree-from-inorder-traversal-segment-tree/
+    kind: Implementation
+  - title: cp-algorithms - Segment Tree
+    href: https://cp-algorithms.com/data_structures/segment_tree.html
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Cartesian trees combine two constraints: the inorder traversal is fixed, and every parent must be the maximum value of its subtree. That means each recursive interval needs one range-maximum query to choose its root, then the same problem repeats on the left and right slices.
+
+## Worked Example
+
+For `[3, 7, 4, 8]`, the maximum over the whole interval is `8`, so it becomes the root. The left interval `[3, 7, 4]` then chooses `7` as its root, giving the preorder traversal `[8, 7, 3, 4]`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class MaxIndexSegmentTree {
+  constructor(values) {
+    if (!Array.isArray(values) || values.length === 0) {
+      throw new RangeError('Values must be a non-empty array');
+    }
+
+    this.values = values;
+    this.size = values.length;
+    this.tree = new Array(this.size * 4).fill(-1);
+    this.build(1, 0, this.size - 1);
+  }
+
+  betterIndex(leftIndex, rightIndex) {
+    if (leftIndex === -1) {
+      return rightIndex;
+    }
+
+    if (rightIndex === -1) {
+      return leftIndex;
+    }
+
+    return this.values[leftIndex] >= this.values[rightIndex] ? leftIndex : rightIndex;
+  }
+
+  build(node, left, right) {
+    if (left === right) {
+      this.tree[node] = left;
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    this.build(node * 2, left, mid);
+    this.build(node * 2 + 1, mid + 1, right);
+    this.tree[node] = this.betterIndex(this.tree[node * 2], this.tree[node * 2 + 1]);
+  }
+
+  query(queryLeft, queryRight) {
+    return this.queryNode(1, 0, this.size - 1, queryLeft, queryRight);
+  }
+
+  queryNode(node, left, right, queryLeft, queryRight) {
+    if (queryRight < left || right < queryLeft) {
+      return -1;
+    }
+
+    if (queryLeft <= left && right <= queryRight) {
+      return this.tree[node];
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    return this.betterIndex(
+      this.queryNode(node * 2, left, mid, queryLeft, queryRight),
+      this.queryNode(node * 2 + 1, mid + 1, right, queryLeft, queryRight),
+    );
+  }
+}
+
+function buildCartesianTreeFromInorderTraversal(values) {
+  const maxIndexTree = new MaxIndexSegmentTree(values);
+
+  const build = (left, right) => {
+    if (left > right) {
+      return null;
+    }
+
+    const maxIndex = maxIndexTree.query(left, right);
+    return {
+      value: values[maxIndex],
+      left: build(left, maxIndex - 1),
+      right: build(maxIndex + 1, right),
+    };
+  };
+
+  return build(0, values.length - 1);
+}
+
+function preorderTraversal(node, result = []) {
+  if (node === null) {
+    return result;
+  }
+
+  result.push(node.value);
+  preorderTraversal(node.left, result);
+  preorderTraversal(node.right, result);
+  return result;
+}
+```
+
+```ts
+type CartesianNode = {
+  value: number;
+  left: CartesianNode | null;
+  right: CartesianNode | null;
+};
+
+class MaxIndexSegmentTree {
+  private readonly values: number[];
+  private readonly size: number;
+  private readonly tree: number[];
+
+  constructor(values: number[]) {
+    if (values.length === 0) {
+      throw new RangeError('Values must be a non-empty array');
+    }
+
+    this.values = values;
+    this.size = values.length;
+    this.tree = new Array<number>(this.size * 4).fill(-1);
+    this.build(1, 0, this.size - 1);
+  }
+
+  query(queryLeft: number, queryRight: number): number {
+    return this.queryNode(1, 0, this.size - 1, queryLeft, queryRight);
+  }
+
+  private betterIndex(leftIndex: number, rightIndex: number): number {
+    if (leftIndex === -1) {
+      return rightIndex;
+    }
+
+    if (rightIndex === -1) {
+      return leftIndex;
+    }
+
+    return this.values[leftIndex] >= this.values[rightIndex] ? leftIndex : rightIndex;
+  }
+
+  private build(node: number, left: number, right: number): void {
+    if (left === right) {
+      this.tree[node] = left;
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    this.build(node * 2, left, mid);
+    this.build(node * 2 + 1, mid + 1, right);
+    this.tree[node] = this.betterIndex(this.tree[node * 2], this.tree[node * 2 + 1]);
+  }
+
+  private queryNode(
+    node: number,
+    left: number,
+    right: number,
+    queryLeft: number,
+    queryRight: number,
+  ): number {
+    if (queryRight < left || right < queryLeft) {
+      return -1;
+    }
+
+    if (queryLeft <= left && right <= queryRight) {
+      return this.tree[node];
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    return this.betterIndex(
+      this.queryNode(node * 2, left, mid, queryLeft, queryRight),
+      this.queryNode(node * 2 + 1, mid + 1, right, queryLeft, queryRight),
+    );
+  }
+}
+
+export function buildCartesianTreeFromInorderTraversal(values: number[]): CartesianNode | null {
+  const maxIndexTree = new MaxIndexSegmentTree(values);
+
+  const build = (left: number, right: number): CartesianNode | null => {
+    if (left > right) {
+      return null;
+    }
+
+    const maxIndex = maxIndexTree.query(left, right);
+    return {
+      value: values[maxIndex],
+      left: build(left, maxIndex - 1),
+      right: build(maxIndex + 1, right),
+    };
+  };
+
+  return build(0, values.length - 1);
+}
+
+export function preorderTraversal(node: CartesianNode | null, result: number[] = []): number[] {
+  if (node === null) {
+    return result;
+  }
+
+  result.push(node.value);
+  preorderTraversal(node.left, result);
+  preorderTraversal(node.right, result);
+  return result;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How does the linear monotonic-stack construction compare with this range-query approach?
+- If equal values are allowed, what tie-breaking rule should define the Cartesian tree uniquely?
+- What other tree-reconstruction tasks can be phrased as repeated range-extremum queries?
+
+## Common Pitfalls
+
+- Forgetting that the Cartesian tree root is the maximum of the interval, not the first or last element.
+- Returning values instead of indices from the segment tree and losing the split position.
+- Neglecting the empty-interval base case in the recursive builder.

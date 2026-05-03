@@ -1,0 +1,169 @@
+---
+title: Calculate the Sum of GCD over all subarrays
+slug: calculate-the-sum-of-gcd-over-all-subarrays
+category: Number Theory
+summary: Maintain the distinct GCD values of all subarrays ending at each position and accumulate their contribution counts.
+description: Calculate the Sum of GCD over all subarrays relies on the fact that the set of distinct suffix GCD values stays small, so each new element can update all subarray-ending GCD totals compactly.
+dataStructures:
+  - Array
+techniques:
+  - Number Theory
+  - Dynamic Programming
+  - GCD
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - sum of gcds of all subarrays
+  - subarray gcd contribution sum
+  - rolling distinct suffix gcds
+useCases:
+  - Summing a range function over every subarray without enumerating them explicitly
+  - Leveraging the small number of distinct GCD states per suffix
+  - Replacing expensive repeated range-GCD queries with compressed rolling states
+complexity:
+  time: O(n log V)
+  space: O(log V)
+  notes: Each step merges equal GCD states, and the number of distinct GCD values for subarrays ending at one position is logarithmically bounded by the value range.
+interviewSignals:
+  - The prompt asks for a total over all subarrays, which rules out per-query range structures as the final form.
+  - GCD values only decrease as a subarray grows, so repeated states compress naturally.
+  - The source may discuss segment trees or sparse tables, but the rolling-GCD formulation is usually the interview-friendly endpoint.
+relatedSlugs:
+  - get-euclid-gcd
+  - segment-tree
+provenance:
+  - title: "GeeksforGeeks - Calculate the Sum of GCD over all subarrays"
+    href: https://www.geeksforgeeks.org/dsa/calculate-the-sum-of-gcd-over-all-subarrays/
+    kind: Implementation
+  - title: cp-algorithms - Euclidean algorithm for computing the greatest common divisor
+    href: https://cp-algorithms.com/algebra/euclid-algorithm.html
+    kind: Reference
+---
+
+## Why It Surfaces
+
+The brute-force solution is obvious and unusable. The real trick is noticing that as you extend subarrays ending at position `i`, their GCDs can only stay the same or decrease, so many different subarrays collapse into the same GCD bucket.
+
+## Worked Example
+
+For `[1, 2, 3, 4, 5]`, the sum of GCDs over all subarrays is `25`. For `[2, 2, 2, 3, 5, 5]`, the same total becomes `41`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function gcd(left, right) {
+  let a = Math.abs(left);
+  let b = Math.abs(right);
+
+  while (b !== 0) {
+    const remainder = a % b;
+    a = b;
+    b = remainder;
+  }
+
+  return a;
+}
+
+function calculateTheSumOfGcdOverAllSubarrays(values) {
+  if (!Array.isArray(values) || values.length === 0) {
+    return 0n;
+  }
+
+  let suffixGcdGroups = [];
+  let total = 0n;
+
+  for (const value of values) {
+    if (!Number.isSafeInteger(value) || value <= 0) {
+      throw new RangeError('Values must be positive safe integers');
+    }
+
+    const nextGroups = [[value, 1n]];
+
+    for (const [currentGcd, count] of suffixGcdGroups) {
+      const nextGcd = gcd(currentGcd, value);
+      const lastGroup = nextGroups[nextGroups.length - 1];
+
+      if (lastGroup[0] === nextGcd) {
+        lastGroup[1] += count;
+      } else {
+        nextGroups.push([nextGcd, count]);
+      }
+    }
+
+    suffixGcdGroups = nextGroups;
+
+    for (const [currentGcd, count] of suffixGcdGroups) {
+      total += BigInt(currentGcd) * count;
+    }
+  }
+
+  return total;
+}
+```
+
+```ts
+function gcd(left: number, right: number): number {
+  let a = Math.abs(left);
+  let b = Math.abs(right);
+
+  while (b !== 0) {
+    const remainder = a % b;
+    a = b;
+    b = remainder;
+  }
+
+  return a;
+}
+
+export function calculateTheSumOfGcdOverAllSubarrays(values: number[]): bigint {
+  if (values.length === 0) {
+    return 0n;
+  }
+
+  let suffixGcdGroups: Array<[number, bigint]> = [];
+  let total = 0n;
+
+  for (const value of values) {
+    if (!Number.isSafeInteger(value) || value <= 0) {
+      throw new RangeError('Values must be positive safe integers');
+    }
+
+    const nextGroups: Array<[number, bigint]> = [[value, 1n]];
+
+    for (const [currentGcd, count] of suffixGcdGroups) {
+      const nextGcd = gcd(currentGcd, value);
+      const lastGroup = nextGroups[nextGroups.length - 1];
+
+      if (lastGroup[0] === nextGcd) {
+        lastGroup[1] += count;
+      } else {
+        nextGroups.push([nextGcd, count]);
+      }
+    }
+
+    suffixGcdGroups = nextGroups;
+
+    for (const [currentGcd, count] of suffixGcdGroups) {
+      total += BigInt(currentGcd) * count;
+    }
+  }
+
+  return total;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would the implementation change if the answer had to be returned modulo a prime?
+- Why does the number of distinct suffix GCD values stay small in practice and in theory?
+- When is a segment tree or sparse table still useful for this family of problems?
+
+## Common Pitfalls
+
+- Enumerating every subarray and recomputing its GCD from scratch.
+- Failing to merge adjacent groups that collapse to the same GCD after adding a new value.
+- Using `number` for the final sum when the count of subarrays becomes large.

@@ -1,0 +1,231 @@
+---
+title: Count number of increasing sub-sequences
+slug: count-number-of-increasing-sub-sequences
+category: Dynamic Programming
+summary: Coordinate-compress the values, then use a sum segment tree to count how many increasing subsequences end at each rank.
+description: Count number of increasing sub-sequences is the counting variant of LIS where every element contributes one new subsequence plus all smaller-ranked subsequences that can extend into it.
+dataStructures:
+  - Array
+  - Binary Tree
+techniques:
+  - Dynamic Programming
+  - Segment Tree
+  - Coordinate Compression
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - count all increasing subsequences
+  - number of strictly increasing subsequences
+  - dp with order-statistic sum tree
+useCases:
+  - Counting monotone subsequences without the quadratic DP scan
+  - Turning value comparisons into prefix sums over compressed ranks
+  - Reusing a segment tree for additive dynamic programming states
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: Compression sorts the distinct values once, and each array element performs one prefix-sum query plus one point add.
+interviewSignals:
+  - The prompt asks for the count of all increasing subsequences, not just the longest one.
+  - The natural DP transition scans all smaller previous values unless you aggregate by rank.
+  - Duplicate values require a strictly-smaller query, not a smaller-or-equal one.
+relatedSlugs:
+  - longest-increasing-subsequence
+  - segment-tree
+provenance:
+  - title: "GeeksforGeeks - Count number of increasing sub-sequences : O(NlogN)"
+    href: https://www.geeksforgeeks.org/dsa/count-number-of-increasing-sub-sequences-onlogn/
+    kind: Implementation
+  - title: cp-algorithms - Segment Tree
+    href: https://cp-algorithms.com/data_structures/segment_tree.html
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is what happens when the usual LIS recurrence becomes a counting problem. For each value, you want the sum of counts for all smaller values seen so far, so the bottleneck is no longer choosing a transition but aggregating many transitions quickly.
+
+## Worked Example
+
+For `[1, 2, 3]`, every non-empty subsequence is increasing, so the answer is `7`. For `[3, 2, 1]`, only the three single-element subsequences qualify, so the answer is `3`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class BigIntSumSegmentTree {
+  constructor(size) {
+    this.size = size;
+    this.tree = new Array(size * 4).fill(0n);
+  }
+
+  add(index, delta) {
+    this.addNode(1, 0, this.size - 1, index, delta);
+  }
+
+  addNode(node, left, right, index, delta) {
+    if (left === right) {
+      this.tree[node] += delta;
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    if (index <= mid) {
+      this.addNode(node * 2, left, mid, index, delta);
+    } else {
+      this.addNode(node * 2 + 1, mid + 1, right, index, delta);
+    }
+
+    this.tree[node] = this.tree[node * 2] + this.tree[node * 2 + 1];
+  }
+
+  query(queryLeft, queryRight) {
+    if (queryLeft > queryRight) {
+      return 0n;
+    }
+
+    return this.queryNode(1, 0, this.size - 1, queryLeft, queryRight);
+  }
+
+  queryNode(node, left, right, queryLeft, queryRight) {
+    if (queryRight < left || right < queryLeft) {
+      return 0n;
+    }
+
+    if (queryLeft <= left && right <= queryRight) {
+      return this.tree[node];
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    return (
+      this.queryNode(node * 2, left, mid, queryLeft, queryRight)
+      + this.queryNode(node * 2 + 1, mid + 1, right, queryLeft, queryRight)
+    );
+  }
+}
+
+function countNumberOfIncreasingSubSequences(values) {
+  if (!Array.isArray(values) || values.length === 0) {
+    return 0n;
+  }
+
+  const ranks = [...new Set(values)].sort((left, right) => left - right);
+  const rankByValue = new Map(ranks.map((value, index) => [value, index]));
+  const tree = new BigIntSumSegmentTree(ranks.length);
+
+  let total = 0n;
+
+  for (const value of values) {
+    const rank = rankByValue.get(value);
+    const extendableCount = tree.query(0, rank - 1);
+    const currentCount = 1n + extendableCount;
+    tree.add(rank, currentCount);
+    total += currentCount;
+  }
+
+  return total;
+}
+```
+
+```ts
+class BigIntSumSegmentTree {
+  private readonly size: number;
+  private readonly tree: bigint[];
+
+  constructor(size: number) {
+    this.size = size;
+    this.tree = new Array<bigint>(size * 4).fill(0n);
+  }
+
+  add(index: number, delta: bigint): void {
+    this.addNode(1, 0, this.size - 1, index, delta);
+  }
+
+  query(queryLeft: number, queryRight: number): bigint {
+    if (queryLeft > queryRight) {
+      return 0n;
+    }
+
+    return this.queryNode(1, 0, this.size - 1, queryLeft, queryRight);
+  }
+
+  private addNode(node: number, left: number, right: number, index: number, delta: bigint): void {
+    if (left === right) {
+      this.tree[node] += delta;
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    if (index <= mid) {
+      this.addNode(node * 2, left, mid, index, delta);
+    } else {
+      this.addNode(node * 2 + 1, mid + 1, right, index, delta);
+    }
+
+    this.tree[node] = this.tree[node * 2] + this.tree[node * 2 + 1];
+  }
+
+  private queryNode(
+    node: number,
+    left: number,
+    right: number,
+    queryLeft: number,
+    queryRight: number,
+  ): bigint {
+    if (queryRight < left || right < queryLeft) {
+      return 0n;
+    }
+
+    if (queryLeft <= left && right <= queryRight) {
+      return this.tree[node];
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    return (
+      this.queryNode(node * 2, left, mid, queryLeft, queryRight)
+      + this.queryNode(node * 2 + 1, mid + 1, right, queryLeft, queryRight)
+    );
+  }
+}
+
+export function countNumberOfIncreasingSubSequences(values: number[]): bigint {
+  if (values.length === 0) {
+    return 0n;
+  }
+
+  const ranks = [...new Set(values)].sort((left, right) => left - right);
+  const rankByValue = new Map<number, number>(ranks.map((value, index) => [value, index]));
+  const tree = new BigIntSumSegmentTree(ranks.length);
+
+  let total = 0n;
+
+  for (const value of values) {
+    const rank = rankByValue.get(value);
+    if (rank === undefined) {
+      throw new Error('Missing compressed rank');
+    }
+
+    const extendableCount = tree.query(0, rank - 1);
+    const currentCount = 1n + extendableCount;
+    tree.add(rank, currentCount);
+    total += currentCount;
+  }
+
+  return total;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you add a modulus if the exact count becomes too large?
+- Why must duplicates query only strictly smaller ranks?
+- Could a Fenwick tree replace the segment tree here without changing the recurrence?
+
+## Common Pitfalls
+
+- Counting non-decreasing subsequences by accident when duplicates are present.
+- Forgetting to coordinate-compress before building the tree.
+- Using `number` for counts and silently overflowing on large inputs.

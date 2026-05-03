@@ -1,0 +1,271 @@
+---
+title: Maximize length of longest subarray consisting of same elements by at most K decrements
+slug: maximize-length-of-longest-subarray-consisting-of-same-elements-by-at-most-k-decrements
+category: Range Queries
+summary: Combine prefix sums with a range-min segment tree and binary search to find the longest window that can be flattened to its minimum.
+description: Maximize length of longest subarray consisting of same elements by at most K decrements asks for the widest interval whose sum exceeds its interval minimum by at most K total decrements.
+dataStructures:
+  - Array
+  - Binary Tree
+techniques:
+  - Range Queries
+  - Segment Tree
+  - Binary Search
+  - Prefix Sum
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - longest equalizable subarray with decrements
+  - flatten subarray to minimum with limited decrements
+  - longest range reducible to one value
+useCases:
+  - Converting a range-transformation cost into a min query and a prefix-sum lookup
+  - Practicing binary search on the answer for every starting index
+  - Recognizing when a custom range cost can be checked quickly after preprocessing
+complexity:
+  time: O(n log^2 n)
+  space: O(n)
+  notes: Each starting index performs a binary search, and every feasibility check uses one range-min query and one prefix-sum difference.
+interviewSignals:
+  - You are allowed to only decrease values, so the target height of a window must be its minimum.
+  - The cost of equalizing a window can be computed from its sum and minimum.
+  - Many overlapping min queries suggest preprocessing rather than rescanning each interval.
+relatedSlugs:
+  - binary-search
+  - segment-tree
+provenance:
+  - title: "GeeksforGeeks - Maximize length of longest subarray consisting of same elements by at most K decrements"
+    href: https://www.geeksforgeeks.org/dsa/maximize-length-of-longest-subarray-consisting-of-same-elements-by-at-most-k-decrements/
+    kind: Implementation
+  - title: cp-algorithms - Segment Tree
+    href: https://cp-algorithms.com/data_structures/segment_tree.html
+    kind: Reference
+---
+
+## Why It Surfaces
+
+The prompt looks like a greedy array-editing problem, but the real question is whether a candidate window can be flattened to one value within budget. Because decrements are the only allowed operation, the target must be the interval minimum, so every check reduces to `sum(window) - min(window) * length(window)`.
+
+## Worked Example
+
+For `[1, 7, 3, 4, 5, 6]` with `K = 6`, the best window is `[3, 4, 5, 6]`. Its minimum is `3`, and the total decrements needed are `(3 + 4 + 5 + 6) - 4 * 3 = 6`, so the answer is `4`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class RangeMinSegmentTree {
+  constructor(values) {
+    if (!Array.isArray(values) || values.length === 0) {
+      throw new RangeError('Values must be a non-empty array');
+    }
+
+    this.values = values.slice();
+    this.size = values.length;
+    this.tree = new Array(this.size * 4).fill(Number.POSITIVE_INFINITY);
+    this.build(1, 0, this.size - 1);
+  }
+
+  build(node, left, right) {
+    if (left === right) {
+      this.tree[node] = this.values[left];
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    this.build(node * 2, left, mid);
+    this.build(node * 2 + 1, mid + 1, right);
+    this.tree[node] = Math.min(this.tree[node * 2], this.tree[node * 2 + 1]);
+  }
+
+  query(queryLeft, queryRight) {
+    return this.queryNode(1, 0, this.size - 1, queryLeft, queryRight);
+  }
+
+  queryNode(node, left, right, queryLeft, queryRight) {
+    if (queryRight < left || right < queryLeft) {
+      return Number.POSITIVE_INFINITY;
+    }
+
+    if (queryLeft <= left && right <= queryRight) {
+      return this.tree[node];
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    return Math.min(
+      this.queryNode(node * 2, left, mid, queryLeft, queryRight),
+      this.queryNode(node * 2 + 1, mid + 1, right, queryLeft, queryRight),
+    );
+  }
+}
+
+function maximizeLengthOfLongestSubarrayConsistingOfSameElementsByAtMostKDecrements(
+  values,
+  maxDecrements,
+) {
+  if (!Array.isArray(values) || values.length === 0) {
+    return 0;
+  }
+
+  if (!Number.isInteger(maxDecrements) || maxDecrements < 0) {
+    throw new RangeError('K must be a non-negative integer');
+  }
+
+  const prefixSums = new Array(values.length + 1).fill(0);
+  for (let index = 0; index < values.length; index += 1) {
+    prefixSums[index + 1] = prefixSums[index] + values[index];
+  }
+
+  const minTree = new RangeMinSegmentTree(values);
+
+  const canFlatten = (left, right) => {
+    const minimum = minTree.query(left, right);
+    const sum = prefixSums[right + 1] - prefixSums[left];
+    const length = right - left + 1;
+    return sum - minimum * length <= maxDecrements;
+  };
+
+  let best = 1;
+
+  for (let left = 0; left < values.length; left += 1) {
+    let low = left;
+    let high = values.length - 1;
+    let answer = left;
+
+    while (low <= high) {
+      const mid = Math.floor((low + high) / 2);
+      if (canFlatten(left, mid)) {
+        answer = mid;
+        low = mid + 1;
+      } else {
+        high = mid - 1;
+      }
+    }
+
+    best = Math.max(best, answer - left + 1);
+  }
+
+  return best;
+}
+```
+
+```ts
+class RangeMinSegmentTree {
+  private readonly values: number[];
+  private readonly size: number;
+  private readonly tree: number[];
+
+  constructor(values: number[]) {
+    if (values.length === 0) {
+      throw new RangeError('Values must be a non-empty array');
+    }
+
+    this.values = values.slice();
+    this.size = values.length;
+    this.tree = new Array<number>(this.size * 4).fill(Number.POSITIVE_INFINITY);
+    this.build(1, 0, this.size - 1);
+  }
+
+  query(queryLeft: number, queryRight: number): number {
+    return this.queryNode(1, 0, this.size - 1, queryLeft, queryRight);
+  }
+
+  private build(node: number, left: number, right: number): void {
+    if (left === right) {
+      this.tree[node] = this.values[left];
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    this.build(node * 2, left, mid);
+    this.build(node * 2 + 1, mid + 1, right);
+    this.tree[node] = Math.min(this.tree[node * 2], this.tree[node * 2 + 1]);
+  }
+
+  private queryNode(
+    node: number,
+    left: number,
+    right: number,
+    queryLeft: number,
+    queryRight: number,
+  ): number {
+    if (queryRight < left || right < queryLeft) {
+      return Number.POSITIVE_INFINITY;
+    }
+
+    if (queryLeft <= left && right <= queryRight) {
+      return this.tree[node];
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    return Math.min(
+      this.queryNode(node * 2, left, mid, queryLeft, queryRight),
+      this.queryNode(node * 2 + 1, mid + 1, right, queryLeft, queryRight),
+    );
+  }
+}
+
+export function maximizeLengthOfLongestSubarrayConsistingOfSameElementsByAtMostKDecrements(
+  values: number[],
+  maxDecrements: number,
+): number {
+  if (values.length === 0) {
+    return 0;
+  }
+
+  if (!Number.isInteger(maxDecrements) || maxDecrements < 0) {
+    throw new RangeError('K must be a non-negative integer');
+  }
+
+  const prefixSums = new Array<number>(values.length + 1).fill(0);
+  for (let index = 0; index < values.length; index += 1) {
+    prefixSums[index + 1] = prefixSums[index] + values[index];
+  }
+
+  const minTree = new RangeMinSegmentTree(values);
+
+  const canFlatten = (left: number, right: number): boolean => {
+    const minimum = minTree.query(left, right);
+    const sum = prefixSums[right + 1] - prefixSums[left];
+    const length = right - left + 1;
+    return sum - minimum * length <= maxDecrements;
+  };
+
+  let best = 1;
+
+  for (let left = 0; left < values.length; left += 1) {
+    let low = left;
+    let high = values.length - 1;
+    let answer = left;
+
+    while (low <= high) {
+      const mid = Math.floor((low + high) / 2);
+      if (canFlatten(left, mid)) {
+        answer = mid;
+        low = mid + 1;
+      } else {
+        high = mid - 1;
+      }
+    }
+
+    best = Math.max(best, answer - left + 1);
+  }
+
+  return best;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Can you replace the segment tree with a monotonic-queue sliding window and improve the complexity?
+- Why must the target value for a window be its minimum rather than some median or average?
+- How would the problem change if increments were also allowed?
+
+## Common Pitfalls
+
+- Forgetting that only decrements are allowed.
+- Recomputing the minimum of every candidate range from scratch.
+- Binary-searching window lengths without a fast feasibility check.

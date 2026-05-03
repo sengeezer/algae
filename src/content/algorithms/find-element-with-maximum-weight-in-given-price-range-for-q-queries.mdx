@@ -1,0 +1,281 @@
+---
+title: Find element with maximum weight in given price range for Q queries
+slug: find-element-with-maximum-weight-in-given-price-range-for-q-queries
+category: Range Queries
+summary: Sort items by price, binary-search the covered indices, and use a max segment tree to answer each price-range query.
+description: Find element with maximum weight in given price range for Q queries is the offline interval-search problem where prices determine the index window and a segment tree returns the heaviest item inside it.
+dataStructures:
+  - Array
+  - Binary Tree
+techniques:
+  - Range Queries
+  - Segment Tree
+  - Binary Search
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - max weight by price interval
+  - heaviest item in price range
+  - range maximum over sorted prices
+useCases:
+  - Answering many price-band queries over a fixed item catalog
+  - Combining binary search over keys with a segment tree over payloads
+  - Preprocessing tabular data for repeated interval lookups
+complexity:
+  time: O(n log n + q log n)
+  space: O(n)
+  notes: Sorting items dominates preprocessing, and each query does two logarithmic bound searches plus one logarithmic max query.
+interviewSignals:
+  - Queries are defined over value ranges rather than direct indices.
+  - The data is static, so you can sort once and reuse that ordering.
+  - The payload to return is an aggregate, not the raw slice of matching items.
+relatedSlugs:
+  - binary-search
+  - segment-tree
+provenance:
+  - title: "GeeksforGeeks - Find element with maximum weight in given price range for Q queries"
+    href: https://www.geeksforgeeks.org/dsa/find-element-with-maximum-weight-in-given-price-range-for-q-queries/
+    kind: Implementation
+  - title: cp-algorithms - Segment Tree
+    href: https://cp-algorithms.com/data_structures/segment_tree.html
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This pattern appears whenever the query range is defined over a sortable key such as price, timestamp, or coordinate. After sorting by that key, every query becomes an index interval, so the remaining problem is a standard range maximum query.
+
+## Worked Example
+
+For items `[(24, 6), (30, 8), (21, 7)]`, sort by price into `[(21, 7), (24, 6), (30, 8)]`. The price query `[10, 24]` covers the first two items, so the maximum weight is `7`. The query `[20, 30]` covers all three, so the answer is `8`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function lowerBound(values, target) {
+  let left = 0;
+  let right = values.length;
+
+  while (left < right) {
+    const mid = Math.floor((left + right) / 2);
+    if (values[mid] < target) {
+      left = mid + 1;
+    } else {
+      right = mid;
+    }
+  }
+
+  return left;
+}
+
+function upperBound(values, target) {
+  let left = 0;
+  let right = values.length;
+
+  while (left < right) {
+    const mid = Math.floor((left + right) / 2);
+    if (values[mid] <= target) {
+      left = mid + 1;
+    } else {
+      right = mid;
+    }
+  }
+
+  return left;
+}
+
+class MaxWeightByPriceRange {
+  constructor(items) {
+    if (!Array.isArray(items) || items.length === 0) {
+      throw new RangeError('Items must be a non-empty array');
+    }
+
+    this.items = items
+      .map(([price, weight]) => ({ price, weight }))
+      .sort((left, right) => left.price - right.price);
+    this.prices = this.items.map((item) => item.price);
+    this.weights = this.items.map((item) => item.weight);
+    this.size = this.items.length;
+    this.tree = new Array(this.size * 4).fill(Number.NEGATIVE_INFINITY);
+    this.build(1, 0, this.size - 1);
+  }
+
+  build(node, left, right) {
+    if (left === right) {
+      this.tree[node] = this.weights[left];
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    this.build(node * 2, left, mid);
+    this.build(node * 2 + 1, mid + 1, right);
+    this.tree[node] = Math.max(this.tree[node * 2], this.tree[node * 2 + 1]);
+  }
+
+  query(minPrice, maxPrice) {
+    if (minPrice > maxPrice) {
+      throw new RangeError('Price range is invalid');
+    }
+
+    const left = lowerBound(this.prices, minPrice);
+    const right = upperBound(this.prices, maxPrice) - 1;
+
+    if (left > right) {
+      return null;
+    }
+
+    return this.queryNode(1, 0, this.size - 1, left, right);
+  }
+
+  queryNode(node, left, right, queryLeft, queryRight) {
+    if (queryRight < left || right < queryLeft) {
+      return Number.NEGATIVE_INFINITY;
+    }
+
+    if (queryLeft <= left && right <= queryRight) {
+      return this.tree[node];
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    return Math.max(
+      this.queryNode(node * 2, left, mid, queryLeft, queryRight),
+      this.queryNode(node * 2 + 1, mid + 1, right, queryLeft, queryRight),
+    );
+  }
+}
+
+function findElementWithMaximumWeightInGivenPriceRangeForQQueries(items, queries) {
+  const index = new MaxWeightByPriceRange(items);
+  return queries.map(([minPrice, maxPrice]) => index.query(minPrice, maxPrice));
+}
+```
+
+```ts
+function lowerBound(values: number[], target: number): number {
+  let left = 0;
+  let right = values.length;
+
+  while (left < right) {
+    const mid = Math.floor((left + right) / 2);
+    if (values[mid] < target) {
+      left = mid + 1;
+    } else {
+      right = mid;
+    }
+  }
+
+  return left;
+}
+
+function upperBound(values: number[], target: number): number {
+  let left = 0;
+  let right = values.length;
+
+  while (left < right) {
+    const mid = Math.floor((left + right) / 2);
+    if (values[mid] <= target) {
+      left = mid + 1;
+    } else {
+      right = mid;
+    }
+  }
+
+  return left;
+}
+
+class MaxWeightByPriceRange {
+  private readonly prices: number[];
+  private readonly weights: number[];
+  private readonly size: number;
+  private readonly tree: number[];
+
+  constructor(items: Array<[number, number]>) {
+    if (items.length === 0) {
+      throw new RangeError('Items must be a non-empty array');
+    }
+
+    const sorted = items
+      .map(([price, weight]) => ({ price, weight }))
+      .sort((left, right) => left.price - right.price);
+
+    this.prices = sorted.map((item) => item.price);
+    this.weights = sorted.map((item) => item.weight);
+    this.size = sorted.length;
+    this.tree = new Array<number>(this.size * 4).fill(Number.NEGATIVE_INFINITY);
+    this.build(1, 0, this.size - 1);
+  }
+
+  query(minPrice: number, maxPrice: number): number | null {
+    if (minPrice > maxPrice) {
+      throw new RangeError('Price range is invalid');
+    }
+
+    const left = lowerBound(this.prices, minPrice);
+    const right = upperBound(this.prices, maxPrice) - 1;
+
+    if (left > right) {
+      return null;
+    }
+
+    return this.queryNode(1, 0, this.size - 1, left, right);
+  }
+
+  private build(node: number, left: number, right: number): void {
+    if (left === right) {
+      this.tree[node] = this.weights[left];
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    this.build(node * 2, left, mid);
+    this.build(node * 2 + 1, mid + 1, right);
+    this.tree[node] = Math.max(this.tree[node * 2], this.tree[node * 2 + 1]);
+  }
+
+  private queryNode(
+    node: number,
+    left: number,
+    right: number,
+    queryLeft: number,
+    queryRight: number,
+  ): number {
+    if (queryRight < left || right < queryLeft) {
+      return Number.NEGATIVE_INFINITY;
+    }
+
+    if (queryLeft <= left && right <= queryRight) {
+      return this.tree[node];
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    return Math.max(
+      this.queryNode(node * 2, left, mid, queryLeft, queryRight),
+      this.queryNode(node * 2 + 1, mid + 1, right, queryLeft, queryRight),
+    );
+  }
+}
+
+export function findElementWithMaximumWeightInGivenPriceRangeForQQueries(
+  items: Array<[number, number]>,
+  queries: Array<[number, number]>,
+): Array<number | null> {
+  const index = new MaxWeightByPriceRange(items);
+  return queries.map(([minPrice, maxPrice]) => index.query(minPrice, maxPrice));
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- If items were inserted online, what data structure would replace the sorted static array?
+- Would you return the weight, the full item, or the original index in a production API?
+- How would you break ties when two items in range have the same maximum weight?
+
+## Common Pitfalls
+
+- Forgetting to sort by price before building the range structure.
+- Using one binary search bound for both sides of the interval.
+- Ignoring the case where no item falls inside the requested price range.
