@@ -1,0 +1,287 @@
+---
+title: Maximum Occurrence in a Given Range
+slug: maximum-occurrence-in-a-given-range
+category: Range Queries
+summary: Compress a sorted array into runs and query the maximum run frequency inside any interval with a segment tree.
+description: Maximum Occurrence in a Given Range is the sorted-array frequency-query problem where partial runs at the edges are handled separately and a segment tree covers only the fully enclosed runs.
+dataStructures:
+  - Array
+  - Segment Tree
+techniques:
+  - Range Queries
+  - Run-Length Compression
+  - Binary Search
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - most frequent value in sorted range
+  - maximum frequency in a query interval
+  - sorted array frequency range query
+useCases:
+  - Answering repeated frequency questions on sorted event streams
+  - Splitting a query into partial edge runs and fully covered middle runs
+  - Practicing segment trees on compressed rather than raw input
+complexity:
+  time: O(n + q log n)
+  space: O(n)
+  notes: The array is first compressed into contiguous runs, then each query combines the left partial run, right partial run, and a max query over any whole runs in the middle.
+interviewSignals:
+  - The input array is explicitly non-decreasing.
+  - The query asks for the largest frequency, not the most frequent value itself.
+  - Naively counting frequencies per query wastes the sorted structure.
+relatedSlugs:
+  - segment-tree
+  - binary-search
+provenance:
+  - title: "GeeksforGeeks - Maximum Occurrence in a Given Range"
+    href: https://www.geeksforgeeks.org/dsa/maximum-occurrence-given-range/
+    kind: Implementation
+  - title: cp-algorithms - Segment Tree
+    href: https://cp-algorithms.com/data_structures/segment_tree.html
+    kind: Reference
+---
+
+## Why It Surfaces
+
+The sorted-array condition is the whole problem. Because equal values are already grouped into runs, you do not need a hash map per query. Instead, you count the truncated run on the left, the truncated run on the right, and use a max segment tree only for the fully covered runs between them.
+
+## Worked Example
+
+For `[-5, -5, 2, 2, 2, 2, 3, 7, 7, 7]`, the query `[0, 9]` returns `4` because `2` appears four times. The query `[4, 9]` returns `3` because only part of the `2` run remains in range, while `7` still appears three times fully inside it.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class RunFrequencySegmentTree {
+  constructor(values) {
+    if (!Array.isArray(values) || values.length === 0) {
+      throw new RangeError('Values must be a non-empty array');
+    }
+
+    for (let index = 1; index < values.length; index += 1) {
+      if (values[index] < values[index - 1]) {
+        throw new RangeError('Values must be sorted in non-decreasing order');
+      }
+    }
+
+    this.size = values.length;
+    this.values = values;
+    this.runStarts = [];
+    this.runEnds = [];
+    this.runCounts = [];
+    this.runIdByIndex = new Array(this.size);
+    this.buildRuns();
+    this.tree = new Array(Math.max(this.runCounts.length, 1) * 4).fill(0);
+    if (this.runCounts.length > 0) {
+      this.buildTree(1, 0, this.runCounts.length - 1);
+    }
+  }
+
+  buildRuns() {
+    let index = 0;
+    while (index < this.size) {
+      const start = index;
+      while (index + 1 < this.size && this.values[index + 1] === this.values[start]) {
+        index += 1;
+      }
+
+      const end = index;
+      const runId = this.runCounts.length;
+      this.runStarts.push(start);
+      this.runEnds.push(end);
+      this.runCounts.push(end - start + 1);
+
+      for (let position = start; position <= end; position += 1) {
+        this.runIdByIndex[position] = runId;
+      }
+
+      index += 1;
+    }
+  }
+
+  buildTree(node, left, right) {
+    if (left === right) {
+      this.tree[node] = this.runCounts[left];
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    this.buildTree(node * 2, left, mid);
+    this.buildTree(node * 2 + 1, mid + 1, right);
+    this.tree[node] = Math.max(this.tree[node * 2], this.tree[node * 2 + 1]);
+  }
+
+  query(queryLeft, queryRight) {
+    this.validateRange(queryLeft, queryRight);
+
+    const leftRun = this.runIdByIndex[queryLeft];
+    const rightRun = this.runIdByIndex[queryRight];
+    if (leftRun === rightRun) {
+      return queryRight - queryLeft + 1;
+    }
+
+    const leftPartial = this.runEnds[leftRun] - queryLeft + 1;
+    const rightPartial = queryRight - this.runStarts[rightRun] + 1;
+    const middleLeft = leftRun + 1;
+    const middleRight = rightRun - 1;
+    const middleBest = middleLeft <= middleRight ? this.queryRuns(1, 0, this.runCounts.length - 1, middleLeft, middleRight) : 0;
+
+    return Math.max(leftPartial, rightPartial, middleBest);
+  }
+
+  queryRuns(node, left, right, queryLeft, queryRight) {
+    if (queryRight < left || right < queryLeft) {
+      return 0;
+    }
+
+    if (queryLeft <= left && right <= queryRight) {
+      return this.tree[node];
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    return Math.max(
+      this.queryRuns(node * 2, left, mid, queryLeft, queryRight),
+      this.queryRuns(node * 2 + 1, mid + 1, right, queryLeft, queryRight),
+    );
+  }
+
+  validateRange(queryLeft, queryRight) {
+    if (
+      !Number.isInteger(queryLeft)
+      || !Number.isInteger(queryRight)
+      || queryLeft < 0
+      || queryRight < queryLeft
+      || queryRight >= this.size
+    ) {
+      throw new RangeError('Query range is invalid');
+    }
+  }
+}
+```
+
+```ts
+export class RunFrequencySegmentTree {
+  private readonly size: number;
+  private readonly runStarts: number[] = [];
+  private readonly runEnds: number[] = [];
+  private readonly runCounts: number[] = [];
+  private readonly runIdByIndex: number[];
+  private readonly tree: number[];
+
+  constructor(private readonly values: number[]) {
+    if (values.length === 0) {
+      throw new RangeError('Values must be a non-empty array');
+    }
+
+    for (let index = 1; index < values.length; index += 1) {
+      if (values[index] < values[index - 1]) {
+        throw new RangeError('Values must be sorted in non-decreasing order');
+      }
+    }
+
+    this.size = values.length;
+    this.runIdByIndex = new Array<number>(this.size);
+    this.buildRuns();
+    this.tree = new Array<number>(Math.max(this.runCounts.length, 1) * 4).fill(0);
+    if (this.runCounts.length > 0) {
+      this.buildTree(1, 0, this.runCounts.length - 1);
+    }
+  }
+
+  query(queryLeft: number, queryRight: number): number {
+    this.validateRange(queryLeft, queryRight);
+
+    const leftRun = this.runIdByIndex[queryLeft];
+    const rightRun = this.runIdByIndex[queryRight];
+    if (leftRun === rightRun) {
+      return queryRight - queryLeft + 1;
+    }
+
+    const leftPartial = this.runEnds[leftRun] - queryLeft + 1;
+    const rightPartial = queryRight - this.runStarts[rightRun] + 1;
+    const middleLeft = leftRun + 1;
+    const middleRight = rightRun - 1;
+    const middleBest = middleLeft <= middleRight ? this.queryRuns(1, 0, this.runCounts.length - 1, middleLeft, middleRight) : 0;
+
+    return Math.max(leftPartial, rightPartial, middleBest);
+  }
+
+  private buildRuns(): void {
+    let index = 0;
+    while (index < this.size) {
+      const start = index;
+      while (index + 1 < this.size && this.values[index + 1] === this.values[start]) {
+        index += 1;
+      }
+
+      const end = index;
+      const runId = this.runCounts.length;
+      this.runStarts.push(start);
+      this.runEnds.push(end);
+      this.runCounts.push(end - start + 1);
+
+      for (let position = start; position <= end; position += 1) {
+        this.runIdByIndex[position] = runId;
+      }
+
+      index += 1;
+    }
+  }
+
+  private buildTree(node: number, left: number, right: number): void {
+    if (left === right) {
+      this.tree[node] = this.runCounts[left];
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    this.buildTree(node * 2, left, mid);
+    this.buildTree(node * 2 + 1, mid + 1, right);
+    this.tree[node] = Math.max(this.tree[node * 2], this.tree[node * 2 + 1]);
+  }
+
+  private queryRuns(node: number, left: number, right: number, queryLeft: number, queryRight: number): number {
+    if (queryRight < left || right < queryLeft) {
+      return 0;
+    }
+
+    if (queryLeft <= left && right <= queryRight) {
+      return this.tree[node];
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    return Math.max(
+      this.queryRuns(node * 2, left, mid, queryLeft, queryRight),
+      this.queryRuns(node * 2 + 1, mid + 1, right, queryLeft, queryRight),
+    );
+  }
+
+  private validateRange(queryLeft: number, queryRight: number): void {
+    if (
+      !Number.isInteger(queryLeft)
+      || !Number.isInteger(queryRight)
+      || queryLeft < 0
+      || queryRight < queryLeft
+      || queryRight >= this.size
+    ) {
+      throw new RangeError('Query range is invalid');
+    }
+  }
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you adapt the solution if the array were no longer sorted?
+- Why can the middle part be answered with a max query over whole runs?
+- Could you replace the segment tree with a sparse table if there were no updates and only offline queries?
+
+## Common Pitfalls
+
+- Running a max query on raw frequencies without trimming partial runs at the edges.
+- Forgetting that equal values are contiguous only because the array is sorted.
+- Returning the most frequent value instead of its occurrence count.

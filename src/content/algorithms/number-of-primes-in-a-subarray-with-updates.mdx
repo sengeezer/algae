@@ -1,0 +1,334 @@
+---
+title: Number of primes in a subarray (with updates)
+slug: number-of-primes-in-a-subarray-with-updates
+category: Range Queries
+summary: Precompute primality once, store prime indicators in a segment tree, and answer prime-count queries with point updates in logarithmic time.
+description: Number of primes in a subarray (with updates) is the range-count problem where primality is reduced to a binary indicator so a segment tree can answer count queries and point assignments efficiently.
+dataStructures:
+  - Array
+  - Segment Tree
+  - Sieve
+techniques:
+  - Range Queries
+  - Point Update
+  - Prime Sieve
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - prime count range query with updates
+  - segment tree over prime indicators
+  - count primes in subarray after updates
+useCases:
+  - Answering many prime-count queries after point assignments
+  - Combining number-theory preprocessing with a mutable range-count structure
+  - Reusing a sum segment tree over boolean indicators
+complexity:
+  time: O(V log log V + (n + q) log n)
+  space: O(n + V)
+  notes: The implementation scans all update values up front, builds one sieve to the largest value V, and then uses a sum segment tree over 0-or-1 prime indicators.
+interviewSignals:
+  - Queries ask only for the count of primes in a range.
+  - Values change over time, so static prefix sums are not enough.
+  - A sieve alone helps primality checks but still needs a range-query data structure.
+relatedSlugs:
+  - segment-tree
+  - sieve-of-eratosthenes
+  - prime-check
+provenance:
+  - title: "GeeksforGeeks - Number of primes in a subarray (with updates)"
+    href: https://www.geeksforgeeks.org/dsa/number-primes-subarray-updates/
+    kind: Implementation
+  - title: cp-algorithms - Sieve of Eratosthenes
+    href: https://cp-algorithms.com/algebra/sieve-of-eratosthenes.html
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem is just a mutable range-sum query once each element is mapped to `1` for prime and `0` for non-prime. The only twist is recognizing that primality preprocessing and segment-tree counting can be composed cleanly.
+
+## Worked Example
+
+For `[1, 2, 3, 5, 7, 9]`, the query `[1, 0, 4]` returns `4` because the primes in `[0, 4]` are `2`, `3`, `5`, and `7`. After the update `[2, 3, 6]`, the same range contains only `3` primes.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function buildPrimeTable(limit) {
+  const size = Math.max(limit, 1);
+  const isPrime = new Array(size + 1).fill(true);
+  isPrime[0] = false;
+  isPrime[1] = false;
+
+  for (let value = 2; value * value <= size; value += 1) {
+    if (!isPrime[value]) {
+      continue;
+    }
+
+    for (let multiple = value * value; multiple <= size; multiple += value) {
+      isPrime[multiple] = false;
+    }
+  }
+
+  return isPrime;
+}
+
+class PrimeCountSegmentTree {
+  constructor(values, primeTable) {
+    this.size = values.length;
+    this.primeTable = primeTable;
+    this.values = [...values];
+    this.tree = new Array(this.size * 4).fill(0);
+    this.build(1, 0, this.size - 1);
+  }
+
+  build(node, left, right) {
+    if (left === right) {
+      this.tree[node] = this.primeTable[this.values[left]] ? 1 : 0;
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    this.build(node * 2, left, mid);
+    this.build(node * 2 + 1, mid + 1, right);
+    this.tree[node] = this.tree[node * 2] + this.tree[node * 2 + 1];
+  }
+
+  update(index, value) {
+    this.validateIndex(index);
+    if (!Number.isInteger(value) || value < 0 || value >= this.primeTable.length) {
+      throw new RangeError('Updated value is outside the precomputed prime table');
+    }
+
+    this.values[index] = value;
+    this.updateNode(1, 0, this.size - 1, index, value);
+  }
+
+  updateNode(node, left, right, index, value) {
+    if (left === right) {
+      this.tree[node] = this.primeTable[value] ? 1 : 0;
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    if (index <= mid) {
+      this.updateNode(node * 2, left, mid, index, value);
+    } else {
+      this.updateNode(node * 2 + 1, mid + 1, right, index, value);
+    }
+
+    this.tree[node] = this.tree[node * 2] + this.tree[node * 2 + 1];
+  }
+
+  query(queryLeft, queryRight) {
+    this.validateRange(queryLeft, queryRight);
+    return this.queryNode(1, 0, this.size - 1, queryLeft, queryRight);
+  }
+
+  queryNode(node, left, right, queryLeft, queryRight) {
+    if (queryRight < left || right < queryLeft) {
+      return 0;
+    }
+
+    if (queryLeft <= left && right <= queryRight) {
+      return this.tree[node];
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    return (
+      this.queryNode(node * 2, left, mid, queryLeft, queryRight)
+      + this.queryNode(node * 2 + 1, mid + 1, right, queryLeft, queryRight)
+    );
+  }
+
+  validateIndex(index) {
+    if (!Number.isInteger(index) || index < 0 || index >= this.size) {
+      throw new RangeError('Index is out of bounds');
+    }
+  }
+
+  validateRange(queryLeft, queryRight) {
+    if (
+      !Number.isInteger(queryLeft)
+      || !Number.isInteger(queryRight)
+      || queryLeft < 0
+      || queryRight < queryLeft
+      || queryRight >= this.size
+    ) {
+      throw new RangeError('Query range is invalid');
+    }
+  }
+}
+
+function numberOfPrimesInASubarrayWithUpdates(values, queries) {
+  const maximumValue = queries.reduce(
+    (best, query) => (query[0] === 2 ? Math.max(best, query[2]) : best),
+    Math.max(...values),
+  );
+  const primeTable = buildPrimeTable(maximumValue);
+  const tree = new PrimeCountSegmentTree(values, primeTable);
+  const results = [];
+
+  for (const [type, left, rightOrValue] of queries) {
+    if (type === 1) {
+      results.push(tree.query(left, rightOrValue));
+    } else if (type === 2) {
+      tree.update(left, rightOrValue);
+    } else {
+      throw new RangeError(`Unknown query type: ${type}`);
+    }
+  }
+
+  return results;
+}
+```
+
+```ts
+function buildPrimeTable(limit: number): boolean[] {
+  const size = Math.max(limit, 1);
+  const isPrime = new Array<boolean>(size + 1).fill(true);
+  isPrime[0] = false;
+  isPrime[1] = false;
+
+  for (let value = 2; value * value <= size; value += 1) {
+    if (!isPrime[value]) {
+      continue;
+    }
+
+    for (let multiple = value * value; multiple <= size; multiple += value) {
+      isPrime[multiple] = false;
+    }
+  }
+
+  return isPrime;
+}
+
+class PrimeCountSegmentTree {
+  private readonly size: number;
+  private readonly tree: number[];
+  private readonly values: number[];
+
+  constructor(values: number[], private readonly primeTable: boolean[]) {
+    this.size = values.length;
+    this.values = [...values];
+    this.tree = new Array<number>(this.size * 4).fill(0);
+    this.build(1, 0, this.size - 1);
+  }
+
+  update(index: number, value: number): void {
+    this.validateIndex(index);
+    if (!Number.isInteger(value) || value < 0 || value >= this.primeTable.length) {
+      throw new RangeError('Updated value is outside the precomputed prime table');
+    }
+
+    this.values[index] = value;
+    this.updateNode(1, 0, this.size - 1, index, value);
+  }
+
+  query(queryLeft: number, queryRight: number): number {
+    this.validateRange(queryLeft, queryRight);
+    return this.queryNode(1, 0, this.size - 1, queryLeft, queryRight);
+  }
+
+  private build(node: number, left: number, right: number): void {
+    if (left === right) {
+      this.tree[node] = this.primeTable[this.values[left]] ? 1 : 0;
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    this.build(node * 2, left, mid);
+    this.build(node * 2 + 1, mid + 1, right);
+    this.tree[node] = this.tree[node * 2] + this.tree[node * 2 + 1];
+  }
+
+  private updateNode(node: number, left: number, right: number, index: number, value: number): void {
+    if (left === right) {
+      this.tree[node] = this.primeTable[value] ? 1 : 0;
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    if (index <= mid) {
+      this.updateNode(node * 2, left, mid, index, value);
+    } else {
+      this.updateNode(node * 2 + 1, mid + 1, right, index, value);
+    }
+
+    this.tree[node] = this.tree[node * 2] + this.tree[node * 2 + 1];
+  }
+
+  private queryNode(node: number, left: number, right: number, queryLeft: number, queryRight: number): number {
+    if (queryRight < left || right < queryLeft) {
+      return 0;
+    }
+
+    if (queryLeft <= left && right <= queryRight) {
+      return this.tree[node];
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    return (
+      this.queryNode(node * 2, left, mid, queryLeft, queryRight)
+      + this.queryNode(node * 2 + 1, mid + 1, right, queryLeft, queryRight)
+    );
+  }
+
+  private validateIndex(index: number): void {
+    if (!Number.isInteger(index) || index < 0 || index >= this.size) {
+      throw new RangeError('Index is out of bounds');
+    }
+  }
+
+  private validateRange(queryLeft: number, queryRight: number): void {
+    if (
+      !Number.isInteger(queryLeft)
+      || !Number.isInteger(queryRight)
+      || queryLeft < 0
+      || queryRight < queryLeft
+      || queryRight >= this.size
+    ) {
+      throw new RangeError('Query range is invalid');
+    }
+  }
+}
+
+export function numberOfPrimesInASubarrayWithUpdates(
+  values: number[],
+  queries: Array<[1, number, number] | [2, number, number]>,
+): number[] {
+  const maximumValue = queries.reduce(
+    (best, query) => (query[0] === 2 ? Math.max(best, query[2]) : best),
+    Math.max(...values),
+  );
+  const primeTable = buildPrimeTable(maximumValue);
+  const tree = new PrimeCountSegmentTree(values, primeTable);
+  const results: number[] = [];
+
+  for (const [type, left, rightOrValue] of queries) {
+    if (type === 1) {
+      results.push(tree.query(left, rightOrValue));
+    } else {
+      tree.update(left, rightOrValue);
+    }
+  }
+
+  return results;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- What changes if updates can insert values larger than every query-time bound known in advance?
+- Could a Fenwick tree replace the segment tree once values are reduced to `0` or `1`?
+- How would you return the actual prime values instead of only their count?
+
+## Common Pitfalls
+
+- Rechecking primality across the whole interval for every count query.
+- Forgetting to account for update values when sizing the sieve.
+- Treating `1` as a prime when building the indicator array.

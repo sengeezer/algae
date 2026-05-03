@@ -1,0 +1,354 @@
+---
+title: String Range Queries to find the number of subsets equal to a given String
+slug: string-range-queries-to-find-the-number-of-subsets-equal-to-a-given-string
+category: Range Queries
+summary: Store 26-character frequency vectors in a segment tree so updates and substring-frequency queries both stay logarithmic.
+description: String Range Queries to find the number of subsets equal to a given String is the mutable string-frequency problem where each range query retrieves character counts and multiplies the required frequencies modulo $10^9 + 7$.
+dataStructures:
+  - String
+  - Segment Tree
+  - Frequency Table
+techniques:
+  - Range Queries
+  - Frequency Counting
+  - Modular Arithmetic
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - string subset count range query
+  - character frequency segment tree
+  - count target-letter subsets in substring
+useCases:
+  - Answering many mutable substring-frequency product queries
+  - Reusing a segment tree whose node state is a fixed-size alphabet histogram
+  - Combining point updates with frequency-based combinatorics
+complexity:
+  time: O((n + q) 26 log n)
+  space: O(26n)
+  notes: Each node stores a 26-slot frequency vector, so merging is constant with respect to alphabet size and logarithmic with respect to string length.
+interviewSignals:
+  - The target string has unique characters, so the answer is a product of frequencies.
+  - The underlying string changes between queries.
+  - Recounting letters across the whole range every time is too slow.
+relatedSlugs:
+  - segment-tree
+  - modular-arithmetic
+  - count-substrings
+provenance:
+  - title: "GeeksforGeeks - String Range Queries to find the number of subsets equal to a given String"
+    href: https://www.geeksforgeeks.org/dsa/string-range-queries-to-find-the-number-of-subsets-equal-to-a-given-string/
+    kind: Implementation
+  - title: cp-algorithms - Segment Tree
+    href: https://cp-algorithms.com/data_structures/segment_tree.html
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem is really a mutable frequency-query problem disguised as a string question. Because the source constrains the target string to have unique characters, the number of valid subsets is just the product of the frequencies of those required letters inside the queried interval.
+
+## Worked Example
+
+For `"geeekkksgskeegks"`, querying `[0, 6]` for `"gek"` gives `9` because the interval contains one `g`, three `e`s, and three `k`s. After changing index `1` from `e` to `x`, the same query returns `6`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+const MOD = 1_000_000_007n;
+
+function emptyFrequency() {
+  return new Array(26).fill(0n);
+}
+
+function mergeFrequency(leftFrequency, rightFrequency) {
+  const merged = emptyFrequency();
+  for (let index = 0; index < 26; index += 1) {
+    merged[index] = leftFrequency[index] + rightFrequency[index];
+  }
+  return merged;
+}
+
+class StringSubsetRangeQuery {
+  constructor(text) {
+    if (typeof text !== 'string' || text.length === 0) {
+      throw new RangeError('Text must be a non-empty lowercase string');
+    }
+
+    this.text = text.split('');
+    this.size = text.length;
+    this.tree = new Array(this.size * 4);
+    this.build(1, 0, this.size - 1);
+  }
+
+  build(node, left, right) {
+    if (left === right) {
+      const frequency = emptyFrequency();
+      frequency[this.charIndex(this.text[left])] = 1n;
+      this.tree[node] = frequency;
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    this.build(node * 2, left, mid);
+    this.build(node * 2 + 1, mid + 1, right);
+    this.tree[node] = mergeFrequency(this.tree[node * 2], this.tree[node * 2 + 1]);
+  }
+
+  update(index, nextChar) {
+    this.validateIndex(index);
+    this.validateCharacter(nextChar);
+    this.text[index] = nextChar;
+    this.updateNode(1, 0, this.size - 1, index, nextChar);
+  }
+
+  updateNode(node, left, right, index, nextChar) {
+    if (left === right) {
+      const frequency = emptyFrequency();
+      frequency[this.charIndex(nextChar)] = 1n;
+      this.tree[node] = frequency;
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    if (index <= mid) {
+      this.updateNode(node * 2, left, mid, index, nextChar);
+    } else {
+      this.updateNode(node * 2 + 1, mid + 1, right, index, nextChar);
+    }
+
+    this.tree[node] = mergeFrequency(this.tree[node * 2], this.tree[node * 2 + 1]);
+  }
+
+  countSubsets(queryLeft, queryRight, target) {
+    this.validateRange(queryLeft, queryRight);
+    this.validateTarget(target);
+
+    const frequency = this.queryNode(1, 0, this.size - 1, queryLeft, queryRight);
+    let result = 1n;
+    for (const character of target) {
+      result = (result * frequency[this.charIndex(character)]) % MOD;
+    }
+
+    return result;
+  }
+
+  queryNode(node, left, right, queryLeft, queryRight) {
+    if (queryRight < left || right < queryLeft) {
+      return emptyFrequency();
+    }
+
+    if (queryLeft <= left && right <= queryRight) {
+      return this.tree[node];
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    return mergeFrequency(
+      this.queryNode(node * 2, left, mid, queryLeft, queryRight),
+      this.queryNode(node * 2 + 1, mid + 1, right, queryLeft, queryRight),
+    );
+  }
+
+  charIndex(character) {
+    return character.charCodeAt(0) - 97;
+  }
+
+  validateIndex(index) {
+    if (!Number.isInteger(index) || index < 0 || index >= this.size) {
+      throw new RangeError('Index is out of bounds');
+    }
+  }
+
+  validateRange(queryLeft, queryRight) {
+    if (
+      !Number.isInteger(queryLeft)
+      || !Number.isInteger(queryRight)
+      || queryLeft < 0
+      || queryRight < queryLeft
+      || queryRight >= this.size
+    ) {
+      throw new RangeError('Query range is invalid');
+    }
+  }
+
+  validateCharacter(character) {
+    if (!/^[a-z]$/.test(character)) {
+      throw new RangeError('Characters must be lowercase latin letters');
+    }
+  }
+
+  validateTarget(target) {
+    if (typeof target !== 'string' || target.length === 0) {
+      throw new RangeError('Target must be a non-empty string');
+    }
+
+    const seen = new Set();
+    for (const character of target) {
+      this.validateCharacter(character);
+      if (seen.has(character)) {
+        throw new RangeError('Target characters must be unique');
+      }
+      seen.add(character);
+    }
+  }
+}
+```
+
+```ts
+const MOD = 1_000_000_007n;
+
+function emptyFrequency(): bigint[] {
+  return new Array<bigint>(26).fill(0n);
+}
+
+function mergeFrequency(leftFrequency: bigint[], rightFrequency: bigint[]): bigint[] {
+  const merged = emptyFrequency();
+  for (let index = 0; index < 26; index += 1) {
+    merged[index] = leftFrequency[index] + rightFrequency[index];
+  }
+  return merged;
+}
+
+export class StringSubsetRangeQuery {
+  private readonly text: string[];
+  private readonly size: number;
+  private readonly tree: bigint[][];
+
+  constructor(text: string) {
+    if (text.length === 0) {
+      throw new RangeError('Text must be a non-empty lowercase string');
+    }
+
+    this.text = text.split('');
+    this.size = text.length;
+    this.tree = new Array<bigint[]>(this.size * 4);
+    this.build(1, 0, this.size - 1);
+  }
+
+  update(index: number, nextChar: string): void {
+    this.validateIndex(index);
+    this.validateCharacter(nextChar);
+    this.text[index] = nextChar;
+    this.updateNode(1, 0, this.size - 1, index, nextChar);
+  }
+
+  countSubsets(queryLeft: number, queryRight: number, target: string): bigint {
+    this.validateRange(queryLeft, queryRight);
+    this.validateTarget(target);
+
+    const frequency = this.queryNode(1, 0, this.size - 1, queryLeft, queryRight);
+    let result = 1n;
+    for (const character of target) {
+      result = (result * frequency[this.charIndex(character)]) % MOD;
+    }
+
+    return result;
+  }
+
+  private build(node: number, left: number, right: number): void {
+    if (left === right) {
+      const frequency = emptyFrequency();
+      frequency[this.charIndex(this.text[left])] = 1n;
+      this.tree[node] = frequency;
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    this.build(node * 2, left, mid);
+    this.build(node * 2 + 1, mid + 1, right);
+    this.tree[node] = mergeFrequency(this.tree[node * 2], this.tree[node * 2 + 1]);
+  }
+
+  private updateNode(node: number, left: number, right: number, index: number, nextChar: string): void {
+    if (left === right) {
+      const frequency = emptyFrequency();
+      frequency[this.charIndex(nextChar)] = 1n;
+      this.tree[node] = frequency;
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    if (index <= mid) {
+      this.updateNode(node * 2, left, mid, index, nextChar);
+    } else {
+      this.updateNode(node * 2 + 1, mid + 1, right, index, nextChar);
+    }
+
+    this.tree[node] = mergeFrequency(this.tree[node * 2], this.tree[node * 2 + 1]);
+  }
+
+  private queryNode(node: number, left: number, right: number, queryLeft: number, queryRight: number): bigint[] {
+    if (queryRight < left || right < queryLeft) {
+      return emptyFrequency();
+    }
+
+    if (queryLeft <= left && right <= queryRight) {
+      return this.tree[node];
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    return mergeFrequency(
+      this.queryNode(node * 2, left, mid, queryLeft, queryRight),
+      this.queryNode(node * 2 + 1, mid + 1, right, queryLeft, queryRight),
+    );
+  }
+
+  private charIndex(character: string): number {
+    return character.charCodeAt(0) - 97;
+  }
+
+  private validateIndex(index: number): void {
+    if (!Number.isInteger(index) || index < 0 || index >= this.size) {
+      throw new RangeError('Index is out of bounds');
+    }
+  }
+
+  private validateRange(queryLeft: number, queryRight: number): void {
+    if (
+      !Number.isInteger(queryLeft)
+      || !Number.isInteger(queryRight)
+      || queryLeft < 0
+      || queryRight < queryLeft
+      || queryRight >= this.size
+    ) {
+      throw new RangeError('Query range is invalid');
+    }
+  }
+
+  private validateCharacter(character: string): void {
+    if (!/^[a-z]$/.test(character)) {
+      throw new RangeError('Characters must be lowercase latin letters');
+    }
+  }
+
+  private validateTarget(target: string): void {
+    if (target.length === 0) {
+      throw new RangeError('Target must be a non-empty string');
+    }
+
+    const seen = new Set<string>();
+    for (const character of target) {
+      this.validateCharacter(character);
+      if (seen.has(character)) {
+        throw new RangeError('Target characters must be unique');
+      }
+      seen.add(character);
+    }
+  }
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would the formula change if the target string could repeat characters?
+- Could this be adapted to support larger alphabets without turning every merge into a bottleneck?
+- When is a Fenwick tree per character easier than one segment tree with 26-slot nodes?
+
+## Common Pitfalls
+
+- Forgetting that the source assumes target characters are unique.
+- Omitting the modulo step and overflowing large counts.
+- Rebuilding the whole string-frequency table after every character update.

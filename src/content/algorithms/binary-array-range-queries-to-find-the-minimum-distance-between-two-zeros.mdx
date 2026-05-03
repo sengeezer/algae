@@ -1,0 +1,234 @@
+---
+title: Binary Array Range Queries to find the minimum distance between two Zeros
+slug: binary-array-range-queries-to-find-the-minimum-distance-between-two-zeros
+category: Range Queries
+summary: Store each segment's leftmost zero, rightmost zero, and best internal gap so minimum-zero-distance queries stay logarithmic.
+description: Binary Array Range Queries to find the minimum distance between two Zeros is the interval-merge problem where each node tracks enough boundary information to detect the closest zero pair that crosses the midpoint.
+dataStructures:
+  - Array
+  - Segment Tree
+techniques:
+  - Range Queries
+  - Boundary Merging
+  - Segment Tree
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - closest zeros in a range
+  - minimum zero gap query
+  - binary segment tree for nearest zeros
+useCases:
+  - Answering many closest-zero distance queries on a fixed binary array
+  - Practicing segment trees that merge boundary metadata and an internal optimum
+  - Modeling nearest-neighbor information across interval boundaries
+complexity:
+  time: O(n + q log n)
+  space: O(n)
+  notes: Each merge uses the best gap in the left child, the best gap in the right child, and the cross-boundary gap between the rightmost zero on the left and the leftmost zero on the right.
+interviewSignals:
+  - Queries ask for the closest pair of a specific value inside many ranges.
+  - A naive scan of each interval is too slow.
+  - The node state must preserve both an internal optimum and enough boundary information to combine two halves.
+relatedSlugs:
+  - segment-tree
+  - binary-equivalent
+provenance:
+  - title: "GeeksforGeeks - Binary Array Range Queries to find the minimum distance between two Zeros"
+    href: https://www.geeksforgeeks.org/dsa/binary-array-range-queries-to-find-the-minimum-distance-between-two-zeros/
+    kind: Implementation
+  - title: cp-algorithms - Segment Tree
+    href: https://cp-algorithms.com/data_structures/segment_tree.html
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a classic custom-merge segment tree. One node cannot be summarized by a single number, because the best answer for a parent interval may come from a zero on the left child and another zero on the right child. That means the node must remember both boundary zero positions and the best internal gap.
+
+## Worked Example
+
+For `[1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0]`, the query `[3, 9]` returns `2` because the closest zeros in that range are at indices `4` and `6`. The query `[10, 13]` returns `3` because the only zero pair in range sits at indices `10` and `13`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function mergeZeroDistance(leftNode, rightNode) {
+  const bestCrossGap = leftNode.rightmostZero !== -1 && rightNode.leftmostZero !== -1
+    ? rightNode.leftmostZero - leftNode.rightmostZero
+    : Infinity;
+
+  return {
+    leftmostZero: leftNode.leftmostZero !== -1 ? leftNode.leftmostZero : rightNode.leftmostZero,
+    rightmostZero: rightNode.rightmostZero !== -1 ? rightNode.rightmostZero : leftNode.rightmostZero,
+    minDistance: Math.min(leftNode.minDistance, rightNode.minDistance, bestCrossGap),
+  };
+}
+
+class MinimumZeroDistanceRangeQuery {
+  constructor(values) {
+    if (!Array.isArray(values) || values.length === 0) {
+      throw new RangeError('Values must be a non-empty binary array');
+    }
+
+    if (values.some((value) => value !== 0 && value !== 1)) {
+      throw new RangeError('Values must contain only 0 and 1');
+    }
+
+    this.values = values;
+    this.size = values.length;
+    this.tree = new Array(this.size * 4);
+    this.build(1, 0, this.size - 1);
+  }
+
+  build(node, left, right) {
+    if (left === right) {
+      this.tree[node] = this.values[left] === 0
+        ? { leftmostZero: left, rightmostZero: left, minDistance: Infinity }
+        : { leftmostZero: -1, rightmostZero: -1, minDistance: Infinity };
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    this.build(node * 2, left, mid);
+    this.build(node * 2 + 1, mid + 1, right);
+    this.tree[node] = mergeZeroDistance(this.tree[node * 2], this.tree[node * 2 + 1]);
+  }
+
+  query(queryLeft, queryRight) {
+    this.validateRange(queryLeft, queryRight);
+    const result = this.queryNode(1, 0, this.size - 1, queryLeft, queryRight);
+    return Number.isFinite(result.minDistance) ? result.minDistance : -1;
+  }
+
+  queryNode(node, left, right, queryLeft, queryRight) {
+    if (queryRight < left || right < queryLeft) {
+      return { leftmostZero: -1, rightmostZero: -1, minDistance: Infinity };
+    }
+
+    if (queryLeft <= left && right <= queryRight) {
+      return this.tree[node];
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    return mergeZeroDistance(
+      this.queryNode(node * 2, left, mid, queryLeft, queryRight),
+      this.queryNode(node * 2 + 1, mid + 1, right, queryLeft, queryRight),
+    );
+  }
+
+  validateRange(queryLeft, queryRight) {
+    if (
+      !Number.isInteger(queryLeft)
+      || !Number.isInteger(queryRight)
+      || queryLeft < 0
+      || queryRight < queryLeft
+      || queryRight >= this.size
+    ) {
+      throw new RangeError('Query range is invalid');
+    }
+  }
+}
+```
+
+```ts
+interface ZeroDistanceNode {
+  leftmostZero: number;
+  rightmostZero: number;
+  minDistance: number;
+}
+
+function mergeZeroDistance(leftNode: ZeroDistanceNode, rightNode: ZeroDistanceNode): ZeroDistanceNode {
+  const bestCrossGap = leftNode.rightmostZero !== -1 && rightNode.leftmostZero !== -1
+    ? rightNode.leftmostZero - leftNode.rightmostZero
+    : Infinity;
+
+  return {
+    leftmostZero: leftNode.leftmostZero !== -1 ? leftNode.leftmostZero : rightNode.leftmostZero,
+    rightmostZero: rightNode.rightmostZero !== -1 ? rightNode.rightmostZero : leftNode.rightmostZero,
+    minDistance: Math.min(leftNode.minDistance, rightNode.minDistance, bestCrossGap),
+  };
+}
+
+export class MinimumZeroDistanceRangeQuery {
+  private readonly size: number;
+  private readonly tree: ZeroDistanceNode[];
+
+  constructor(private readonly values: number[]) {
+    if (values.length === 0) {
+      throw new RangeError('Values must be a non-empty binary array');
+    }
+
+    if (values.some((value) => value !== 0 && value !== 1)) {
+      throw new RangeError('Values must contain only 0 and 1');
+    }
+
+    this.size = values.length;
+    this.tree = new Array<ZeroDistanceNode>(this.size * 4);
+    this.build(1, 0, this.size - 1);
+  }
+
+  query(queryLeft: number, queryRight: number): number {
+    this.validateRange(queryLeft, queryRight);
+    const result = this.queryNode(1, 0, this.size - 1, queryLeft, queryRight);
+    return Number.isFinite(result.minDistance) ? result.minDistance : -1;
+  }
+
+  private build(node: number, left: number, right: number): void {
+    if (left === right) {
+      this.tree[node] = this.values[left] === 0
+        ? { leftmostZero: left, rightmostZero: left, minDistance: Infinity }
+        : { leftmostZero: -1, rightmostZero: -1, minDistance: Infinity };
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    this.build(node * 2, left, mid);
+    this.build(node * 2 + 1, mid + 1, right);
+    this.tree[node] = mergeZeroDistance(this.tree[node * 2], this.tree[node * 2 + 1]);
+  }
+
+  private queryNode(node: number, left: number, right: number, queryLeft: number, queryRight: number): ZeroDistanceNode {
+    if (queryRight < left || right < queryLeft) {
+      return { leftmostZero: -1, rightmostZero: -1, minDistance: Infinity };
+    }
+
+    if (queryLeft <= left && right <= queryRight) {
+      return this.tree[node];
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    return mergeZeroDistance(
+      this.queryNode(node * 2, left, mid, queryLeft, queryRight),
+      this.queryNode(node * 2 + 1, mid + 1, right, queryLeft, queryRight),
+    );
+  }
+
+  private validateRange(queryLeft: number, queryRight: number): void {
+    if (
+      !Number.isInteger(queryLeft)
+      || !Number.isInteger(queryRight)
+      || queryLeft < 0
+      || queryRight < queryLeft
+      || queryRight >= this.size
+    ) {
+      throw new RangeError('Query range is invalid');
+    }
+  }
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you adapt the node state to answer the closest pair of ones instead?
+- What should the API return when a range contains fewer than two zeros?
+- Could this be extended to support point updates that flip individual bits?
+
+## Common Pitfalls
+
+- Storing only the best internal distance and losing the boundary zeros needed for cross-segment merges.
+- Forgetting to handle ranges that contain fewer than two zeros.
+- Confusing the first and last zero with the closest zero pair.

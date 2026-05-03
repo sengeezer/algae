@@ -1,0 +1,224 @@
+---
+title: Range Queries for Longest Correct Bracket Subsequence
+slug: range-queries-for-longest-correct-bracket-subsequence
+category: Range Queries
+summary: Store matched pairs plus unmatched opens and closes per segment so each query can report the longest valid bracket subsequence length.
+description: Range Queries for Longest Correct Bracket Subsequence is the bracket-matching segment tree where each node tracks how many pairs are already formed and how many brackets remain unmatched on both sides.
+dataStructures:
+  - String
+  - Segment Tree
+techniques:
+  - Range Queries
+  - Bracket Matching
+  - Segment Tree Merging
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - longest valid bracket subsequence in range
+  - bracket segment tree query
+  - range longest correct parentheses subsequence
+useCases:
+  - Answering many bracket-validity length queries on one fixed string
+  - Practicing custom segment-tree node states beyond sums and maxima
+  - Modeling how unmatched symbols combine across interval boundaries
+complexity:
+  time: O(n + q log n)
+  space: O(n)
+  notes: Each node stores matched pairs, unused opens, and unused closes; merging only needs a constant-size combine operation.
+interviewSignals:
+  - The query asks for the best subsequence inside many ranges of one bracket string.
+  - A full stack scan per query is too slow.
+  - The answer depends on how unmatched brackets from two halves can be paired.
+relatedSlugs:
+  - segment-tree
+  - min-adjacent-swaps-for-bracket-balancing
+provenance:
+  - title: "GeeksforGeeks - Range Queries for Longest Correct Bracket Subsequence"
+    href: https://www.geeksforgeeks.org/dsa/range-queries-longest-correct-bracket-subsequence/
+    kind: Implementation
+  - title: cp-algorithms - Segment Tree
+    href: https://cp-algorithms.com/data_structures/segment_tree.html
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem is a good test of whether you can invent the right node summary for a segment tree. Instead of storing one number, each interval keeps enough information to say how many pairs are already matched and how many opens or closes remain available to match across a boundary.
+
+## Worked Example
+
+For `"())(())(())("`, the query `[0, 11]` returns `10` because the longest correct bracket subsequence has five matched pairs. The query `[1, 2]` returns `0` because `"))"` cannot form any valid pair.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function mergeBracketNodes(leftNode, rightNode) {
+  const matchedAcrossBoundary = Math.min(leftNode.open, rightNode.closed);
+
+  return {
+    pairs: leftNode.pairs + rightNode.pairs + matchedAcrossBoundary,
+    open: leftNode.open + rightNode.open - matchedAcrossBoundary,
+    closed: leftNode.closed + rightNode.closed - matchedAcrossBoundary,
+  };
+}
+
+class LongestCorrectBracketSubsequence {
+  constructor(text) {
+    if (typeof text !== 'string' || text.length === 0) {
+      throw new RangeError('Text must be a non-empty string');
+    }
+
+    this.text = text;
+    this.size = text.length;
+    this.tree = new Array(this.size * 4);
+    this.build(1, 0, this.size - 1);
+  }
+
+  build(node, left, right) {
+    if (left === right) {
+      this.tree[node] = {
+        pairs: 0,
+        open: this.text[left] === '(' ? 1 : 0,
+        closed: this.text[left] === ')' ? 1 : 0,
+      };
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    this.build(node * 2, left, mid);
+    this.build(node * 2 + 1, mid + 1, right);
+    this.tree[node] = mergeBracketNodes(this.tree[node * 2], this.tree[node * 2 + 1]);
+  }
+
+  query(queryLeft, queryRight) {
+    this.validateRange(queryLeft, queryRight);
+    return this.queryNode(1, 0, this.size - 1, queryLeft, queryRight).pairs * 2;
+  }
+
+  queryNode(node, left, right, queryLeft, queryRight) {
+    if (queryRight < left || right < queryLeft) {
+      return { pairs: 0, open: 0, closed: 0 };
+    }
+
+    if (queryLeft <= left && right <= queryRight) {
+      return this.tree[node];
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    return mergeBracketNodes(
+      this.queryNode(node * 2, left, mid, queryLeft, queryRight),
+      this.queryNode(node * 2 + 1, mid + 1, right, queryLeft, queryRight),
+    );
+  }
+
+  validateRange(queryLeft, queryRight) {
+    if (
+      !Number.isInteger(queryLeft)
+      || !Number.isInteger(queryRight)
+      || queryLeft < 0
+      || queryRight < queryLeft
+      || queryRight >= this.size
+    ) {
+      throw new RangeError('Query range is invalid');
+    }
+  }
+}
+```
+
+```ts
+interface BracketNode {
+  pairs: number;
+  open: number;
+  closed: number;
+}
+
+function mergeBracketNodes(leftNode: BracketNode, rightNode: BracketNode): BracketNode {
+  const matchedAcrossBoundary = Math.min(leftNode.open, rightNode.closed);
+
+  return {
+    pairs: leftNode.pairs + rightNode.pairs + matchedAcrossBoundary,
+    open: leftNode.open + rightNode.open - matchedAcrossBoundary,
+    closed: leftNode.closed + rightNode.closed - matchedAcrossBoundary,
+  };
+}
+
+export class LongestCorrectBracketSubsequence {
+  private readonly size: number;
+  private readonly tree: BracketNode[];
+
+  constructor(private readonly text: string) {
+    if (text.length === 0) {
+      throw new RangeError('Text must be a non-empty string');
+    }
+
+    this.size = text.length;
+    this.tree = new Array<BracketNode>(this.size * 4);
+    this.build(1, 0, this.size - 1);
+  }
+
+  query(queryLeft: number, queryRight: number): number {
+    this.validateRange(queryLeft, queryRight);
+    return this.queryNode(1, 0, this.size - 1, queryLeft, queryRight).pairs * 2;
+  }
+
+  private build(node: number, left: number, right: number): void {
+    if (left === right) {
+      this.tree[node] = {
+        pairs: 0,
+        open: this.text[left] === '(' ? 1 : 0,
+        closed: this.text[left] === ')' ? 1 : 0,
+      };
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    this.build(node * 2, left, mid);
+    this.build(node * 2 + 1, mid + 1, right);
+    this.tree[node] = mergeBracketNodes(this.tree[node * 2], this.tree[node * 2 + 1]);
+  }
+
+  private queryNode(node: number, left: number, right: number, queryLeft: number, queryRight: number): BracketNode {
+    if (queryRight < left || right < queryLeft) {
+      return { pairs: 0, open: 0, closed: 0 };
+    }
+
+    if (queryLeft <= left && right <= queryRight) {
+      return this.tree[node];
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    return mergeBracketNodes(
+      this.queryNode(node * 2, left, mid, queryLeft, queryRight),
+      this.queryNode(node * 2 + 1, mid + 1, right, queryLeft, queryRight),
+    );
+  }
+
+  private validateRange(queryLeft: number, queryRight: number): void {
+    if (
+      !Number.isInteger(queryLeft)
+      || !Number.isInteger(queryRight)
+      || queryLeft < 0
+      || queryRight < queryLeft
+      || queryRight >= this.size
+    ) {
+      throw new RangeError('Query range is invalid');
+    }
+  }
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you support point updates that flip one bracket character?
+- Why does the answer equal `matchedPairs * 2` instead of just `matchedPairs`?
+- When would the O(1) offline approach mentioned in the source be preferable?
+
+## Common Pitfalls
+
+- Treating this as a substring problem when the prompt asks for a subsequence.
+- Forgetting that unmatched opens from the left can only pair with unmatched closes from the right.
+- Returning the number of pairs instead of the length of the subsequence.

@@ -1,0 +1,260 @@
+---
+title: Range and Update Query for Chessboard Pieces
+slug: range-and-update-query-for-chessboard-pieces
+category: Range Queries
+summary: Model black pieces as ones, then use a lazy segment tree to flip whole ranges and count black pieces in logarithmic time.
+description: Range and Update Query for Chessboard Pieces is the toggle-range problem where each update inverts every bit in an interval and each query asks for the number of black pieces remaining inside a range.
+dataStructures:
+  - Array
+  - Segment Tree
+techniques:
+  - Range Queries
+  - Lazy Propagation
+  - Bit Flipping
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - chessboard piece range toggles
+  - count black pieces after interval flips
+  - lazy segment tree for bit inversion
+useCases:
+  - Tracking toggled binary state across many interval updates
+  - Counting active positions after repeated range inversions
+  - Reusing lazy propagation for boolean rather than numeric updates
+complexity:
+  time: O((q + n) log n)
+  space: O(n)
+  notes: Each lazy flag records whether a subtree needs one pending flip, and applying that flip changes the stored count to `segmentLength - currentCount`.
+interviewSignals:
+  - Updates invert every value in a range rather than assigning a fixed value.
+  - Queries ask for the count of active or black entries after many flips.
+  - Revisiting each cell in the interval would be too slow.
+relatedSlugs:
+  - lazy-propagation-in-segment-tree
+  - flipping-sign-problem
+provenance:
+  - title: "GeeksforGeeks - Range and Update Query for Chessboard Pieces"
+    href: https://www.geeksforgeeks.org/dsa/range-update-query-chessboard-pieces/
+    kind: Implementation
+  - title: cp-algorithms - Segment Tree
+    href: https://cp-algorithms.com/data_structures/segment_tree.html
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a direct lazy-propagation variant where the update is a toggle instead of an addition. The node summary is just the number of black pieces, and the pending operation is a boolean flag that says the whole interval still needs to be inverted.
+
+## Worked Example
+
+Start with four white pieces, represented as `[0, 0, 0, 0]`. Querying `[0, 3]` returns `0`, flipping `[1, 2]` gives `[0, 1, 1, 0]`, and a later full-range flip turns that into `[1, 0, 0, 1]`, where querying `[0, 3]` returns `2` black pieces.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class ChessboardPiecesRangeQuery {
+  constructor(size) {
+    if (!Number.isInteger(size) || size <= 0) {
+      throw new RangeError('Size must be a positive integer');
+    }
+
+    this.size = size;
+    this.tree = new Array(size * 4).fill(0);
+    this.lazy = new Array(size * 4).fill(false);
+  }
+
+  flip(updateLeft, updateRight) {
+    this.validateRange(updateLeft, updateRight);
+    this.flipNode(1, 0, this.size - 1, updateLeft, updateRight);
+  }
+
+  countBlackPieces(queryLeft, queryRight) {
+    this.validateRange(queryLeft, queryRight);
+    return this.queryNode(1, 0, this.size - 1, queryLeft, queryRight);
+  }
+
+  apply(node, left, right) {
+    this.tree[node] = right - left + 1 - this.tree[node];
+    this.lazy[node] = !this.lazy[node];
+  }
+
+  push(node, left, right) {
+    if (!this.lazy[node]) {
+      return;
+    }
+
+    if (left !== right) {
+      const mid = Math.floor((left + right) / 2);
+      this.apply(node * 2, left, mid);
+      this.apply(node * 2 + 1, mid + 1, right);
+    }
+
+    this.lazy[node] = false;
+  }
+
+  flipNode(node, left, right, updateLeft, updateRight) {
+    if (updateRight < left || right < updateLeft) {
+      return;
+    }
+
+    if (updateLeft <= left && right <= updateRight) {
+      this.apply(node, left, right);
+      return;
+    }
+
+    this.push(node, left, right);
+    const mid = Math.floor((left + right) / 2);
+    this.flipNode(node * 2, left, mid, updateLeft, updateRight);
+    this.flipNode(node * 2 + 1, mid + 1, right, updateLeft, updateRight);
+    this.tree[node] = this.tree[node * 2] + this.tree[node * 2 + 1];
+  }
+
+  queryNode(node, left, right, queryLeft, queryRight) {
+    if (queryRight < left || right < queryLeft) {
+      return 0;
+    }
+
+    if (queryLeft <= left && right <= queryRight) {
+      return this.tree[node];
+    }
+
+    this.push(node, left, right);
+    const mid = Math.floor((left + right) / 2);
+    return (
+      this.queryNode(node * 2, left, mid, queryLeft, queryRight)
+      + this.queryNode(node * 2 + 1, mid + 1, right, queryLeft, queryRight)
+    );
+  }
+
+  validateRange(queryLeft, queryRight) {
+    if (
+      !Number.isInteger(queryLeft)
+      || !Number.isInteger(queryRight)
+      || queryLeft < 0
+      || queryRight < queryLeft
+      || queryRight >= this.size
+    ) {
+      throw new RangeError('Query range is invalid');
+    }
+  }
+}
+```
+
+```ts
+export class ChessboardPiecesRangeQuery {
+  private readonly tree: number[];
+  private readonly lazy: boolean[];
+
+  constructor(private readonly size: number) {
+    if (!Number.isInteger(size) || size <= 0) {
+      throw new RangeError('Size must be a positive integer');
+    }
+
+    this.tree = new Array<number>(size * 4).fill(0);
+    this.lazy = new Array<boolean>(size * 4).fill(false);
+  }
+
+  flip(updateLeft: number, updateRight: number): void {
+    this.validateRange(updateLeft, updateRight);
+    this.flipNode(1, 0, this.size - 1, updateLeft, updateRight);
+  }
+
+  countBlackPieces(queryLeft: number, queryRight: number): number {
+    this.validateRange(queryLeft, queryRight);
+    return this.queryNode(1, 0, this.size - 1, queryLeft, queryRight);
+  }
+
+  private apply(node: number, left: number, right: number): void {
+    this.tree[node] = right - left + 1 - this.tree[node];
+    this.lazy[node] = !this.lazy[node];
+  }
+
+  private push(node: number, left: number, right: number): void {
+    if (!this.lazy[node]) {
+      return;
+    }
+
+    if (left !== right) {
+      const mid = Math.floor((left + right) / 2);
+      this.apply(node * 2, left, mid);
+      this.apply(node * 2 + 1, mid + 1, right);
+    }
+
+    this.lazy[node] = false;
+  }
+
+  private flipNode(
+    node: number,
+    left: number,
+    right: number,
+    updateLeft: number,
+    updateRight: number,
+  ): void {
+    if (updateRight < left || right < updateLeft) {
+      return;
+    }
+
+    if (updateLeft <= left && right <= updateRight) {
+      this.apply(node, left, right);
+      return;
+    }
+
+    this.push(node, left, right);
+    const mid = Math.floor((left + right) / 2);
+    this.flipNode(node * 2, left, mid, updateLeft, updateRight);
+    this.flipNode(node * 2 + 1, mid + 1, right, updateLeft, updateRight);
+    this.tree[node] = this.tree[node * 2] + this.tree[node * 2 + 1];
+  }
+
+  private queryNode(
+    node: number,
+    left: number,
+    right: number,
+    queryLeft: number,
+    queryRight: number,
+  ): number {
+    if (queryRight < left || right < queryLeft) {
+      return 0;
+    }
+
+    if (queryLeft <= left && right <= queryRight) {
+      return this.tree[node];
+    }
+
+    this.push(node, left, right);
+    const mid = Math.floor((left + right) / 2);
+    return (
+      this.queryNode(node * 2, left, mid, queryLeft, queryRight)
+      + this.queryNode(node * 2 + 1, mid + 1, right, queryLeft, queryRight)
+    );
+  }
+
+  private validateRange(queryLeft: number, queryRight: number): void {
+    if (
+      !Number.isInteger(queryLeft)
+      || !Number.isInteger(queryRight)
+      || queryLeft < 0
+      || queryRight < queryLeft
+      || queryRight >= this.size
+    ) {
+      throw new RangeError('Query range is invalid');
+    }
+  }
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you support setting a whole range to white or black instead of just toggling it?
+- Why is `segmentLength - currentCount` the correct way to apply a flip to a node?
+- What other boolean interval problems share this exact lazy-state pattern?
+
+## Common Pitfalls
+
+- Pushing every flip all the way to the leaves and losing the lazy-propagation speedup.
+- Forgetting that two pending flips cancel each other.
+- Counting white pieces by mistake when the tree is defined to store black ones.

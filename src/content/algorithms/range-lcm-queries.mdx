@@ -1,0 +1,250 @@
+---
+title: Range LCM Queries
+slug: range-lcm-queries
+category: Range Queries
+summary: Build a segment tree whose nodes store least common multiples so static interval LCM queries stay logarithmic.
+description: Range LCM Queries is the static range-aggregation problem where segment tree nodes combine with the LCM operator instead of sum or max.
+dataStructures:
+  - Array
+  - Binary Tree
+techniques:
+  - Range Queries
+  - Segment Tree
+  - Number Theory
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - segment tree for lcm
+  - range least common multiple query
+  - interval lcm queries
+useCases:
+  - Answering many least-common-multiple queries over a fixed array
+  - Reusing a segment tree with a non-trivial associative combine function
+  - Mixing Euclidean GCD helpers with interval aggregation
+complexity:
+  time: O((n + q log n) log V)
+  space: O(n)
+  notes: Building takes linear segment-tree work, and each query visits logarithmically many nodes while every combine performs a GCD-based LCM step on values bounded by V.
+interviewSignals:
+  - The prompt asks for many LCM queries on an unchanged array.
+  - Recomputing the LCM from scratch for every interval is too expensive.
+  - The combine function is associative but heavier than addition.
+relatedSlugs:
+  - segment-tree
+  - find-lcm
+provenance:
+  - title: "GeeksforGeeks - Range LCM Queries"
+    href: https://www.geeksforgeeks.org/dsa/range-lcm-queries/
+    kind: Implementation
+  - title: cp-algorithms - Segment Tree
+    href: https://cp-algorithms.com/data_structures/segment_tree.html
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the same structural idea as a sum or max segment tree, but the combine step is the least common multiple. It is a good interview test for recognizing when an associative range aggregate can reuse the same tree skeleton with a different merge function.
+
+## Worked Example
+
+For `[5, 7, 5, 2, 10, 12, 11, 17, 14, 1, 44]`, the query `[2, 5]` returns `60` because `lcm(5, 2, 10, 12) = 60`. A second query `[5, 10]` returns `15708` without recomputing the whole interval from scratch.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function gcd(left, right) {
+  let a = left < 0n ? -left : left;
+  let b = right < 0n ? -right : right;
+
+  while (b !== 0n) {
+    const remainder = a % b;
+    a = b;
+    b = remainder;
+  }
+
+  return a;
+}
+
+function lcm(left, right) {
+  if (left === 0n || right === 0n) {
+    return 0n;
+  }
+
+  return (left / gcd(left, right)) * right;
+}
+
+class RangeLcmSegmentTree {
+  constructor(values) {
+    if (!Array.isArray(values) || values.length === 0) {
+      throw new RangeError('Values must be a non-empty array');
+    }
+
+    this.size = values.length;
+    this.tree = new Array(this.size * 4).fill(1n);
+    this.values = values.map((value) => BigInt(value));
+    this.build(1, 0, this.size - 1);
+  }
+
+  build(node, left, right) {
+    if (left === right) {
+      this.tree[node] = this.values[left];
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    this.build(node * 2, left, mid);
+    this.build(node * 2 + 1, mid + 1, right);
+    this.tree[node] = lcm(this.tree[node * 2], this.tree[node * 2 + 1]);
+  }
+
+  query(queryLeft, queryRight) {
+    this.validateRange(queryLeft, queryRight);
+    return this.queryNode(1, 0, this.size - 1, queryLeft, queryRight);
+  }
+
+  queryNode(node, left, right, queryLeft, queryRight) {
+    if (queryRight < left || right < queryLeft) {
+      return 1n;
+    }
+
+    if (queryLeft <= left && right <= queryRight) {
+      return this.tree[node];
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    return lcm(
+      this.queryNode(node * 2, left, mid, queryLeft, queryRight),
+      this.queryNode(node * 2 + 1, mid + 1, right, queryLeft, queryRight),
+    );
+  }
+
+  validateRange(queryLeft, queryRight) {
+    if (
+      !Number.isInteger(queryLeft)
+      || !Number.isInteger(queryRight)
+      || queryLeft < 0
+      || queryRight < queryLeft
+      || queryRight >= this.size
+    ) {
+      throw new RangeError('Query range is invalid');
+    }
+  }
+}
+
+function rangeLcmQueries(values, queries) {
+  const tree = new RangeLcmSegmentTree(values);
+  return queries.map(([left, right]) => tree.query(left, right));
+}
+```
+
+```ts
+function gcd(left: bigint, right: bigint): bigint {
+  let a = left < 0n ? -left : left;
+  let b = right < 0n ? -right : right;
+
+  while (b !== 0n) {
+    const remainder = a % b;
+    a = b;
+    b = remainder;
+  }
+
+  return a;
+}
+
+function lcm(left: bigint, right: bigint): bigint {
+  if (left === 0n || right === 0n) {
+    return 0n;
+  }
+
+  return (left / gcd(left, right)) * right;
+}
+
+class RangeLcmSegmentTree {
+  private readonly size: number;
+  private readonly tree: bigint[];
+  private readonly values: bigint[];
+
+  constructor(values: number[]) {
+    if (values.length === 0) {
+      throw new RangeError('Values must be a non-empty array');
+    }
+
+    this.size = values.length;
+    this.tree = new Array<bigint>(this.size * 4).fill(1n);
+    this.values = values.map((value) => BigInt(value));
+    this.build(1, 0, this.size - 1);
+  }
+
+  query(queryLeft: number, queryRight: number): bigint {
+    this.validateRange(queryLeft, queryRight);
+    return this.queryNode(1, 0, this.size - 1, queryLeft, queryRight);
+  }
+
+  private build(node: number, left: number, right: number): void {
+    if (left === right) {
+      this.tree[node] = this.values[left];
+      return;
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    this.build(node * 2, left, mid);
+    this.build(node * 2 + 1, mid + 1, right);
+    this.tree[node] = lcm(this.tree[node * 2], this.tree[node * 2 + 1]);
+  }
+
+  private queryNode(
+    node: number,
+    left: number,
+    right: number,
+    queryLeft: number,
+    queryRight: number,
+  ): bigint {
+    if (queryRight < left || right < queryLeft) {
+      return 1n;
+    }
+
+    if (queryLeft <= left && right <= queryRight) {
+      return this.tree[node];
+    }
+
+    const mid = Math.floor((left + right) / 2);
+    return lcm(
+      this.queryNode(node * 2, left, mid, queryLeft, queryRight),
+      this.queryNode(node * 2 + 1, mid + 1, right, queryLeft, queryRight),
+    );
+  }
+
+  private validateRange(queryLeft: number, queryRight: number): void {
+    if (
+      !Number.isInteger(queryLeft)
+      || !Number.isInteger(queryRight)
+      || queryLeft < 0
+      || queryRight < queryLeft
+      || queryRight >= this.size
+    ) {
+      throw new RangeError('Query range is invalid');
+    }
+  }
+}
+
+export function rangeLcmQueries(values: number[], queries: Array<[number, number]>): bigint[] {
+  const tree = new RangeLcmSegmentTree(values);
+  return queries.map(([left, right]) => tree.query(left, right));
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why is `1` the correct identity element for a no-overlap LCM query branch?
+- How would you handle point updates if the array were no longer static?
+- When would a sparse table be a better fit than a segment tree here?
+
+## Common Pitfalls
+
+- Using `number` carelessly and overflowing when LCM values become large.
+- Forgetting that the no-overlap identity must not change the answer during merges.
+- Recomputing the GCD from scratch across the whole interval instead of combining segment answers.
