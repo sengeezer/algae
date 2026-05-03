@@ -1,0 +1,102 @@
+---
+title: Position of rightmost set bit
+slug: position-of-rightmost-set-bit
+category: Bit Manipulation
+summary: Return the one-based position of the lowest set bit by isolating it with a two's-complement trick.
+description: Position of rightmost set bit is the trailing-bit query where `n & -n` keeps only the lowest `1`, making its position easy to recover.
+dataStructures:
+  - Bitmask
+  - Number
+techniques:
+  - Bit Manipulation
+  - Two's Complement
+  - Bit Isolation
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - first set bit position
+  - trailing one bit position
+  - rightmost set bit position
+useCases:
+  - Locating the first active flag from the least-significant side
+  - Supporting low-bit decomposition and Fenwick-style reasoning
+  - Converting an isolated low bit into a one-based index
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The identity `n & -n` isolates the lowest set bit, and this entry returns its one-based position from the right.
+interviewSignals:
+  - The prompt asks for the position of the first set bit from right to left.
+  - The answer should return `0` when the input contains no set bits.
+relatedSlugs:
+  - turn-off-the-rightmost-set-bit
+  - position-of-the-only-set-bit
+  - binary-count-set-bits
+provenance:
+  - title: "GeeksforGeeks - Position of rightmost set bit"
+    href: https://www.geeksforgeeks.org/dsa/position-of-rightmost-set-bit/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the natural follow-up to low-bit identities such as clearing the rightmost set bit. Interviewers use it to see whether you can move from “isolate the bit” to “turn that bit into an index.”
+
+## Worked Example
+
+`18` is `10010` in binary, so the first set bit from the right is at position `2`. For `19`, which is `10011`, the answer is `1`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function positionOfRightmostSetBit(value) {
+  if (!Number.isInteger(value) || value < 0 || value > 0xffffffff) {
+    throw new RangeError('Value must be an unsigned 32-bit integer');
+  }
+
+  const number = value >>> 0;
+
+  if (number === 0) {
+    return 0;
+  }
+
+  const isolated = (number & -number) >>> 0;
+  return Math.log2(isolated) + 1;
+}
+```
+
+```ts
+export function positionOfRightmostSetBit(value: number): number {
+  if (!Number.isInteger(value) || value < 0 || value > 0xffffffff) {
+    throw new RangeError('Value must be an unsigned 32-bit integer');
+  }
+
+  const number = value >>> 0;
+
+  if (number === 0) {
+    return 0;
+  }
+
+  const isolated = (number & -number) >>> 0;
+  return Math.log2(isolated) + 1;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the isolated low-bit value instead of its position.
+- Solve the same problem with a shift loop instead of `Math.log2`.
+- Compare the one-based convention here with zero-based bit indexing prompts.
+
+## Common Pitfalls
+
+- Returning `-1` instead of `0` when the input has no set bits.
+- Forgetting that the expected position is one-based from the right.
+- Mixing up the rightmost set-bit position with the count of set bits.

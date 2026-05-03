@@ -1,0 +1,143 @@
+---
+title: Swap bits in a given number
+slug: swap-bits-in-a-given-number
+category: Bit Manipulation
+summary: Swap two non-overlapping bit ranges by isolating their differences and XORing those differences back into the original number.
+description: Swap bits in a given number is the bit-range exchange problem where two slices are extracted, compared, and selectively flipped so they trade places without touching identical bits.
+dataStructures:
+  - Bitmask
+  - Number
+techniques:
+  - Bit Manipulation
+  - XOR Difference Mask
+  - Range Swap
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - swap bit ranges
+  - exchange bit blocks
+  - swap bit fields
+useCases:
+  - Rearranging packed flags inside an integer
+  - Transforming bitfields without rebuilding every bit manually
+  - Extending single-bit XOR tricks into multi-bit slice updates
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: Only the bit positions that differ between the two ranges need to be flipped, which is why XOR is enough to drive the swap.
+interviewSignals:
+  - The prompt gives a number, two start positions, and a bit count.
+  - The two bit ranges are stated not to overlap.
+relatedSlugs:
+  - swap-two-numbers
+  - k-th-bit-is-set-or-not
+  - rotate-bits-of-a-number
+provenance:
+  - title: "GeeksforGeeks - Swap bits in a given number"
+    href: https://www.geeksforgeeks.org/dsa/swap-bits-in-a-given-number/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the bitfield version of a swap problem. Instead of exchanging whole values, you exchange compact slices inside a single integer, which tests whether you can combine shifting, masking, and XOR precisely.
+
+## Worked Example
+
+For `x = 47`, `p1 = 1`, `p2 = 5`, and `n = 3`, the two three-bit ranges are swapped and the result becomes `227`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function swapBitsInAGivenNumber(value, firstPosition, secondPosition, bitCount) {
+  if (!Number.isInteger(value) || value < 0 || value > 0xffffffff) {
+    throw new RangeError('Value must be an unsigned 32-bit integer');
+  }
+
+  if (!Number.isInteger(firstPosition) || !Number.isInteger(secondPosition) || !Number.isInteger(bitCount)) {
+    throw new TypeError('Bit positions and bitCount must be integers');
+  }
+
+  if (bitCount < 1 || bitCount > 31) {
+    throw new RangeError('bitCount must be between 1 and 31');
+  }
+
+  if (firstPosition < 0 || secondPosition < 0 || firstPosition + bitCount > 32 || secondPosition + bitCount > 32) {
+    throw new RangeError('Bit ranges must stay within a 32-bit integer');
+  }
+
+  const leftStart = Math.min(firstPosition, secondPosition);
+  const rightStart = Math.max(firstPosition, secondPosition);
+  if (leftStart + bitCount > rightStart) {
+    throw new RangeError('Bit ranges must not overlap');
+  }
+
+  const number = value >>> 0;
+  const mask = (2 ** bitCount - 1) >>> 0;
+  const firstSet = (number >>> firstPosition) & mask;
+  const secondSet = (number >>> secondPosition) & mask;
+  let xorValue = (firstSet ^ secondSet) >>> 0;
+
+  xorValue = ((xorValue << firstPosition) | (xorValue << secondPosition)) >>> 0;
+  return (number ^ xorValue) >>> 0;
+}
+```
+
+```ts
+export function swapBitsInAGivenNumber(
+  value: number,
+  firstPosition: number,
+  secondPosition: number,
+  bitCount: number,
+): number {
+  if (!Number.isInteger(value) || value < 0 || value > 0xffffffff) {
+    throw new RangeError('Value must be an unsigned 32-bit integer');
+  }
+
+  if (!Number.isInteger(firstPosition) || !Number.isInteger(secondPosition) || !Number.isInteger(bitCount)) {
+    throw new TypeError('Bit positions and bitCount must be integers');
+  }
+
+  if (bitCount < 1 || bitCount > 31) {
+    throw new RangeError('bitCount must be between 1 and 31');
+  }
+
+  if (firstPosition < 0 || secondPosition < 0 || firstPosition + bitCount > 32 || secondPosition + bitCount > 32) {
+    throw new RangeError('Bit ranges must stay within a 32-bit integer');
+  }
+
+  const leftStart = Math.min(firstPosition, secondPosition);
+  const rightStart = Math.max(firstPosition, secondPosition);
+  if (leftStart + bitCount > rightStart) {
+    throw new RangeError('Bit ranges must not overlap');
+  }
+
+  const number = value >>> 0;
+  const mask = (2 ** bitCount - 1) >>> 0;
+  const firstSet = (number >>> firstPosition) & mask;
+  const secondSet = (number >>> secondPosition) & mask;
+  let xorValue = (firstSet ^ secondSet) >>> 0;
+
+  xorValue = ((xorValue << firstPosition) | (xorValue << secondPosition)) >>> 0;
+  return (number ^ xorValue) >>> 0;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Rewrite the swap one bit at a time and compare it with the range-based XOR method.
+- Adapt the function to swap overlapping ranges by rebuilding the result explicitly.
+- Explain why equal bit slices need no changes at all.
+
+## Common Pitfalls
+
+- Forgetting that the positions are zero-based from the right.
+- Allowing the two bit ranges to overlap and silently corrupting the result.
+- Using the wrong mask width and swapping more or fewer bits than requested.

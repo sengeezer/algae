@@ -1,0 +1,118 @@
+---
+title: Rotate bits of a number
+slug: rotate-bits-of-a-number
+category: Bit Manipulation
+summary: Return the left and right circular rotations of a 32-bit integer after normalizing the rotation distance modulo the word size.
+description: Rotate bits of a number is the fixed-width circular shift problem where bits leaving one side wrap back around to the other instead of being discarded.
+dataStructures:
+  - Number
+  - Tuple
+techniques:
+  - Bit Manipulation
+  - Circular Shift
+  - Fixed-Width Arithmetic
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - bit rotation
+  - circular shift
+  - rotate left and right
+useCases:
+  - Implementing hash and checksum style mixing operations
+  - Modeling fixed-width machine instructions and bitfield transforms
+  - Distinguishing rotation from ordinary left and right shifts
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: Rotation depends on a chosen word size; this entry follows the source's explicit 32-bit formulation and returns both left and right rotations.
+interviewSignals:
+  - The prompt asks for circular movement of bits rather than ordinary shifts.
+  - The result keeps the same fixed width, so overflowed bits must wrap around.
+relatedSlugs:
+  - swap-bits-in-a-given-number
+  - find-most-significant-set-bit-of-a-number
+  - binary-equivalent
+provenance:
+  - title: "GeeksforGeeks - Rotate bits of a number"
+    href: https://www.geeksforgeeks.org/dsa/rotate-bits-of-an-integer/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Rotation problems test whether you are thinking in fixed-width binary rather than in ordinary arithmetic. The key distinction is that no bit is lost; every bit that falls off one side must reappear on the other.
+
+## Worked Example
+
+For `28` and a rotation distance of `2`, the 32-bit left rotation is `112` and the right rotation is `7`, so the function returns `[112, 7]`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function rotateBitsOfANumber(value, distance) {
+  if (!Number.isInteger(value) || value < 0 || value > 0xffffffff) {
+    throw new RangeError('Value must be an unsigned 32-bit integer');
+  }
+
+  if (!Number.isInteger(distance) || distance < 0) {
+    throw new RangeError('Distance must be a non-negative integer');
+  }
+
+  const width = 32;
+  const amount = distance % width;
+  const number = value >>> 0;
+
+  if (amount === 0) {
+    return [number, number];
+  }
+
+  const left = ((number << amount) | (number >>> (width - amount))) >>> 0;
+  const right = ((number >>> amount) | (number << (width - amount))) >>> 0;
+
+  return [left, right];
+}
+```
+
+```ts
+export function rotateBitsOfANumber(value: number, distance: number): [number, number] {
+  if (!Number.isInteger(value) || value < 0 || value > 0xffffffff) {
+    throw new RangeError('Value must be an unsigned 32-bit integer');
+  }
+
+  if (!Number.isInteger(distance) || distance < 0) {
+    throw new RangeError('Distance must be a non-negative integer');
+  }
+
+  const width = 32;
+  const amount = distance % width;
+  const number = value >>> 0;
+
+  if (amount === 0) {
+    return [number, number];
+  }
+
+  const left = ((number << amount) | (number >>> (width - amount))) >>> 0;
+  const right = ((number >>> amount) | (number << (width - amount))) >>> 0;
+
+  return [left, right];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Split the helper into dedicated `rotateLeft` and `rotateRight` functions.
+- Explain why `distance % 32` is necessary for fixed-width rotation.
+- Compare circular rotation with ordinary shifts that discard overflowed bits.
+
+## Common Pitfalls
+
+- Treating rotation as a plain shift and losing the wrapped bits.
+- Forgetting to normalize the distance by the word size.
+- Ignoring the unsigned 32-bit model and returning negative signed results accidentally.

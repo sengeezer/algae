@@ -1,0 +1,112 @@
+---
+title: Find most significant set bit of a number
+slug: find-most-significant-set-bit-of-a-number
+category: Bit Manipulation
+summary: Return the highest power of two present in a non-negative integer by isolating its leading `1` bit.
+description: Find most significant set bit of a number is the leading-bit extraction problem where you collapse all lower bits and then keep only the highest set position.
+dataStructures:
+  - Bitmask
+  - Number
+techniques:
+  - Bit Manipulation
+  - Bit Propagation
+  - Leading Bit Extraction
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - most significant set bit
+  - highest set bit value
+  - greatest power of two not exceeding n
+useCases:
+  - Rounding values down to the nearest power of two
+  - Identifying the highest active flag in a bitmask
+  - Supporting bit-length and logarithm-style helpers
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The fixed 32-bit version uses a constant number of shift-and-OR steps to fill every bit below the MSB, then removes all but that leading bit.
+interviewSignals:
+  - The prompt asks for the value of the highest set bit rather than its index.
+  - The expected answer is the greatest power of two less than or equal to the input.
+relatedSlugs:
+  - next-power-of-two
+  - log-two
+  - position-of-the-only-set-bit
+provenance:
+  - title: "GeeksforGeeks - Find most significant set bit of a number"
+    href: https://www.geeksforgeeks.org/dsa/find-significant-set-bit-number/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem comes up whenever an interviewer wants the highest active power-of-two component instead of the raw bit position. It is also a good bridge between bit tricks and sizing problems like power-of-two rounding.
+
+## Worked Example
+
+`10` is `1010` in binary, so the highest set bit is the `8` place. The function therefore returns `8`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function findMostSignificantSetBitOfANumber(value) {
+  if (!Number.isInteger(value) || value < 0 || value > 0xffffffff) {
+    throw new RangeError('Value must be an unsigned 32-bit integer');
+  }
+
+  let number = value >>> 0;
+
+  if (number === 0) {
+    return 0;
+  }
+
+  number |= number >>> 1;
+  number |= number >>> 2;
+  number |= number >>> 4;
+  number |= number >>> 8;
+  number |= number >>> 16;
+
+  return (number ^ (number >>> 1)) >>> 0;
+}
+```
+
+```ts
+export function findMostSignificantSetBitOfANumber(value: number): number {
+  if (!Number.isInteger(value) || value < 0 || value > 0xffffffff) {
+    throw new RangeError('Value must be an unsigned 32-bit integer');
+  }
+
+  let number = value >>> 0;
+
+  if (number === 0) {
+    return 0;
+  }
+
+  number |= number >>> 1;
+  number |= number >>> 2;
+  number |= number >>> 4;
+  number |= number >>> 8;
+  number |= number >>> 16;
+
+  return (number ^ (number >>> 1)) >>> 0;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the zero-based position of the MSB instead of its value.
+- Compare this fixed-width bit trick with `Math.clz32`.
+- Use the same leading-bit idea to implement floor `log2`.
+
+## Common Pitfalls
+
+- Returning the bit index when the prompt wants the bit value.
+- Forgetting that `0` has no set bits and should return `0` here.
+- Ignoring that JavaScript bitwise operators coerce numbers to 32-bit integers.
