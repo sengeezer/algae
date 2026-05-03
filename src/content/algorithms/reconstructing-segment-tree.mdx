@@ -1,0 +1,373 @@
+---
+title: Reconstructing Segment Tree
+slug: reconstructing-segment-tree
+category: Trees
+summary: Sort the multiset, map each value's occurrence count to a subtree height, and rebuild the RMQ tree by filling left spines from the smallest values upward.
+description: Reconstructing Segment Tree asks whether a multiset of 2N-1 values could be the array form of a range-minimum segment tree on distinct leaves, and if so, rebuilds that tree by assigning each value to the leftmost available subtree of matching height.
+dataStructures:
+  - Array
+  - Binary Tree
+techniques:
+  - Segment Tree
+  - Greedy Construction
+  - Heaps
+  - Sorting
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - reconstruct rmq segment tree
+  - rebuild segment tree from multiset
+  - segment tree from occurrence counts
+useCases:
+  - Validating whether an array could represent a range-minimum segment tree
+  - Recovering a tree shape from aggregate occurrence constraints
+  - Practicing how subtree height controls repeated minima in RMQ trees
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: Sorting distinct values dominates, and each subtree-root allocation uses one heap pop plus several smaller-height heap pushes across the full construction.
+interviewSignals:
+  - The prompt gives a multiset of internal and leaf values rather than the original leaf array.
+  - Leaf values are distinct, so each value's frequency encodes how many levels of minima it survives.
+  - The hard part is finding the right invariant before writing any tree code.
+relatedSlugs:
+  - segment-tree
+provenance:
+  - title: "GeeksforGeeks - Reconstructing Segment Tree"
+    href: https://www.geeksforgeeks.org/dsa/reconstructing-segment-tree/
+    kind: Implementation
+  - title: cp-algorithms - Segment Tree
+    href: https://cp-algorithms.com/data_structures/segment_tree.html
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem is really about the meaning of repeated minima in an RMQ segment tree. If a value appears `k` times, then it must be the minimum along a chain of `k` nodes from some leaf upward, which means it belongs on the left spine of a subtree of height `k`.
+
+## Worked Example
+
+For the multiset `[1, 1, 1, 1, 2, 2, 3, 3, 3, 4, 4, 5, 6, 7, 8]`, the value `1` appears `4` times, so it must occupy the left spine of the whole height-4 tree. The value `2` appears `2` times, so it takes the left spine of the leftmost remaining height-2 subtree, and continuing this process rebuilds the array-form tree `[1, 1, 3, 1, 2, 3, 4, 1, 5, 2, 6, 3, 7, 4, 8]`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class MinHeap {
+  constructor() {
+    this.values = [];
+  }
+
+  get size() {
+    return this.values.length;
+  }
+
+  push(value) {
+    this.values.push(value);
+    this.bubbleUp(this.values.length - 1);
+  }
+
+  pop() {
+    if (this.values.length === 0) {
+      return null;
+    }
+
+    const minimum = this.values[0];
+    const tail = this.values.pop();
+
+    if (this.values.length > 0 && tail !== undefined) {
+      this.values[0] = tail;
+      this.bubbleDown(0);
+    }
+
+    return minimum;
+  }
+
+  bubbleUp(index) {
+    let child = index;
+
+    while (child > 0) {
+      const parent = Math.floor((child - 1) / 2);
+      if (this.values[parent] <= this.values[child]) {
+        break;
+      }
+
+      [this.values[parent], this.values[child]] = [this.values[child], this.values[parent]];
+      child = parent;
+    }
+  }
+
+  bubbleDown(index) {
+    let parent = index;
+
+    while (true) {
+      const left = parent * 2 + 1;
+      const right = parent * 2 + 2;
+      let smallest = parent;
+
+      if (left < this.values.length && this.values[left] < this.values[smallest]) {
+        smallest = left;
+      }
+
+      if (right < this.values.length && this.values[right] < this.values[smallest]) {
+        smallest = right;
+      }
+
+      if (smallest === parent) {
+        break;
+      }
+
+      [this.values[parent], this.values[smallest]] = [this.values[smallest], this.values[parent]];
+      parent = smallest;
+    }
+  }
+}
+
+function isPowerOfTwo(value) {
+  return value > 0 && (value & (value - 1)) === 0;
+}
+
+function isValidRmqSegmentTree(tree, leafCount) {
+  const leafStart = leafCount - 1;
+  const leaves = tree.slice(leafStart);
+  if (new Set(leaves).size !== leaves.length) {
+    return false;
+  }
+
+  for (let node = leafStart - 1; node >= 0; node -= 1) {
+    const left = node * 2 + 1;
+    const right = node * 2 + 2;
+    if (tree[node] !== Math.min(tree[left], tree[right])) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function reconstructSegmentTree(values) {
+  if (!Array.isArray(values) || values.length === 0) {
+    throw new RangeError('Values must be a non-empty array');
+  }
+
+  const totalNodes = values.length;
+  const leafCount = (totalNodes + 1) / 2;
+
+  if (!Number.isInteger(leafCount) || !isPowerOfTwo(leafCount)) {
+    throw new RangeError('Array length must be 2N - 1 for a power-of-two leaf count');
+  }
+
+  const occurrences = new Map();
+  for (const value of values) {
+    if (!Number.isSafeInteger(value)) {
+      throw new RangeError('Values must be safe integers');
+    }
+
+    occurrences.set(value, (occurrences.get(value) ?? 0) + 1);
+  }
+
+  if (occurrences.size !== leafCount) {
+    return null;
+  }
+
+  const maxHeight = Math.log2(leafCount) + 1;
+  const availableRoots = Array.from({ length: maxHeight + 1 }, () => new MinHeap());
+  availableRoots[maxHeight].push(0);
+
+  const tree = new Array(totalNodes).fill(undefined);
+  const sortedEntries = [...occurrences.entries()].sort((left, right) => left[0] - right[0]);
+
+  for (const [value, count] of sortedEntries) {
+    if (count > maxHeight || availableRoots[count].size === 0) {
+      return null;
+    }
+
+    let node = availableRoots[count].pop();
+    let height = count;
+
+    while (height > 0 && node !== null) {
+      tree[node] = value;
+
+      if (height > 1) {
+        availableRoots[height - 1].push(node * 2 + 2);
+        node = node * 2 + 1;
+      }
+
+      height -= 1;
+    }
+  }
+
+  if (tree.some((value) => value === undefined)) {
+    return null;
+  }
+
+  return isValidRmqSegmentTree(tree, leafCount) ? tree : null;
+}
+```
+
+```ts
+class MinHeap {
+  private readonly values: number[] = [];
+
+  get size(): number {
+    return this.values.length;
+  }
+
+  push(value: number): void {
+    this.values.push(value);
+    this.bubbleUp(this.values.length - 1);
+  }
+
+  pop(): number | null {
+    if (this.values.length === 0) {
+      return null;
+    }
+
+    const minimum = this.values[0];
+    const tail = this.values.pop();
+
+    if (this.values.length > 0 && tail !== undefined) {
+      this.values[0] = tail;
+      this.bubbleDown(0);
+    }
+
+    return minimum;
+  }
+
+  private bubbleUp(index: number): void {
+    let child = index;
+
+    while (child > 0) {
+      const parent = Math.floor((child - 1) / 2);
+      if (this.values[parent] <= this.values[child]) {
+        break;
+      }
+
+      [this.values[parent], this.values[child]] = [this.values[child], this.values[parent]];
+      child = parent;
+    }
+  }
+
+  private bubbleDown(index: number): void {
+    let parent = index;
+
+    while (true) {
+      const left = parent * 2 + 1;
+      const right = parent * 2 + 2;
+      let smallest = parent;
+
+      if (left < this.values.length && this.values[left] < this.values[smallest]) {
+        smallest = left;
+      }
+
+      if (right < this.values.length && this.values[right] < this.values[smallest]) {
+        smallest = right;
+      }
+
+      if (smallest === parent) {
+        break;
+      }
+
+      [this.values[parent], this.values[smallest]] = [this.values[smallest], this.values[parent]];
+      parent = smallest;
+    }
+  }
+}
+
+function isPowerOfTwo(value: number): boolean {
+  return value > 0 && (value & (value - 1)) === 0;
+}
+
+function isValidRmqSegmentTree(tree: number[], leafCount: number): boolean {
+  const leafStart = leafCount - 1;
+  const leaves = tree.slice(leafStart);
+  if (new Set(leaves).size !== leaves.length) {
+    return false;
+  }
+
+  for (let node = leafStart - 1; node >= 0; node -= 1) {
+    const left = node * 2 + 1;
+    const right = node * 2 + 2;
+    if (tree[node] !== Math.min(tree[left], tree[right])) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+export function reconstructSegmentTree(values: number[]): number[] | null {
+  if (values.length === 0) {
+    throw new RangeError('Values must be a non-empty array');
+  }
+
+  const totalNodes = values.length;
+  const leafCount = (totalNodes + 1) / 2;
+
+  if (!Number.isInteger(leafCount) || !isPowerOfTwo(leafCount)) {
+    throw new RangeError('Array length must be 2N - 1 for a power-of-two leaf count');
+  }
+
+  const occurrences = new Map<number, number>();
+  for (const value of values) {
+    if (!Number.isSafeInteger(value)) {
+      throw new RangeError('Values must be safe integers');
+    }
+
+    occurrences.set(value, (occurrences.get(value) ?? 0) + 1);
+  }
+
+  if (occurrences.size !== leafCount) {
+    return null;
+  }
+
+  const maxHeight = Math.log2(leafCount) + 1;
+  const availableRoots = Array.from({ length: maxHeight + 1 }, () => new MinHeap());
+  availableRoots[maxHeight].push(0);
+
+  const tree = new Array<number | undefined>(totalNodes).fill(undefined);
+  const sortedEntries = [...occurrences.entries()].sort((left, right) => left[0] - right[0]);
+
+  for (const [value, count] of sortedEntries) {
+    if (count > maxHeight || availableRoots[count].size === 0) {
+      return null;
+    }
+
+    let node = availableRoots[count].pop();
+    let height = count;
+
+    while (height > 0 && node !== null) {
+      tree[node] = value;
+
+      if (height > 1) {
+        availableRoots[height - 1].push(node * 2 + 2);
+        node = node * 2 + 1;
+      }
+
+      height -= 1;
+    }
+  }
+
+  if (tree.some((value) => value === undefined)) {
+    return null;
+  }
+
+  const completedTree = tree as number[];
+  return isValidRmqSegmentTree(completedTree, leafCount) ? completedTree : null;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why does an occurrence count of `k` correspond to a subtree of height `k` in an RMQ segment tree with distinct leaves?
+- How would the problem change if equal leaf values were allowed?
+- Can you derive the original leaf array directly from the reconstructed tree array?
+
+## Common Pitfalls
+
+- Forgetting that the number of distinct values must equal the number of leaves.
+- Treating the occurrence count as subtree size instead of subtree height.
+- Reconstructing a filled array but never checking that every internal node really is the minimum of its children.

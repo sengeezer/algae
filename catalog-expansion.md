@@ -1129,9 +1129,15 @@ This one-hundred-fourth expansion slice lifts the catalog from 572 to 580 entrie
 - Calculate the Sum of GCD over all subarrays
 - Cartesian tree from inorder traversal
 
+## Batch 105 added
+
+This one-hundred-fifth expansion slice lifts the catalog from 580 to 581 entries.
+
+- Reconstructing Segment Tree
+
 ## Next candidates from the same sources
 
-- The published catalog now reaches 580 entries on `main` after the third Segment Tree slice.
+- The published catalog now reaches 581 entries on `main` after the final Segment Tree slice.
 - Batch 92 carries the vetted Dynamic Programming hard stretch through `Longest repeating and non-overlapping substring` and then consumes the clean `Advanced Concepts` absences `Count Ways To Assign Unique Cap To Every Person`, `Digit DP | Introduction`, and `Sum over Subsets | Dynamic Programming`.
 - The Dynamic Programming items skipped between `Program to find amount of water in a given glass` and `Largest Cross Bordered Square` remain already represented locally: `Longest Common Subsequence`, `Longest Increasing Subsequence`, `Edit Distance`, `0-1 Knapsack Problem`, `Partition Problem`, `Longest Palindromic Subsequence`, `Bellman-Ford Algorithm`, and `Floyd Warshall Algorithm`.
 - `The painter's partition problem` remains skipped because the local `Find minimum time to finish all jobs with given constraints` entry already covers that partition-minimax problem and includes the alias `painter partition with multiplier`.
@@ -1166,4 +1172,6 @@ This one-hundred-fourth expansion slice lifts the catalog from 572 to 580 entrie
 - Batch 104 uses the verified destination title cleanup `Maximum weight in given price range for Q queries` -> `Find element with maximum weight in given price range for Q queries` and `Longest subarray consisting of same elements by at most K decrements` -> `Maximize length of longest subarray consisting of same elements by at most K decrements`; `Queries to evaluate the given equation in a range [L, R]`, `Generate original permutation from given array of inversions`, `Build a segment tree for N-ary rooted tree`, and `Calculate the Sum of GCD over all subarrays` already match their destination titles.
 - The source label `Count number of increasing sub-sequences : O(NlogN)` is normalized locally to `Count number of increasing sub-sequences`, and `Cartesian tree from inorder traversal` is drafted without the destination page suffix `| Segment Tree` because the suffix is only sectional context.
 - `Longest Increasing Subsequences (LIS)` and `LIS using Segment Tree` remain semantic duplicates of the published `Longest Increasing Subsequence` entry, and `Maximum of all subarrays of size K` remains a semantic duplicate of the published sliding-window maximum coverage in `Sliding Window` and `Monotonic Queue`.
-- The next source-order Segment Tree candidate to vet is `Reconstructing Segment Tree`; after that, the remaining page tail is the `Applications of Segment Tree` overview section rather than another implementation queue.
+- Batch 105 uses the destination title `Reconstructing Segment Tree` verbatim.
+- The GeeksforGeeks Segment Tree page is now exhausted in source order after the local `Reconstructing Segment Tree` draft; the remaining `Applications of Segment Tree` section is theory-only overview material and should stay skipped during drafting.
+- The next vetted source branch after the exhausted Segment Tree page is the GeeksforGeeks Binary Indexed Tree page: https://www.geeksforgeeks.org/dsa/binary-indexed-tree-or-fenwick-tree-2/
