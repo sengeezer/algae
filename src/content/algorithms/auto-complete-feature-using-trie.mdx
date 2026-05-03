@@ -1,0 +1,178 @@
+---
+title: Auto-complete feature using Trie
+slug: auto-complete-feature-using-trie
+category: Strings
+summary: Follow the query prefix in the trie once, then enumerate only the matching subtree to produce completion suggestions.
+description: Auto-complete feature using Trie is the classic prefix-search problem where a fast prefix walk narrows the result set before a DFS collects matching words.
+dataStructures:
+  - Tree
+  - String
+  - Hash Map
+techniques:
+  - Trie
+  - Prefix Matching
+  - Depth-First Search
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - trie autocomplete
+  - prefix suggestions
+  - search box completion
+useCases:
+  - Search box suggestions
+  - IDE or command palette completion
+  - Prefix-based recommendation systems
+complexity:
+  time: O(d + p + r)
+  space: O(d + h)
+  notes: "d is the total dictionary size when the trie is built for the query, p is the prefix length, r is the total emitted character count, and h is traversal depth."
+interviewSignals:
+  - The user types a prefix and wants all matching stored words.
+  - The candidate solution should avoid scanning the whole dictionary for every query.
+  - The interviewer often asks how to extend the solution to top-k ranking.
+relatedSlugs:
+  - trie
+  - displaying-content-of-trie
+provenance:
+  - title: "GeeksforGeeks - Auto-complete feature using Trie"
+    href: https://www.geeksforgeeks.org/dsa/auto-complete-feature-using-trie/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+Autocomplete is one of the most recognizable trie applications. The whole point is that you only pay once to walk the typed prefix, and after that you search a much smaller subtree instead of rechecking every stored word.
+
+## Worked Example
+
+If the trie stores `hell`, `hello`, `help`, `helping`, and `helps`, then the prefix `hel` lands at the shared prefix node and a DFS below it returns all five suggestions.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class AutoCompleteTrieNode {
+  constructor() {
+    this.children = new Map();
+    this.isWord = false;
+  }
+}
+
+function autoCompleteFeatureUsingTrie(words, prefix) {
+  if (!Array.isArray(words) || typeof prefix !== 'string') {
+    throw new TypeError('Expected an array of words and a string prefix');
+  }
+
+  const root = new AutoCompleteTrieNode();
+
+  for (const word of words) {
+    if (typeof word !== 'string' || word.length === 0) {
+      throw new RangeError('Words must be non-empty strings');
+    }
+
+    let node = root;
+    for (const char of word) {
+      if (!node.children.has(char)) {
+        node.children.set(char, new AutoCompleteTrieNode());
+      }
+      node = node.children.get(char);
+    }
+    node.isWord = true;
+  }
+
+  let node = root;
+  for (const char of prefix) {
+    node = node.children.get(char);
+    if (!node) {
+      return [];
+    }
+  }
+
+  const suggestions = [];
+
+  const collect = (currentNode, currentWord) => {
+    if (currentNode.isWord) {
+      suggestions.push(currentWord);
+    }
+
+    const entries = [...currentNode.children.entries()].sort((left, right) =>
+      left[0].localeCompare(right[0]),
+    );
+
+    for (const [char, child] of entries) {
+      collect(child, currentWord + char);
+    }
+  };
+
+  collect(node, prefix);
+  return suggestions;
+}
+```
+
+```ts
+class AutoCompleteTrieNode {
+  children = new Map<string, AutoCompleteTrieNode>();
+  isWord = false;
+}
+
+export function autoCompleteFeatureUsingTrie(words: string[], prefix: string): string[] {
+  const root = new AutoCompleteTrieNode();
+
+  for (const word of words) {
+    if (word.length === 0) {
+      throw new RangeError('Words must be non-empty strings');
+    }
+
+    let node = root;
+    for (const char of word) {
+      if (!node.children.has(char)) {
+        node.children.set(char, new AutoCompleteTrieNode());
+      }
+      node = node.children.get(char) as AutoCompleteTrieNode;
+    }
+    node.isWord = true;
+  }
+
+  let node: AutoCompleteTrieNode | undefined = root;
+  for (const char of prefix) {
+    node = node.children.get(char);
+    if (!node) {
+      return [];
+    }
+  }
+
+  const suggestions: string[] = [];
+
+  const collect = (currentNode: AutoCompleteTrieNode, currentWord: string): void => {
+    if (currentNode.isWord) {
+      suggestions.push(currentWord);
+    }
+
+    const entries = [...currentNode.children.entries()].sort((left, right) =>
+      left[0].localeCompare(right[0]),
+    );
+
+    for (const [char, child] of entries) {
+      collect(child, currentWord + char);
+    }
+  };
+
+  collect(node, prefix);
+  return suggestions;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you rank results by popularity instead of pure lexicographic order?
+- How would you cap output at the top `k` suggestions?
+- What would change if queries arrive continuously and the trie is reused across many requests?
+
+## Common Pitfalls
+
+- Scanning every stored word even after the trie already identifies the prefix subtree.
+- Returning the prefix alone even when it is not actually stored as a complete word.
+- Forgetting that no matching prefix should usually return an empty list rather than throw.

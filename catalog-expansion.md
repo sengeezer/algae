@@ -1148,9 +1148,29 @@ This one-hundred-sixth expansion slice lifts the catalog from 581 to 589 entries
 - Count-based Absolute difference for Array element
 - Sum and Update Queries on 3D Matrix in log(N) time
 
+## Batch 107 added
+
+This one-hundred-seventh expansion slice lifts the catalog from 589 to 597 entries.
+
+- Trie Delete
+- Minimum Word Break
+- Unique rows in boolean matrix
+- Count of distinct substrings
+- Sorting array of strings (or words) using Trie
+- Displaying content of Trie
+- Auto-complete feature using Trie
+- Pattern Searching using a Trie of all Suffixes
+
 ## Next candidates from the same sources
 
-- The published catalog now reaches 589 entries on `main` after the first Binary Indexed Tree example-problem slice.
+- The published catalog now reaches 597 entries on `main` after the first Trie common-interview slice.
+- On the Trie Data Structure page, the overview article remains a semantic duplicate of the published `Trie` entry, and the `Trie Data Structure - Commonly Asked Questions` page is treated as the active queue source rather than a catalog entry.
+- Batch 107 uses the verified destination title cleanup `Trie | (Delete)` -> `Trie Delete` and `Trie | (Display Content)` -> `Displaying content of Trie`.
+- `Minimum Word Break`, `Unique rows in boolean matrix`, `Count of distinct substrings`, `Sorting array of strings (or words) using Trie`, `Auto-complete feature using Trie`, and `Pattern Searching using a Trie of all Suffixes` already match their destination titles.
+- `Word Boggle` remains duplicate-level coverage because the published `Boggle` entry already covers that board-search problem semantically.
+- The Trie common-interview queue is now exhausted in source order after the local batch-107 slice.
+- The next vetted source branch after the exhausted Trie queue is the GeeksforGeeks Square Root (Sqrt) Decomposition Algorithm page: https://www.geeksforgeeks.org/dsa/square-root-sqrt-decomposition-algorithm/
+- On that Square Root page, the overview article remains a semantic duplicate of the published `Square Root Decomposition` entry.
 - Batch 92 carries the vetted Dynamic Programming hard stretch through `Longest repeating and non-overlapping substring` and then consumes the clean `Advanced Concepts` absences `Count Ways To Assign Unique Cap To Every Person`, `Digit DP | Introduction`, and `Sum over Subsets | Dynamic Programming`.
 - The Dynamic Programming items skipped between `Program to find amount of water in a given glass` and `Largest Cross Bordered Square` remain already represented locally: `Longest Common Subsequence`, `Longest Increasing Subsequence`, `Edit Distance`, `0-1 Knapsack Problem`, `Partition Problem`, `Longest Palindromic Subsequence`, `Bellman-Ford Algorithm`, and `Floyd Warshall Algorithm`.
 - `The painter's partition problem` remains skipped because the local `Find minimum time to finish all jobs with given constraints` entry already covers that partition-minimax problem and includes the alias `painter partition with multiplier`.

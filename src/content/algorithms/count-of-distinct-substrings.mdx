@@ -1,0 +1,128 @@
+---
+title: Count of distinct substrings
+slug: count-of-distinct-substrings
+category: Strings
+summary: Insert every suffix into a trie and count how many new nodes appear, because each new node represents one new distinct substring.
+description: "Count of distinct substrings turns a suffix-trie build into the answer directly: every previously unseen path extension corresponds to one new non-empty substring."
+dataStructures:
+  - Tree
+  - String
+  - Hash Map
+techniques:
+  - Trie
+  - Suffix Trie
+  - Counting
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - distinct substrings count
+  - count distinct substrings
+  - suffix trie substring count
+useCases:
+  - Counting all different substrings of a string
+  - Connecting suffix indexing with trie growth
+  - Building intuition for why suffix structures compress repeated substrings
+complexity:
+  time: O(n^2)
+  space: O(n^2)
+  notes: The suffix-trie solution is interview-friendly and counts new substrings by counting new nodes, though faster suffix structures exist for large inputs.
+interviewSignals:
+  - The prompt asks for the count of distinct substrings, not just whether one exists.
+  - Many substrings repeat, so enumerating and storing them explicitly is expensive.
+  - Trie growth over all suffixes provides a structural count of new substrings.
+relatedSlugs:
+  - trie
+  - suffix-array
+provenance:
+  - title: "GeeksforGeeks - Count of distinct substrings"
+    href: https://www.geeksforgeeks.org/problems/count-of-distinct-substrings/1
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+Every substring is a prefix of some suffix. If you insert all suffixes into a trie, each brand-new node you create corresponds to one distinct non-empty substring that has never appeared before.
+
+## Worked Example
+
+For `ababa`, inserting suffixes creates nodes for `a`, `b`, `ab`, `ba`, `aba`, `bab`, `abab`, `baba`, and `ababa`. The total number of non-root nodes created is `9`, which is the number of distinct non-empty substrings.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class DistinctSubstringTrieNode {
+  constructor() {
+    this.children = new Map();
+  }
+}
+
+function countOfDistinctSubstrings(text) {
+  if (typeof text !== 'string') {
+    throw new TypeError('Text must be a string');
+  }
+
+  const root = new DistinctSubstringTrieNode();
+  let distinctCount = 0;
+
+  for (let start = 0; start < text.length; start += 1) {
+    let node = root;
+
+    for (let end = start; end < text.length; end += 1) {
+      const char = text[end];
+
+      if (!node.children.has(char)) {
+        node.children.set(char, new DistinctSubstringTrieNode());
+        distinctCount += 1;
+      }
+
+      node = node.children.get(char);
+    }
+  }
+
+  return distinctCount;
+}
+```
+
+```ts
+class DistinctSubstringTrieNode {
+  children = new Map<string, DistinctSubstringTrieNode>();
+}
+
+export function countOfDistinctSubstrings(text: string): number {
+  const root = new DistinctSubstringTrieNode();
+  let distinctCount = 0;
+
+  for (let start = 0; start < text.length; start += 1) {
+    let node = root;
+
+    for (let end = start; end < text.length; end += 1) {
+      const char = text[end];
+
+      if (!node.children.has(char)) {
+        node.children.set(char, new DistinctSubstringTrieNode());
+        distinctCount += 1;
+      }
+
+      node = node.children.get(char) as DistinctSubstringTrieNode;
+    }
+  }
+
+  return distinctCount;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you change the answer if the empty substring should also be counted?
+- What faster suffix-based structures could reduce the O(n²) space cost?
+- How would you recover the actual distinct substrings instead of only their count?
+
+## Common Pitfalls
+
+- Counting every substring occurrence instead of only distinct ones.
+- Forgetting that the root node does not correspond to a non-empty substring.
+- Building all substring strings explicitly before deduplicating them.

@@ -1,0 +1,171 @@
+---
+title: Minimum Word Break
+slug: minimum-word-break
+category: Strings
+summary: Combine prefix DP with a dictionary trie so each suffix computes the minimum number of cuts without rescanning every word.
+description: Minimum Word Break is the optimization variant of word break where the goal is not just feasibility, but the fewest cuts needed to segment the string into dictionary words.
+dataStructures:
+  - Tree
+  - String
+  - Array
+  - Hash Map
+techniques:
+  - Trie
+  - Dynamic Programming
+  - Prefix DP
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - minimum cuts for word break
+  - minimum dictionary segmentation
+useCases:
+  - Minimizing token splits in dictionary-based parsing
+  - Turning a boolean segmentation problem into an optimization DP
+  - Combining trie walks with suffix DP
+complexity:
+  time: O(d + n^2)
+  space: O(d + n)
+  notes: Here `d` is the total number of characters stored in the dictionary trie; each suffix walks forward until the trie path breaks.
+interviewSignals:
+  - The problem asks for the fewest cuts, not just whether a segmentation exists.
+  - Repeated substring membership checks dominate a naive DP.
+  - A trie can replace dictionary scans while preserving the same DP state.
+relatedSlugs:
+  - word-break
+  - trie
+provenance:
+  - title: "GeeksforGeeks - Minimum Word Break"
+    href: https://www.geeksforgeeks.org/dsa/minimum-word-break/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is the point where the plain word-break decision problem becomes an optimization problem. The DP state is still prefix-based, but each valid dictionary match now competes to minimize the total number of segments, so the final answer is `segments - 1` cuts.
+
+## Worked Example
+
+For `pineapplepen` and dictionary `{"pine", "apple", "pen", "pineapple"}`, the best split is `pineapple | pen`, which uses two dictionary words and therefore only one cut.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class WordBreakTrieNode {
+  constructor() {
+    this.children = new Map();
+    this.isWord = false;
+  }
+}
+
+function minimumWordBreak(text, words) {
+  if (typeof text !== 'string') {
+    throw new TypeError('Text must be a string');
+  }
+
+  const root = new WordBreakTrieNode();
+  for (const word of words) {
+    if (typeof word !== 'string' || word.length === 0) {
+      throw new RangeError('Dictionary words must be non-empty strings');
+    }
+
+    let node = root;
+    for (const char of word) {
+      if (!node.children.has(char)) {
+        node.children.set(char, new WordBreakTrieNode());
+      }
+      node = node.children.get(char);
+    }
+    node.isWord = true;
+  }
+
+  if (text.length === 0) {
+    return 0;
+  }
+
+  const segments = new Array(text.length + 1).fill(Infinity);
+  segments[text.length] = 0;
+
+  for (let start = text.length - 1; start >= 0; start -= 1) {
+    let node = root;
+
+    for (let end = start; end < text.length; end += 1) {
+      node = node.children.get(text[end]);
+      if (!node) {
+        break;
+      }
+
+      if (node.isWord && segments[end + 1] !== Infinity) {
+        segments[start] = Math.min(segments[start], 1 + segments[end + 1]);
+      }
+    }
+  }
+
+  return segments[0] === Infinity ? -1 : segments[0] - 1;
+}
+```
+
+```ts
+class WordBreakTrieNode {
+  children = new Map<string, WordBreakTrieNode>();
+  isWord = false;
+}
+
+export function minimumWordBreak(text: string, words: string[]): number {
+  const root = new WordBreakTrieNode();
+
+  for (const word of words) {
+    if (word.length === 0) {
+      throw new RangeError('Dictionary words must be non-empty strings');
+    }
+
+    let node = root;
+    for (const char of word) {
+      if (!node.children.has(char)) {
+        node.children.set(char, new WordBreakTrieNode());
+      }
+      node = node.children.get(char) as WordBreakTrieNode;
+    }
+    node.isWord = true;
+  }
+
+  if (text.length === 0) {
+    return 0;
+  }
+
+  const segments = new Array<number>(text.length + 1).fill(Number.POSITIVE_INFINITY);
+  segments[text.length] = 0;
+
+  for (let start = text.length - 1; start >= 0; start -= 1) {
+    let node: WordBreakTrieNode | undefined = root;
+
+    for (let end = start; end < text.length; end += 1) {
+      node = node.children.get(text[end]);
+      if (!node) {
+        break;
+      }
+
+      if (node.isWord && segments[end + 1] !== Number.POSITIVE_INFINITY) {
+        segments[start] = Math.min(segments[start], 1 + segments[end + 1]);
+      }
+    }
+  }
+
+  return segments[0] === Number.POSITIVE_INFINITY ? -1 : segments[0] - 1;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you return one optimal segmentation instead of only the cut count?
+- What if the dictionary is updated online between queries?
+- How would you adapt the DP if each dictionary word carried a custom penalty instead of one cut?
+
+## Common Pitfalls
+
+- Reusing the boolean word-break DP and forgetting that this version minimizes cuts.
+- Returning the number of segments instead of `segments - 1` cuts.
+- Scanning the whole dictionary for every substring instead of walking a trie forward.

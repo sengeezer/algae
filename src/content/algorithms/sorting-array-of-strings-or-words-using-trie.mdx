@@ -1,0 +1,163 @@
+---
+title: Sorting array of strings (or words) using Trie
+slug: sorting-array-of-strings-or-words-using-trie
+category: Sorting
+summary: Insert each word into a trie and perform a lexicographic depth-first traversal to emit the unique words in dictionary order.
+description: Sorting array of strings (or words) using Trie treats trie traversal as the ordering mechanism, so duplicate words collapse naturally and output appears in lexicographic order.
+dataStructures:
+  - Tree
+  - String
+  - Array
+  - Hash Map
+techniques:
+  - Trie
+  - Lexicographic Traversal
+  - Sorting
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - trie string sort
+  - sort words using trie
+  - lexicographic trie traversal
+useCases:
+  - Sorting many shared-prefix words in dictionary order
+  - Deduplicating words while producing sorted output
+  - Demonstrating how preorder trie traversal yields lexicographic order
+complexity:
+  time: O(t + o)
+  space: O(t)
+  notes: "t is the total number of inserted characters and o is the total number of emitted characters, assuming a fixed-size alphabet or sorted child iteration."
+interviewSignals:
+  - The data is a collection of strings rather than numbers.
+  - Shared prefixes make comparison-based sorting feel wasteful.
+  - The question explicitly nudges toward trie traversal or dictionary order.
+relatedSlugs:
+  - trie
+  - displaying-content-of-trie
+provenance:
+  - title: "GeeksforGeeks - Sorting array of strings (or words) using Trie"
+    href: https://www.geeksforgeeks.org/dsa/sorting-array-strings-words-using-trie/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This problem is really about exploiting shared prefixes. Once all words are inserted, a lexicographic DFS over child edges produces dictionary order without comparing whole strings against each other the way a standard comparison sort would.
+
+## Worked Example
+
+For `['geeks', 'for', 'geeks', 'a']`, the trie stores each distinct word once. A lexicographic traversal visits `a`, then `for`, then `geeks`, so the sorted unique output is `['a', 'for', 'geeks']`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class TrieSortNode {
+  constructor() {
+    this.children = new Map();
+    this.isWord = false;
+  }
+}
+
+function sortingArrayOfStringsOrWordsUsingTrie(words) {
+  if (!Array.isArray(words)) {
+    throw new TypeError('Words must be an array of strings');
+  }
+
+  const root = new TrieSortNode();
+
+  for (const word of words) {
+    if (typeof word !== 'string' || word.length === 0) {
+      throw new RangeError('Words must be non-empty strings');
+    }
+
+    let node = root;
+    for (const char of word) {
+      if (!node.children.has(char)) {
+        node.children.set(char, new TrieSortNode());
+      }
+      node = node.children.get(char);
+    }
+    node.isWord = true;
+  }
+
+  const orderedWords = [];
+
+  const dfs = (node, prefix) => {
+    if (node.isWord) {
+      orderedWords.push(prefix);
+    }
+
+    const entries = [...node.children.entries()].sort((left, right) =>
+      left[0].localeCompare(right[0]),
+    );
+
+    for (const [char, child] of entries) {
+      dfs(child, prefix + char);
+    }
+  };
+
+  dfs(root, '');
+  return orderedWords;
+}
+```
+
+```ts
+class TrieSortNode {
+  children = new Map<string, TrieSortNode>();
+  isWord = false;
+}
+
+export function sortingArrayOfStringsOrWordsUsingTrie(words: string[]): string[] {
+  const root = new TrieSortNode();
+
+  for (const word of words) {
+    if (word.length === 0) {
+      throw new RangeError('Words must be non-empty strings');
+    }
+
+    let node = root;
+    for (const char of word) {
+      if (!node.children.has(char)) {
+        node.children.set(char, new TrieSortNode());
+      }
+      node = node.children.get(char) as TrieSortNode;
+    }
+    node.isWord = true;
+  }
+
+  const orderedWords: string[] = [];
+
+  const dfs = (node: TrieSortNode, prefix: string): void => {
+    if (node.isWord) {
+      orderedWords.push(prefix);
+    }
+
+    const entries = [...node.children.entries()].sort((left, right) =>
+      left[0].localeCompare(right[0]),
+    );
+
+    for (const [char, child] of entries) {
+      dfs(child, prefix + char);
+    }
+  };
+
+  dfs(root, '');
+  return orderedWords;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would this compare to `words.sort()` when the alphabet is fixed but prefixes overlap heavily?
+- What changes if duplicates should be preserved instead of collapsed?
+- How would you adapt the traversal for descending lexicographic order?
+
+## Common Pitfalls
+
+- Forgetting that a trie naturally removes duplicates unless you track multiplicity.
+- Traversing child nodes in insertion order instead of lexicographic order.
+- Reconstructing entire strings at each step with unnecessary repeated work.

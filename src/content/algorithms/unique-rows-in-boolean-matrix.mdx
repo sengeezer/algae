@@ -1,0 +1,143 @@
+---
+title: Unique rows in boolean matrix
+slug: unique-rows-in-boolean-matrix
+category: Matrices
+summary: Insert each binary row into a two-branch trie and emit it only the first time its full bit path becomes terminal.
+description: Unique rows in boolean matrix uses a binary trie to preserve first appearance order while filtering duplicate rows in O(rows × cols) time.
+dataStructures:
+  - Matrix
+  - Tree
+  - Array
+techniques:
+  - Trie
+  - Deduplication
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - unique rows in boolean matrix
+  - distinct binary rows
+  - deduplicate binary matrix rows
+useCases:
+  - Removing repeated bit patterns while preserving order
+  - Applying trie ideas outside string alphabets
+  - Deduplicating long fixed-width binary keys efficiently
+complexity:
+  time: O(r * c)
+  space: O(r * c)
+  notes: The trie has only two outgoing choices per level, so each row is processed in one linear walk across its columns.
+interviewSignals:
+  - The input rows contain only 0s and 1s.
+  - You must preserve the first occurrence order of unique rows.
+  - Hashing works too, but the prompt is nudging toward a trie on binary digits.
+relatedSlugs:
+  - trie
+provenance:
+  - title: "GeeksforGeeks - Unique rows in boolean matrix"
+    href: https://www.geeksforgeeks.org/problems/unique-rows-in-boolean-matrix/1
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+Each row is just a binary string of fixed width, so a trie with only two child choices per node works naturally. The first time a full row path ends at a non-terminal node, that row is new; every later visit to the same terminal path is a duplicate.
+
+## Worked Example
+
+For `[[1, 1, 0, 1], [1, 0, 0, 1], [1, 1, 0, 1]]`, the first row creates a new terminal path and is emitted, the second row creates another new terminal path and is emitted, and the third row lands on the first terminal path so it is skipped.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class BooleanRowTrieNode {
+  constructor() {
+    this.children = [null, null];
+    this.isRow = false;
+  }
+}
+
+function uniqueRowsInBooleanMatrix(matrix) {
+  if (!Array.isArray(matrix)) {
+    throw new TypeError('Matrix must be an array of rows');
+  }
+
+  const root = new BooleanRowTrieNode();
+  const uniqueRows = [];
+
+  for (const row of matrix) {
+    if (!Array.isArray(row)) {
+      throw new TypeError('Each row must be an array');
+    }
+
+    let node = root;
+    for (const bit of row) {
+      if (bit !== 0 && bit !== 1) {
+        throw new RangeError('Rows must contain only 0 and 1');
+      }
+
+      if (node.children[bit] === null) {
+        node.children[bit] = new BooleanRowTrieNode();
+      }
+
+      node = node.children[bit];
+    }
+
+    if (!node.isRow) {
+      node.isRow = true;
+      uniqueRows.push([...row]);
+    }
+  }
+
+  return uniqueRows;
+}
+```
+
+```ts
+class BooleanRowTrieNode {
+  children: [BooleanRowTrieNode | null, BooleanRowTrieNode | null] = [null, null];
+  isRow = false;
+}
+
+export function uniqueRowsInBooleanMatrix(matrix: number[][]): number[][] {
+  const root = new BooleanRowTrieNode();
+  const uniqueRows: number[][] = [];
+
+  for (const row of matrix) {
+    let node = root;
+
+    for (const bit of row) {
+      if (bit !== 0 && bit !== 1) {
+        throw new RangeError('Rows must contain only 0 and 1');
+      }
+
+      if (node.children[bit] === null) {
+        node.children[bit] = new BooleanRowTrieNode();
+      }
+
+      node = node.children[bit] as BooleanRowTrieNode;
+    }
+
+    if (!node.isRow) {
+      node.isRow = true;
+      uniqueRows.push([...row]);
+    }
+  }
+
+  return uniqueRows;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you adapt the idea if each row contained digits `0` through `9` instead of only bits?
+- When would a hash-based solution be simpler than a trie here?
+- How would you track how many times each row appears instead of only the first unique rows?
+
+## Common Pitfalls
+
+- Forgetting to preserve first appearance order when deduplicating.
+- Reusing the same row array reference instead of copying it into the result.
+- Treating a shared prefix as proof that the full row already exists.

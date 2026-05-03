@@ -1,0 +1,164 @@
+---
+title: Displaying content of Trie
+slug: displaying-content-of-trie
+category: Strings
+summary: Reconstruct every stored key by traversing the trie depth-first and emitting the current path whenever a terminal node is reached.
+description: "Displaying content of Trie is the enumeration problem for a prefix tree: walk the structure in lexicographic child order and rebuild each stored word from the path."
+dataStructures:
+  - Tree
+  - String
+  - Hash Map
+techniques:
+  - Trie
+  - Depth-First Search
+  - Lexicographic Traversal
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - display trie contents
+  - print all words in trie
+  - enumerate trie keys
+useCases:
+  - Debugging a trie after a sequence of inserts and deletes
+  - Exporting all keys from a prefix index
+  - Showing how path reconstruction works in depth-first traversal
+complexity:
+  time: O(t + o)
+  space: O(h)
+  notes: "t is the number of trie edges visited, o is the total emitted character count, and h is the maximum word length on the recursion stack."
+interviewSignals:
+  - The trie already exists and the task is to print or list every stored word.
+  - The output should be lexicographically ordered.
+  - The interviewer wants to see path reconstruction during DFS.
+relatedSlugs:
+  - trie
+  - sorting-array-of-strings-or-words-using-trie
+provenance:
+  - title: "GeeksforGeeks - Trie | (Display Content)"
+    href: https://www.geeksforgeeks.org/dsa/trie-display-content/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+After insert, search, and delete, the next natural trie question is usually enumeration. The key move is to carry the current prefix down the recursion and emit it only when the current node marks the end of a stored word.
+
+## Worked Example
+
+If the trie stores `answer`, `any`, `bye`, `their`, and `there`, a lexicographic DFS over child edges produces exactly that ordered list of words from the structure.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class DisplayTrieNode {
+  constructor() {
+    this.children = new Map();
+    this.isWord = false;
+  }
+}
+
+class DisplayTrie {
+  constructor() {
+    this.root = new DisplayTrieNode();
+  }
+
+  insert(word) {
+    if (typeof word !== 'string' || word.length === 0) {
+      throw new RangeError('Words must be non-empty strings');
+    }
+
+    let node = this.root;
+    for (const char of word) {
+      if (!node.children.has(char)) {
+        node.children.set(char, new DisplayTrieNode());
+      }
+      node = node.children.get(char);
+    }
+    node.isWord = true;
+  }
+
+  listContents() {
+    const contents = [];
+
+    const dfs = (node, prefix) => {
+      if (node.isWord) {
+        contents.push(prefix);
+      }
+
+      const entries = [...node.children.entries()].sort((left, right) =>
+        left[0].localeCompare(right[0]),
+      );
+
+      for (const [char, child] of entries) {
+        dfs(child, prefix + char);
+      }
+    };
+
+    dfs(this.root, '');
+    return contents;
+  }
+}
+```
+
+```ts
+class DisplayTrieNode {
+  children = new Map<string, DisplayTrieNode>();
+  isWord = false;
+}
+
+export class DisplayTrie {
+  private readonly root = new DisplayTrieNode();
+
+  insert(word: string): void {
+    if (word.length === 0) {
+      throw new RangeError('Words must be non-empty strings');
+    }
+
+    let node = this.root;
+    for (const char of word) {
+      if (!node.children.has(char)) {
+        node.children.set(char, new DisplayTrieNode());
+      }
+      node = node.children.get(char) as DisplayTrieNode;
+    }
+    node.isWord = true;
+  }
+
+  listContents(): string[] {
+    const contents: string[] = [];
+
+    const dfs = (node: DisplayTrieNode, prefix: string): void => {
+      if (node.isWord) {
+        contents.push(prefix);
+      }
+
+      const entries = [...node.children.entries()].sort((left, right) =>
+        left[0].localeCompare(right[0]),
+      );
+
+      for (const [char, child] of entries) {
+        dfs(child, prefix + char);
+      }
+    };
+
+    dfs(this.root, '');
+    return contents;
+  }
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you stream the words one at a time instead of collecting them into an array?
+- What changes if you need only the first `k` lexicographically smallest words?
+- How would you avoid recursion depth issues for very long keys?
+
+## Common Pitfalls
+
+- Printing prefixes that are not actually marked as complete words.
+- Forgetting to preserve lexicographic order when iterating children.
+- Reusing one mutable buffer without undoing the last appended character correctly.

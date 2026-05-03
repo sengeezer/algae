@@ -1,0 +1,243 @@
+---
+title: Trie Delete
+slug: trie-delete
+category: Strings
+summary: Remove a word from a trie recursively while pruning only the nodes that no longer serve any remaining key.
+description: Trie Delete extends the basic prefix tree with bottom-up cleanup so deleting one word does not disturb overlapping prefixes that still belong to other words.
+dataStructures:
+  - Tree
+  - String
+  - Hash Map
+techniques:
+  - Trie
+  - Recursion
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - trie remove
+  - delete from trie
+  - remove word from prefix tree
+useCases:
+  - Maintaining mutable autocomplete dictionaries
+  - Removing expired tokens from a prefix index
+  - Practicing bottom-up cleanup in recursive tree code
+complexity:
+  time: O(k)
+  space: O(k)
+  notes: The recursion follows only the target word path and then prunes nodes that are no longer terminal and no longer have children.
+interviewSignals:
+  - The trie already supports insert and search, and the interviewer asks for full deletion semantics.
+  - Shared prefixes must survive when one stored word is removed.
+  - The hard part is deciding when a node can be safely pruned on the way back up.
+relatedSlugs:
+  - trie
+  - auto-complete-feature-using-trie
+provenance:
+  - title: "GeeksforGeeks - Trie | (Delete)"
+    href: https://www.geeksforgeeks.org/dsa/trie-delete/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+Deletion is where trie implementations stop being mechanical. Insert and search only move downward, but delete has to reason about what remains after the target word disappears: is this node still the end of another word, and does any other branch still need it?
+
+## Worked Example
+
+If the trie stores `an`, `and`, and `ant`, deleting `an` should only unmark the terminal flag on the `n` node because `and` and `ant` still need that prefix. Deleting `and` after that can prune the trailing `d` node, but it must keep the `a -> n -> t` branch intact.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+class TrieDeleteNode {
+  constructor() {
+    this.children = new Map();
+    this.isWord = false;
+  }
+}
+
+class TrieWithDelete {
+  constructor() {
+    this.root = new TrieDeleteNode();
+  }
+
+  insert(word) {
+    if (typeof word !== 'string' || word.length === 0) {
+      throw new RangeError('Words must be non-empty strings');
+    }
+
+    let node = this.root;
+    for (const char of word) {
+      if (!node.children.has(char)) {
+        node.children.set(char, new TrieDeleteNode());
+      }
+      node = node.children.get(char);
+    }
+
+    node.isWord = true;
+  }
+
+  has(word) {
+    let node = this.root;
+
+    for (const char of word) {
+      node = node.children.get(char);
+      if (!node) {
+        return false;
+      }
+    }
+
+    return node.isWord;
+  }
+
+  delete(word) {
+    if (!this.has(word)) {
+      return false;
+    }
+
+    this.deleteFrom(this.root, word, 0);
+    return true;
+  }
+
+  listWords() {
+    const words = [];
+
+    const dfs = (node, prefix) => {
+      if (node.isWord) {
+        words.push(prefix);
+      }
+
+      const entries = [...node.children.entries()].sort((left, right) =>
+        left[0].localeCompare(right[0]),
+      );
+
+      for (const [char, child] of entries) {
+        dfs(child, prefix + char);
+      }
+    };
+
+    dfs(this.root, '');
+    return words;
+  }
+
+  deleteFrom(node, word, index) {
+    if (index === word.length) {
+      node.isWord = false;
+      return node.children.size === 0;
+    }
+
+    const char = word[index];
+    const child = node.children.get(char);
+    const shouldRemoveChild = this.deleteFrom(child, word, index + 1);
+
+    if (shouldRemoveChild) {
+      node.children.delete(char);
+    }
+
+    return !node.isWord && node.children.size === 0;
+  }
+}
+```
+
+```ts
+class TrieDeleteNode {
+  children = new Map<string, TrieDeleteNode>();
+  isWord = false;
+}
+
+export class TrieWithDelete {
+  private readonly root = new TrieDeleteNode();
+
+  insert(word: string): void {
+    if (word.length === 0) {
+      throw new RangeError('Words must be non-empty strings');
+    }
+
+    let node = this.root;
+    for (const char of word) {
+      if (!node.children.has(char)) {
+        node.children.set(char, new TrieDeleteNode());
+      }
+      node = node.children.get(char) as TrieDeleteNode;
+    }
+
+    node.isWord = true;
+  }
+
+  has(word: string): boolean {
+    let node: TrieDeleteNode | undefined = this.root;
+
+    for (const char of word) {
+      node = node.children.get(char);
+      if (!node) {
+        return false;
+      }
+    }
+
+    return node.isWord;
+  }
+
+  delete(word: string): boolean {
+    if (!this.has(word)) {
+      return false;
+    }
+
+    this.deleteFrom(this.root, word, 0);
+    return true;
+  }
+
+  listWords(): string[] {
+    const words: string[] = [];
+
+    const dfs = (node: TrieDeleteNode, prefix: string): void => {
+      if (node.isWord) {
+        words.push(prefix);
+      }
+
+      const entries = [...node.children.entries()].sort((left, right) =>
+        left[0].localeCompare(right[0]),
+      );
+
+      for (const [char, child] of entries) {
+        dfs(child, prefix + char);
+      }
+    };
+
+    dfs(this.root, '');
+    return words;
+  }
+
+  private deleteFrom(node: TrieDeleteNode, word: string, index: number): boolean {
+    if (index === word.length) {
+      node.isWord = false;
+      return node.children.size === 0;
+    }
+
+    const char = word[index];
+    const child = node.children.get(char) as TrieDeleteNode;
+    const shouldRemoveChild = this.deleteFrom(child, word, index + 1);
+
+    if (shouldRemoveChild) {
+      node.children.delete(char);
+    }
+
+    return !node.isWord && node.children.size === 0;
+  }
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you support word counts so duplicate inserts require duplicate deletes?
+- What changes if the trie stores fixed-size child arrays instead of a hash map?
+- How would you expose delete in an autocomplete system that also tracks popularity?
+
+## Common Pitfalls
+
+- Deleting every node on the target path even when other stored words still need the prefix.
+- Unmarking a word but forgetting to prune orphaned suffix nodes.
+- Returning the pruning signal as if it also meant the word existed in the trie.
