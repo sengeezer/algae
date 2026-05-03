@@ -995,15 +995,26 @@ This ninety-first expansion slice lifts the catalog from 503 to 511 entries.
 - Maximum sum rectangle in a 2D matrix
 - Stock Buy and Sell - Max 2 Transactions Allowed
 
+## Batch 92 added
+
+This ninety-second expansion slice lifts the catalog from 511 to 519 entries.
+
+- Minimum cost to sort strings using reversals of different costs
+- Count of AP (Arithmetic Progression) Subsequences in an array
+- Introduction to Dynamic Programming on Trees
+- Maximum height of Tree when any Node can be considered as Root
+- Longest repeating and non-overlapping substring
+- Count Ways To Assign Unique Cap To Every Person
+- Digit DP | Introduction
+- Sum over Subsets | Dynamic Programming
+
 ## Next candidates from the same sources
 
-- The Greedy-page tail and the Dynamic Programming hard-problem carry-over now reach `Stock Buy and Sell - Max 2 Transactions Allowed`.
-- The published catalog now reaches 511 entries on `main`.
-- The Dynamic Programming items skipped between `Program to find amount of water in a given glass` and `Largest Cross Bordered Square` are already represented locally: `Longest Common Subsequence`, `Longest Increasing Subsequence`, `Edit Distance`, `0-1 Knapsack Problem`, `Partition Problem`, `Longest Palindromic Subsequence`, `Bellman-Ford Algorithm`, and `Floyd Warshall Algorithm`.
-- Batch 91 continues the verified destination-title cleanup in the Dynamic Programming hard stretch: `Egg Dropping Problem` resolves to `Egg Dropping Puzzle`, `Palindrome Partitioning` plus `Palindromic Substring Count` both resolve to `Palindrome Substrings Count`, `Word Wrap Problem` plus `Optimal Strategy for a Game` both resolve to `Optimal Strategy for a Game`, and `Stock Buy and Sell - At-Most k Times` plus `Stock Buy and Sell - At Most 2 Times` both resolve to `Stock Buy and Sell - Max 2 Transactions Allowed`.
+- The local catalog now stands at 519 entries pending any batch-92 publish step.
+- Batch 92 carries the vetted Dynamic Programming hard stretch through `Longest repeating and non-overlapping substring` and then consumes the clean `Advanced Concepts` absences `Count Ways To Assign Unique Cap To Every Person`, `Digit DP | Introduction`, and `Sum over Subsets | Dynamic Programming`.
+- The Dynamic Programming items skipped between `Program to find amount of water in a given glass` and `Largest Cross Bordered Square` remain already represented locally: `Longest Common Subsequence`, `Longest Increasing Subsequence`, `Edit Distance`, `0-1 Knapsack Problem`, `Partition Problem`, `Longest Palindromic Subsequence`, `Bellman-Ford Algorithm`, and `Floyd Warshall Algorithm`.
 - `The painter's partition problem` remains skipped because the local `Find minimum time to finish all jobs with given constraints` entry already covers that partition-minimax problem and includes the alias `painter partition with multiplier`.
-- The next hard-problem source labels resolve as follows: `Min cost to sort strings using Reversals` -> `Minimum cost to sort strings using reversals of different costs`, `Count of AP Subsequences` -> `Count of AP (Arithmetic Progression) Subsequences in an array`, `DP on Trees` -> `Introduction to Dynamic Programming on Trees`, `Max Height of Tree when any Node can be Root` -> `Maximum height of Tree when any Node can be considered as Root`, and `Longest repeating and non-overlapping substring` keeps its destination title.
-- The repeated `Palindrome Substrings Count` link that appears immediately after `Longest repeating and non-overlapping substring` still points to the already-published palindrome-count entry and should stay skipped as a duplicate.
-- The `Problems Sorted by Topic / Dimensions` trio (`DP Standard Problems and Variations.`, `DP Problems Dimension Wise (1D, 2D and 3D)`, and `DP Problems Topic Wise`) are aggregator pages and should stay skipped during source-order drafting.
-- In `Advanced Concepts`, `Bitmasking and DP1` resolves to `Count Ways To Assign Unique Cap To Every Person`, which is still a clean absence despite the existing generic `Bitmask DP` entry; `Traveling Salesman Problem` remains a duplicate of the published exact TSP entry; `Digit DP` resolves to `Digit DP | Introduction`; and `Sum over Subsets` resolves to `Sum over Subsets | Dynamic Programming`.
-- The next clean eight source-ordered absences for batch 92 are `Minimum cost to sort strings using reversals of different costs`, `Count of AP (Arithmetic Progression) Subsequences in an array`, `Introduction to Dynamic Programming on Trees`, `Maximum height of Tree when any Node can be considered as Root`, `Longest repeating and non-overlapping substring`, `Count Ways To Assign Unique Cap To Every Person`, `Digit DP | Introduction`, and `Sum over Subsets | Dynamic Programming`.
+- The repeated `Palindrome Substrings Count` link after `Longest repeating and non-overlapping substring` remains a duplicate of the already-published palindrome-count entry.
+- The `Problems Sorted by Topic / Dimensions` trio (`DP Standard Problems and Variations.`, `DP Problems Dimension Wise (1D, 2D and 3D)`, and `DP Problems Topic Wise`) remain aggregator pages and should stay skipped during source-order drafting.
+- `Traveling Salesman Problem` remains a duplicate of the published exact TSP entry despite appearing inside `Advanced Concepts`.
+- Batch 93 needs a fresh source-order vetting pass starting after `Sum over Subsets | Dynamic Programming` in the GeeksforGeeks advanced-concepts chain, or a shift back to the next eligible source branch if that tail is duplicate-only.

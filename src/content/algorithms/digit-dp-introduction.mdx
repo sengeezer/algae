@@ -1,0 +1,163 @@
+---
+title: "Digit DP | Introduction"
+slug: digit-dp-introduction
+category: Dynamic Programming
+summary: "Count or aggregate numbers in a range by building them digit by digit with a tightness flag and a small accumulated state."
+description: "Digit DP | Introduction is the range-counting dynamic-programming pattern where the answer for `[a, b]` is computed as `G(b) - G(a - 1)` and each state tracks digit position, whether the constructed prefix is still tight to the bound, and the property-specific accumulator."
+dataStructures:
+  - Array
+  - Map
+  - Table
+techniques:
+  - Dynamic Programming
+  - Digit DP
+  - Memoization
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - digit dp
+  - tight digit dp
+  - range counting by digits
+useCases:
+  - Counting integers in a range that satisfy a digit property
+  - Summing digit-derived values without iterating through every number
+  - Handling bounds up to `10^18` where direct iteration is impossible
+complexity:
+  time: O(digits * state-size * 10)
+  space: O(digits * state-size)
+  notes: "The exact state-size depends on the property being tracked. The article's introductory example uses `(index, tight, sum)` to accumulate digit sums."
+interviewSignals:
+  - The prompt asks for a count or total over all numbers in `[a, b]`.
+  - The property depends on digits rather than on arithmetic relationships between neighboring numbers.
+relatedSlugs:
+  - memoization-dp
+  - sum-of-digits
+  - count-possible-decodings-of-a-given-digit-sequence
+provenance:
+  - title: "GeeksforGeeks - Digit DP | Introduction"
+    href: https://www.geeksforgeeks.org/dsa/digit-dp-introduction/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Digit DP is the technique interviewers reach for when the bound is huge but the property lives entirely in the decimal representation. The trick is to stop thinking about every integer one by one and instead count all valid completions of a digit prefix in a single DP state.
+
+## Worked Example
+
+The article's introductory problem asks for the sum of all digits appearing in integers from `5` through `11`. Writing the answer as `G(11) - G(4)` yields `38`, because the digits are `5 + 6 + 7 + 8 + 9 + 1 + 0 + 1 + 1`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function digitDPIntroduction(lower, upper) {
+  if (typeof lower !== 'bigint' || typeof upper !== 'bigint') {
+    throw new TypeError('lower and upper must be bigint values');
+  }
+
+  if (lower < 0n || upper < lower) {
+    throw new RangeError('expected 0n <= lower <= upper');
+  }
+
+  function sumOfDigitsUpTo(limit) {
+    if (limit < 0n) {
+      return 0n;
+    }
+
+    const digits = Array.from(limit.toString(), (digit) => Number(digit));
+    const memo = new Map();
+
+    function solve(index, tight, sum) {
+      if (index === digits.length) {
+        return BigInt(sum);
+      }
+
+      const key = `${index}|${tight ? 1 : 0}|${sum}`;
+      const cached = memo.get(key);
+      if (cached !== undefined) {
+        return cached;
+      }
+
+      let total = 0n;
+      const maxDigit = tight ? digits[index] : 9;
+
+      for (let digit = 0; digit <= maxDigit; digit += 1) {
+        total += solve(index + 1, tight && digit === maxDigit, sum + digit);
+      }
+
+      memo.set(key, total);
+      return total;
+    }
+
+    return solve(0, true, 0);
+  }
+
+  return sumOfDigitsUpTo(upper) - sumOfDigitsUpTo(lower - 1n);
+}
+```
+
+```ts
+export function digitDPIntroduction(lower: bigint, upper: bigint): bigint {
+  if (typeof lower !== 'bigint' || typeof upper !== 'bigint') {
+    throw new TypeError('lower and upper must be bigint values');
+  }
+
+  if (lower < 0n || upper < lower) {
+    throw new RangeError('expected 0n <= lower <= upper');
+  }
+
+  function sumOfDigitsUpTo(limit: bigint): bigint {
+    if (limit < 0n) {
+      return 0n;
+    }
+
+    const digits = Array.from(limit.toString(), (digit) => Number(digit));
+    const memo = new Map<string, bigint>();
+
+    function solve(index: number, tight: boolean, sum: number): bigint {
+      if (index === digits.length) {
+        return BigInt(sum);
+      }
+
+      const key = `${index}|${tight ? 1 : 0}|${sum}`;
+      const cached = memo.get(key);
+      if (cached !== undefined) {
+        return cached;
+      }
+
+      let total = 0n;
+      const maxDigit = tight ? digits[index] : 9;
+
+      for (let digit = 0; digit <= maxDigit; digit += 1) {
+        total += solve(index + 1, tight && digit === maxDigit, sum + digit);
+      }
+
+      memo.set(key, total);
+      return total;
+    }
+
+    return solve(0, true, 0);
+  }
+
+  return sumOfDigitsUpTo(upper) - sumOfDigitsUpTo(lower - 1n);
+}
+```
+
+</ExamplePair>
+
+## Interview Notes
+
+- Say `answer = G(b) - G(a - 1)` early; it shows you know the pattern.
+- Choose a state that captures only what future digits still need to know.
+- Mention `tight` explicitly, because it is what separates unrestricted digits from bound-constrained digits.
+
+## Common Pitfalls
+
+- Iterating the whole range even though the limits are too large.
+- Carrying unnecessary state that blows up the memo table.
+- Forgetting to handle leading zeros consistently when defining the digit property.

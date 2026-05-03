@@ -1,0 +1,139 @@
+---
+title: "Introduction to Dynamic Programming on Trees"
+slug: introduction-to-dynamic-programming-on-trees
+category: Dynamic Programming
+summary: "Treat each subtree as a reusable state so parent answers can combine child answers instead of recomputing them."
+description: "Introduction to Dynamic Programming on Trees is the tree-shaped DP pattern where each node summarizes its subtree, and the article's example uses that idea to compute the maximum root-to-leaf path sum." 
+dataStructures:
+  - Tree
+  - Map
+  - Recursion Stack
+techniques:
+  - Dynamic Programming
+  - Tree DP
+  - Memoization
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - dp on trees
+  - tree dynamic programming
+  - tree dp introduction
+useCases:
+  - Reusing subtree answers in root-to-leaf, subtree-aggregate, and rerooting problems
+  - Turning recursive tree reasoning into cached or bottom-up state transitions
+  - Explaining why tree structure changes the shape of a DP state compared with arrays or strings
+complexity:
+  time: O(nodes)
+  space: O(nodes)
+  notes: "The article's memoized root-to-leaf example visits each node once, but the general tree-DP pattern scales with the amount of state stored per node."
+interviewSignals:
+  - Each node's answer depends on answers from its children.
+  - The tree structure removes cycles once a parent-child direction is fixed.
+relatedSlugs:
+  - memoization-dp
+  - tree-diameter
+  - maximum-height-of-tree-when-any-node-can-be-considered-as-root
+provenance:
+  - title: "GeeksforGeeks - Introduction to Dynamic Programming on Trees"
+    href: https://www.geeksforgeeks.org/dsa/introduction-to-dynamic-programming-on-trees/
+    kind: Implementation
+  - title: "free-programming-books - Algorithm Design"
+    href: https://archive.org/details/AlgorithmDesign1stEditionByJonKleinbergAndEvaTardos2005PDF
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Tree DP questions stop feeling mysterious once the node state is explicit. Unlike graph DP, the parent-child direction removes cycles, so the main job is deciding what information each subtree should return upward.
+
+## Worked Example
+
+In the article's sample tree, the maximum root-to-leaf sum is `22`. The best path is the root plus the child branch that eventually reaches the leaf with the highest accumulated total, so the tree can be solved from leaves back toward the root.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function introductionToDynamicProgrammingOnTrees(root) {
+  if (root === null) {
+    return 0;
+  }
+
+  const memo = new Map();
+
+  function solve(node) {
+    if (node === null) {
+      return Number.NEGATIVE_INFINITY;
+    }
+
+    const cached = memo.get(node);
+    if (cached !== undefined) {
+      return cached;
+    }
+
+    if (node.left === null && node.right === null) {
+      memo.set(node, node.value);
+      return node.value;
+    }
+
+    const answer = node.value + Math.max(solve(node.left), solve(node.right));
+    memo.set(node, answer);
+    return answer;
+  }
+
+  return solve(root);
+}
+```
+
+```ts
+type TreeNode = {
+  value: number;
+  left: TreeNode | null;
+  right: TreeNode | null;
+};
+
+export function introductionToDynamicProgrammingOnTrees(root: TreeNode | null): number {
+  if (root === null) {
+    return 0;
+  }
+
+  const memo = new Map<TreeNode, number>();
+
+  function solve(node: TreeNode | null): number {
+    if (node === null) {
+      return Number.NEGATIVE_INFINITY;
+    }
+
+    const cached = memo.get(node);
+    if (cached !== undefined) {
+      return cached;
+    }
+
+    if (node.left === null && node.right === null) {
+      memo.set(node, node.value);
+      return node.value;
+    }
+
+    const answer = node.value + Math.max(solve(node.left), solve(node.right));
+    memo.set(node, answer);
+    return answer;
+  }
+
+  return solve(root);
+}
+```
+
+</ExamplePair>
+
+## Interview Notes
+
+- Define exactly what each node returns before writing transitions.
+- Mention that postorder traversal is the usual bottom-up execution order.
+- Call out rerooting when the interviewer wants answers for every possible root instead of one fixed root.
+
+## Common Pitfalls
+
+- Recomputing the same subtree answers instead of caching or combining them once.
+- Forgetting to orient the tree by parent and child, which can create accidental cycles.
+- Treating tree DP like array DP without defining what the node state actually means.

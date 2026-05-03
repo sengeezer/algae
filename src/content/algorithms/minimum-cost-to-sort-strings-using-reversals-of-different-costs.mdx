@@ -1,0 +1,173 @@
+---
+title: "Minimum cost to sort strings using reversals of different costs"
+slug: minimum-cost-to-sort-strings-using-reversals-of-different-costs
+category: Dynamic Programming
+summary: "Track the cheapest way to keep or reverse each string while preserving non-decreasing lexicographic order across the fixed array order."
+description: "Minimum cost to sort strings using reversals of different costs is the two-state string DP where each index may stay as-is or be reversed, but only transitions that keep lexicographic order remain valid."
+dataStructures:
+  - Array
+  - String
+techniques:
+  - Dynamic Programming
+  - State Compression
+  - Lexicographic Ordering
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - min cost to sort strings using reversals
+  - sort strings by reversing with costs
+  - string reversal cost dp
+useCases:
+  - Choosing the cheapest normalization steps when array order itself cannot change
+  - Modeling two valid representations per item in a sequence DP
+  - Recognizing when string transformations only depend on the immediately previous state
+complexity:
+  time: O(n * m)
+  space: O(totalCharacters)
+  notes: "The DP keeps only the previous keep and reverse costs, but precomputing reversed strings still stores one reversed copy of each input string. Here `n` is the number of strings and `m` is the average comparison length."
+interviewSignals:
+  - The strings must stay in their original positions, so reordering is not allowed.
+  - Each index has exactly two local states: original or reversed.
+relatedSlugs:
+  - reverse-string
+  - memoization-dp
+  - longest-common-subsequence
+provenance:
+  - title: "GeeksforGeeks - Minimum cost to sort strings using reversals of different costs"
+    href: https://www.geeksforgeeks.org/dsa/minimum-cost-sort-strings-using-reversal-operations-different-costs/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This prompt looks like string sorting at first, but the real constraint is that the array order is fixed. The only freedom is whether each string stays as-is or is reversed, which turns the problem into a left-to-right DP with two states per position.
+
+## Worked Example
+
+For `strings = ["aa", "ba", "ac"]` and `costs = [1, 3, 1]`, the answer is `1`. Keeping `"aa"` and `"ba"` is already valid, but the last string must become `"ca"` to stay lexicographically after `"ba"`, so reversing only the final string is optimal.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function minimumCostToSortStringsUsingReversalsOfDifferentCosts(strings, costs) {
+  if (!Array.isArray(strings) || !Array.isArray(costs) || strings.length !== costs.length) {
+    throw new RangeError('strings and costs must be arrays of equal length');
+  }
+
+  const count = strings.length;
+  if (count === 0) {
+    return 0;
+  }
+
+  for (let index = 0; index < count; index += 1) {
+    if (typeof strings[index] !== 'string' || !Number.isInteger(costs[index]) || costs[index] < 0) {
+      throw new TypeError('strings must contain strings and costs must contain non-negative integers');
+    }
+  }
+
+  const reversed = strings.map((value) => [...value].reverse().join(''));
+  const inf = Number.POSITIVE_INFINITY;
+  let previousKeep = 0;
+  let previousReverse = costs[0];
+
+  for (let index = 1; index < count; index += 1) {
+    let currentKeep = inf;
+    let currentReverse = inf;
+
+    if (strings[index] >= strings[index - 1] && previousKeep !== inf) {
+      currentKeep = Math.min(currentKeep, previousKeep);
+    }
+
+    if (strings[index] >= reversed[index - 1] && previousReverse !== inf) {
+      currentKeep = Math.min(currentKeep, previousReverse);
+    }
+
+    if (reversed[index] >= strings[index - 1] && previousKeep !== inf) {
+      currentReverse = Math.min(currentReverse, previousKeep + costs[index]);
+    }
+
+    if (reversed[index] >= reversed[index - 1] && previousReverse !== inf) {
+      currentReverse = Math.min(currentReverse, previousReverse + costs[index]);
+    }
+
+    previousKeep = currentKeep;
+    previousReverse = currentReverse;
+  }
+
+  const answer = Math.min(previousKeep, previousReverse);
+  return Number.isFinite(answer) ? answer : -1;
+}
+```
+
+```ts
+export function minimumCostToSortStringsUsingReversalsOfDifferentCosts(
+  strings: string[],
+  costs: number[],
+): number {
+  if (!Array.isArray(strings) || !Array.isArray(costs) || strings.length !== costs.length) {
+    throw new RangeError('strings and costs must be arrays of equal length');
+  }
+
+  const count = strings.length;
+  if (count === 0) {
+    return 0;
+  }
+
+  for (let index = 0; index < count; index += 1) {
+    if (typeof strings[index] !== 'string' || !Number.isInteger(costs[index]) || costs[index] < 0) {
+      throw new TypeError('strings must contain strings and costs must contain non-negative integers');
+    }
+  }
+
+  const reversed = strings.map((value) => [...value].reverse().join(''));
+  const inf = Number.POSITIVE_INFINITY;
+  let previousKeep = 0;
+  let previousReverse = costs[0];
+
+  for (let index = 1; index < count; index += 1) {
+    let currentKeep = inf;
+    let currentReverse = inf;
+
+    if (strings[index] >= strings[index - 1] && previousKeep !== inf) {
+      currentKeep = Math.min(currentKeep, previousKeep);
+    }
+
+    if (strings[index] >= reversed[index - 1] && previousReverse !== inf) {
+      currentKeep = Math.min(currentKeep, previousReverse);
+    }
+
+    if (reversed[index] >= strings[index - 1] && previousKeep !== inf) {
+      currentReverse = Math.min(currentReverse, previousKeep + costs[index]);
+    }
+
+    if (reversed[index] >= reversed[index - 1] && previousReverse !== inf) {
+      currentReverse = Math.min(currentReverse, previousReverse + costs[index]);
+    }
+
+    previousKeep = currentKeep;
+    previousReverse = currentReverse;
+  }
+
+  const answer = Math.min(previousKeep, previousReverse);
+  return Number.isFinite(answer) ? answer : -1;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Reconstruct which indices should be reversed instead of returning only the minimum cost.
+- Compare the O(1)-state version with the full `dp[i][2]` table.
+- Explain why greedy local reversal decisions can fail even though each position has only two choices.
+
+## Common Pitfalls
+
+- Sorting the array directly even though the prompt forbids reordering.
+- Comparing only against the original previous string and forgetting the reversed previous state.
+- Returning `Infinity` instead of `-1` when no valid lexicographic sequence exists.

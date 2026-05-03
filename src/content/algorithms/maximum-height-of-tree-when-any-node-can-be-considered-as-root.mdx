@@ -1,0 +1,260 @@
+---
+title: "Maximum height of Tree when any Node can be considered as Root"
+slug: maximum-height-of-tree-when-any-node-can-be-considered-as-root
+category: Dynamic Programming
+summary: "Compute downward and upward heights so every node's root height is known in linear time, then take the largest of them."
+description: "Maximum height of Tree when any Node can be considered as Root is the rerooting tree-DP problem where one pass computes subtree heights and another pass propagates the best height coming from outside each subtree."
+dataStructures:
+  - Tree
+  - Graph
+  - Array
+techniques:
+  - Dynamic Programming
+  - Tree DP
+  - Rerooting
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - max height of tree when any node can be root
+  - rerooting tree height
+  - tree height for all roots
+useCases:
+  - Precomputing per-root heights across every possible root choice in a tree
+  - Practicing rerooting transitions with best-child and second-best-child bookkeeping
+  - Connecting subtree DP with the tree-diameter shortcut
+complexity:
+  time: O(nodes)
+  space: O(nodes)
+  notes: "The rerooting DP stores one downward height and one upward height per node, and each edge is processed a constant number of times."
+interviewSignals:
+  - The prompt asks how the answer changes when the root is allowed to move.
+  - Child answers alone are not enough; each node also needs the best contribution coming from above.
+relatedSlugs:
+  - introduction-to-dynamic-programming-on-trees
+  - tree-diameter
+  - breadth-first-tree-traversal
+provenance:
+  - title: "GeeksforGeeks - Maximum height of Tree when any Node can be considered as Root"
+    href: https://www.geeksforgeeks.org/dsa/maximum-height-of-tree-when-any-node-can-be-considered-as-root/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the classic rerooting move. A single subtree height is easy, but once every node is allowed to be the root, each node needs to know both the best path going down into its own children and the best alternative path coming from its parent side.
+
+## Worked Example
+
+For `nodeCount = 5` and `edges = [[0, 1], [1, 2], [1, 3], [3, 4]]`, the answer is `3`. Rooting the tree at either endpoint of the longest path gives height `3`, while the more central nodes produce smaller heights.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function maximumHeightOfTreeWhenAnyNodeCanBeConsideredAsRoot(nodeCount, edges) {
+  if (!Number.isInteger(nodeCount) || nodeCount < 0) {
+    throw new RangeError('nodeCount must be a non-negative integer');
+  }
+
+  if (!Array.isArray(edges)) {
+    throw new TypeError('edges must be an array of [from, to] pairs');
+  }
+
+  if (nodeCount <= 1) {
+    return 0;
+  }
+
+  const graph = Array.from({ length: nodeCount }, () => []);
+
+  for (const edge of edges) {
+    if (!Array.isArray(edge) || edge.length !== 2) {
+      throw new TypeError('edges must be an array of [from, to] pairs');
+    }
+
+    const [from, to] = edge;
+    if (
+      !Number.isInteger(from)
+      || !Number.isInteger(to)
+      || from < 0
+      || to < 0
+      || from >= nodeCount
+      || to >= nodeCount
+    ) {
+      throw new RangeError('edge endpoints must be valid node indices');
+    }
+
+    graph[from].push(to);
+    graph[to].push(from);
+  }
+
+  const down = new Array(nodeCount).fill(0);
+  const up = new Array(nodeCount).fill(0);
+
+  function dfsDown(node, parent) {
+    for (const neighbor of graph[node]) {
+      if (neighbor === parent) {
+        continue;
+      }
+
+      down[node] = Math.max(down[node], 1 + dfsDown(neighbor, node));
+    }
+
+    return down[node];
+  }
+
+  function dfsUp(node, parent) {
+    let bestChild = -1;
+    let secondBestChild = -1;
+
+    for (const neighbor of graph[node]) {
+      if (neighbor === parent) {
+        continue;
+      }
+
+      const candidate = 1 + down[neighbor];
+      if (candidate > bestChild) {
+        secondBestChild = bestChild;
+        bestChild = candidate;
+      } else if (candidate > secondBestChild) {
+        secondBestChild = candidate;
+      }
+    }
+
+    for (const neighbor of graph[node]) {
+      if (neighbor === parent) {
+        continue;
+      }
+
+      const childPath = 1 + down[neighbor];
+      const useSibling = childPath === bestChild ? secondBestChild : bestChild;
+      up[neighbor] = 1 + Math.max(up[node], useSibling);
+      dfsUp(neighbor, node);
+    }
+  }
+
+  dfsDown(0, -1);
+  dfsUp(0, -1);
+
+  let answer = 0;
+  for (let node = 0; node < nodeCount; node += 1) {
+    answer = Math.max(answer, Math.max(down[node], up[node]));
+  }
+
+  return answer;
+}
+```
+
+```ts
+export function maximumHeightOfTreeWhenAnyNodeCanBeConsideredAsRoot(
+  nodeCount: number,
+  edges: Array<[number, number]>,
+): number {
+  if (!Number.isInteger(nodeCount) || nodeCount < 0) {
+    throw new RangeError('nodeCount must be a non-negative integer');
+  }
+
+  if (!Array.isArray(edges)) {
+    throw new TypeError('edges must be an array of [from, to] pairs');
+  }
+
+  if (nodeCount <= 1) {
+    return 0;
+  }
+
+  const graph = Array.from({ length: nodeCount }, () => [] as number[]);
+
+  for (const edge of edges) {
+    if (!Array.isArray(edge) || edge.length !== 2) {
+      throw new TypeError('edges must be an array of [from, to] pairs');
+    }
+
+    const [from, to] = edge;
+    if (
+      !Number.isInteger(from)
+      || !Number.isInteger(to)
+      || from < 0
+      || to < 0
+      || from >= nodeCount
+      || to >= nodeCount
+    ) {
+      throw new RangeError('edge endpoints must be valid node indices');
+    }
+
+    graph[from].push(to);
+    graph[to].push(from);
+  }
+
+  const down = new Array<number>(nodeCount).fill(0);
+  const up = new Array<number>(nodeCount).fill(0);
+
+  function dfsDown(node: number, parent: number): number {
+    for (const neighbor of graph[node]) {
+      if (neighbor === parent) {
+        continue;
+      }
+
+      down[node] = Math.max(down[node], 1 + dfsDown(neighbor, node));
+    }
+
+    return down[node];
+  }
+
+  function dfsUp(node: number, parent: number): void {
+    let bestChild = -1;
+    let secondBestChild = -1;
+
+    for (const neighbor of graph[node]) {
+      if (neighbor === parent) {
+        continue;
+      }
+
+      const candidate = 1 + down[neighbor];
+      if (candidate > bestChild) {
+        secondBestChild = bestChild;
+        bestChild = candidate;
+      } else if (candidate > secondBestChild) {
+        secondBestChild = candidate;
+      }
+    }
+
+    for (const neighbor of graph[node]) {
+      if (neighbor === parent) {
+        continue;
+      }
+
+      const childPath = 1 + down[neighbor];
+      const useSibling = childPath === bestChild ? secondBestChild : bestChild;
+      up[neighbor] = 1 + Math.max(up[node], useSibling);
+      dfsUp(neighbor, node);
+    }
+  }
+
+  dfsDown(0, -1);
+  dfsUp(0, -1);
+
+  let answer = 0;
+  for (let node = 0; node < nodeCount; node += 1) {
+    answer = Math.max(answer, Math.max(down[node], up[node]));
+  }
+
+  return answer;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the height for every possible root instead of only the maximum over them.
+- Explain why the tree diameter gives the same final maximum height.
+- Adapt the rerooting state when nodes have weights instead of unit-height edges.
+
+## Common Pitfalls
+
+- Recomputing a full DFS from every node and missing the rerooting shortcut.
+- Forgetting to keep both the best and second-best child contributions when moving the root.
+- Mixing node-count and edge-count definitions of height.

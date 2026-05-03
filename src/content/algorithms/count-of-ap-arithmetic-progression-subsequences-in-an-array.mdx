@@ -1,0 +1,138 @@
+---
+title: "Count of AP (Arithmetic Progression) Subsequences in an array"
+slug: count-of-ap-arithmetic-progression-subsequences-in-an-array
+category: Dynamic Programming
+summary: "Count subsequences by tracking, for each index and common difference, how many arithmetic-progressions can end there."
+description: "Count of AP (Arithmetic Progression) Subsequences in an array is the hash-map DP where every pair of indices defines a difference and either starts a new arithmetic subsequence or extends earlier ones with that same difference."
+dataStructures:
+  - Array
+  - Hash Map
+techniques:
+  - Dynamic Programming
+  - Hashing
+  - Counting DP
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - count of ap subsequences
+  - count arithmetic progression subsequences
+  - arithmetic subsequence counting
+useCases:
+  - Counting evenly spaced trends hidden inside a numeric sequence
+  - Extending pair-based sequence DP with difference-indexed state
+  - Handling interview variants that include or exclude singleton and empty subsequences
+complexity:
+  time: O(n^2)
+  space: O(n^2)
+  notes: "The standard tabulation stores a map of difference counts for each ending index; the article counts the empty subsequence and all single-element subsequences too, so the running total starts at `n + 1`."
+interviewSignals:
+  - The subsequence must preserve order but does not need to stay contiguous.
+  - A common difference becomes the natural extra state dimension.
+relatedSlugs:
+  - longest-increasing-subsequence
+  - longest-common-increasing-subsequence-lcs-lis
+  - number-of-subsets-equal-to-given-sum
+provenance:
+  - title: "GeeksforGeeks - Count of AP (Arithmetic Progression) Subsequences in an array"
+    href: https://www.geeksforgeeks.org/dsa/count-arithmetic-progression-subsequences-array/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is one of the sequence problems where the right state is not just the index. Once a subsequence picks its second element, the common difference is fixed, so the DP has to remember both where the subsequence ends and what difference it is trying to maintain.
+
+## Worked Example
+
+For `values = [1, 2, 3]`, the answer is `8` in the GeeksforGeeks version because it counts the empty sequence, all three singletons, the three length-two subsequences, and the full arithmetic subsequence `[1, 2, 3]`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function countOfAPArithmeticProgressionSubsequencesInAnArray(values) {
+  if (!Array.isArray(values)) {
+    throw new TypeError('values must be an array of integers');
+  }
+
+  for (const value of values) {
+    if (!Number.isInteger(value)) {
+      throw new TypeError('values must be an array of integers');
+    }
+  }
+
+  const length = values.length;
+  if (length === 0) {
+    return 1;
+  }
+
+  const dp = Array.from({ length }, () => new Map());
+  let total = length + 1;
+
+  for (let end = 0; end < length; end += 1) {
+    for (let start = 0; start < end; start += 1) {
+      const difference = values[end] - values[start];
+      const previous = dp[start].get(difference) ?? 0;
+      const current = (dp[end].get(difference) ?? 0) + previous + 1;
+
+      dp[end].set(difference, current);
+      total += previous + 1;
+    }
+  }
+
+  return total;
+}
+```
+
+```ts
+export function countOfAPArithmeticProgressionSubsequencesInAnArray(values: number[]): number {
+  if (!Array.isArray(values)) {
+    throw new TypeError('values must be an array of integers');
+  }
+
+  for (const value of values) {
+    if (!Number.isInteger(value)) {
+      throw new TypeError('values must be an array of integers');
+    }
+  }
+
+  const length = values.length;
+  if (length === 0) {
+    return 1;
+  }
+
+  const dp = Array.from({ length }, () => new Map<number, number>());
+  let total = length + 1;
+
+  for (let end = 0; end < length; end += 1) {
+    for (let start = 0; start < end; start += 1) {
+      const difference = values[end] - values[start];
+      const previous = dp[start].get(difference) ?? 0;
+      const current = (dp[end].get(difference) ?? 0) + previous + 1;
+
+      dp[end].set(difference, current);
+      total += previous + 1;
+    }
+  }
+
+  return total;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Adjust the answer for interview variants that exclude the empty subsequence or single-element subsequences.
+- Return only arithmetic subsequences of length at least `3`.
+- Compare the per-index hash-map DP with the range-based optimization that depends on `max - min`.
+
+## Common Pitfalls
+
+- Solving contiguous arithmetic subarrays instead of subsequences.
+- Forgetting that the GeeksforGeeks formulation counts the empty sequence and singletons.
+- Collapsing the state to index only and losing the common difference information.

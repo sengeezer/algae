@@ -1,0 +1,146 @@
+---
+title: "Longest repeating and non-overlapping substring"
+slug: longest-repeating-and-non-overlapping-substring
+category: Dynamic Programming
+summary: "Track common suffix lengths for pairs of positions while capping them so the two equal substrings never overlap."
+description: "Longest repeating and non-overlapping substring is the string-DP problem where matching characters extend a repeated suffix, but every extension is clipped by the gap between the two occurrences to prevent overlap."
+dataStructures:
+  - String
+  - Array
+techniques:
+  - Dynamic Programming
+  - String Matching
+  - Space Optimization
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - longest repeating non-overlapping substring
+  - longest repeated non-overlapping substring
+  - repeating substring without overlap
+useCases:
+  - Detecting the longest duplicated phrase that appears twice without sharing characters
+  - Reusing longest-common-substring style DP with an extra non-overlap constraint
+  - Distinguishing contiguous repeated-substring problems from subsequence variants
+complexity:
+  time: O(n^2)
+  space: O(n)
+  notes: "The space-optimized version keeps one rolling row of suffix lengths; the key extra rule is `min(previousDiagonal + 1, j - i - 1)` so equal substrings never overlap."
+interviewSignals:
+  - The answer must be a substring, not a subsequence.
+  - Matching characters alone are not enough; overlap invalidates an otherwise longer repeat.
+relatedSlugs:
+  - longest-common-substring
+  - count-substrings
+  - palindrome-substrings-count
+provenance:
+  - title: "GeeksforGeeks - Longest repeating and non-overlapping substring"
+    href: https://www.geeksforgeeks.org/dsa/longest-repeating-and-non-overlapping-substring/
+    kind: Implementation
+  - title: "free-programming-books - Algorithm Design"
+    href: https://archive.org/details/AlgorithmDesign1stEditionByJonKleinbergAndEvaTardos2005PDF
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is what happens when longest-common-substring logic is pointed at one string instead of two. The important twist is that a repeated match is only valid while the two copies stay disjoint, so the DP must cap every repeated suffix by the distance between its starting positions.
+
+## Worked Example
+
+For `text = "acdcdacdc"`, the answer is `"acdc"`. That substring appears twice, and the two occurrences do not share any characters.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function longestRepeatingAndNonOverlappingSubstring(text) {
+  if (typeof text !== 'string') {
+    throw new TypeError('text must be a string');
+  }
+
+  const length = text.length;
+  if (length === 0) {
+    return '-1';
+  }
+
+  const dp = new Array(length + 1).fill(0);
+  let bestLength = 0;
+  let bestStart = -1;
+
+  for (let left = length - 1; left >= 0; left -= 1) {
+    for (let right = left + 1; right < length; right += 1) {
+      if (text[left] === text[right]) {
+        dp[right] = 1 + Math.min(dp[right + 1], right - left - 1);
+
+        if (
+          dp[right] > bestLength
+          || (dp[right] === bestLength && dp[right] > 0 && (bestStart === -1 || left < bestStart))
+        ) {
+          bestLength = dp[right];
+          bestStart = left;
+        }
+      } else {
+        dp[right] = 0;
+      }
+    }
+
+    dp[left] = 0;
+  }
+
+  return bestLength === 0 ? '-1' : text.slice(bestStart, bestStart + bestLength);
+}
+```
+
+```ts
+export function longestRepeatingAndNonOverlappingSubstring(text: string): string {
+  if (typeof text !== 'string') {
+    throw new TypeError('text must be a string');
+  }
+
+  const length = text.length;
+  if (length === 0) {
+    return '-1';
+  }
+
+  const dp = new Array<number>(length + 1).fill(0);
+  let bestLength = 0;
+  let bestStart = -1;
+
+  for (let left = length - 1; left >= 0; left -= 1) {
+    for (let right = left + 1; right < length; right += 1) {
+      if (text[left] === text[right]) {
+        dp[right] = 1 + Math.min(dp[right + 1], right - left - 1);
+
+        if (
+          dp[right] > bestLength
+          || (dp[right] === bestLength && dp[right] > 0 && (bestStart === -1 || left < bestStart))
+        ) {
+          bestLength = dp[right];
+          bestStart = left;
+        }
+      } else {
+        dp[right] = 0;
+      }
+    }
+
+    dp[left] = 0;
+  }
+
+  return bestLength === 0 ? '-1' : text.slice(bestStart, bestStart + bestLength);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return only the length instead of the substring itself.
+- Compare this recurrence with ordinary longest common substring.
+- Keep all earliest optimal answers when multiple non-overlapping substrings have the same best length.
+
+## Common Pitfalls
+
+- Returning overlapping repeated substrings that should be invalid.
+- Solving longest repeated subsequence by mistake.
+- Forgetting the tie rule that prefers the earlier first occurrence.

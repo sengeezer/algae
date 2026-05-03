@@ -1,0 +1,201 @@
+---
+title: "Count Ways To Assign Unique Cap To Every Person"
+slug: count-ways-to-assign-unique-cap-to-every-person
+category: Dynamic Programming
+summary: "Iterate through cap IDs and use a people-bitmask state to count every valid one-cap-per-person assignment."
+description: "Count Ways To Assign Unique Cap To Every Person is the classic bitmask DP assignment problem where each cap is either skipped or assigned to one eligible unassigned person, and the people mask is the reusable state."
+dataStructures:
+  - Array
+  - Bitmask
+  - Map
+techniques:
+  - Dynamic Programming
+  - Bitmask DP
+  - Counting DP
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - assign unique caps
+  - unique hat assignment
+  - cap assignment bitmask dp
+useCases:
+  - Counting injective assignments when one side of the matching is small
+  - Practicing bitmask DP on preference lists or compatibility tables
+  - Reframing a constrained matching problem as memoized subset state
+complexity:
+  time: O(100 * people * 2^people)
+  space: O(100 * 2^people)
+  notes: "There are only 100 cap labels, so the state is driven by `(cap, assignedPeopleMask)` rather than by permuting all assignments directly."
+interviewSignals:
+  - The number of people is small enough that subset states are realistic.
+  - Each item can be assigned at most once and every person has a preference list.
+relatedSlugs:
+  - bitmask-dp
+  - traveling-salesman-problem
+  - sum-over-subsets-dynamic-programming
+provenance:
+  - title: "GeeksforGeeks - Count Ways To Assign Unique Cap To Every Person"
+    href: https://www.geeksforgeeks.org/dsa/bitmasking-and-dynamic-programming-set-1-count-ways-to-assign-unique-cap-to-every-person/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the small-set assignment problem that naturally turns into bitmask DP. Brute-forcing cap choices explodes quickly, but once the state becomes "which people already have caps" and "which cap number are we considering now," the recursion becomes clean and memoizable.
+
+## Worked Example
+
+For `preferences = [[3, 4], [4, 5], [5]]`, there is exactly `1` valid assignment: person `0` takes cap `3`, person `1` takes cap `4`, and person `2` takes cap `5`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function countWaysToAssignUniqueCapToEveryPerson(preferences) {
+  if (!Array.isArray(preferences)) {
+    throw new TypeError('preferences must be an array of cap lists');
+  }
+
+  const peopleCount = preferences.length;
+  if (peopleCount === 0) {
+    return 1;
+  }
+
+  if (peopleCount > 20) {
+    throw new RangeError('this bitmask implementation is intended for at most 20 people');
+  }
+
+  const capToPeople = Array.from({ length: 101 }, () => []);
+
+  for (let person = 0; person < peopleCount; person += 1) {
+    if (!Array.isArray(preferences[person])) {
+      throw new TypeError('preferences must be an array of cap lists');
+    }
+
+    for (const cap of preferences[person]) {
+      if (!Number.isInteger(cap) || cap < 1 || cap > 100) {
+        throw new RangeError('cap labels must be integers between 1 and 100');
+      }
+
+      capToPeople[cap].push(person);
+    }
+  }
+
+  const allAssigned = (1 << peopleCount) - 1;
+  const memo = Array.from({ length: 101 }, () => new Map());
+
+  function solve(cap, assignedMask) {
+    if (assignedMask === allAssigned) {
+      return 1;
+    }
+
+    if (cap > 100) {
+      return 0;
+    }
+
+    const cached = memo[cap].get(assignedMask);
+    if (cached !== undefined) {
+      return cached;
+    }
+
+    let ways = solve(cap + 1, assignedMask);
+
+    for (const person of capToPeople[cap]) {
+      if (assignedMask & (1 << person)) {
+        continue;
+      }
+
+      ways += solve(cap + 1, assignedMask | (1 << person));
+    }
+
+    memo[cap].set(assignedMask, ways);
+    return ways;
+  }
+
+  return solve(1, 0);
+}
+```
+
+```ts
+export function countWaysToAssignUniqueCapToEveryPerson(preferences: number[][]): number {
+  if (!Array.isArray(preferences)) {
+    throw new TypeError('preferences must be an array of cap lists');
+  }
+
+  const peopleCount = preferences.length;
+  if (peopleCount === 0) {
+    return 1;
+  }
+
+  if (peopleCount > 20) {
+    throw new RangeError('this bitmask implementation is intended for at most 20 people');
+  }
+
+  const capToPeople = Array.from({ length: 101 }, () => [] as number[]);
+
+  for (let person = 0; person < peopleCount; person += 1) {
+    if (!Array.isArray(preferences[person])) {
+      throw new TypeError('preferences must be an array of cap lists');
+    }
+
+    for (const cap of preferences[person]) {
+      if (!Number.isInteger(cap) || cap < 1 || cap > 100) {
+        throw new RangeError('cap labels must be integers between 1 and 100');
+      }
+
+      capToPeople[cap].push(person);
+    }
+  }
+
+  const allAssigned = (1 << peopleCount) - 1;
+  const memo = Array.from({ length: 101 }, () => new Map<number, number>());
+
+  function solve(cap: number, assignedMask: number): number {
+    if (assignedMask === allAssigned) {
+      return 1;
+    }
+
+    if (cap > 100) {
+      return 0;
+    }
+
+    const cached = memo[cap].get(assignedMask);
+    if (cached !== undefined) {
+      return cached;
+    }
+
+    let ways = solve(cap + 1, assignedMask);
+
+    for (const person of capToPeople[cap]) {
+      if (assignedMask & (1 << person)) {
+        continue;
+      }
+
+      ways += solve(cap + 1, assignedMask | (1 << person));
+    }
+
+    memo[cap].set(assignedMask, ways);
+    return ways;
+  }
+
+  return solve(1, 0);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the answer modulo a large prime if the raw count can overflow.
+- Convert the memoized recursion into bottom-up tabulation over `cap` and `mask`.
+- Compare this assignment DP with bipartite matching when the goal changes from counting to feasibility.
+
+## Common Pitfalls
+
+- Using person order as the outer state and losing the advantage of the fixed 100-cap domain.
+- Forgetting that the same cap cannot be assigned twice.
+- Ignoring the bitmask size limit in JavaScript and applying the pattern to unrealistically large `n`.

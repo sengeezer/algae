@@ -1,0 +1,138 @@
+---
+title: "Sum over Subsets | Dynamic Programming"
+slug: sum-over-subsets-dynamic-programming
+category: Dynamic Programming
+summary: "Precompute every mask's total over all of its submasks in `O(n * 2^n)` by folding contributions bit by bit."
+description: "Sum over Subsets | Dynamic Programming is the subset-transform pattern where each mask absorbs the totals of masks missing one chosen bit, turning a brute-force submask sum into a fast DP over bits."
+dataStructures:
+  - Array
+  - Bitmask
+techniques:
+  - Dynamic Programming
+  - Bitmask DP
+  - Zeta Transform
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - sos dp
+  - subset sum over masks
+  - zeta transform over subsets
+useCases:
+  - Precomputing answers for every mask when queries aggregate over submasks
+  - Replacing explicit submask iteration with a structured bit-by-bit transform
+  - Building intuition for fast subset transforms used in competitive programming
+complexity:
+  time: O(bits * 2^bits)
+  space: O(2^bits)
+  notes: "The article walks from the `O(4^n)` brute force to the `O(3^n)` submask iteration and then to the standard `O(n * 2^n)` transform that updates one bit dimension at a time."
+interviewSignals:
+  - The domain is every mask from `0` to `2^n - 1`.
+  - Each answer depends on all submasks, and repeated subset iteration is the bottleneck.
+relatedSlugs:
+  - bitmask-dp
+  - generate-subsets
+  - count-ways-to-assign-unique-cap-to-every-person
+provenance:
+  - title: "GeeksforGeeks - Sum over Subsets | Dynamic Programming"
+    href: https://www.geeksforgeeks.org/dsa/sum-subsets-dynamic-programming/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+SOS DP is what you use when every bitmask answer needs information from all of its submasks. Enumerating those submasks repeatedly works for small inputs, but the real pattern is to push contributions across one bit position at a time until every mask has accumulated the values it should inherit.
+
+## Worked Example
+
+For `values = [7, 12, 14, 16]`, the masks are `00`, `01`, `10`, and `11`. The subset sums become `[7, 19, 21, 49]` because mask `11` must include all four original entries while mask `01` includes only the submasks `00` and `01`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function sumOverSubsetsDynamicProgramming(values) {
+  if (!Array.isArray(values)) {
+    throw new TypeError('values must be an array');
+  }
+
+  if (values.length === 0) {
+    return [];
+  }
+
+  for (const value of values) {
+    if (!Number.isFinite(value)) {
+      throw new TypeError('values must contain only finite numbers');
+    }
+  }
+
+  const bitCount = Math.log2(values.length);
+  if (!Number.isInteger(bitCount)) {
+    throw new RangeError('values length must be a power of two');
+  }
+
+  const sums = [...values];
+
+  for (let bit = 0; bit < bitCount; bit += 1) {
+    for (let mask = 0; mask < sums.length; mask += 1) {
+      if (mask & (1 << bit)) {
+        sums[mask] += sums[mask ^ (1 << bit)];
+      }
+    }
+  }
+
+  return sums;
+}
+```
+
+```ts
+export function sumOverSubsetsDynamicProgramming(values: number[]): number[] {
+  if (!Array.isArray(values)) {
+    throw new TypeError('values must be an array');
+  }
+
+  if (values.length === 0) {
+    return [];
+  }
+
+  for (const value of values) {
+    if (!Number.isFinite(value)) {
+      throw new TypeError('values must contain only finite numbers');
+    }
+  }
+
+  const bitCount = Math.log2(values.length);
+  if (!Number.isInteger(bitCount)) {
+    throw new RangeError('values length must be a power of two');
+  }
+
+  const sums = [...values];
+
+  for (let bit = 0; bit < bitCount; bit += 1) {
+    for (let mask = 0; mask < sums.length; mask += 1) {
+      if (mask & (1 << bit)) {
+        sums[mask] += sums[mask ^ (1 << bit)];
+      }
+    }
+  }
+
+  return sums;
+}
+```
+
+</ExamplePair>
+
+## Interview Notes
+
+- State clearly what each mask represents before talking about transitions.
+- Mention the progression from brute force to submask iteration to the `O(n * 2^n)` transform.
+- Connect the pattern to other bitmask DP problems that aggregate over subsets or supersets.
+
+## Common Pitfalls
+
+- Treating the input length as arbitrary when SOS DP expects `2^n` masks.
+- Recomputing all submasks for every mask instead of applying the bit transform.
+- Confusing subset aggregation with subset-sum problems over arbitrary values.
