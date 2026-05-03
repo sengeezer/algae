@@ -1,0 +1,116 @@
+---
+title: Gray to Binary and Binary to Gray conversion
+slug: gray-to-binary-and-binary-to-gray-conversion
+category: Bit Manipulation
+summary: Convert an integer from binary to Gray code with one XOR and convert a Gray-coded integer back by folding prefix XORs across its shifted suffixes.
+description: Gray to Binary and Binary to Gray conversion is the bidirectional code-transform problem where adjacent-state encoding uses `n ^ (n >> 1)` in one direction and cumulative XOR in the other.
+dataStructures:
+  - Number
+  - Object
+techniques:
+  - Bit Manipulation
+  - XOR
+  - Prefix Folding
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - gray binary conversion
+  - binary to gray conversion
+  - gray code conversion
+useCases:
+  - Translating between ordinary binary values and adjacency-friendly Gray encodings
+  - Explaining why Gray codes differ by one bit between neighbors
+  - Reusing XOR accumulation patterns in bit-decoding tasks
+complexity:
+  time: O(log n)
+  space: O(1)
+  notes: Binary-to-Gray is one constant-time XOR, while Gray-to-binary walks down the shifted suffixes and accumulates prefix XORs until no bits remain.
+interviewSignals:
+  - The prompt asks for both conversion directions between Gray and ordinary binary.
+  - The expected binary-to-Gray formula is `n ^ (n >> 1)`.
+relatedSlugs:
+  - gray-codes
+  - binary-equivalent
+  - find-xor-of-two-number-without-using-xor-operator
+provenance:
+  - title: "GeeksforGeeks - Gray to Binary and Binary to Gray conversion"
+    href: https://www.geeksforgeeks.org/dsa/gray-to-binary-and-binary-to-gray-conversion/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem comes up when the interviewer wants more than Gray-code generation. The key distinction is that generating Gray code is a direct formula, but decoding it back requires folding XOR information from the most significant side down through the remaining bits.
+
+## Worked Example
+
+For `n = 5`, binary-to-Gray returns `7` because `5 ^ (5 >> 1)` is `101 ^ 010 = 111`. Treating the same input as Gray code, Gray-to-binary returns `6` after cumulatively XORing the shifted suffixes.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function grayToBinaryAndBinaryToGrayConversion(value) {
+  if (!Number.isInteger(value) || value < 0 || value > 0xffffffff) {
+    throw new RangeError('Value must be an unsigned 32-bit integer');
+  }
+
+  const number = value >>> 0;
+  const binaryToGray = (number ^ (number >>> 1)) >>> 0;
+  let grayToBinary = number;
+  let shifted = number >>> 1;
+
+  while (shifted !== 0) {
+    grayToBinary ^= shifted;
+    shifted >>>= 1;
+  }
+
+  return {
+    binaryToGray,
+    grayToBinary: grayToBinary >>> 0,
+  };
+}
+```
+
+```ts
+export function grayToBinaryAndBinaryToGrayConversion(
+  value: number,
+): { binaryToGray: number; grayToBinary: number } {
+  if (!Number.isInteger(value) || value < 0 || value > 0xffffffff) {
+    throw new RangeError('Value must be an unsigned 32-bit integer');
+  }
+
+  const number = value >>> 0;
+  const binaryToGray = (number ^ (number >>> 1)) >>> 0;
+  let grayToBinary = number;
+  let shifted = number >>> 1;
+
+  while (shifted !== 0) {
+    grayToBinary ^= shifted;
+    shifted >>>= 1;
+  }
+
+  return {
+    binaryToGray,
+    grayToBinary: grayToBinary >>> 0,
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Add string-based conversion for fixed-width binary and Gray-code strings.
+- Explain why cumulative XOR reconstructs the original binary prefix one bit at a time.
+- Compare this conversion problem with generating the full `n`-bit Gray-code sequence.
+
+## Common Pitfalls
+
+- Assuming Gray-to-binary is another one-step XOR like binary-to-Gray.
+- Confusing the generated Gray-code value with a list of Gray codes.
+- Forgetting that JavaScript bitwise operators coerce values into 32-bit integers.

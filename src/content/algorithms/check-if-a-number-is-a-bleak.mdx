@@ -1,0 +1,131 @@
+---
+title: Check if a Number is a Bleak
+slug: check-if-a-number-is-a-bleak
+category: Bit Manipulation
+summary: Determine whether a positive integer cannot be written as `x + popcount(x)` for any smaller non-negative `x`.
+description: Check if a Number is a Bleak is the bounded predecessor search where bit-count limits shrink the candidate window to only the last `ceil(log2(n))` values before `n`.
+dataStructures:
+  - Number
+techniques:
+  - Bit Counting
+  - Bounded Search
+  - Number Theory
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - bleak number check
+  - bleak number test
+  - x plus popcount search
+useCases:
+  - Reasoning about how popcount can perturb a predecessor value
+  - Using bit-length bounds to tighten a naive search
+  - Combining number-theory conditions with bit-count helpers
+complexity:
+  time: O(log n * log n)
+  space: O(1)
+  notes: Only the last `ceil(log2(n))` predecessors need to be checked because no smaller value can contribute more set bits than its own bit length.
+interviewSignals:
+  - The prompt asks whether `n` can be written as `x + countSetBits(x)`.
+  - The expected improvement is a much smaller candidate window than `1..n-1`.
+relatedSlugs:
+  - binary-count-set-bits
+  - program-to-find-parity
+  - is-power-of-two
+provenance:
+  - title: "GeeksforGeeks - Check if a Number is a Bleak"
+    href: https://www.geeksforgeeks.org/dsa/check-if-a-number-is-bleak/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Bleak-number questions are really about bounding the search. Once you notice that `countSetBits(x)` can never exceed the number of bits in `x`, the huge naive scan collapses to a very small suffix of candidates.
+
+## Worked Example
+
+`3` is not bleak because `2 + countSetBits(2)` is `2 + 1 = 3`. `4` is bleak because no smaller non-negative `x` satisfies `x + countSetBits(x) = 4`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function countSetBits(value) {
+  let number = BigInt(value);
+  let count = 0;
+
+  while (number > 0n) {
+    number &= number - 1n;
+    count += 1;
+  }
+
+  return count;
+}
+
+function checkIfANumberIsABleak(value) {
+  if (!Number.isSafeInteger(value) || value < 1) {
+    throw new RangeError('Value must be a positive safe integer');
+  }
+
+  const searchWidth = Math.ceil(Math.log2(value));
+  const lowerBound = Math.max(0, value - searchWidth);
+  const target = BigInt(value);
+
+  for (let candidate = BigInt(lowerBound); candidate < target; candidate += 1n) {
+    if (candidate + BigInt(countSetBits(candidate)) === target) {
+      return false;
+    }
+  }
+
+  return true;
+}
+```
+
+```ts
+function countSetBits(value: bigint): number {
+  let number = value;
+  let count = 0;
+
+  while (number > 0n) {
+    number &= number - 1n;
+    count += 1;
+  }
+
+  return count;
+}
+
+export function checkIfANumberIsABleak(value: number): boolean {
+  if (!Number.isSafeInteger(value) || value < 1) {
+    throw new RangeError('Value must be a positive safe integer');
+  }
+
+  const searchWidth = Math.ceil(Math.log2(value));
+  const lowerBound = Math.max(0, value - searchWidth);
+  const target = BigInt(value);
+
+  for (let candidate = BigInt(lowerBound); candidate < target; candidate += 1n) {
+    if (candidate + BigInt(countSetBits(candidate)) === target) {
+      return false;
+    }
+  }
+
+  return true;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare the bounded search with the naive `1..n-1` scan.
+- Replace the custom popcount helper with a built-in when the language provides one.
+- Characterize ranges that contain many bleak numbers versus very few.
+
+## Common Pitfalls
+
+- Checking every predecessor up to `n - 1` even after deriving the logarithmic bound.
+- Forgetting that the condition depends on the popcount of the candidate, not of `n`.
+- Mishandling small positive inputs like `1`, where the logarithmic search width becomes `0`.

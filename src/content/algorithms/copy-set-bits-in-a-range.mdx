@@ -1,0 +1,121 @@
+---
+title: Copy set bits in a range
+slug: copy-set-bits-in-a-range
+category: Bit Manipulation
+summary: Set every bit in a target number that is set in a source number inside a chosen one-based bit interval.
+description: Copy set bits in a range is the masked bit-transfer problem where the source contributes only its set bits between two positions and the target keeps everything else unchanged.
+dataStructures:
+  - Bitmask
+  - Number
+techniques:
+  - Bit Manipulation
+  - Range Masking
+  - Bitwise OR
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - set bits in a range
+  - copy set bits
+  - bit range transfer
+useCases:
+  - Updating selected flag positions in one value from another
+  - Restricting a bitwise merge to a narrow window
+  - Practicing one-based bit indexing on 32-bit integers
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The implementation builds one mask for the inclusive one-based range `[l, r]`, intersects it with the source, and ORs the surviving set bits into the target.
+interviewSignals:
+  - The prompt gives two numbers and a bit-position interval.
+  - Only set bits from the source should be copied, and only inside the requested range.
+relatedSlugs:
+  - swap-bits-in-a-given-number
+  - k-th-bit-is-set-or-not
+  - set-bit
+provenance:
+  - title: "GeeksforGeeks - Copy set bits in a range"
+    href: https://www.geeksforgeeks.org/dsa/copy-set-bits-in-a-range/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a targeted bitfield update problem. The main test is whether you can isolate just one region of the source number and merge it into the target without disturbing any other bits.
+
+## Worked Example
+
+For `x = 10`, `y = 13`, and range `[2, 3]`, only the third bit is set in `y` within that interval, so `x` changes from `1010` to `1110` and the function returns `14`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function copySetBitsInARange(target, source, left, right) {
+  if (![target, source, left, right].every(Number.isInteger)) {
+    throw new TypeError('Arguments must be integers');
+  }
+
+  if (target < 0 || target > 0xffffffff || source < 0 || source > 0xffffffff) {
+    throw new RangeError('target and source must be unsigned 32-bit integers');
+  }
+
+  if (left < 1 || right > 32 || left > right) {
+    throw new RangeError('left and right must define a valid 1-based range within 32 bits');
+  }
+
+  const targetValue = BigInt(target >>> 0);
+  const sourceValue = BigInt(source >>> 0);
+  const start = BigInt(left - 1);
+  const width = BigInt(right - left + 1);
+  const mask = ((1n << width) - 1n) << start;
+
+  return Number((targetValue | (sourceValue & mask)) & 0xffffffffn);
+}
+```
+
+```ts
+export function copySetBitsInARange(
+  target: number,
+  source: number,
+  left: number,
+  right: number,
+): number {
+  if (![target, source, left, right].every(Number.isInteger)) {
+    throw new TypeError('Arguments must be integers');
+  }
+
+  if (target < 0 || target > 0xffffffff || source < 0 || source > 0xffffffff) {
+    throw new RangeError('target and source must be unsigned 32-bit integers');
+  }
+
+  if (left < 1 || right > 32 || left > right) {
+    throw new RangeError('left and right must define a valid 1-based range within 32 bits');
+  }
+
+  const targetValue = BigInt(target >>> 0);
+  const sourceValue = BigInt(source >>> 0);
+  const start = BigInt(left - 1);
+  const width = BigInt(right - left + 1);
+  const mask = ((1n << width) - 1n) << start;
+
+  return Number((targetValue | (sourceValue & mask)) & 0xffffffffn);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Clear the target bits in that range before copying every source bit, not only the set ones.
+- Rework the helper for zero-based bit positions.
+- Explain why the interval is one-based in the source prompt but the shifts are zero-based in code.
+
+## Common Pitfalls
+
+- Treating `l` and `r` as zero-based positions when the prompt uses one-based indexing.
+- Copying all bits in the range instead of only the set bits from the source.
+- Building a mask that overflows the intended interval or leaks into neighboring bits.
