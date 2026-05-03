@@ -1,0 +1,119 @@
+---
+title: XOR Encryption by Shifting Plaintext
+slug: xor-encryption-by-shifting-plaintext
+category: Bit Manipulation
+summary: Recover the original hexadecimal plaintext by walking backward through the shifted self-XOR ciphertext and maintaining the suffix XOR chain.
+description: XOR Encryption by Shifting Plaintext is the reverse-reconstruction problem where each ciphertext nibble folds in one more plaintext nibble from the right, so decryption reveals the original hex string one digit at a time.
+dataStructures:
+  - String
+techniques:
+  - Bit Manipulation
+  - Prefix and Suffix XOR
+  - Reverse Reconstruction
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - shifted xor decryption
+  - xor shifting plaintext
+  - decrypt shifted xor hex string
+useCases:
+  - Reconstructing data from cumulative XOR relationships
+  - Practicing reverse scans where later outputs reveal earlier inputs
+  - Modeling nibble-level transforms on hexadecimal strings
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: The ciphertext length is `2n - 1`, and the decryption loop only needs the rolling XOR of the plaintext suffix already recovered.
+interviewSignals:
+  - The ciphertext is a hexadecimal string produced by repeated shifted XOR operations on the plaintext.
+  - The intended solution works from the right edge because the last ciphertext digit directly exposes the last plaintext digit.
+relatedSlugs:
+  - xor-cipher
+  - find-xor-of-two-number-without-using-xor-operator
+  - cyclic-redundancy-check-and-modulo-2-division
+provenance:
+  - title: "GeeksforGeeks - XOR Encryption by Shifting Plaintext"
+    href: https://www.geeksforgeeks.org/dsa/xor-encryption-shifting-plaintext/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem looks like cryptography, but the interview core is really reverse dependency recovery. Each ciphertext digit is the XOR of a suffix of plaintext digits, so the rightmost side contains enough information to peel the plaintext back one hex digit at a time.
+
+## Worked Example
+
+The ciphertext `a1d0a1d` decrypts to `abcd`. The last ciphertext digit `d` is already the last plaintext digit, then each step to the left XORs with the suffix recovered so far to reveal the next plaintext digit.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function xorEncryptionByShiftingPlaintext(ciphertext) {
+  if (typeof ciphertext !== 'string' || !/^[0-9a-fA-F]+$/.test(ciphertext)) {
+    throw new TypeError('Ciphertext must be a non-empty hexadecimal string');
+  }
+
+  const normalized = ciphertext.toLowerCase();
+  if (normalized.length % 2 === 0) {
+    throw new RangeError('Ciphertext length must be odd');
+  }
+
+  let rollingXor = 0;
+  let plaintext = '';
+
+  for (let index = normalized.length - 1; index >= Math.floor(normalized.length / 2); index -= 1) {
+    const cipherDigit = Number.parseInt(normalized[index], 16);
+    const plainDigit = rollingXor ^ cipherDigit;
+
+    plaintext = plainDigit.toString(16) + plaintext;
+    rollingXor ^= plainDigit;
+  }
+
+  return plaintext;
+}
+```
+
+```ts
+export function xorEncryptionByShiftingPlaintext(ciphertext: string): string {
+  if (!/^[0-9a-fA-F]+$/.test(ciphertext)) {
+    throw new TypeError('Ciphertext must be a non-empty hexadecimal string');
+  }
+
+  const normalized = ciphertext.toLowerCase();
+  if (normalized.length % 2 === 0) {
+    throw new RangeError('Ciphertext length must be odd');
+  }
+
+  let rollingXor = 0;
+  let plaintext = '';
+
+  for (let index = normalized.length - 1; index >= Math.floor(normalized.length / 2); index -= 1) {
+    const cipherDigit = Number.parseInt(normalized[index], 16);
+    const plainDigit = rollingXor ^ cipherDigit;
+
+    plaintext = plainDigit.toString(16) + plaintext;
+    rollingXor ^= plainDigit;
+  }
+
+  return plaintext;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Add the forward encryption routine and prove why the decryption loop is its inverse.
+- Adapt the solution if the alphabet were bytes instead of hexadecimal digits.
+- Stream the plaintext out without building the full answer in memory first.
+
+## Common Pitfalls
+
+- Treating the input as arbitrary text instead of hexadecimal digits.
+- Scanning from the left even though the right edge is the only side that directly exposes plaintext digits.
+- Forgetting that a valid shifted-self-XOR ciphertext has odd length.

@@ -1,0 +1,196 @@
+---
+title: Booth's Multiplication Algorithm
+slug: booths-multiplication-algorithm
+category: Bit Manipulation
+summary: Multiply two signed two's-complement binary strings by alternating add, subtract, and arithmetic right-shift steps based on adjacent multiplier bits.
+description: Booth's Multiplication Algorithm is the signed binary multiplication routine that compresses runs of multiplier ones into add and subtract boundaries before each arithmetic shift.
+dataStructures:
+  - String
+  - Bitmask
+techniques:
+  - Bit Manipulation
+  - Two's Complement Arithmetic
+  - Arithmetic Shift
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - booth multiplication
+  - booth's algorithm
+  - signed binary multiplication
+useCases:
+  - Simulating hardware-style multiplication on signed binary operands
+  - Understanding how runs of ones become add and subtract transitions
+  - Practicing fixed-width two's-complement control in bitwise code
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: Each of the `n` iterations performs at most one add or subtract and one arithmetic shift across the accumulator and multiplier registers.
+interviewSignals:
+  - The prompt explicitly mentions signed binary multiplication or two's-complement register simulation.
+  - The expected solution examines the current multiplier bit together with the previous one.
+relatedSlugs:
+  - karatsuba-algorithm-for-fast-multiplication-using-divide-and-conquer-algorithm
+  - russian-peasant-multiply-two-numbers-using-bitwise-operators
+  - binary-exponentiation
+provenance:
+  - title: "GeeksforGeeks - Booth's Multiplication Algorithm"
+    href: https://www.geeksforgeeks.org/dsa/booths-multiplication-algorithm/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Booth's algorithm is less about raw multiplication than about understanding signed binary arithmetic at register level. The key insight is that a run of multiplier ones can be handled by one subtraction when the run starts and one addition when it ends, with arithmetic shifts propagating the sign.
+
+## Worked Example
+
+Multiplying `0110` (`6`) by `0010` (`2`) with 4-bit operands yields `00001100`, which is the 8-bit two's-complement representation of `12`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function validateSignedBinaryOperand(value, name) {
+  if (typeof value !== 'string' || !/^[01]+$/.test(value)) {
+    throw new TypeError(`${name} must be a non-empty binary string`);
+  }
+}
+
+function toSignedBigInt(binary) {
+  const width = BigInt(binary.length);
+  const unsigned = BigInt(`0b${binary}`);
+  const signBit = 1n << (width - 1n);
+
+  return (unsigned & signBit) === 0n ? unsigned : unsigned - (1n << width);
+}
+
+function toUnsignedBigInt(value, width) {
+  return value & ((1n << BigInt(width)) - 1n);
+}
+
+function wrapToWidth(value, width) {
+  const unsigned = toUnsignedBigInt(value, width);
+  const signBit = 1n << BigInt(width - 1);
+
+  return (unsigned & signBit) === 0n ? unsigned : unsigned - (1n << BigInt(width));
+}
+
+function boothsMultiplicationAlgorithm(multiplicand, multiplier) {
+  validateSignedBinaryOperand(multiplicand, 'multiplicand');
+  validateSignedBinaryOperand(multiplier, 'multiplier');
+
+  if (multiplicand.length !== multiplier.length) {
+    throw new RangeError('Operands must use the same bit width');
+  }
+
+  const bitWidth = multiplicand.length;
+  const registerMask = (1n << BigInt(bitWidth)) - 1n;
+  const br = toSignedBigInt(multiplicand);
+
+  let ac = 0n;
+  let qr = BigInt(`0b${multiplier}`);
+  let qMinusOne = 0n;
+
+  for (let step = 0; step < bitWidth; step += 1) {
+    const qrLeastSignificantBit = qr & 1n;
+
+    if (qrLeastSignificantBit === 0n && qMinusOne === 1n) {
+      ac = wrapToWidth(ac + br, bitWidth);
+    } else if (qrLeastSignificantBit === 1n && qMinusOne === 0n) {
+      ac = wrapToWidth(ac - br, bitWidth);
+    }
+
+    const nextQMinusOne = qrLeastSignificantBit;
+    const acLeastSignificantBit = toUnsignedBigInt(ac, bitWidth) & 1n;
+
+    qr = ((qr >> 1n) | (acLeastSignificantBit << BigInt(bitWidth - 1))) & registerMask;
+    ac = wrapToWidth(ac >> 1n, bitWidth);
+    qMinusOne = nextQMinusOne;
+  }
+
+  const product = (toUnsignedBigInt(ac, bitWidth) << BigInt(bitWidth)) | qr;
+  return product.toString(2).padStart(bitWidth * 2, '0');
+}
+```
+
+```ts
+function validateSignedBinaryOperand(value: string, name: string): void {
+  if (!/^[01]+$/.test(value)) {
+    throw new TypeError(`${name} must be a non-empty binary string`);
+  }
+}
+
+function toSignedBigInt(binary: string): bigint {
+  const width = BigInt(binary.length);
+  const unsigned = BigInt(`0b${binary}`);
+  const signBit = 1n << (width - 1n);
+
+  return (unsigned & signBit) === 0n ? unsigned : unsigned - (1n << width);
+}
+
+function toUnsignedBigInt(value: bigint, width: number): bigint {
+  return value & ((1n << BigInt(width)) - 1n);
+}
+
+function wrapToWidth(value: bigint, width: number): bigint {
+  const unsigned = toUnsignedBigInt(value, width);
+  const signBit = 1n << BigInt(width - 1);
+
+  return (unsigned & signBit) === 0n ? unsigned : unsigned - (1n << BigInt(width));
+}
+
+export function boothsMultiplicationAlgorithm(multiplicand: string, multiplier: string): string {
+  validateSignedBinaryOperand(multiplicand, 'multiplicand');
+  validateSignedBinaryOperand(multiplier, 'multiplier');
+
+  if (multiplicand.length !== multiplier.length) {
+    throw new RangeError('Operands must use the same bit width');
+  }
+
+  const bitWidth = multiplicand.length;
+  const registerMask = (1n << BigInt(bitWidth)) - 1n;
+  const br = toSignedBigInt(multiplicand);
+
+  let ac = 0n;
+  let qr = BigInt(`0b${multiplier}`);
+  let qMinusOne = 0n;
+
+  for (let step = 0; step < bitWidth; step += 1) {
+    const qrLeastSignificantBit = qr & 1n;
+
+    if (qrLeastSignificantBit === 0n && qMinusOne === 1n) {
+      ac = wrapToWidth(ac + br, bitWidth);
+    } else if (qrLeastSignificantBit === 1n && qMinusOne === 0n) {
+      ac = wrapToWidth(ac - br, bitWidth);
+    }
+
+    const nextQMinusOne = qrLeastSignificantBit;
+    const acLeastSignificantBit = toUnsignedBigInt(ac, bitWidth) & 1n;
+
+    qr = ((qr >> 1n) | (acLeastSignificantBit << BigInt(bitWidth - 1))) & registerMask;
+    ac = wrapToWidth(ac >> 1n, bitWidth);
+    qMinusOne = nextQMinusOne;
+  }
+
+  const product = (toUnsignedBigInt(ac, bitWidth) << BigInt(bitWidth)) | qr;
+  return product.toString(2).padStart(bitWidth * 2, '0');
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the full step table instead of only the final product bits.
+- Explain why logical right shift would break negative intermediate values.
+- Compare Booth's algorithm with Russian peasant multiplication and Karatsuba multiplication.
+
+## Common Pitfalls
+
+- Treating the operands as unsigned even though Booth's algorithm is designed for signed two's-complement values.
+- Using logical right shift semantics where the accumulator requires arithmetic sign extension.
+- Forgetting to constrain accumulator updates back to the chosen bit width after each add or subtract.

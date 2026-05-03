@@ -1,0 +1,177 @@
+---
+title: Count pairs in an array which have at least one digit common
+slug: count-pairs-in-an-array-which-have-at-least-one-digit-common
+category: Bit Manipulation
+summary: Count array pairs that share at least one decimal digit by compressing each value into a 10-bit digit mask.
+description: Count pairs in an array which have at least one digit common is the digit-mask frequency problem where pair validity reduces to whether two decimal-digit masks share any set bit.
+dataStructures:
+  - Array
+  - Bitmask
+  - Frequency Table
+techniques:
+  - Bit Masking
+  - Frequency Counting
+  - Pair Counting
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - count pairs with common digit
+  - digit mask pair count
+  - at least one digit common
+useCases:
+  - Counting pair relationships without comparing every digit of every pair
+  - Turning decimal-digit membership into a fixed-width bitmask problem
+  - Reusing frequency compression when the state space is tiny
+complexity:
+  time: O(n + 1024^2)
+  space: O(1024)
+  notes: Only 1024 possible digit masks exist, so the expensive phase depends on mask variety rather than on the numeric magnitude of the input values.
+interviewSignals:
+  - The naive pairwise scan is too slow, but each number only carries digits `0` through `9`.
+  - The intended optimization replaces decimal strings with a small bitmask universe.
+relatedSlugs:
+  - bitmask-dp
+  - traveling-salesman-problem
+  - generate-subsets
+provenance:
+  - title: "GeeksforGeeks - Count pairs in an array which have at least one digit common"
+    href: https://www.geeksforgeeks.org/dsa/count-pairs-array-least-one-digit-common/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the kind of counting problem that looks quadratic until you notice the domain is only decimal digits. Once each number becomes a 10-bit mask, the question changes from "Do these two numbers share a digit?" to "Do these two masks share a set bit?"
+
+## Worked Example
+
+For `[10, 12, 24]`, the valid pairs are `(10, 12)` because they both contain digit `1`, and `(12, 24)` because they both contain digit `2`, so the answer is `2`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function digitMask(value) {
+  if (value === 0) {
+    return 1;
+  }
+
+  let number = value;
+  let mask = 0;
+
+  while (number > 0) {
+    mask |= 1 << (number % 10);
+    number = Math.floor(number / 10);
+  }
+
+  return mask;
+}
+
+function countPairsInAnArrayWhichHaveAtLeastOneDigitCommon(values) {
+  if (!Array.isArray(values) || !values.every((value) => Number.isSafeInteger(value) && value >= 0)) {
+    throw new TypeError('Values must be an array of non-negative safe integers');
+  }
+
+  const frequencies = new Array(1 << 10).fill(0);
+
+  for (const value of values) {
+    frequencies[digitMask(value)] += 1;
+  }
+
+  let pairs = 0;
+
+  for (let leftMask = 1; leftMask < frequencies.length; leftMask += 1) {
+    const leftFrequency = frequencies[leftMask];
+    if (leftFrequency === 0) {
+      continue;
+    }
+
+    pairs += (leftFrequency * (leftFrequency - 1)) / 2;
+
+    for (let rightMask = leftMask + 1; rightMask < frequencies.length; rightMask += 1) {
+      const rightFrequency = frequencies[rightMask];
+      if (rightFrequency === 0) {
+        continue;
+      }
+
+      if ((leftMask & rightMask) !== 0) {
+        pairs += leftFrequency * rightFrequency;
+      }
+    }
+  }
+
+  return pairs;
+}
+```
+
+```ts
+function digitMask(value: number): number {
+  if (value === 0) {
+    return 1;
+  }
+
+  let number = value;
+  let mask = 0;
+
+  while (number > 0) {
+    mask |= 1 << (number % 10);
+    number = Math.floor(number / 10);
+  }
+
+  return mask;
+}
+
+export function countPairsInAnArrayWhichHaveAtLeastOneDigitCommon(values: number[]): number {
+  if (!Array.isArray(values) || !values.every((value) => Number.isSafeInteger(value) && value >= 0)) {
+    throw new TypeError('Values must be an array of non-negative safe integers');
+  }
+
+  const frequencies = new Array<number>(1 << 10).fill(0);
+
+  for (const value of values) {
+    frequencies[digitMask(value)] += 1;
+  }
+
+  let pairs = 0;
+
+  for (let leftMask = 1; leftMask < frequencies.length; leftMask += 1) {
+    const leftFrequency = frequencies[leftMask];
+    if (leftFrequency === 0) {
+      continue;
+    }
+
+    pairs += (leftFrequency * (leftFrequency - 1)) / 2;
+
+    for (let rightMask = leftMask + 1; rightMask < frequencies.length; rightMask += 1) {
+      const rightFrequency = frequencies[rightMask];
+      if (rightFrequency === 0) {
+        continue;
+      }
+
+      if ((leftMask & rightMask) !== 0) {
+        pairs += leftFrequency * rightFrequency;
+      }
+    }
+  }
+
+  return pairs;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the actual pairs for small inputs, not only their count.
+- Generalize the mask idea to hexadecimal digits or lowercase letters.
+- Replace the `1024^2` mask scan with a subset-sum style acceleration if the alphabet grew larger.
+
+## Common Pitfalls
+
+- Forgetting that the number `0` contains digit `0` and therefore needs a non-empty mask.
+- Using bitwise OR instead of bitwise AND when testing whether two masks share a digit.
+- Building masks from decimal strings and accidentally treating repeated digits as multiple distinct requirements.

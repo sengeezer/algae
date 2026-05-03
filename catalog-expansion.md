@@ -1073,9 +1073,18 @@ This ninety-ninth expansion slice lifts the catalog from 545 to 549 entries.
 - Maximum Subarray XOR
 - Find longest sequence of 1's in binary representation with one flip
 
+## Batch 100 added
+
+This one-hundredth expansion slice lifts the catalog from 549 to 553 entries.
+
+- Closest (or Next) smaller and greater numbers with same number of set bits
+- XOR Encryption by Shifting Plaintext
+- Count pairs in an array which have at least one digit common
+- Booth's Multiplication Algorithm
+
 ## Next candidates from the same sources
 
-- The published catalog now reaches 549 entries on `main` after the opening Hard Problems slice.
+- The published catalog now reaches 553 entries on `main` after the next Hard Problems slice.
 - Batch 92 carries the vetted Dynamic Programming hard stretch through `Longest repeating and non-overlapping substring` and then consumes the clean `Advanced Concepts` absences `Count Ways To Assign Unique Cap To Every Person`, `Digit DP | Introduction`, and `Sum over Subsets | Dynamic Programming`.
 - The Dynamic Programming items skipped between `Program to find amount of water in a given glass` and `Largest Cross Bordered Square` remain already represented locally: `Longest Common Subsequence`, `Longest Increasing Subsequence`, `Edit Distance`, `0-1 Knapsack Problem`, `Partition Problem`, `Longest Palindromic Subsequence`, `Bellman-Ford Algorithm`, and `Floyd Warshall Algorithm`.
 - `The painter's partition problem` remains skipped because the local `Find minimum time to finish all jobs with given constraints` entry already covers that partition-minimax problem and includes the alias `painter partition with multiplier`.
@@ -1094,4 +1103,8 @@ This ninety-ninth expansion slice lifts the catalog from 545 to 549 entries.
 - The GeeksforGeeks Bitwise page's Medium Problems section is now exhausted in source order after the published `Gray to Binary and Binary to Gray conversion` entry.
 - The opening Hard Problems slice is now published through `Find longest sequence of 1's in binary representation with one flip`.
 - The first Hard Problems destination-title cleanup is `Next higher with same set bits` -> `Next higher number with same number of set bits`, `Karatsuba Algorithm for fast Multiplication` -> `Karatsuba algorithm for fast multiplication using Divide and Conquer algorithm`, `Max Subarray XOR` -> `Maximum Subarray XOR`, and `Longest Sequence of 1's in Binary with One Flip` -> `Find longest sequence of 1's in binary representation with one flip`.
-- The next unvetted source-ordered Hard Problems follow-ons after the current local batch-99 draft are `Closest Smaller and greater with same set bits`, `Bitmasking and Dynamic Programming`, `Compute the Parity`, and `XOR Encryption by Shifting Plaintext`.
+- `Bitmasking and Dynamic Programming` remains a duplicate of the published `Traveling Salesman Problem`, and `Compute the Parity` remains a duplicate of the published `Program to find parity` despite using a byte table lookup variant.
+- `Floating to Binary` should stay skipped because the source link is a Python-specific article rather than a language-agnostic algorithm entry.
+- Batch 100 is now published through `Booth's Multiplication Algorithm`.
+- The next Hard Problems destination-title cleanup in that stretch is `Closest Smaller and greater with same set bits` -> `Closest (or Next) smaller and greater numbers with same number of set bits`, `Count pairs with at least one digit common` -> `Count pairs in an array which have at least one digit common`, and `Booth’s Multiplication Algorithm` -> `Booth's Multiplication Algorithm`.
+- After the skipped Python-only `Floating to Binary` link, the next unvetted source-ordered Hard Problems follow-ons after the current local batch-100 draft are `Number of pairs with Pandigital Concatenation`, `n-th number whose binary is a palindrome`, and `Two non-repeating in an array of repeating`.

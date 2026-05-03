@@ -1,0 +1,206 @@
+---
+title: Closest (or Next) smaller and greater numbers with same number of set bits
+slug: closest-or-next-smaller-and-greater-numbers-with-same-number-of-set-bits
+category: Bit Manipulation
+summary: Return the nearest smaller and greater unsigned 32-bit integers that preserve the input's popcount.
+description: Closest (or Next) smaller and greater numbers with same number of set bits is the paired bit-pattern predecessor and successor problem where the nearest answers come from rearranging the rightmost movable zero and one blocks.
+dataStructures:
+  - Bitmask
+  - Number
+techniques:
+  - Bit Manipulation
+  - Popcount Preservation
+  - Bit Pattern Successor
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - closest smaller and greater with same set bits
+  - next smaller and greater with same popcount
+  - nearest numbers with same number of ones
+useCases:
+  - Enumerating neighboring fixed-cardinality subset encodings
+  - Comparing predecessor and successor transforms on the same bit pattern
+  - Practicing rightmost non-trailing zero and one analysis
+complexity:
+  time: O(log n)
+  space: O(1)
+  notes: The helpers scan only the trailing runs that influence the nearest predecessor and successor, then rebuild just the suffix that changes.
+interviewSignals:
+  - The prompt asks for both the next larger and next smaller value with the same number of `1` bits.
+  - Scanning outward one integer at a time is too slow compared with direct bit rearrangement.
+relatedSlugs:
+  - next-higher-number-with-same-number-of-set-bits
+  - binary-count-set-bits
+  - gray-codes
+provenance:
+  - title: "GeeksforGeeks - Closest (or Next) smaller and greater numbers with same number of set bits"
+    href: https://www.geeksforgeeks.org/dsa/closest-next-smaller-greater-numbers-number-set-bits/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the two-sided version of fixed-popcount bitmask iteration. Instead of finding only the next larger mask, you also need the nearest smaller one, which forces you to understand how trailing zero and one runs differ between predecessor and successor construction.
+
+## Worked Example
+
+`5` is `101` in binary and has two set bits. The closest smaller number with two set bits is `3` (`11`), and the closest greater number is `6` (`110`).
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function validateUnsigned32(value) {
+  if (!Number.isInteger(value) || value < 0 || value > 0xffffffff) {
+    throw new RangeError('Value must be an unsigned 32-bit integer');
+  }
+}
+
+function getNextWithSameSetBits(value) {
+  const number = BigInt(value >>> 0);
+  if (number === 0n) {
+    return null;
+  }
+
+  const rightOne = number & -number;
+  const nextHigherOneBit = number + rightOne;
+  const rightOnesPattern = ((number ^ nextHigherOneBit) / rightOne) >> 2n;
+  const next = nextHigherOneBit | rightOnesPattern;
+
+  if (next > 0xffffffffn) {
+    return null;
+  }
+
+  return Number(next);
+}
+
+function getPreviousWithSameSetBits(value) {
+  let number = BigInt(value >>> 0);
+  if (number === 0n) {
+    return null;
+  }
+
+  let trailingOnes = 0n;
+  let working = number;
+
+  while ((working & 1n) === 1n) {
+    trailingOnes += 1n;
+    working >>= 1n;
+  }
+
+  if (working === 0n) {
+    return null;
+  }
+
+  let zerosAfterTrailingOnes = 0n;
+  while ((working & 1n) === 0n && working !== 0n) {
+    zerosAfterTrailingOnes += 1n;
+    working >>= 1n;
+  }
+
+  const position = trailingOnes + zerosAfterTrailingOnes;
+  number &= ~((1n << (position + 1n)) - 1n);
+
+  const onesMask = ((1n << (trailingOnes + 1n)) - 1n) << (zerosAfterTrailingOnes - 1n);
+  const previous = number | onesMask;
+
+  return previous > 0xffffffffn ? null : Number(previous);
+}
+
+function closestSmallerAndGreaterNumbersWithSameNumberOfSetBits(value) {
+  validateUnsigned32(value);
+
+  return {
+    smaller: getPreviousWithSameSetBits(value),
+    greater: getNextWithSameSetBits(value),
+  };
+}
+```
+
+```ts
+function validateUnsigned32(value: number): void {
+  if (!Number.isInteger(value) || value < 0 || value > 0xffffffff) {
+    throw new RangeError('Value must be an unsigned 32-bit integer');
+  }
+}
+
+function getNextWithSameSetBits(value: number): number | null {
+  const number = BigInt(value >>> 0);
+  if (number === 0n) {
+    return null;
+  }
+
+  const rightOne = number & -number;
+  const nextHigherOneBit = number + rightOne;
+  const rightOnesPattern = ((number ^ nextHigherOneBit) / rightOne) >> 2n;
+  const next = nextHigherOneBit | rightOnesPattern;
+
+  if (next > 0xffffffffn) {
+    return null;
+  }
+
+  return Number(next);
+}
+
+function getPreviousWithSameSetBits(value: number): number | null {
+  let number = BigInt(value >>> 0);
+  if (number === 0n) {
+    return null;
+  }
+
+  let trailingOnes = 0n;
+  let working = number;
+
+  while ((working & 1n) === 1n) {
+    trailingOnes += 1n;
+    working >>= 1n;
+  }
+
+  if (working === 0n) {
+    return null;
+  }
+
+  let zerosAfterTrailingOnes = 0n;
+  while ((working & 1n) === 0n && working !== 0n) {
+    zerosAfterTrailingOnes += 1n;
+    working >>= 1n;
+  }
+
+  const position = trailingOnes + zerosAfterTrailingOnes;
+  number &= ~((1n << (position + 1n)) - 1n);
+
+  const onesMask = ((1n << (trailingOnes + 1n)) - 1n) << (zerosAfterTrailingOnes - 1n);
+  const previous = number | onesMask;
+
+  return previous > 0xffffffffn ? null : Number(previous);
+}
+
+export function closestSmallerAndGreaterNumbersWithSameNumberOfSetBits(
+  value: number,
+): { smaller: number | null; greater: number | null } {
+  validateUnsigned32(value);
+
+  return {
+    smaller: getPreviousWithSameSetBits(value),
+    greater: getNextWithSameSetBits(value),
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return only the next smaller or only the next greater value as separate helpers.
+- Explain why the predecessor logic counts trailing ones first while the successor logic counts trailing zeros first.
+- Use the successor half to iterate over every `k`-subset bitmask in sorted order.
+
+## Common Pitfalls
+
+- Reusing the successor formula for the predecessor without accounting for the different trailing pattern.
+- Forgetting that some inputs have no valid smaller or greater answer with the same popcount.
+- Letting signed 32-bit coercions break edge cases near the top of the unsigned range.
