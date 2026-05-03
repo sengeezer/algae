@@ -1,0 +1,135 @@
+---
+title: Find two non-repeating elements in an array of repeating elements
+slug: find-two-non-repeating-elements-in-an-array-of-repeating-elements
+category: Bit Manipulation
+summary: Recover the two values that appear once by XORing the array, isolating one distinguishing bit, and partitioning elements by that bit.
+description: Find two non-repeating elements in an array of repeating elements is the paired-XOR cancellation problem where the XOR of the two unique values reveals a separating bit that splits the duplicates into self-canceling groups.
+dataStructures:
+  - Array
+  - Bitmask
+  - Number
+techniques:
+  - Bit Manipulation
+  - XOR Reduction
+  - Partition by Set Bit
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - two non-repeating in an array of repeating
+  - two unique numbers
+  - two singletons with xor
+useCases:
+  - Extending single-XOR cancellation from one singleton to two
+  - Splitting data by a distinguishing bit without extra hash state
+  - Recovering two anomalies from paired duplicates in constant space
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: "One XOR pass isolates the combined difference `x ^ y`, and one more pass uses any set bit of that difference to separate the two unique values."
+interviewSignals:
+  - Every repeated value appears exactly twice, but two values appear once.
+  - The intended solution avoids hashing and instead uses one differing bit between the two answers.
+relatedSlugs:
+  - unique-element-in-an-array
+  - binary-count-set-bits
+  - turn-off-the-rightmost-set-bit
+provenance:
+  - title: "GeeksforGeeks - Unique Numbers ||"
+    href: https://www.geeksforgeeks.org/dsa/find-two-non-repeating-elements-in-an-array-of-repeating-elements/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the natural next step after the one-singleton XOR trick. XORing the whole array no longer returns a complete answer, but it does reveal one bit where the two unique values differ, which is enough to split the input into two independently canceling groups.
+
+## Worked Example
+
+For `[1, 2, 3, 2, 1, 4]`, the duplicated values cancel under XOR, leaving `3 ^ 4`. The rightmost set bit of that XOR separates `3` and `4` into different groups, and XOR within each group returns the two answers.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function findTwoNonRepeatingElementsInAnArrayOfRepeatingElements(values) {
+  if (!Array.isArray(values) || values.length < 2) {
+    throw new RangeError('Values must be an array with at least two elements');
+  }
+
+  if (!values.every((value) => Number.isInteger(value) && value >= 0 && value <= 0xffffffff)) {
+    throw new RangeError('Values must contain unsigned 32-bit integers');
+  }
+
+  let xorValue = 0;
+
+  for (const value of values) {
+    xorValue ^= value >>> 0;
+  }
+
+  const separatingBit = xorValue & -xorValue;
+  let first = 0;
+  let second = 0;
+
+  for (const value of values) {
+    if (((value >>> 0) & separatingBit) === 0) {
+      first ^= value >>> 0;
+    } else {
+      second ^= value >>> 0;
+    }
+  }
+
+  return first < second ? [first, second] : [second, first];
+}
+```
+
+```ts
+export function findTwoNonRepeatingElementsInAnArrayOfRepeatingElements(
+  values: number[],
+): [number, number] {
+  if (!Array.isArray(values) || values.length < 2) {
+    throw new RangeError('Values must be an array with at least two elements');
+  }
+
+  if (!values.every((value) => Number.isInteger(value) && value >= 0 && value <= 0xffffffff)) {
+    throw new RangeError('Values must contain unsigned 32-bit integers');
+  }
+
+  let xorValue = 0;
+
+  for (const value of values) {
+    xorValue ^= value >>> 0;
+  }
+
+  const separatingBit = xorValue & -xorValue;
+  let first = 0;
+  let second = 0;
+
+  for (const value of values) {
+    if (((value >>> 0) & separatingBit) === 0) {
+      first ^= value >>> 0;
+    } else {
+      second ^= value >>> 0;
+    }
+  }
+
+  return first < second ? [first, second] : [second, first];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Adapt the idea when one number appears once and every other number appears three times.
+- Explain why any set bit of `x ^ y` can partition the two answers into different groups.
+- Compare this constant-space method with a frequency-map solution.
+
+## Common Pitfalls
+
+- Reusing the single-singleton XOR trick without the second partitioning pass.
+- Forgetting to sort or normalize the final pair when the prompt requires a stable output order.
+- Applying this method when repeated numbers do not appear exactly twice.

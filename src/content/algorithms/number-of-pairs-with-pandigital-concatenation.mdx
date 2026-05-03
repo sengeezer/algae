@@ -1,0 +1,172 @@
+---
+title: Number of pairs with Pandigital Concatenation
+slug: number-of-pairs-with-pandigital-concatenation
+category: Bit Manipulation
+summary: Count string pairs whose concatenation covers every decimal digit at least once by compressing each string into a 10-bit digit mask.
+description: Number of pairs with Pandigital Concatenation is the digit-mask pair-count problem where a pair is valid exactly when the OR of its decimal-digit masks equals the full ten-digit mask.
+dataStructures:
+  - Array
+  - String
+  - Bitmask
+  - Frequency Table
+techniques:
+  - Bit Masking
+  - Frequency Counting
+  - Pair Counting
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - pandigital concatenation pairs
+  - count pandigital pairs
+  - digit mask concatenation pairs
+useCases:
+  - Counting pair coverage constraints without materializing every concatenation
+  - Turning decimal digit presence into a fixed-width state space
+  - Reusing bitmask aggregation for string-pair queries
+complexity:
+  time: O(nk + 1024^2)
+  space: O(1024)
+  notes: "`k` is the average string length. The mask domain is fixed at `2^10`, so the pair-combination phase is bounded by a small constant-sized state space."
+interviewSignals:
+  - The prompt asks for pairs whose joined digits cover `0` through `9`.
+  - The intended optimization compares digit masks instead of concatenating every pair and rescanning all characters.
+relatedSlugs:
+  - count-pairs-in-an-array-which-have-at-least-one-digit-common
+  - binary-equivalent
+  - generate-subsets
+provenance:
+  - title: "GeeksforGeeks - Number of pairs with Pandigital Concatenation"
+    href: https://www.geeksforgeeks.org/dsa/number-pairs-pandigital-concatenation/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a pair-count problem hiding inside a tiny bitmask universe. Once each numeric string becomes a 10-bit mask of seen digits, the only question left is whether two masks together cover all ten positions.
+
+## Worked Example
+
+For `['123567', '098234', '14765', '19804']`, there are `3` valid pairs. Each valid pair contributes all digits `0` through `9` at least once after concatenation.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function digitMask(value) {
+  let mask = 0;
+
+  for (const character of value) {
+    mask |= 1 << Number.parseInt(character, 10);
+  }
+
+  return mask;
+}
+
+function numberOfPairsWithPandigitalConcatenation(values) {
+  if (!Array.isArray(values) || !values.every((value) => typeof value === 'string' && /^[0-9]+$/.test(value))) {
+    throw new TypeError('Values must be an array of non-empty decimal strings');
+  }
+
+  const fullMask = (1 << 10) - 1;
+  const frequencies = new Array(1 << 10).fill(0);
+
+  for (const value of values) {
+    frequencies[digitMask(value)] += 1;
+  }
+
+  let pairs = 0;
+
+  for (let leftMask = 1; leftMask < frequencies.length; leftMask += 1) {
+    const leftFrequency = frequencies[leftMask];
+    if (leftFrequency === 0) {
+      continue;
+    }
+
+    if ((leftMask | leftMask) === fullMask) {
+      pairs += (leftFrequency * (leftFrequency - 1)) / 2;
+    }
+
+    for (let rightMask = leftMask + 1; rightMask < frequencies.length; rightMask += 1) {
+      const rightFrequency = frequencies[rightMask];
+      if (rightFrequency === 0) {
+        continue;
+      }
+
+      if ((leftMask | rightMask) === fullMask) {
+        pairs += leftFrequency * rightFrequency;
+      }
+    }
+  }
+
+  return pairs;
+}
+```
+
+```ts
+function digitMask(value: string): number {
+  let mask = 0;
+
+  for (const character of value) {
+    mask |= 1 << Number.parseInt(character, 10);
+  }
+
+  return mask;
+}
+
+export function numberOfPairsWithPandigitalConcatenation(values: string[]): number {
+  if (!Array.isArray(values) || !values.every((value) => /^[0-9]+$/.test(value))) {
+    throw new TypeError('Values must be an array of non-empty decimal strings');
+  }
+
+  const fullMask = (1 << 10) - 1;
+  const frequencies = new Array<number>(1 << 10).fill(0);
+
+  for (const value of values) {
+    frequencies[digitMask(value)] += 1;
+  }
+
+  let pairs = 0;
+
+  for (let leftMask = 1; leftMask < frequencies.length; leftMask += 1) {
+    const leftFrequency = frequencies[leftMask];
+    if (leftFrequency === 0) {
+      continue;
+    }
+
+    if ((leftMask | leftMask) === fullMask) {
+      pairs += (leftFrequency * (leftFrequency - 1)) / 2;
+    }
+
+    for (let rightMask = leftMask + 1; rightMask < frequencies.length; rightMask += 1) {
+      const rightFrequency = frequencies[rightMask];
+      if (rightFrequency === 0) {
+        continue;
+      }
+
+      if ((leftMask | rightMask) === fullMask) {
+        pairs += leftFrequency * rightFrequency;
+      }
+    }
+  }
+
+  return pairs;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the actual pair indices instead of only the pair count.
+- Generalize the mask logic to hexadecimal strings or lowercase letters.
+- Compare this fixed-state-space method with brute-force concatenation on short inputs.
+
+## Common Pitfalls
+
+- Treating repeated digits inside one string as if they contributed extra coverage.
+- Forgetting that two identical masks can still form valid pairs when that mask already covers all digits.
+- Converting the strings to numbers and accidentally dropping significant leading zeros.

@@ -1,0 +1,140 @@
+---
+title: Nth Binary Palindrome
+slug: nth-binary-palindrome
+category: Bit Manipulation
+summary: Construct the nth positive integer whose binary representation is palindromic by locating its length group and mirroring the chosen prefix.
+description: Nth Binary Palindrome is the grouped construction problem where binary palindromes are counted by length and built directly from the prefix that determines the mirrored suffix.
+dataStructures:
+  - Bitmask
+  - Number
+techniques:
+  - Bit Manipulation
+  - Direct Construction
+  - Symmetry
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - nth number whose binary is a palindrome
+  - kth binary palindrome
+  - generate nth binary palindrome
+useCases:
+  - Ranking palindromic bit patterns without brute-force scanning
+  - Building mirrored integers from half-state descriptions
+  - Practicing length-group counting for structured sequences
+complexity:
+  time: O(log n)
+  space: O(1)
+  notes: The implementation counts how many palindromes exist at each binary length and then mirrors only the prefix bits needed for the selected group member.
+interviewSignals:
+  - The prompt asks for the nth palindromic binary number, not merely a palindrome test.
+  - Scanning integers one by one is too slow compared with direct grouped construction.
+relatedSlugs:
+  - check-if-binary-representation-is-palindrome
+  - binary-equivalent
+  - gray-codes
+provenance:
+  - title: "GeeksforGeeks - Nth Binary Palindrome"
+    href: https://www.geeksforgeeks.org/dsa/find-n-th-number-whose-binary-representation-palindrome/
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem is the constructive sibling of a binary-palindrome check. Instead of testing one candidate, you count how many palindromes live at each length, jump into the correct group, and mirror the prefix that determines the rest of the bits.
+
+## Worked Example
+
+The 9th binary palindrome is `27`, whose binary representation is `11011`. The shorter palindromes occupy the earlier length groups, so the 9th entry lands in the 5-bit group.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function reverseBits(value, count) {
+  let working = value;
+  let result = 0n;
+
+  for (let step = 0n; step < count; step += 1n) {
+    result = (result << 1n) | (working & 1n);
+    working >>= 1n;
+  }
+
+  return result;
+}
+
+function nthBinaryPalindrome(index) {
+  if (!Number.isInteger(index) || index <= 0) {
+    throw new RangeError('Index must be a positive integer');
+  }
+
+  let target = BigInt(index);
+  let length = 1n;
+  let groupCount = 1n;
+
+  while (target > groupCount) {
+    target -= groupCount;
+    length += 1n;
+    groupCount = 1n << ((length - 1n) / 2n);
+  }
+
+  const prefixLength = (length + 1n) / 2n;
+  const prefix = (1n << (prefixLength - 1n)) | (target - 1n);
+  const mirrored = reverseBits(length % 2n === 0n ? prefix : prefix >> 1n, length / 2n);
+
+  return (prefix << (length / 2n)) | mirrored;
+}
+```
+
+```ts
+function reverseBits(value: bigint, count: bigint): bigint {
+  let working = value;
+  let result = 0n;
+
+  for (let step = 0n; step < count; step += 1n) {
+    result = (result << 1n) | (working & 1n);
+    working >>= 1n;
+  }
+
+  return result;
+}
+
+export function nthBinaryPalindrome(index: number): bigint {
+  if (!Number.isInteger(index) || index <= 0) {
+    throw new RangeError('Index must be a positive integer');
+  }
+
+  let target = BigInt(index);
+  let length = 1n;
+  let groupCount = 1n;
+
+  while (target > groupCount) {
+    target -= groupCount;
+    length += 1n;
+    groupCount = 1n << ((length - 1n) / 2n);
+  }
+
+  const prefixLength = (length + 1n) / 2n;
+  const prefix = (1n << (prefixLength - 1n)) | (target - 1n);
+  const mirrored = reverseBits(length % 2n === 0n ? prefix : prefix >> 1n, length / 2n);
+
+  return (prefix << (length / 2n)) | mirrored;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the binary string instead of a `bigint`.
+- Prove the count of palindromes of length `L` is `2^(ceil(L / 2) - 1)`.
+- Compare this direct construction with BFS generation and brute-force scanning.
+
+## Common Pitfalls
+
+- Counting leading-zero variants as separate palindromes even though the sequence ignores leading zeros.
+- Forgetting to drop the middle bit before mirroring odd-length prefixes.
+- Returning a `number` and silently losing precision for larger indices.

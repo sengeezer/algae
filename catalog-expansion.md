@@ -1082,9 +1082,17 @@ This one-hundredth expansion slice lifts the catalog from 549 to 553 entries.
 - Count pairs in an array which have at least one digit common
 - Booth's Multiplication Algorithm
 
+## Batch 101 added
+
+This one-hundred-first expansion slice lifts the catalog from 553 to 556 entries.
+
+- Number of pairs with Pandigital Concatenation
+- Nth Binary Palindrome
+- Find two non-repeating elements in an array of repeating elements
+
 ## Next candidates from the same sources
 
-- The published catalog now reaches 553 entries on `main` after the next Hard Problems slice.
+- The published catalog now reaches 556 entries on `main` after the final Bitwise slice.
 - Batch 92 carries the vetted Dynamic Programming hard stretch through `Longest repeating and non-overlapping substring` and then consumes the clean `Advanced Concepts` absences `Count Ways To Assign Unique Cap To Every Person`, `Digit DP | Introduction`, and `Sum over Subsets | Dynamic Programming`.
 - The Dynamic Programming items skipped between `Program to find amount of water in a given glass` and `Largest Cross Bordered Square` remain already represented locally: `Longest Common Subsequence`, `Longest Increasing Subsequence`, `Edit Distance`, `0-1 Knapsack Problem`, `Partition Problem`, `Longest Palindromic Subsequence`, `Bellman-Ford Algorithm`, and `Floyd Warshall Algorithm`.
 - `The painter's partition problem` remains skipped because the local `Find minimum time to finish all jobs with given constraints` entry already covers that partition-minimax problem and includes the alias `painter partition with multiplier`.
@@ -1107,4 +1115,7 @@ This one-hundredth expansion slice lifts the catalog from 549 to 553 entries.
 - `Floating to Binary` should stay skipped because the source link is a Python-specific article rather than a language-agnostic algorithm entry.
 - Batch 100 is now published through `Booth's Multiplication Algorithm`.
 - The next Hard Problems destination-title cleanup in that stretch is `Closest Smaller and greater with same set bits` -> `Closest (or Next) smaller and greater numbers with same number of set bits`, `Count pairs with at least one digit common` -> `Count pairs in an array which have at least one digit common`, and `Booth’s Multiplication Algorithm` -> `Booth's Multiplication Algorithm`.
-- After the skipped Python-only `Floating to Binary` link, the next unvetted source-ordered Hard Problems follow-ons after the current local batch-100 draft are `Number of pairs with Pandigital Concatenation`, `n-th number whose binary is a palindrome`, and `Two non-repeating in an array of repeating`.
+- Batch 101 is now published through `Find two non-repeating elements in an array of repeating elements`.
+- The final Hard Problems destination-title cleanup is `n-th number whose binary is a palindrome` -> `Nth Binary Palindrome` and `Two non-repeating in an array of repeating` -> `Find two non-repeating elements in an array of repeating elements`.
+- The GeeksforGeeks Bitwise page is now exhausted in source order after the published batch-101 draft.
+- No next source branch has been vetted yet after finishing the Bitwise page.
