@@ -1209,7 +1209,7 @@ This one-hundred-eleventh expansion slice lifts the catalog from 621 to 623 entr
 
 ## Batch 112 added
 
-This one-hundred-twelfth expansion slice currently lifts the catalog locally from 623 to 631 entries.
+This one-hundred-twelfth expansion slice lifts the catalog from 623 to 631 entries.
 
 - Program to find the mid-point of a line
 - Section formula (Point that divides a line in given ratio)
@@ -1219,6 +1219,17 @@ This one-hundred-twelfth expansion slice currently lifts the catalog locally fro
 - Sweep Line Algorithm - Find if any Two Segments Intersect
 - Count maximum points on same line
 - Minimum lines to cover all points
+
+## Batch 113 added
+
+This one-hundred-thirteenth expansion slice currently lifts the catalog locally from 631 to 637 entries.
+
+- Check whether triangle is valid or not if sides are given
+- Check whether a given point lies inside a triangle or not
+- Check if right triangle possible from given area and hypotenuse
+- Count Integral points inside a Triangle
+- Find all angles of a given triangle
+- Program to find Circumcenter of a Triangle
 
 ## Next candidates from the same sources
 
@@ -1249,9 +1260,14 @@ This one-hundred-twelfth expansion slice currently lifts the catalog locally fro
 - The GeeksforGeeks Branch and Bound page is exhausted in source order after `Generate Binary Strings of length N using Branch and Bound`; the remaining tail is quick links only, so the next source branch now needs fresh vetting.
 - The next vetted source branch after the exhausted Branch and Bound page is the GeeksforGeeks Geometric Algorithms page: https://www.geeksforgeeks.org/dsa/geometric-algorithms/
 - Destination-title cleanup in the first clean Geometric `Lines` queue is `Mid-point of a line` -> `Program to find the mid-point of a line`, `Slope of a line` -> `Program to find slope of a line`, `Line passing through 2 Points` -> `Program to find line passing through 2 Points`, `Intersection of Two Lines` -> `Program for Point of Intersection of Two Lines`, and `Find if any two segments intersect` -> `Sweep Line Algorithm - Find if any Two Segments Intersect`.
-- Batch 112 currently lifts the catalog locally from 623 to 631 entries with `Program to find the mid-point of a line`, `Section formula (Point that divides a line in given ratio)`, `Program to find slope of a line`, `Program to find line passing through 2 Points`, `Program for Point of Intersection of Two Lines`, `Sweep Line Algorithm - Find if any Two Segments Intersect`, `Count maximum points on same line`, and `Minimum lines to cover all points`.
+- Batch 112 lifts the catalog from 623 to 631 entries with `Program to find the mid-point of a line`, `Section formula (Point that divides a line in given ratio)`, `Program to find slope of a line`, `Program to find line passing through 2 Points`, `Program for Point of Intersection of Two Lines`, `Sweep Line Algorithm - Find if any Two Segments Intersect`, `Count maximum points on same line`, and `Minimum lines to cover all points`.
 - Focused `gray-matter` plus JavaScript-fence validators passed for all eight batch-112 entries.
-- The next source-order research on the Geometric Algorithms page begins at `Check triangle is valid or not`; the opening Triangle titles `Check triangle is valid or not`, `Check if a given point lies inside a triangle`, and `Area of a triangle` are currently absent by exact-title check.
+- Destination-title cleanup in the first clean Geometric `Triangle` queue is `Check triangle is valid or not` -> `Check whether triangle is valid or not if sides are given`, `Check if a given point lies inside a triangle` -> `Check whether a given point lies inside a triangle or not`, `All angles of a given triangle` -> `Find all angles of a given triangle`, and `Circumcenter of a Triangle` -> `Program to find Circumcenter of a Triangle`.
+- `Area of a triangle` remains duplicate-level coverage of the published `Area` entry because that entry already covers both Heron's formula and direct triangle-area computation.
+- Batch 113 currently lifts the catalog locally from 631 to 637 entries with `Check whether triangle is valid or not if sides are given`, `Check whether a given point lies inside a triangle or not`, `Check if right triangle possible from given area and hypotenuse`, `Count Integral points inside a Triangle`, `Find all angles of a given triangle`, and `Program to find Circumcenter of a Triangle`.
+- `Check if right triangle possible from given area and hypotenuse` and `Count Integral points inside a Triangle` already match their destination titles.
+- Focused `gray-matter` plus JavaScript-fence validators passed for all six batch-113 entries.
+- The next source-order research on the Geometric Algorithms page begins at `Triangles formed from a set of lines in Euclidean Plane`; the next Triangle titles `Triangles formed from a set of lines in Euclidean Plane`, `Area of Circumcircle of an Equilateral Triangle`, and `Third side of triangle using law of cosines` are currently absent by exact-title check.
 - Batch 92 carries the vetted Dynamic Programming hard stretch through `Longest repeating and non-overlapping substring` and then consumes the clean `Advanced Concepts` absences `Count Ways To Assign Unique Cap To Every Person`, `Digit DP | Introduction`, and `Sum over Subsets | Dynamic Programming`.
 - The Dynamic Programming items skipped between `Program to find amount of water in a given glass` and `Largest Cross Bordered Square` remain already represented locally: `Longest Common Subsequence`, `Longest Increasing Subsequence`, `Edit Distance`, `0-1 Knapsack Problem`, `Partition Problem`, `Longest Palindromic Subsequence`, `Bellman-Ford Algorithm`, and `Floyd Warshall Algorithm`.
 - `The painter's partition problem` remains skipped because the local `Find minimum time to finish all jobs with given constraints` entry already covers that partition-minimax problem and includes the alias `painter partition with multiplier`.

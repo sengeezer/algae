@@ -1,0 +1,144 @@
+---
+title: Count Integral points inside a Triangle
+slug: count-integral-points-inside-a-triangle
+category: Mathematics
+summary: Use Pick's theorem and lattice-point counts on the three edges to derive the number of integer interior points.
+description: "Count Integral points inside a Triangle is the lattice-geometry problem that converts triangle area and boundary lattice counts into the number of strictly interior integer points."
+dataStructures:
+  - Array
+techniques:
+  - Pick's Theorem
+  - Shoelace Formula
+  - Greatest Common Divisor
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - lattice points inside triangle
+  - interior integral points in triangle
+useCases:
+  - Counting lattice points in coordinate-geometry problems
+  - Combining area formulas with number theory through gcd edge counts
+  - Reusing Pick's theorem in polygon follow-up questions
+complexity:
+  time: O(log C)
+  space: O(1)
+  notes: The non-constant work comes from the three gcd computations on the edge deltas.
+interviewSignals:
+  - The vertices are integral coordinates and the question asks for interior lattice points.
+  - Direct enumeration is a trap when coordinates grow large.
+  - Pick's theorem is the shortest route once boundary counts are available.
+relatedSlugs:
+  - number-of-integral-points-between-two-points
+  - check-whether-a-given-point-lies-inside-a-triangle-or-not
+  - area
+provenance:
+  - title: "GeeksforGeeks - Count Integral points inside a Triangle"
+    href: https://www.geeksforgeeks.org/dsa/count-integral-points-inside-a-triangle/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is a good example of geometry meeting number theory. Instead of scanning the whole bounding box, you compute the triangle's doubled area, count how many lattice points lie on each edge using gcd, and plug the result into Pick's theorem.
+
+## Worked Example
+
+For `P = [0, 0]`, `Q = [0, 5]`, and `R = [5, 0]`, Pick's theorem yields `6` interior integer points.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function countIntegralPointsInsideATriangle(p, q, r) {
+  function gcd(left, right) {
+    let a = Math.abs(left);
+    let b = Math.abs(right);
+
+    while (b !== 0) {
+      [a, b] = [b, a % b];
+    }
+
+    return a;
+  }
+
+  function edgeBoundaryCount(first, second) {
+    return gcd(first[0] - second[0], first[1] - second[1]);
+  }
+
+  const doubledArea = Math.abs(
+    p[0] * (q[1] - r[1])
+    + q[0] * (r[1] - p[1])
+    + r[0] * (p[1] - q[1])
+  );
+
+  if (doubledArea === 0) {
+    return 0;
+  }
+
+  const boundaryPoints = (
+    edgeBoundaryCount(p, q)
+    + edgeBoundaryCount(q, r)
+    + edgeBoundaryCount(r, p)
+  );
+
+  return (doubledArea - boundaryPoints + 2) / 2;
+}
+```
+
+```ts
+type Point = [number, number];
+
+export function countIntegralPointsInsideATriangle(
+  p: Point,
+  q: Point,
+  r: Point,
+): number {
+  const gcd = (left: number, right: number): number => {
+    let a = Math.abs(left);
+    let b = Math.abs(right);
+
+    while (b !== 0) {
+      [a, b] = [b, a % b];
+    }
+
+    return a;
+  };
+
+  const edgeBoundaryCount = (first: Point, second: Point): number => {
+    return gcd(first[0] - second[0], first[1] - second[1]);
+  };
+
+  const doubledArea = Math.abs(
+    p[0] * (q[1] - r[1])
+    + q[0] * (r[1] - p[1])
+    + r[0] * (p[1] - q[1])
+  );
+
+  if (doubledArea === 0) {
+    return 0;
+  }
+
+  const boundaryPoints = (
+    edgeBoundaryCount(p, q)
+    + edgeBoundaryCount(q, r)
+    + edgeBoundaryCount(r, p)
+  );
+
+  return (doubledArea - boundaryPoints + 2) / 2;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why does each edge contribute `gcd(|dx|, |dy|)` boundary lattice points?
+- How would you extend the same reasoning to a simple lattice polygon?
+- Why is the doubled-area form convenient here?
+
+## Common Pitfalls
+
+- Counting boundary lattice points incorrectly by double-counting vertices.
+- Forgetting that Pick's theorem needs a simple polygon with lattice vertices.
+- Enumerating every point in the bounding box instead of using the theorem directly.

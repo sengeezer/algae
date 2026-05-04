@@ -1,0 +1,127 @@
+---
+title: Find all angles of a given triangle
+slug: find-all-angles-of-a-given-triangle
+category: Mathematics
+summary: Compute the three side lengths from the coordinates and apply the law of cosines to recover each angle.
+description: "Find all angles of a given triangle is the coordinate-geometry reconstruction problem that derives the three interior angles from the triangle's vertex coordinates."
+dataStructures:
+  - Array
+techniques:
+  - Coordinate Geometry
+  - Law of Cosines
+  - Distance Formula
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - all angles of a triangle
+  - triangle angles from coordinates
+useCases:
+  - Recovering angle measurements from coordinate input
+  - Demonstrating how side-length formulas feed trigonometric reconstruction
+  - Supporting triangle classification once angles are known
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The solution computes three distances and then evaluates three cosine formulas with clamping for numerical stability.
+interviewSignals:
+  - The input is three coordinates, but the output is angular rather than positional.
+  - The law of cosines is the intended bridge from geometry to trigonometry.
+  - Degenerate triangles must be rejected before angle recovery.
+relatedSlugs:
+  - check-whether-triangle-is-valid-or-not-if-sides-are-given
+  - check-if-right-triangle-possible-from-given-area-and-hypotenuse
+  - program-to-find-circumcenter-of-a-triangle
+provenance:
+  - title: "GeeksforGeeks - Find all angles of a given triangle"
+    href: https://www.geeksforgeeks.org/dsa/find-angles-given-triangle/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is the inverse of the usual triangle-side problem. Once the coordinates are known, you convert them to side lengths and then apply the law of cosines three times to reconstruct the interior angles.
+
+## Worked Example
+
+For `A = [0, 0]`, `B = [0, 1]`, and `C = [1, 0]`, the triangle is right isosceles, so the angles are `[90, 45, 45]` in the order `[A, B, C]`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function findAllAnglesOfAGivenTriangle(a, b, c) {
+  function distance(first, second) {
+    return Math.hypot(second[0] - first[0], second[1] - first[1]);
+  }
+
+  function toDegrees(radians) {
+    return radians * 180 / Math.PI;
+  }
+
+  function clamp(value) {
+    return Math.min(1, Math.max(-1, value));
+  }
+
+  const sideA = distance(b, c);
+  const sideB = distance(a, c);
+  const sideC = distance(a, b);
+
+  if (sideA + sideB <= sideC || sideA + sideC <= sideB || sideB + sideC <= sideA) {
+    return null;
+  }
+
+  const angleA = toDegrees(Math.acos(clamp((sideB ** 2 + sideC ** 2 - sideA ** 2) / (2 * sideB * sideC))));
+  const angleB = toDegrees(Math.acos(clamp((sideA ** 2 + sideC ** 2 - sideB ** 2) / (2 * sideA * sideC))));
+  const angleC = 180 - angleA - angleB;
+
+  return [angleA, angleB, angleC].map((value) => Math.round(value * 1e6) / 1e6);
+}
+```
+
+```ts
+type Point = [number, number];
+
+export function findAllAnglesOfAGivenTriangle(
+  a: Point,
+  b: Point,
+  c: Point,
+): [number, number, number] | null {
+  const distance = (first: Point, second: Point): number => {
+    return Math.hypot(second[0] - first[0], second[1] - first[1]);
+  };
+
+  const toDegrees = (radians: number): number => radians * 180 / Math.PI;
+  const clamp = (value: number): number => Math.min(1, Math.max(-1, value));
+
+  const sideA = distance(b, c);
+  const sideB = distance(a, c);
+  const sideC = distance(a, b);
+
+  if (sideA + sideB <= sideC || sideA + sideC <= sideB || sideB + sideC <= sideA) {
+    return null;
+  }
+
+  const angleA = toDegrees(Math.acos(clamp((sideB ** 2 + sideC ** 2 - sideA ** 2) / (2 * sideB * sideC))));
+  const angleB = toDegrees(Math.acos(clamp((sideA ** 2 + sideC ** 2 - sideB ** 2) / (2 * sideA * sideC))));
+  const angleC = 180 - angleA - angleB;
+
+  return [angleA, angleB, angleC].map(
+    (value) => Math.round(value * 1e6) / 1e6,
+  ) as [number, number, number];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why is it safer to clamp the cosine argument before calling `acos`?
+- How would you classify the triangle once the angle triple is known?
+- Why does the third angle come from `180 - angleA - angleB` even though it could also be computed with another cosine formula?
+
+## Common Pitfalls
+
+- Mixing up which side is opposite which angle.
+- Forgetting to reject degenerate triangles before dividing by side products.
+- Letting tiny floating-point drift push the cosine argument outside `[-1, 1]`.

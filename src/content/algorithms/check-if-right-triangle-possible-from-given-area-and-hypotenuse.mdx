@@ -1,0 +1,146 @@
+---
+title: Check if right triangle possible from given area and hypotenuse
+slug: check-if-right-triangle-possible-from-given-area-and-hypotenuse
+category: Mathematics
+summary: Solve for the two unknown legs from the area and hypotenuse by reducing the problem to a quadratic in the squared leg length.
+description: "Check if right triangle possible from given area and hypotenuse is the algebraic reconstruction problem that derives the missing legs of a right triangle or proves that no such triangle exists."
+dataStructures:
+  - Number
+  - Array
+techniques:
+  - Algebraic Rearrangement
+  - Quadratic Roots
+  - Pythagorean Constraint
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - right triangle from area and hypotenuse
+  - reconstruct right triangle sides
+useCases:
+  - Recovering unknown right-triangle dimensions from aggregate measurements
+  - Translating geometric constraints into a quadratic equation
+  - Checking whether a geometry prompt has any feasible solution at all
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The existence test is driven by the discriminant of the quadratic in the squared leg length.
+interviewSignals:
+  - Only area and hypotenuse are provided, so both legs are unknown.
+  - The problem is algebraic, not a search over candidate triples.
+  - A negative discriminant proves no real right triangle can satisfy both constraints.
+relatedSlugs:
+  - check-whether-triangle-is-valid-or-not-if-sides-are-given
+  - find-all-angles-of-a-given-triangle
+  - area
+provenance:
+  - title: "GeeksforGeeks - Check if right triangle possible from given area and hypotenuse"
+    href: https://www.geeksforgeeks.org/dsa/check-right-angles-possible-given-area-hypotenuse/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This problem looks geometric, but the clean solution is algebraic. If the unknown legs are `a` and `b`, then `ab = 2A` from the area and `a^2 + b^2 = H^2` from the Pythagorean theorem. Eliminating one variable gives a quadratic in the squared leg length.
+
+## Worked Example
+
+With area `6` and hypotenuse `5`, the only right triangle is `[3, 4, 5]`, so the function should return those sides in ascending order.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function checkIfRightTrianglePossibleFromGivenAreaAndHypotenuse(area, hypotenuse) {
+  if (area <= 0 || hypotenuse <= 0) {
+    return null;
+  }
+
+  const hypotenuseSquared = hypotenuse * hypotenuse;
+  const discriminant = hypotenuseSquared * hypotenuseSquared - 16 * area * area;
+
+  if (discriminant < 0) {
+    return null;
+  }
+
+  const sqrtDiscriminant = Math.sqrt(discriminant);
+  const legSquareA = (hypotenuseSquared + sqrtDiscriminant) / 2;
+  const legSquareB = (hypotenuseSquared - sqrtDiscriminant) / 2;
+
+  if (legSquareA < 0 || legSquareB < 0) {
+    return null;
+  }
+
+  const legA = Math.sqrt(legSquareA);
+  const legB = Math.sqrt(legSquareB);
+
+  if (
+    !Number.isFinite(legA)
+    || !Number.isFinite(legB)
+    || Math.abs(0.5 * legA * legB - area) > 1e-9
+    || Math.abs(Math.hypot(legA, legB) - hypotenuse) > 1e-9
+  ) {
+    return null;
+  }
+
+  return [legA, legB, hypotenuse]
+    .sort((left, right) => left - right)
+    .map((value) => (Math.abs(value - Math.round(value)) < 1e-9 ? Math.round(value) : value));
+}
+```
+
+```ts
+export function checkIfRightTrianglePossibleFromGivenAreaAndHypotenuse(
+  area: number,
+  hypotenuse: number,
+): Array<number> | null {
+  if (area <= 0 || hypotenuse <= 0) {
+    return null;
+  }
+
+  const hypotenuseSquared = hypotenuse * hypotenuse;
+  const discriminant = hypotenuseSquared * hypotenuseSquared - 16 * area * area;
+
+  if (discriminant < 0) {
+    return null;
+  }
+
+  const sqrtDiscriminant = Math.sqrt(discriminant);
+  const legSquareA = (hypotenuseSquared + sqrtDiscriminant) / 2;
+  const legSquareB = (hypotenuseSquared - sqrtDiscriminant) / 2;
+
+  if (legSquareA < 0 || legSquareB < 0) {
+    return null;
+  }
+
+  const legA = Math.sqrt(legSquareA);
+  const legB = Math.sqrt(legSquareB);
+
+  if (
+    !Number.isFinite(legA)
+    || !Number.isFinite(legB)
+    || Math.abs(0.5 * legA * legB - area) > 1e-9
+    || Math.abs(Math.hypot(legA, legB) - hypotenuse) > 1e-9
+  ) {
+    return null;
+  }
+
+  return [legA, legB, hypotenuse]
+    .sort((left, right) => left - right)
+    .map((value) => (Math.abs(value - Math.round(value)) < 1e-9 ? Math.round(value) : value));
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why is the discriminant the decisive existence test here?
+- How would you restrict the answer to integer-sided triangles only?
+- What changes if the input is perimeter and area instead of hypotenuse and area?
+
+## Common Pitfalls
+
+- Forgetting that both area and hypotenuse constraints must be satisfied at once.
+- Accepting negative squared-leg roots.
+- Assuming every non-negative discriminant automatically yields a valid triangle without checking the reconstructed legs.

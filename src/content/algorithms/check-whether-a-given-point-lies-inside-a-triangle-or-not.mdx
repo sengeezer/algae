@@ -1,0 +1,119 @@
+---
+title: Check whether a given point lies inside a triangle or not
+slug: check-whether-a-given-point-lies-inside-a-triangle-or-not
+category: Mathematics
+summary: Compare the triangle's area with the sum of the three sub-triangle areas formed with the query point.
+description: "Check whether a given point lies inside a triangle or not is the constant-time point-location test that treats edge points as inside by comparing signed-area magnitudes."
+dataStructures:
+  - Array
+techniques:
+  - Coordinate Geometry
+  - Area Comparison
+  - Barycentric Reasoning
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - point inside triangle
+  - triangle containment test
+useCases:
+  - Checking whether a click, vertex, or sensor point falls inside a triangular region
+  - Introducing area-based point-in-polygon reasoning in the simplest polygon case
+  - Reusing triangle-area helpers for constant-time containment tests
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The method computes one parent area and three point-induced sub-areas, then compares their sum with a small tolerance.
+interviewSignals:
+  - The input is three triangle vertices plus one query point.
+  - The prompt is about containment, not distance or line equations.
+  - Boundary points usually count as inside unless the prompt says strictly interior.
+relatedSlugs:
+  - count-integral-points-inside-a-triangle
+  - area
+  - program-for-point-of-intersection-of-two-lines
+provenance:
+  - title: "GeeksforGeeks - Check whether a given point lies inside a triangle or not"
+    href: https://www.geeksforgeeks.org/dsa/check-whether-a-given-point-lies-inside-a-triangle-or-not/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is a clean entry point into geometric predicates. Instead of inventing a custom case split, you compute the triangle area once, then see whether the query point decomposes that triangle into three smaller pieces whose total area matches the original.
+
+## Worked Example
+
+For `A = [0, 0]`, `B = [10, 30]`, `C = [20, 0]`, and `P = [10, 15]`, the three sub-triangle areas add up exactly to the area of `ABC`, so `P` lies inside the triangle.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function checkWhetherAGivenPointLiesInsideATriangleOrNot(a, b, c, point) {
+  function twiceArea(first, second, third) {
+    return Math.abs(
+      first[0] * (second[1] - third[1])
+      + second[0] * (third[1] - first[1])
+      + third[0] * (first[1] - second[1])
+    );
+  }
+
+  const whole = twiceArea(a, b, c);
+
+  if (whole === 0) {
+    return false;
+  }
+
+  const part1 = twiceArea(point, b, c);
+  const part2 = twiceArea(a, point, c);
+  const part3 = twiceArea(a, b, point);
+
+  return Math.abs(whole - (part1 + part2 + part3)) < 1e-9;
+}
+```
+
+```ts
+type Point = [number, number];
+
+export function checkWhetherAGivenPointLiesInsideATriangleOrNot(
+  a: Point,
+  b: Point,
+  c: Point,
+  point: Point,
+): boolean {
+  const twiceArea = (first: Point, second: Point, third: Point): number => {
+    return Math.abs(
+      first[0] * (second[1] - third[1])
+      + second[0] * (third[1] - first[1])
+      + third[0] * (first[1] - second[1])
+    );
+  };
+
+  const whole = twiceArea(a, b, c);
+
+  if (whole === 0) {
+    return false;
+  }
+
+  const part1 = twiceArea(point, b, c);
+  const part2 = twiceArea(a, point, c);
+  const part3 = twiceArea(a, b, point);
+
+  return Math.abs(whole - (part1 + part2 + part3)) < 1e-9;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you change the predicate if the prompt required strictly interior points only?
+- Why does this method work even when the triangle is not axis-aligned?
+- How does the barycentric-coordinate version encode the same idea differently?
+
+## Common Pitfalls
+
+- Forgetting to reject collinear triangle vertices.
+- Using exact floating-point equality without a tolerance.
+- Treating edge points as outside when the intended interpretation includes the boundary.

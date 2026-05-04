@@ -1,0 +1,132 @@
+---
+title: Program to find Circumcenter of a Triangle
+slug: program-to-find-circumcenter-of-a-triangle
+category: Mathematics
+summary: Intersect the perpendicular bisectors of two sides to obtain the unique center of the circumcircle.
+description: "Program to find Circumcenter of a Triangle is the coordinate-geometry construction that returns the center of the circle passing through all three triangle vertices."
+dataStructures:
+  - Array
+techniques:
+  - Coordinate Geometry
+  - Determinants
+  - Perpendicular Bisectors
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - circumcenter of a triangle
+  - circumcircle center
+useCases:
+  - Finding the center of the unique circle through three non-collinear points
+  - Reusing line-intersection ideas in triangle geometry
+  - Building triangle-center utilities for geometric tooling
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The direct determinant formula computes the same point obtained by intersecting two perpendicular bisectors.
+interviewSignals:
+  - The input is three 2D triangle vertices and the output is a single point.
+  - Collinear points must be rejected because no unique circumcircle exists.
+  - The problem is closely tied to midpoint and line-intersection helpers.
+relatedSlugs:
+  - program-to-find-the-mid-point-of-a-line
+  - program-for-point-of-intersection-of-two-lines
+  - program-to-find-line-passing-through-2-points
+provenance:
+  - title: "GeeksforGeeks - Program to find Circumcenter of a Triangle"
+    href: https://www.geeksforgeeks.org/dsa/program-find-circumcenter-triangle-2/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is the triangle-center version of the line-intersection problems from the previous slice. The geometric fact is simple: the circumcenter lies at the intersection of the perpendicular bisectors of the sides, so two bisectors are enough to recover it.
+
+## Worked Example
+
+For `P = [6, 0]`, `Q = [0, 0]`, and `R = [0, 8]`, the circumcenter is `[3, 4]`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function programToFindCircumcenterOfATriangle(p, q, r) {
+  const denominator = 2 * (
+    p[0] * (q[1] - r[1])
+    + q[0] * (r[1] - p[1])
+    + r[0] * (p[1] - q[1])
+  );
+
+  if (denominator === 0) {
+    return null;
+  }
+
+  const pSquared = p[0] * p[0] + p[1] * p[1];
+  const qSquared = q[0] * q[0] + q[1] * q[1];
+  const rSquared = r[0] * r[0] + r[1] * r[1];
+
+  const x = (
+    pSquared * (q[1] - r[1])
+    + qSquared * (r[1] - p[1])
+    + rSquared * (p[1] - q[1])
+  ) / denominator;
+  const y = (
+    pSquared * (r[0] - q[0])
+    + qSquared * (p[0] - r[0])
+    + rSquared * (q[0] - p[0])
+  ) / denominator;
+
+  return [x, y];
+}
+```
+
+```ts
+type Point = [number, number];
+
+export function programToFindCircumcenterOfATriangle(
+  p: Point,
+  q: Point,
+  r: Point,
+): Point | null {
+  const denominator = 2 * (
+    p[0] * (q[1] - r[1])
+    + q[0] * (r[1] - p[1])
+    + r[0] * (p[1] - q[1])
+  );
+
+  if (denominator === 0) {
+    return null;
+  }
+
+  const pSquared = p[0] * p[0] + p[1] * p[1];
+  const qSquared = q[0] * q[0] + q[1] * q[1];
+  const rSquared = r[0] * r[0] + r[1] * r[1];
+
+  const x = (
+    pSquared * (q[1] - r[1])
+    + qSquared * (r[1] - p[1])
+    + rSquared * (p[1] - q[1])
+  ) / denominator;
+  const y = (
+    pSquared * (r[0] - q[0])
+    + qSquared * (p[0] - r[0])
+    + rSquared * (q[0] - p[0])
+  ) / denominator;
+
+  return [x, y];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why do collinear points fail to determine a circumcenter?
+- How does the direct determinant formula correspond to intersecting perpendicular bisectors?
+- How would you recover the circumradius once the center is known?
+
+## Common Pitfalls
+
+- Forgetting the collinear case where the denominator becomes zero.
+- Mixing circumcenter with centroid or incenter.
+- Losing track of sign when expanding the determinant terms.

@@ -1,0 +1,87 @@
+---
+title: Check whether triangle is valid or not if sides are given
+slug: check-whether-triangle-is-valid-or-not-if-sides-are-given
+category: Mathematics
+summary: Validate positive side lengths and enforce the triangle inequality on all three side pairs.
+description: "Check whether triangle is valid or not if sides are given is the constant-time geometry predicate that determines whether three lengths can form a non-degenerate triangle."
+dataStructures:
+  - Number
+techniques:
+  - Triangle Inequality
+  - Input Validation
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - triangle validity check
+  - valid triangle from sides
+useCases:
+  - Rejecting impossible side triples before geometric calculations
+  - Guarding downstream helpers such as area or angle computations
+  - Teaching the triangle inequality as a direct interview predicate
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: Only three pairwise inequalities and a positivity check are required.
+interviewSignals:
+  - The input is exactly three side lengths.
+  - The question asks for a yes or no answer, not coordinates or angles.
+  - Degenerate cases where two sides sum to the third must be rejected.
+relatedSlugs:
+  - area
+  - check-if-right-triangle-possible-from-given-area-and-hypotenuse
+  - find-all-angles-of-a-given-triangle
+provenance:
+  - title: "GeeksforGeeks - Check whether triangle is valid or not if sides are given"
+    href: https://www.geeksforgeeks.org/dsa/check-whether-triangle-valid-not-sides-given/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is the smallest standalone triangle predicate. The entire problem reduces to whether each pair of sides is strictly longer than the remaining side. If any one inequality fails, the shape collapses into a segment or becomes impossible.
+
+## Worked Example
+
+For sides `7`, `10`, and `5`, all three inequalities hold: `7 + 10 > 5`, `7 + 5 > 10`, and `10 + 5 > 7`, so the triangle is valid.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function checkWhetherTriangleIsValidOrNotIfSidesAreGiven(a, b, c) {
+  if (![a, b, c].every((side) => typeof side === "number" && Number.isFinite(side) && side > 0)) {
+    return false;
+  }
+
+  return a + b > c && a + c > b && b + c > a;
+}
+```
+
+```ts
+export function checkWhetherTriangleIsValidOrNotIfSidesAreGiven(
+  a: number,
+  b: number,
+  c: number,
+): boolean {
+  if (![a, b, c].every((side) => Number.isFinite(side) && side > 0)) {
+    return false;
+  }
+
+  return a + b > c && a + c > b && b + c > a;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why does equality fail the test even though the numbers look close to valid?
+- How would you extend the predicate to classify acute, obtuse, and right triangles after validity passes?
+- Why is positivity a separate requirement from the triangle inequalities?
+
+## Common Pitfalls
+
+- Accepting degenerate triples where two sides sum exactly to the third.
+- Ignoring zero or negative side lengths.
+- Sorting the sides first when the direct inequalities already suffice.
