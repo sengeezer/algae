@@ -1207,6 +1207,19 @@ This one-hundred-eleventh expansion slice lifts the catalog from 621 to 623 entr
 - Job Assignment Problem using Branch And Bound
 - Generate Binary Strings of length N using Branch and Bound
 
+## Batch 112 added
+
+This one-hundred-twelfth expansion slice currently lifts the catalog locally from 623 to 631 entries.
+
+- Program to find the mid-point of a line
+- Section formula (Point that divides a line in given ratio)
+- Program to find slope of a line
+- Program to find line passing through 2 Points
+- Program for Point of Intersection of Two Lines
+- Sweep Line Algorithm - Find if any Two Segments Intersect
+- Count maximum points on same line
+- Minimum lines to cover all points
+
 ## Next candidates from the same sources
 
 - The published catalog now reaches 623 entries on `main` after exhausting the GeeksforGeeks Branch and Bound page.
@@ -1235,7 +1248,10 @@ This one-hundred-eleventh expansion slice lifts the catalog from 621 to 623 entr
 - `Job Assignment Problem using Branch And Bound` remains distinct from the published `Bipartite Matching` entry because it minimizes total weighted assignment cost rather than maximizing unweighted one-to-one matches.
 - The GeeksforGeeks Branch and Bound page is exhausted in source order after `Generate Binary Strings of length N using Branch and Bound`; the remaining tail is quick links only, so the next source branch now needs fresh vetting.
 - The next vetted source branch after the exhausted Branch and Bound page is the GeeksforGeeks Geometric Algorithms page: https://www.geeksforgeeks.org/dsa/geometric-algorithms/
-- The opening `Lines` section on the Geometric Algorithms page currently appears to be a fully clean eight-item queue by exact-title and filename checks: `Mid-point of a line`, `Section formula (Point that divides a line in given ratio)`, `Slope of a line`, `Line passing through 2 Points`, `Intersection of Two Lines`, `Find if any two segments intersect`, `Count maximum points on same line`, and `Minimum lines to cover all points`.
+- Destination-title cleanup in the first clean Geometric `Lines` queue is `Mid-point of a line` -> `Program to find the mid-point of a line`, `Slope of a line` -> `Program to find slope of a line`, `Line passing through 2 Points` -> `Program to find line passing through 2 Points`, `Intersection of Two Lines` -> `Program for Point of Intersection of Two Lines`, and `Find if any two segments intersect` -> `Sweep Line Algorithm - Find if any Two Segments Intersect`.
+- Batch 112 currently lifts the catalog locally from 623 to 631 entries with `Program to find the mid-point of a line`, `Section formula (Point that divides a line in given ratio)`, `Program to find slope of a line`, `Program to find line passing through 2 Points`, `Program for Point of Intersection of Two Lines`, `Sweep Line Algorithm - Find if any Two Segments Intersect`, `Count maximum points on same line`, and `Minimum lines to cover all points`.
+- Focused `gray-matter` plus JavaScript-fence validators passed for all eight batch-112 entries.
+- The next source-order research on the Geometric Algorithms page begins at `Check triangle is valid or not`; the opening Triangle titles `Check triangle is valid or not`, `Check if a given point lies inside a triangle`, and `Area of a triangle` are currently absent by exact-title check.
 - Batch 92 carries the vetted Dynamic Programming hard stretch through `Longest repeating and non-overlapping substring` and then consumes the clean `Advanced Concepts` absences `Count Ways To Assign Unique Cap To Every Person`, `Digit DP | Introduction`, and `Sum over Subsets | Dynamic Programming`.
 - The Dynamic Programming items skipped between `Program to find amount of water in a given glass` and `Largest Cross Bordered Square` remain already represented locally: `Longest Common Subsequence`, `Longest Increasing Subsequence`, `Edit Distance`, `0-1 Knapsack Problem`, `Partition Problem`, `Longest Palindromic Subsequence`, `Bellman-Ford Algorithm`, and `Floyd Warshall Algorithm`.
 - `The painter's partition problem` remains skipped because the local `Find minimum time to finish all jobs with given constraints` entry already covers that partition-minimax problem and includes the alias `painter partition with multiplier`.

@@ -1,0 +1,170 @@
+---
+title: Minimum lines to cover all points
+slug: minimum-lines-to-cover-all-points
+category: Mathematics
+summary: Normalize each point's slope relative to the required pivot point and count how many distinct directions appear.
+description: "Minimum lines to cover all points is the constrained collinearity problem where every covering line must pass through one fixed origin point, so the answer is the number of distinct slopes from that pivot."
+dataStructures:
+  - Array
+  - Set
+techniques:
+  - Coordinate Geometry
+  - Slope Normalization
+  - Hashing
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - minimum lines cover points
+  - cover points through fixed origin
+useCases:
+  - Grouping points by direction from a mandatory pivot point
+  - Converting geometric line coverage into distinct normalized slopes
+  - Reusing collinearity helpers from line-grouping problems
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: Each point contributes one normalized direction from the fixed origin, and duplicate directions collapse into the same covering line.
+interviewSignals:
+  - Every covering line must pass through one specified point.
+  - The real work is counting unique directions, not constructing every line explicitly.
+  - Points that share the same slope with the pivot share one line.
+relatedSlugs:
+  - count-maximum-points-on-same-line
+  - program-to-find-slope-of-a-line
+  - program-to-find-line-passing-through-2-points
+provenance:
+  - title: "GeeksforGeeks - Minimum lines to cover all points"
+    href: https://www.geeksforgeeks.org/dsa/minimum-lines-cover-points/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+At first glance this looks like a geometric covering problem, but the fixed pivot point simplifies it sharply. Every valid covering line is determined only by its slope through the pivot, so you just count how many distinct normalized directions the given points produce.
+
+## Worked Example
+
+For points `[[-1, 3], [4, 3], [2, 1], [-1, -2], [3, -3]]` and pivot `[1, 0]`, there are only two distinct slopes from the pivot, so the minimum number of lines is `2`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function minimumLinesToCoverAllPoints(points, origin) {
+  function gcd(left, right) {
+    let a = Math.abs(left);
+    let b = Math.abs(right);
+
+    while (b !== 0) {
+      [a, b] = [b, a % b];
+    }
+
+    return a;
+  }
+
+  function normalizedSlope(point) {
+    let dy = point[1] - origin[1];
+    let dx = point[0] - origin[0];
+
+    if (dx === 0) {
+      return "1/0";
+    }
+
+    if (dy === 0) {
+      return "0/1";
+    }
+
+    const divisor = gcd(dy, dx);
+    dy /= divisor;
+    dx /= divisor;
+
+    if (dx < 0) {
+      dy = -dy;
+      dx = -dx;
+    }
+
+    return `${dy}/${dx}`;
+  }
+
+  const slopes = new Set();
+
+  for (const point of points) {
+    if (point[0] === origin[0] && point[1] === origin[1]) {
+      continue;
+    }
+
+    slopes.add(normalizedSlope(point));
+  }
+
+  return slopes.size;
+}
+```
+
+```ts
+export function minimumLinesToCoverAllPoints(
+  points: Array<[number, number]>,
+  origin: [number, number],
+): number {
+  const gcd = (left: number, right: number): number => {
+    let a = Math.abs(left);
+    let b = Math.abs(right);
+
+    while (b !== 0) {
+      [a, b] = [b, a % b];
+    }
+
+    return a;
+  };
+
+  const normalizedSlope = (point: [number, number]): string => {
+    let dy = point[1] - origin[1];
+    let dx = point[0] - origin[0];
+
+    if (dx === 0) {
+      return '1/0';
+    }
+
+    if (dy === 0) {
+      return '0/1';
+    }
+
+    const divisor = gcd(dy, dx);
+    dy /= divisor;
+    dx /= divisor;
+
+    if (dx < 0) {
+      dy = -dy;
+      dx = -dx;
+    }
+
+    return `${dy}/${dx}`;
+  };
+
+  const slopes = new Set<string>();
+
+  for (const point of points) {
+    if (point[0] === origin[0] && point[1] === origin[1]) {
+      continue;
+    }
+
+    slopes.add(normalizedSlope(point));
+  }
+
+  return slopes.size;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why does fixing one required pivot point collapse the problem to counting slopes?
+- How would the problem change if lines were not required to pass through one origin?
+- Why is normalized direction safer than floating-point slope storage here too?
+
+## Common Pitfalls
+
+- Counting each point separately instead of collapsing equal slopes.
+- Forgetting to skip the pivot point itself if it appears in the input.
+- Mishandling vertical directions where the denominator is zero.

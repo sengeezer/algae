@@ -1,0 +1,99 @@
+---
+title: Section formula (Point that divides a line in given ratio)
+slug: section-formula-point-that-divides-a-line-in-given-ratio
+category: Mathematics
+summary: Weight each endpoint by the opposite ratio part and divide by the total to get the internal dividing point directly.
+description: "Section formula (Point that divides a line in given ratio) is the coordinate-geometry formula for the point that splits a segment internally according to a given m:n ratio."
+dataStructures:
+  - Array
+  - Number
+techniques:
+  - Coordinate Geometry
+  - Weighted Average
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - section formula
+  - point dividing line in ratio
+useCases:
+  - Finding an internal point on a segment from a target ratio
+  - Interpolating between endpoints with exact coordinate weights
+  - Reusing midpoint logic as the special case `1:1`
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The section point is just a weighted average of the endpoints, so the formula is constant time once the ratio is known.
+interviewSignals:
+  - The prompt asks for a point that divides a segment in the ratio `m:n`.
+  - The answer is a direct coordinate formula, not a search.
+  - Midpoint is only the special balanced case.
+relatedSlugs:
+  - program-to-find-the-mid-point-of-a-line
+  - program-to-find-line-passing-through-2-points
+  - euclidean-distance
+provenance:
+  - title: "GeeksforGeeks - Section formula (Point that divides a line in given ratio)"
+    href: https://www.geeksforgeeks.org/dsa/section-formula-point-divides-line-given-ratio/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is the midpoint formula with uneven weights. Instead of splitting the segment equally, you scale each endpoint by the opposite ratio term, which gives the coordinates of the internal dividing point in one step.
+
+## Worked Example
+
+For endpoints `[2, 4]` and `[4, 6]` with ratio `2:3`, the section point is `[(3 * 2 + 2 * 4) / 5, (3 * 4 + 2 * 6) / 5] = [2.8, 4.8]`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function sectionFormulaPointThatDividesALineInGivenRatio(start, end, m, n) {
+  const total = m + n;
+
+  if (total === 0) {
+    throw new RangeError("Ratio parts cannot sum to zero");
+  }
+
+  return [
+    (n * start[0] + m * end[0]) / total,
+    (n * start[1] + m * end[1]) / total,
+  ];
+}
+```
+
+```ts
+export function sectionFormulaPointThatDividesALineInGivenRatio(
+  start: [number, number],
+  end: [number, number],
+  m: number,
+  n: number,
+): [number, number] {
+  const total = m + n;
+
+  if (total === 0) {
+    throw new RangeError('Ratio parts cannot sum to zero');
+  }
+
+  return [
+    (n * start[0] + m * end[0]) / total,
+    (n * start[1] + m * end[1]) / total,
+  ];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why does midpoint fall out when `m = n = 1`?
+- How would you adapt this for an external division point?
+- Why do the weights use the opposite ratio parts?
+
+## Common Pitfalls
+
+- Using `m` with the first point and `n` with the second without checking the formula direction.
+- Forgetting to reject the degenerate case where `m + n = 0`.
+- Assuming the point must have integer coordinates.

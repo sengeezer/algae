@@ -1,0 +1,91 @@
+---
+title: Program to find slope of a line
+slug: program-to-find-slope-of-a-line
+category: Mathematics
+summary: Compute rise over run from two points and treat vertical lines as having no finite slope.
+description: "Program to find slope of a line is the coordinate-geometry helper that converts two points into the line's rate of vertical change per unit horizontal movement."
+dataStructures:
+  - Array
+  - Number
+techniques:
+  - Coordinate Geometry
+  - Ratio Calculation
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - slope of a line
+  - rise over run
+useCases:
+  - Comparing line directions from endpoint pairs
+  - Building normalized line signatures for collinearity checks
+  - Supporting later geometry helpers like line equations or grouping by slope
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The only edge case is a vertical line, where the denominator becomes zero and the slope is undefined.
+interviewSignals:
+  - The input is exactly two points on a line.
+  - The prompt asks for rate of change or steepness.
+  - Vertical lines need special handling.
+relatedSlugs:
+  - program-to-find-line-passing-through-2-points
+  - count-maximum-points-on-same-line
+  - minimum-lines-to-cover-all-points
+provenance:
+  - title: "GeeksforGeeks - Program to find slope of a line"
+    href: https://www.geeksforgeeks.org/dsa/program-find-slope-line/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+Slope is one of the first geometry-derived quantities that later problems reuse. Once you can compute rise over run cleanly and guard the vertical-line case, you have the building block for grouping collinear points or constructing line equations.
+
+## Worked Example
+
+For points `[4, 2]` and `[2, 5]`, the slope is `(5 - 2) / (2 - 4) = 3 / -2 = -1.5`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function programToFindSlopeOfALine(start, end) {
+  const deltaX = end[0] - start[0];
+
+  if (deltaX === 0) {
+    return null;
+  }
+
+  return (end[1] - start[1]) / deltaX;
+}
+```
+
+```ts
+export function programToFindSlopeOfALine(
+  start: [number, number],
+  end: [number, number],
+): number | null {
+  const deltaX = end[0] - start[0];
+
+  if (deltaX === 0) {
+    return null;
+  }
+
+  return (end[1] - start[1]) / deltaX;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why is the slope undefined for vertical lines?
+- How would you compare slopes exactly for integer points without floating-point precision issues?
+- How does the slope sign encode line direction?
+
+## Common Pitfalls
+
+- Dividing by zero on vertical lines.
+- Swapping rise and run.
+- Assuming two equal slopes always mean the same line instead of only parallel direction.

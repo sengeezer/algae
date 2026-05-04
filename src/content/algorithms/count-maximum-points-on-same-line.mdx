@@ -1,0 +1,205 @@
+---
+title: Count maximum points on same line
+slug: count-maximum-points-on-same-line
+category: Mathematics
+summary: Anchor at each point, normalize slopes to every later point, and keep the largest collinear group count seen from any anchor.
+description: "Count maximum points on same line is the collinearity problem that groups points by normalized slope relative to each anchor point to find the largest straight-line set."
+dataStructures:
+  - Array
+  - Map
+techniques:
+  - Coordinate Geometry
+  - Hashing
+  - Slope Normalization
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - max points on one line
+  - maximum collinear points
+useCases:
+  - Finding the largest collinear subset in a 2D point cloud
+  - Comparing exact slope grouping against floating-point approximations
+  - Reusing normalized direction vectors in geometry problems
+complexity:
+  time: O(n^2)
+  space: O(n)
+  notes: The nested anchor scan dominates the work, while normalized slope keys avoid floating-point precision errors.
+interviewSignals:
+  - The prompt asks for the largest set of collinear points.
+  - Duplicate points and vertical lines need explicit handling.
+  - Exact slope grouping matters more than approximate line fitting.
+relatedSlugs:
+  - minimum-lines-to-cover-all-points
+  - program-to-find-slope-of-a-line
+  - program-to-find-line-passing-through-2-points
+provenance:
+  - title: "GeeksforGeeks - Count maximum points on same line"
+    href: https://www.geeksforgeeks.org/dsa/count-maximum-points-on-same-line/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+The real trick here is not computing slope once, but comparing many slopes exactly. If you store raw floating-point ratios, tiny precision differences break collinearity grouping, so the better move is to normalize the direction `(dy, dx)` with a greatest common divisor and a fixed sign convention.
+
+## Worked Example
+
+For points `[[-1, 1], [0, 0], [1, 1], [2, 2], [3, 3], [3, 4]]`, the largest collinear set is `[0, 0]`, `[1, 1]`, `[2, 2]`, `[3, 3]`, so the answer is `4`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function countMaximumPointsOnSameLine(points) {
+  function gcd(left, right) {
+    let a = Math.abs(left);
+    let b = Math.abs(right);
+
+    while (b !== 0) {
+      [a, b] = [b, a % b];
+    }
+
+    return a;
+  }
+
+  function slopeKey(anchor, candidate) {
+    let dy = candidate[1] - anchor[1];
+    let dx = candidate[0] - anchor[0];
+
+    if (dx === 0) {
+      return "1/0";
+    }
+
+    if (dy === 0) {
+      return "0/1";
+    }
+
+    const divisor = gcd(dy, dx);
+    dy /= divisor;
+    dx /= divisor;
+
+    if (dx < 0) {
+      dy = -dy;
+      dx = -dx;
+    }
+
+    return `${dy}/${dx}`;
+  }
+
+  if (points.length < 2) {
+    return points.length;
+  }
+
+  let best = 1;
+
+  for (let index = 0; index < points.length; index += 1) {
+    const slopeCounts = new Map();
+    let overlaps = 0;
+    let localBest = 0;
+
+    for (let next = index + 1; next < points.length; next += 1) {
+      if (
+        points[index][0] === points[next][0]
+        && points[index][1] === points[next][1]
+      ) {
+        overlaps += 1;
+        continue;
+      }
+
+      const key = slopeKey(points[index], points[next]);
+      const count = (slopeCounts.get(key) ?? 0) + 1;
+      slopeCounts.set(key, count);
+      localBest = Math.max(localBest, count);
+    }
+
+    best = Math.max(best, localBest + overlaps + 1);
+  }
+
+  return best;
+}
+```
+
+```ts
+export function countMaximumPointsOnSameLine(points: Array<[number, number]>): number {
+  const gcd = (left: number, right: number): number => {
+    let a = Math.abs(left);
+    let b = Math.abs(right);
+
+    while (b !== 0) {
+      [a, b] = [b, a % b];
+    }
+
+    return a;
+  };
+
+  const slopeKey = (anchor: [number, number], candidate: [number, number]): string => {
+    let dy = candidate[1] - anchor[1];
+    let dx = candidate[0] - anchor[0];
+
+    if (dx === 0) {
+      return '1/0';
+    }
+
+    if (dy === 0) {
+      return '0/1';
+    }
+
+    const divisor = gcd(dy, dx);
+    dy /= divisor;
+    dx /= divisor;
+
+    if (dx < 0) {
+      dy = -dy;
+      dx = -dx;
+    }
+
+    return `${dy}/${dx}`;
+  };
+
+  if (points.length < 2) {
+    return points.length;
+  }
+
+  let best = 1;
+
+  for (let index = 0; index < points.length; index += 1) {
+    const slopeCounts = new Map<string, number>();
+    let overlaps = 0;
+    let localBest = 0;
+
+    for (let next = index + 1; next < points.length; next += 1) {
+      if (
+        points[index][0] === points[next][0]
+        && points[index][1] === points[next][1]
+      ) {
+        overlaps += 1;
+        continue;
+      }
+
+      const key = slopeKey(points[index], points[next]);
+      const count = (slopeCounts.get(key) ?? 0) + 1;
+      slopeCounts.set(key, count);
+      localBest = Math.max(localBest, count);
+    }
+
+    best = Math.max(best, localBest + overlaps + 1);
+  }
+
+  return best;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why is normalized `(dy, dx)` safer than storing `dy / dx` as a float?
+- How do duplicate points affect the anchor-based counting logic?
+- How would you return one actual maximum collinear subset instead of only the count?
+
+## Common Pitfalls
+
+- Letting floating-point rounding split one true line across multiple keys.
+- Forgetting to treat duplicate points separately from shared slopes.
+- Mishandling vertical lines when `dx = 0`.

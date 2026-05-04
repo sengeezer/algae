@@ -1,0 +1,121 @@
+---
+title: Program for Point of Intersection of Two Lines
+slug: program-for-point-of-intersection-of-two-lines
+category: Mathematics
+summary: Turn each line into `ax + by = c`, solve the resulting `2 x 2` system, and reject the parallel case when the determinant is zero.
+description: "Program for Point of Intersection of Two Lines is the constant-time linear-system solver for the crossing point of two infinite lines in the plane."
+dataStructures:
+  - Array
+  - Number
+techniques:
+  - Coordinate Geometry
+  - Determinant Method
+  - Linear Equations
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - line intersection point
+  - point of intersection of two lines
+useCases:
+  - Computing where two infinite lines cross
+  - Preparing for segment-intersection follow-up checks
+  - Reusing standard-form line coefficients in geometry routines
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: After converting each point pair into line coefficients, the intersection comes from a fixed-size determinant calculation.
+interviewSignals:
+  - The prompt gives two lines through endpoint pairs.
+  - Parallel and coincident cases need to be detected explicitly.
+  - The line representation is easier to solve algebraically than geometrically.
+relatedSlugs:
+  - program-to-find-line-passing-through-2-points
+  - sweep-line-algorithm-find-if-any-two-segments-intersect
+  - program-to-find-slope-of-a-line
+provenance:
+  - title: "GeeksforGeeks - Program for Point of Intersection of Two Lines"
+    href: https://www.geeksforgeeks.org/dsa/program-for-point-of-intersection-of-two-lines/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This problem is really a small linear-algebra exercise wrapped in geometry language. Once both lines are in standard form, the intersection is just the solution to two equations in two unknowns, with the determinant deciding whether the lines are parallel.
+
+## Worked Example
+
+For lines through `[1, 1]` and `[4, 4]`, and `[1, 8]` and `[2, 4]`, solving the two standard-form equations gives the intersection point `[2.4, 2.4]`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function programForPointOfIntersectionOfTwoLines(firstA, firstB, secondA, secondB) {
+  function coefficients(left, right) {
+    const a = right[1] - left[1];
+    const b = left[0] - right[0];
+    const c = a * left[0] + b * left[1];
+    return [a, b, c];
+  }
+
+  const [a1, b1, c1] = coefficients(firstA, firstB);
+  const [a2, b2, c2] = coefficients(secondA, secondB);
+  const determinant = a1 * b2 - a2 * b1;
+
+  if (determinant === 0) {
+    return null;
+  }
+
+  return [
+    (c1 * b2 - c2 * b1) / determinant,
+    (a1 * c2 - a2 * c1) / determinant,
+  ];
+}
+```
+
+```ts
+export function programForPointOfIntersectionOfTwoLines(
+  firstA: [number, number],
+  firstB: [number, number],
+  secondA: [number, number],
+  secondB: [number, number],
+): [number, number] | null {
+  const coefficients = (
+    left: [number, number],
+    right: [number, number],
+  ): [number, number, number] => {
+    const a = right[1] - left[1];
+    const b = left[0] - right[0];
+    const c = a * left[0] + b * left[1];
+    return [a, b, c];
+  };
+
+  const [a1, b1, c1] = coefficients(firstA, firstB);
+  const [a2, b2, c2] = coefficients(secondA, secondB);
+  const determinant = a1 * b2 - a2 * b1;
+
+  if (determinant === 0) {
+    return null;
+  }
+
+  return [
+    (c1 * b2 - c2 * b1) / determinant,
+    (a1 * c2 - a2 * c1) / determinant,
+  ];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you distinguish coincident lines from merely parallel ones?
+- What extra check is needed if the inputs are line segments instead of infinite lines?
+- Why is determinant zero the right test for parallel direction vectors?
+
+## Common Pitfalls
+
+- Forgetting that parallel lines have no unique intersection point.
+- Solving for the line intersection but skipping the segment-bounds check in a segment variant.
+- Mixing up the determinant formulas for `x` and `y`.

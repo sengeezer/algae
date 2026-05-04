@@ -1,0 +1,192 @@
+---
+title: Sweep Line Algorithm - Find if any Two Segments Intersect
+slug: sweep-line-algorithm-find-if-any-two-segments-intersect
+category: Mathematics
+summary: Use segment-orientation tests to identify which pairs cross or overlap, while keeping the source article's sweep-line variant as the asymptotically faster extension.
+description: "Sweep Line Algorithm - Find if any Two Segments Intersect is the planar segment-intersection problem, where orientation predicates determine whether two segments cross, touch, or overlap."
+dataStructures:
+  - Array
+techniques:
+  - Computational Geometry
+  - Orientation Test
+  - Sweep Line
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - line segment intersection
+  - detect segment intersections
+  - sweep line segment intersection
+useCases:
+  - Detecting crossings in planar line-segment sets
+  - Counting intersecting pairs in geometric input
+  - Introducing orientation and on-segment predicates before sweep-line acceleration
+complexity:
+  time: O(n^2)
+  space: O(1)
+  notes: "The source page presents the O(n log n) sweep-line improvement. This implementation keeps the same geometric predicates but uses a direct pair scan so the returned count stays simple and explicit."
+interviewSignals:
+  - The input is a set of 2D line segments, not infinite lines.
+  - Touching and overlapping count as intersections.
+  - The key primitive is orientation of ordered triples.
+relatedSlugs:
+  - program-for-point-of-intersection-of-two-lines
+  - count-maximum-points-on-same-line
+  - program-to-find-line-passing-through-2-points
+provenance:
+  - title: "GeeksforGeeks - Sweep Line Algorithm - Find if any Two Segments Intersect"
+    href: https://www.geeksforgeeks.org/dsa/given-a-set-of-line-segments-find-if-any-two-segments-intersect/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is one of the classic computational-geometry predicate problems. The important interview idea is that the real work is not drawing the picture but correctly classifying the relative orientation of endpoints so you can handle both the general crossing case and the collinear overlap cases.
+
+## Worked Example
+
+For the five segments `[[[1, 5], [4, 5]], [[2, 5], [10, 1]], [[3, 2], [10, 3]], [[6, 4], [9, 4]], [[7, 1], [8, 1]]]`, there are `2` intersecting pairs, so the result is `{ hasIntersection: true, count: 2 }`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function sweepLineAlgorithmFindIfAnyTwoSegmentsIntersect(segments) {
+  function orientation(first, second, third) {
+    const cross = (
+      (second[1] - first[1]) * (third[0] - second[0])
+      - (second[0] - first[0]) * (third[1] - second[1])
+    );
+
+    if (cross === 0) {
+      return 0;
+    }
+
+    return cross > 0 ? 1 : 2;
+  }
+
+  function onSegment(first, second, third) {
+    return (
+      second[0] >= Math.min(first[0], third[0])
+      && second[0] <= Math.max(first[0], third[0])
+      && second[1] >= Math.min(first[1], third[1])
+      && second[1] <= Math.max(first[1], third[1])
+    );
+  }
+
+  function intersects(left, right) {
+    const [p1, q1] = left;
+    const [p2, q2] = right;
+    const o1 = orientation(p1, q1, p2);
+    const o2 = orientation(p1, q1, q2);
+    const o3 = orientation(p2, q2, p1);
+    const o4 = orientation(p2, q2, q1);
+
+    if (o1 !== o2 && o3 !== o4) {
+      return true;
+    }
+
+    return (
+      (o1 === 0 && onSegment(p1, p2, q1))
+      || (o2 === 0 && onSegment(p1, q2, q1))
+      || (o3 === 0 && onSegment(p2, p1, q2))
+      || (o4 === 0 && onSegment(p2, q1, q2))
+    );
+  }
+
+  let count = 0;
+
+  for (let left = 0; left < segments.length; left += 1) {
+    for (let right = left + 1; right < segments.length; right += 1) {
+      if (intersects(segments[left], segments[right])) {
+        count += 1;
+      }
+    }
+  }
+
+  return {
+    hasIntersection: count > 0,
+    count,
+  };
+}
+```
+
+```ts
+type Point = [number, number];
+type Segment = [Point, Point];
+
+export function sweepLineAlgorithmFindIfAnyTwoSegmentsIntersect(
+  segments: Segment[],
+): { hasIntersection: boolean; count: number } {
+  const orientation = (first: Point, second: Point, third: Point): number => {
+    const cross = (
+      (second[1] - first[1]) * (third[0] - second[0])
+      - (second[0] - first[0]) * (third[1] - second[1])
+    );
+
+    if (cross === 0) {
+      return 0;
+    }
+
+    return cross > 0 ? 1 : 2;
+  };
+
+  const onSegment = (first: Point, second: Point, third: Point): boolean => {
+    return (
+      second[0] >= Math.min(first[0], third[0])
+      && second[0] <= Math.max(first[0], third[0])
+      && second[1] >= Math.min(first[1], third[1])
+      && second[1] <= Math.max(first[1], third[1])
+    );
+  };
+
+  const intersects = (left: Segment, right: Segment): boolean => {
+    const [p1, q1] = left;
+    const [p2, q2] = right;
+    const o1 = orientation(p1, q1, p2);
+    const o2 = orientation(p1, q1, q2);
+    const o3 = orientation(p2, q2, p1);
+    const o4 = orientation(p2, q2, q1);
+
+    if (o1 !== o2 && o3 !== o4) {
+      return true;
+    }
+
+    return (
+      (o1 === 0 && onSegment(p1, p2, q1))
+      || (o2 === 0 && onSegment(p1, q2, q1))
+      || (o3 === 0 && onSegment(p2, p1, q2))
+      || (o4 === 0 && onSegment(p2, q1, q2))
+    );
+  };
+
+  let count = 0;
+
+  for (let left = 0; left < segments.length; left += 1) {
+    for (let right = left + 1; right < segments.length; right += 1) {
+      if (intersects(segments[left], segments[right])) {
+        count += 1;
+      }
+    }
+  }
+
+  return {
+    hasIntersection: count > 0,
+    count,
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How does the full sweep-line version reduce the time from quadratic to `O(n log n)`?
+- Why do collinear overlap cases need `onSegment` checks even after the orientation test?
+- How would you return the actual intersection coordinates for non-parallel crossing pairs?
+
+## Common Pitfalls
+
+- Handling only the strict crossing case and missing collinear overlaps.
+- Confusing infinite-line intersection with bounded-segment intersection.
+- Using floating-point slope comparisons instead of orientation predicates.

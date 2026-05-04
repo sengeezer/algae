@@ -1,0 +1,107 @@
+---
+title: Program to find line passing through 2 Points
+slug: program-to-find-line-passing-through-2-points
+category: Mathematics
+summary: Convert two points into the standard-form coefficients `ax + by = c` by taking the perpendicular direction components.
+description: "Program to find line passing through 2 Points is the constant-time coordinate-geometry conversion from two distinct points to a standard line equation."
+dataStructures:
+  - Array
+  - Number
+techniques:
+  - Coordinate Geometry
+  - Algebraic Representation
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - line through two points
+  - equation of line from two points
+useCases:
+  - Converting point pairs into a reusable line equation
+  - Preparing line data for intersection calculations
+  - Normalizing geometric constraints into algebraic form
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The coefficients come directly from the point differences, and identical points are the only invalid input.
+interviewSignals:
+  - Two distinct points define the full line.
+  - The prompt wants an explicit line equation.
+  - Later processing may depend on coefficient form rather than slope-intercept form.
+relatedSlugs:
+  - program-to-find-slope-of-a-line
+  - program-for-point-of-intersection-of-two-lines
+  - section-formula-point-that-divides-a-line-in-given-ratio
+provenance:
+  - title: "GeeksforGeeks - Program to find line passing through 2 Points"
+    href: https://www.geeksforgeeks.org/dsa/program-find-line-passing-2-points/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is the next step after slope. Instead of representing a line as rise over run, you convert it into a reusable equation that works for horizontal, vertical, and slanted lines with the same algebraic form.
+
+## Worked Example
+
+For points `[3, 2]` and `[2, 6]`, we get `a = 6 - 2 = 4`, `b = 3 - 2 = 1`, and `c = 4 * 3 + 1 * 2 = 14`, so the line is `4x + 1y = 14`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function programToFindLinePassingThrough2Points(first, second) {
+  if (first[0] === second[0] && first[1] === second[1]) {
+    throw new RangeError("Distinct points are required");
+  }
+
+  let a = second[1] - first[1];
+  let b = first[0] - second[0];
+  let c = a * first[0] + b * first[1];
+
+  if (a < 0 || (a === 0 && b < 0)) {
+    a = -a;
+    b = -b;
+    c = -c;
+  }
+
+  return [a, b, c];
+}
+```
+
+```ts
+export function programToFindLinePassingThrough2Points(
+  first: [number, number],
+  second: [number, number],
+): [number, number, number] {
+  if (first[0] === second[0] && first[1] === second[1]) {
+    throw new RangeError('Distinct points are required');
+  }
+
+  let a = second[1] - first[1];
+  let b = first[0] - second[0];
+  let c = a * first[0] + b * first[1];
+
+  if (a < 0 || (a === 0 && b < 0)) {
+    a = -a;
+    b = -b;
+    c = -c;
+  }
+
+  return [a, b, c];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why does standard form handle vertical lines more cleanly than slope-intercept form?
+- How would you normalize the coefficients so equivalent lines always get the same triple?
+- Why do identical input points fail to define a unique line?
+
+## Common Pitfalls
+
+- Using the same point twice and pretending it still defines a line.
+- Returning slope-intercept form even when the line is vertical.
+- Forgetting to normalize sign, which makes equivalent lines harder to compare.
