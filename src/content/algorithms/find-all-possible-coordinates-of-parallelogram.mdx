@@ -1,0 +1,122 @@
+---
+title: Find all possible coordinates of parallelogram
+slug: find-all-possible-coordinates-of-parallelogram
+category: Mathematics
+summary: Use vector addition on the three given vertices to derive the three possible fourth points of a non-degenerate parallelogram.
+description: "Find all possible coordinates of parallelogram is the coordinate-geometry construction that enumerates the three valid fourth vertices implied by three known points."
+dataStructures:
+  - Array
+techniques:
+  - Coordinate Geometry
+  - Vector Addition
+  - Case Enumeration
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - missing fourth points of a parallelogram
+  - all fourth vertices of a parallelogram
+useCases:
+  - Enumerating valid completions of a quadrilateral from three known vertices
+  - Using vector identities to derive missing coordinates in geometry tasks
+  - Building intuition for side-versus-diagonal interpretations of point triples
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: There are only three valid cases because each of the three given points can serve as the vertex opposite the missing point.
+interviewSignals:
+  - Three points do not determine a unique parallelogram.
+  - The three constructions come from treating each segment in turn as a diagonal.
+  - Non-zero area requires the input points to be distinct and non-collinear.
+relatedSlugs:
+  - number-of-parallelograms-when-n-horizontal-parallel-lines-intersect-m-vertical-parallel-lines
+  - program-for-circumference-of-a-parallelogram
+  - check-whether-four-points-make-a-parallelogram
+provenance:
+  - title: "GeeksforGeeks - Find all possible coordinates of parallelogram"
+    href: https://www.geeksforgeeks.org/dsa/find-possible-coordinates-parallelogram/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+Three vertices are not enough to pin down a unique parallelogram. The useful observation is that depending on which pair is treated as adjacent sides or as a diagonal, there are exactly three vector-addition completions for the fourth point.
+
+## Worked Example
+
+For `A = (0, 0)`, `B = (1, 0)`, and `C = (0, 1)`, the three possible fourth vertices are `(1, -1)`, `(-1, 1)`, and `(1, 1)`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function findAllPossibleCoordinatesOfParallelogram(pointA, pointB, pointC) {
+  const points = [pointA, pointB, pointC];
+  if (
+    !points.every(
+      (point) => Array.isArray(point) && point.length === 2 && point.every(Number.isFinite),
+    )
+  ) {
+    throw new RangeError("Each point must be a pair of finite numbers");
+  }
+
+  const twiceArea =
+    pointA[0] * (pointB[1] - pointC[1])
+    + pointB[0] * (pointC[1] - pointA[1])
+    + pointC[0] * (pointA[1] - pointB[1]);
+
+  if (twiceArea === 0) {
+    throw new RangeError("Points must form a non-degenerate triangle");
+  }
+
+  return [
+    [pointA[0] + pointB[0] - pointC[0], pointA[1] + pointB[1] - pointC[1]],
+    [pointA[0] + pointC[0] - pointB[0], pointA[1] + pointC[1] - pointB[1]],
+    [pointB[0] + pointC[0] - pointA[0], pointB[1] + pointC[1] - pointA[1]],
+  ];
+}
+```
+
+```ts
+type Point = [number, number];
+
+export function findAllPossibleCoordinatesOfParallelogram(
+  pointA: Point,
+  pointB: Point,
+  pointC: Point,
+): Point[] {
+  const points = [pointA, pointB, pointC];
+  if (!points.every((point) => point.length === 2 && point.every(Number.isFinite))) {
+    throw new RangeError('Each point must be a pair of finite numbers');
+  }
+
+  const twiceArea =
+    pointA[0] * (pointB[1] - pointC[1])
+    + pointB[0] * (pointC[1] - pointA[1])
+    + pointC[0] * (pointA[1] - pointB[1]);
+
+  if (twiceArea === 0) {
+    throw new RangeError('Points must form a non-degenerate triangle');
+  }
+
+  return [
+    [pointA[0] + pointB[0] - pointC[0], pointA[1] + pointB[1] - pointC[1]],
+    [pointA[0] + pointC[0] - pointB[0], pointA[1] + pointC[1] - pointB[1]],
+    [pointB[0] + pointC[0] - pointA[0], pointB[1] + pointC[1] - pointA[1]],
+  ];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why are there exactly three possible fourth points instead of one?
+- How would you prove that the returned points are distinct when the area is non-zero?
+- How would the result change in 3D coordinates?
+
+## Common Pitfalls
+
+- Returning only one completion and forgetting the diagonal interpretations.
+- Reproducing the source article's last y-coordinate typo instead of using `pointB[1] + pointC[1] - pointA[1]`.
+- Ignoring the collinear case where the area collapses to zero.

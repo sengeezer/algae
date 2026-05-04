@@ -1,0 +1,97 @@
+---
+title: Program to calculate area and perimeter of Trapezium
+slug: program-to-calculate-area-and-perimeter-of-trapezium
+category: Mathematics
+summary: Compute trapezium area from the two bases and height, and compute perimeter from all four side lengths.
+description: "Program to calculate area and perimeter of Trapezium is the direct-formula geometry helper that combines the average-of-bases area formula with the full side-length perimeter sum."
+dataStructures:
+  - Number
+techniques:
+  - Direct Formula Application
+  - Input Validation
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - trapezium area and perimeter
+  - trapezoid area and perimeter
+useCases:
+  - Solving basic quadrilateral formula prompts with both area and perimeter outputs
+  - Geometry utilities that need trapezium measurements from direct dimensions
+  - Comparing area-only and perimeter-aware shape helpers
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The area uses only the two parallel sides and the height, while the perimeter requires all four side lengths.
+interviewSignals:
+  - The prompt asks for both area and perimeter in one helper.
+  - Height is required for area even though all four side lengths are listed.
+  - The formula is direct once the parallel sides are identified as the bases.
+relatedSlugs:
+  - program-for-circumference-of-a-parallelogram
+  - area
+  - maximum-area-of-quadrilateral
+provenance:
+  - title: "GeeksforGeeks - Program to calculate area and perimeter of Trapezium"
+    href: https://www.geeksforgeeks.org/dsa/program-calculate-area-perimeter-trapezium/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is a formula-recognition prompt in the quadrilateral section. The main detail is that the area depends on the two parallel sides and the perpendicular height, while the perimeter uses all four sides, so the helper needs both groups of inputs.
+
+## Worked Example
+
+For `a = 5`, `b = 6`, `c = 4`, `d = 3`, and `h = 8`, the area is `0.5 * (5 + 6) * 8 = 44` and the perimeter is `5 + 6 + 4 + 3 = 18`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function programToCalculateAreaAndPerimeterOfTrapezium(a, b, c, d, h) {
+  const values = [a, b, c, d, h];
+  if (!values.every(Number.isFinite) || values.some((value) => value < 0)) {
+    throw new RangeError("Trapezium dimensions must be non-negative numbers");
+  }
+
+  return {
+    area: 0.5 * (a + b) * h,
+    perimeter: a + b + c + d,
+  };
+}
+```
+
+```ts
+export function programToCalculateAreaAndPerimeterOfTrapezium(
+  a: number,
+  b: number,
+  c: number,
+  d: number,
+  h: number,
+): { area: number; perimeter: number } {
+  const values = [a, b, c, d, h];
+  if (!values.every(Number.isFinite) || values.some((value) => value < 0)) {
+    throw new RangeError('Trapezium dimensions must be non-negative numbers');
+  }
+
+  return {
+    area: 0.5 * (a + b) * h,
+    perimeter: a + b + c + d,
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why does the area formula use height instead of the two non-parallel sides?
+- How would you adapt this for a coordinate-defined trapezium instead of direct dimensions?
+- When should trapezium and trapezoid be treated as the same shape in interview code?
+
+## Common Pitfalls
+
+- Forgetting that perimeter needs all four sides, not just the bases.
+- Using the average of all four sides in the area formula.
+- Treating the height as a slanted side length instead of the perpendicular distance between bases.

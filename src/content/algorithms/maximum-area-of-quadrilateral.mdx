@@ -1,0 +1,115 @@
+---
+title: Maximum area of quadrilateral
+slug: maximum-area-of-quadrilateral
+category: Mathematics
+summary: Use Brahmagupta's formula on the four side lengths because the maximum area occurs when the quadrilateral is cyclic.
+description: "Maximum area of quadrilateral is the geometry optimization problem where Bretschneider's formula simplifies to Brahmagupta's formula at the maximum-area configuration."
+dataStructures:
+  - Number
+techniques:
+  - Geometry Formula
+  - Optimization by Invariant
+  - Semiperimeter Transformation
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - max area from four side lengths
+  - quadrilateral maximum area
+useCases:
+  - Optimizing geometric area under fixed side constraints
+  - Translating a general quadrilateral formula into its maximal cyclic case
+  - Screening whether a side multiset can form a valid quadrilateral
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The maximum area for fixed side lengths is achieved by a cyclic quadrilateral, which makes the cosine term in Bretschneider's formula vanish.
+interviewSignals:
+  - The inputs are only side lengths, not angles or coordinates.
+  - The problem asks for the maximum possible area, not the area of an arbitrary quadrilateral.
+  - The semiperimeter form is the key simplification.
+relatedSlugs:
+  - program-to-calculate-area-and-perimeter-of-trapezium
+  - find-all-possible-coordinates-of-parallelogram
+  - area-of-a-circumscribed-circle-of-a-square
+provenance:
+  - title: "GeeksforGeeks - Maximum area of quadrilateral"
+    href: https://www.geeksforgeeks.org/dsa/maximum-area-quadrilateral/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This prompt is more interesting than a direct area formula because the quadrilateral itself is not fixed. The useful fact is that among all quadrilaterals with the same four sides, the cyclic one maximizes the area, so Bretschneider's formula collapses to Brahmagupta's formula.
+
+## Worked Example
+
+For sides `1`, `2`, `1`, and `2`, the semiperimeter is `3`, so the maximum area is `sqrt((3 - 1) * (3 - 2) * (3 - 1) * (3 - 2)) = 2`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function maximumAreaOfQuadrilateral(a, b, c, d) {
+  const sides = [a, b, c, d];
+  if (!sides.every(Number.isFinite) || sides.some((side) => side <= 0)) {
+    throw new RangeError("Side lengths must be positive finite numbers");
+  }
+
+  const perimeter = a + b + c + d;
+  const longestSide = Math.max(...sides);
+  if (longestSide >= perimeter - longestSide) {
+    throw new RangeError("The given lengths cannot form a non-degenerate quadrilateral");
+  }
+
+  const semiperimeter = perimeter / 2;
+  return Math.sqrt(
+    (semiperimeter - a)
+    * (semiperimeter - b)
+    * (semiperimeter - c)
+    * (semiperimeter - d),
+  );
+}
+```
+
+```ts
+export function maximumAreaOfQuadrilateral(
+  a: number,
+  b: number,
+  c: number,
+  d: number,
+): number {
+  const sides = [a, b, c, d];
+  if (!sides.every(Number.isFinite) || sides.some((side) => side <= 0)) {
+    throw new RangeError('Side lengths must be positive finite numbers');
+  }
+
+  const perimeter = a + b + c + d;
+  const longestSide = Math.max(...sides);
+  if (longestSide >= perimeter - longestSide) {
+    throw new RangeError('The given lengths cannot form a non-degenerate quadrilateral');
+  }
+
+  const semiperimeter = perimeter / 2;
+  return Math.sqrt(
+    (semiperimeter - a)
+    * (semiperimeter - b)
+    * (semiperimeter - c)
+    * (semiperimeter - d),
+  );
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why does the maximum-area configuration have to be cyclic?
+- How is this related to Heron's formula for triangles?
+- What condition on the side lengths prevents any non-degenerate quadrilateral from existing?
+
+## Common Pitfalls
+
+- Using Brahmagupta's formula without noting that it gives the maximum-area case here.
+- Forgetting to validate that the four side lengths can form a quadrilateral.
+- Mixing the semiperimeter formula up with the triangle-only Heron case.
