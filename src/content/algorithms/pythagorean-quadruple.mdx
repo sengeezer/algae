@@ -1,0 +1,92 @@
+---
+title: Pythagorean Quadruple
+slug: pythagorean-quadruple
+category: Mathematics
+summary: Check whether four integers satisfy `a^2 + b^2 + c^2 = d^2`.
+description: "Pythagorean Quadruple is the constant-time Diophantine predicate that verifies whether three squared terms sum to a fourth squared term."
+dataStructures:
+  - Number
+techniques:
+  - Direct Formula Application
+  - Number Theory
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - pythagorean quadruple check
+  - four-term pythagorean identity
+useCases:
+  - Validating integer cuboid side lengths against an integer space diagonal
+  - Checking four-number tuples against a sum-of-squares condition
+  - Teaching the 3D analogue of the Pythagorean theorem
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The check is a direct equality on squared integer magnitudes.
+interviewSignals:
+  - The prompt is the 3D extension of a Pythagorean triplet test.
+  - The intended solution is a single sum-of-squares comparison.
+  - Integer inputs matter because the object is a Diophantine relation.
+relatedSlugs:
+  - check-if-right-triangle-possible-from-given-area-and-hypotenuse
+  - program-for-surface-area-and-volume-of-cuboid
+  - third-side-of-triangle-using-law-of-cosines
+provenance:
+  - title: "GeeksforGeeks - Pythagorean Quadruple"
+    href: https://www.geeksforgeeks.org/dsa/pythagorean-quadruple/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is the four-term version of the familiar Pythagorean identity. Geometrically, it checks whether a cuboid with integer side lengths also has an integer space diagonal.
+
+## Worked Example
+
+`(1, 2, 2, 3)` is a Pythagorean quadruple because `1^2 + 2^2 + 2^2 = 9 = 3^2`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function pythagoreanQuadruple(a, b, c, d) {
+  const values = [a, b, c, d];
+  if (!values.every(Number.isInteger)) {
+    throw new RangeError("Pythagorean quadruple inputs must be integers");
+  }
+
+  const [aa, bb, cc, dd] = values.map((value) => Math.abs(value));
+  return aa ** 2 + bb ** 2 + cc ** 2 === dd ** 2;
+}
+```
+
+```ts
+export function pythagoreanQuadruple(
+  a: number,
+  b: number,
+  c: number,
+  d: number,
+): boolean {
+  const values = [a, b, c, d];
+  if (!values.every(Number.isInteger)) {
+    throw new RangeError('Pythagorean quadruple inputs must be integers');
+  }
+
+  const [aa, bb, cc, dd] = values.map((value) => Math.abs(value));
+  return aa ** 2 + bb ** 2 + cc ** 2 === dd ** 2;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why is taking absolute values mathematically harmless here?
+- How is this related to the space diagonal of a cuboid?
+- How would you generate primitive quadruples instead of only checking one tuple?
+
+## Common Pitfalls
+
+- Forgetting that the relation is defined on integers, not arbitrary floats.
+- Comparing unsquared values or only two of the three left-hand terms.
+- Rejecting negative integers even though squaring removes the sign.

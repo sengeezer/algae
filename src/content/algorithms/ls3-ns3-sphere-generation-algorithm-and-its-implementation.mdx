@@ -1,0 +1,149 @@
+---
+title: LS3/NS3 sphere generation algorithm and its implementation
+slug: ls3-ns3-sphere-generation-algorithm-and-its-implementation
+category: Mathematics
+summary: Enumerate integer lattice offsets whose squared distance falls inside the discrete sphere shell around `radius^2`.
+description: "LS3/NS3 sphere generation algorithm and its implementation is the lattice-geometry routine that generates the voxel coordinates lying on a discrete sphere surface."
+dataStructures:
+  - Array
+  - Object
+techniques:
+  - Exhaustive Search
+  - Lattice Geometry
+  - Symmetry
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - lattice sphere generation
+  - voxel sphere generation
+  - integer points on sphere surface
+useCases:
+  - Generating sphere voxels for grid-based rendering and geometry experiments
+  - Enumerating integer lattice points on a fixed-radius sphere shell
+  - Teaching how sum-of-squares identities define discrete spherical surfaces
+complexity:
+  time: O(r^3)
+  space: O(k)
+  notes: This local helper favors a direct shell-band scan over the source article's symmetry-heavy storage optimization, while preserving the same discrete surface prompt.
+interviewSignals:
+  - The prompt is about integer voxel generation rather than continuous sphere equations alone.
+  - The defining condition is a discrete shell around `dx^2 + dy^2 + dz^2 = r^2`, not only the exact continuous sphere equation.
+  - A simple exhaustive lattice scan is easier to reason about than the article's 48-way symmetry bookkeeping.
+relatedSlugs:
+  - calculate-volume-and-surface-area-of-sphere
+  - program-to-calculate-volume-of-ellipsoid
+  - pythagorean-quadruple
+provenance:
+  - title: "GeeksforGeeks - LS3/NS3 sphere generation algorithm and its implementation"
+    href: https://www.geeksforgeeks.org/dsa/ls3ns3-sphere-generation-algorithm-implementation/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+The article is really about discrete geometry, not continuous sphere formulas. The stable prompt surface is a voxel shell around the sphere, so nearby integer points whose squared distance stays close to `r^2` are kept instead of only the exact continuous solutions.
+
+## Worked Example
+
+For center `(0, 0, 0)` and radius `1`, the discrete sphere contains exactly six axis-aligned voxels: `(-1, 0, 0)`, `(1, 0, 0)`, `(0, -1, 0)`, `(0, 1, 0)`, `(0, 0, -1)`, and `(0, 0, 1)`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function ls3Ns3SphereGenerationAlgorithmAndItsImplementation(center, radius) {
+  if (
+    !center ||
+    !Number.isInteger(center.x) ||
+    !Number.isInteger(center.y) ||
+    !Number.isInteger(center.z) ||
+    !Number.isInteger(radius) ||
+    radius < 0
+  ) {
+    throw new RangeError("Sphere center coordinates and radius must be integers, and radius must be non-negative");
+  }
+
+  if (radius === 0) {
+    return [{ x: center.x, y: center.y, z: center.z }];
+  }
+
+  const points = [];
+  const radiusSquared = radius ** 2;
+
+  for (let dx = -radius; dx <= radius; dx += 1) {
+    for (let dy = -radius; dy <= radius; dy += 1) {
+      for (let dz = -radius; dz <= radius; dz += 1) {
+        const distanceSquared = dx ** 2 + dy ** 2 + dz ** 2;
+        if (Math.abs(distanceSquared - radiusSquared) < radius) {
+          points.push({
+            x: center.x + dx,
+            y: center.y + dy,
+            z: center.z + dz,
+          });
+        }
+      }
+    }
+  }
+
+  return points.sort((left, right) => left.x - right.x || left.y - right.y || left.z - right.z);
+}
+```
+
+```ts
+type Point3D = { x: number; y: number; z: number };
+
+export function ls3Ns3SphereGenerationAlgorithmAndItsImplementation(
+  center: Point3D,
+  radius: number,
+): Point3D[] {
+  if (
+    !Number.isInteger(center.x) ||
+    !Number.isInteger(center.y) ||
+    !Number.isInteger(center.z) ||
+    !Number.isInteger(radius) ||
+    radius < 0
+  ) {
+    throw new RangeError('Sphere center coordinates and radius must be integers, and radius must be non-negative');
+  }
+
+  if (radius === 0) {
+    return [{ x: center.x, y: center.y, z: center.z }];
+  }
+
+  const points: Point3D[] = [];
+  const radiusSquared = radius ** 2;
+
+  for (let dx = -radius; dx <= radius; dx += 1) {
+    for (let dy = -radius; dy <= radius; dy += 1) {
+      for (let dz = -radius; dz <= radius; dz += 1) {
+        const distanceSquared = dx ** 2 + dy ** 2 + dz ** 2;
+        if (Math.abs(distanceSquared - radiusSquared) < radius) {
+          points.push({
+            x: center.x + dx,
+            y: center.y + dy,
+            z: center.z + dz,
+          });
+        }
+      }
+    }
+  }
+
+  return points.sort((left, right) => left.x - right.x || left.y - right.y || left.z - right.z);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you bucket the returned points by `x` coordinate to mirror the article's storage idea?
+- Why does radius `2` add the `(-1, -1, -1)` family of points once the shell is interpreted discretely?
+- How could symmetry reduce the amount of work compared with scanning the full cube?
+
+## Common Pitfalls
+
+- Generating the full solid ball instead of only the surface shell.
+- Restricting the result to only exact `dx^2 + dy^2 + dz^2 = r^2` points when the article's discrete shell is thicker.
+- Accepting non-integer centers or radii even though the prompt is about lattice voxels.
+- Forgetting to sort or otherwise normalize the output when comparing against sample sets.

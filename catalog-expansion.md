@@ -1305,11 +1305,19 @@ This one-hundred-twenty-second expansion slice lifts the catalog from 661 to 664
 
 ## Batch 123 added
 
-This one-hundred-twenty-third expansion slice currently lifts the catalog locally from 664 to 667 entries.
+This one-hundred-twenty-third expansion slice lifts the catalog from 664 to 667 entries.
 
 - Calculate Volume and Surface area Of Sphere
 - Program for Surface Area and Volume of Cuboid
 - Program for Volume and Surface Area of Cube
+
+## Batch 124 added
+
+This one-hundred-twenty-fourth expansion slice currently lifts the catalog locally from 667 to 670 entries.
+
+- Pythagorean Quadruple
+- LS3/NS3 sphere generation algorithm and its implementation
+- How to check if a given point lies inside or outside a polygon?
 
 ## Next candidates from the same sources
 
@@ -1389,9 +1397,14 @@ This one-hundred-twenty-third expansion slice currently lifts the catalog locall
 - Destination-title cleanup in the next clean `3D Objects` queue is `Program for Volume and Surface Area of Cuboid` -> `Program for Surface Area and Volume of Cuboid`.
 - `Calculate Volume and Surface area Of Sphere` and `Program for Volume and Surface Area of Cube` already match their destination titles.
 - The three shape-specific measurement prompts remain distinct from the published `Volume` entry because the local `Volume` article only covers standalone volume helpers and not the paired surface-area prompt surface.
-- Batch 123 currently lifts the catalog locally from 664 to 667 entries with `Calculate Volume and Surface area Of Sphere`, `Program for Surface Area and Volume of Cuboid`, and `Program for Volume and Surface Area of Cube`.
+- Batch 123 lifts the catalog from 664 to 667 entries with `Calculate Volume and Surface area Of Sphere`, `Program for Surface Area and Volume of Cuboid`, and `Program for Volume and Surface Area of Cube`.
 - Focused `gray-matter` plus JavaScript-fence validators passed for all three batch-123 entries.
-- The next clean source-order titles are `Pythagorean Quadruple`, `LS3/NS3 sphere generation algorithm and its implementation`, and `How to check if a given point lies inside or outside a polygon?`, and they are currently absent by exact-title check.
+- `Pythagorean Quadruple`, `LS3/NS3 sphere generation algorithm and its implementation`, and `How to check if a given point lies inside or outside a polygon?` already match their destination titles.
+- `How to check if a given point lies inside or outside a polygon?` remains distinct from the published triangle-point and line-intersection coverage because it handles arbitrary polygons with a boundary-aware ray-casting test.
+- The GeeksforGeeks `3D Objects` section is now exhausted in source order after `LS3/NS3 sphere generation algorithm and its implementation`; drafting advances into `Polygon and Convex Hull`.
+- Batch 124 currently lifts the catalog locally from 667 to 670 entries with `Pythagorean Quadruple`, `LS3/NS3 sphere generation algorithm and its implementation`, and `How to check if a given point lies inside or outside a polygon?`.
+- Focused `gray-matter` plus JavaScript-fence validators passed for all three batch-124 entries.
+- The next clean source-order titles are `Area of a polygon with given n ordered vertices`, `Tangents between two Convex Polygons`, and `Find number of diagonals in n sided convex polygon`, and they are currently absent by exact-title check.
 - Batch 92 carries the vetted Dynamic Programming hard stretch through `Longest repeating and non-overlapping substring` and then consumes the clean `Advanced Concepts` absences `Count Ways To Assign Unique Cap To Every Person`, `Digit DP | Introduction`, and `Sum over Subsets | Dynamic Programming`.
 - The Dynamic Programming items skipped between `Program to find amount of water in a given glass` and `Largest Cross Bordered Square` remain already represented locally: `Longest Common Subsequence`, `Longest Increasing Subsequence`, `Edit Distance`, `0-1 Knapsack Problem`, `Partition Problem`, `Longest Palindromic Subsequence`, `Bellman-Ford Algorithm`, and `Floyd Warshall Algorithm`.
 - `The painter's partition problem` remains skipped because the local `Find minimum time to finish all jobs with given constraints` entry already covers that partition-minimax problem and includes the alias `painter partition with multiplier`.

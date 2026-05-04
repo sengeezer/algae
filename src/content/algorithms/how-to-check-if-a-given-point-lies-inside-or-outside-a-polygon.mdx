@@ -1,0 +1,171 @@
+---
+title: "How to check if a given point lies inside or outside a polygon?"
+slug: how-to-check-if-a-given-point-lies-inside-or-outside-a-polygon
+category: Geometry
+summary: Use ray casting with an explicit on-segment check so border points count as inside.
+description: "How to check if a given point lies inside or outside a polygon? is the point-in-polygon routine that combines a boundary check with an odd-intersection ray-casting test."
+dataStructures:
+  - Array
+  - Object
+techniques:
+  - Computational Geometry
+  - Ray Casting
+  - Orientation Tests
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - point in polygon
+  - inside or outside polygon
+  - ray casting polygon test
+useCases:
+  - Determining whether a map coordinate lies inside a polygonal boundary
+  - Handling hit-testing for irregular 2D regions
+  - Teaching boundary-aware ray-casting geometry
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The border is treated as inside, so the segment-membership check must run before the odd-crossing toggle.
+interviewSignals:
+  - The prompt explicitly treats border points as inside.
+  - The intended approach is a horizontal ray count with careful edge handling.
+  - Intersection parity alone is not enough unless collinear edge cases are handled first.
+relatedSlugs:
+  - sweep-line-algorithm-find-if-any-two-segments-intersect
+  - check-whether-a-given-point-lies-inside-a-triangle-or-not
+  - program-for-point-of-intersection-of-two-lines
+provenance:
+  - title: "GeeksforGeeks - How to check if a given point lies inside or outside a polygon?"
+    href: https://www.geeksforgeeks.org/dsa/how-to-check-if-a-given-point-lies-inside-a-polygon/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is the standard point-in-polygon interview question. The stable mental model is to cast a ray to the right, count edge crossings, and short-circuit to `true` when the point lies exactly on an edge.
+
+## Worked Example
+
+For the square with vertices `(0, 0)`, `(10, 0)`, `(10, 10)`, and `(0, 10)`, the point `(5, 5)` is inside because a ray to the right crosses the boundary once, while `(15, 5)` is outside because it crosses zero times.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function howToCheckIfAGivenPointLiesInsideOrOutsideAPolygon(point, polygon) {
+  if (!Array.isArray(polygon) || polygon.length < 3) {
+    throw new RangeError("Polygon must contain at least three vertices");
+  }
+
+  const epsilon = 1e-9;
+
+  function cross(origin, first, second) {
+    return (first.x - origin.x) * (second.y - origin.y) - (first.y - origin.y) * (second.x - origin.x);
+  }
+
+  function isOnSegment(candidate, start, end) {
+    if (Math.abs(cross(start, end, candidate)) > epsilon) {
+      return false;
+    }
+
+    return (
+      candidate.x >= Math.min(start.x, end.x) - epsilon &&
+      candidate.x <= Math.max(start.x, end.x) + epsilon &&
+      candidate.y >= Math.min(start.y, end.y) - epsilon &&
+      candidate.y <= Math.max(start.y, end.y) + epsilon
+    );
+  }
+
+  let inside = false;
+
+  for (let index = 0; index < polygon.length; index += 1) {
+    const current = polygon[index];
+    const next = polygon[(index + 1) % polygon.length];
+
+    if (isOnSegment(point, current, next)) {
+      return true;
+    }
+
+    const crossesHorizontalBand = (current.y > point.y) !== (next.y > point.y);
+    if (!crossesHorizontalBand) {
+      continue;
+    }
+
+    const intersectionX = current.x + ((next.x - current.x) * (point.y - current.y)) / (next.y - current.y);
+    if (intersectionX >= point.x - epsilon) {
+      inside = !inside;
+    }
+  }
+
+  return inside;
+}
+```
+
+```ts
+type Point = { x: number; y: number };
+
+export function howToCheckIfAGivenPointLiesInsideOrOutsideAPolygon(
+  point: Point,
+  polygon: Point[],
+): boolean {
+  if (polygon.length < 3) {
+    throw new RangeError('Polygon must contain at least three vertices');
+  }
+
+  const epsilon = 1e-9;
+
+  function cross(origin: Point, first: Point, second: Point): number {
+    return (first.x - origin.x) * (second.y - origin.y) - (first.y - origin.y) * (second.x - origin.x);
+  }
+
+  function isOnSegment(candidate: Point, start: Point, end: Point): boolean {
+    if (Math.abs(cross(start, end, candidate)) > epsilon) {
+      return false;
+    }
+
+    return (
+      candidate.x >= Math.min(start.x, end.x) - epsilon &&
+      candidate.x <= Math.max(start.x, end.x) + epsilon &&
+      candidate.y >= Math.min(start.y, end.y) - epsilon &&
+      candidate.y <= Math.max(start.y, end.y) + epsilon
+    );
+  }
+
+  let inside = false;
+
+  for (let index = 0; index < polygon.length; index += 1) {
+    const current = polygon[index];
+    const next = polygon[(index + 1) % polygon.length];
+
+    if (isOnSegment(point, current, next)) {
+      return true;
+    }
+
+    const crossesHorizontalBand = (current.y > point.y) !== (next.y > point.y);
+    if (!crossesHorizontalBand) {
+      continue;
+    }
+
+    const intersectionX = current.x + ((next.x - current.x) * (point.y - current.y)) / (next.y - current.y);
+    if (intersectionX >= point.x - epsilon) {
+      inside = !inside;
+    }
+  }
+
+  return inside;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why must the border check happen before the parity toggle?
+- How does the odd-crossing rule compare with a winding-number approach?
+- What changes if the polygon can self-intersect?
+
+## Common Pitfalls
+
+- Double-counting a ray that passes exactly through a polygon vertex.
+- Forgetting to treat boundary points as inside.
+- Using a horizontal-band test that includes both endpoints and flips parity twice on shared vertices.
