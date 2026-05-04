@@ -1,0 +1,105 @@
+---
+title: Program for Area And Perimeter Of Rectangle
+slug: program-for-area-and-perimeter-of-rectangle
+category: Mathematics
+summary: Compute the rectangle area with `length * width` and the perimeter with `2 * (length + width)`.
+description: "Program for Area And Perimeter Of Rectangle is the direct-formula geometry helper that returns the two basic measurements for a rectangle from its side lengths."
+dataStructures:
+  - Number
+  - Object
+techniques:
+  - Direct Formula Application
+  - Input Validation
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - rectangle area and perimeter
+  - rectangle measurements
+useCases:
+  - Returning the two primary rectangle metrics from one prompt
+  - Pairing a shape's enclosed area with its boundary length
+  - Building small geometry utilities for UI, graphics, or layout code
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The result is two arithmetic expressions once the side lengths are validated.
+interviewSignals:
+  - The prompt asks for both area and perimeter, not just one.
+  - The input is rectangle side lengths rather than coordinates.
+  - The intended solution is formula-based rather than iterative.
+relatedSlugs:
+  - area
+  - find-if-two-rectangles-overlap
+  - check-whether-a-given-point-lies-inside-a-rectangle-or-not
+provenance:
+  - title: "GeeksforGeeks - Program for Area And Perimeter Of Rectangle"
+    href: https://www.geeksforgeeks.org/dsa/program-area-perimeter-rectangle/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This looks trivial, but it is still distinct from a generic area helper because the prompt asks for two outputs with one shape-specific input surface. The answer is just the pair of canonical rectangle formulas with minimal validation.
+
+## Worked Example
+
+For `length = 5` and `width = 6`, the area is `30` and the perimeter is `22`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function programForAreaAndPerimeterOfRectangle(length, width) {
+  if (
+    typeof length !== "number"
+    || typeof width !== "number"
+    || !Number.isFinite(length)
+    || !Number.isFinite(width)
+    || length <= 0
+    || width <= 0
+  ) {
+    throw new RangeError("Rectangle side lengths must be positive numbers");
+  }
+
+  return {
+    area: length * width,
+    perimeter: 2 * (length + width),
+  };
+}
+```
+
+```ts
+export function programForAreaAndPerimeterOfRectangle(
+  length: number,
+  width: number,
+): { area: number; perimeter: number } {
+  if (
+    !Number.isFinite(length)
+    || !Number.isFinite(width)
+    || length <= 0
+    || width <= 0
+  ) {
+    throw new RangeError('Rectangle side lengths must be positive numbers');
+  }
+
+  return {
+    area: length * width,
+    perimeter: 2 * (length + width),
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you extend the helper to derive diagonal length as well?
+- Why does this stay distinct from a generic area-only helper?
+- What changes if the input is corner coordinates instead of side lengths?
+
+## Common Pitfalls
+
+- Reusing the area formula when the prompt asks for perimeter too.
+- Accepting zero or negative side lengths as valid rectangles.
+- Mixing up perimeter with diagonal length.

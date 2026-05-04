@@ -1233,11 +1233,19 @@ This one-hundred-thirteenth expansion slice lifts the catalog from 631 to 637 en
 
 ## Batch 114 added
 
-This one-hundred-fourteenth expansion slice currently lifts the catalog locally from 637 to 640 entries.
+This one-hundred-fourteenth expansion slice lifts the catalog from 637 to 640 entries.
 
 - Triangles formed from a set of lines in Euclidean Plane
 - Area of Circumcircle of an Equilateral Triangle
 - Third side of triangle using law of cosines
+
+## Batch 115 added
+
+This one-hundred-fifteenth expansion slice currently lifts the catalog locally from 640 to 643 entries.
+
+- Check whether a given point lies inside a rectangle or not
+- Program for Area And Perimeter Of Rectangle
+- Find if two rectangles overlap
 
 ## Next candidates from the same sources
 
@@ -1276,10 +1284,14 @@ This one-hundred-fourteenth expansion slice currently lifts the catalog locally 
 - `Check if right triangle possible from given area and hypotenuse` and `Count Integral points inside a Triangle` already match their destination titles.
 - Focused `gray-matter` plus JavaScript-fence validators passed for all six batch-113 entries.
 - Destination-title cleanup in the final clean Geometric `Triangle` queue is `Number of Triangles that can be formed given a set of lines in Euclidean Plane` -> `Triangles formed from a set of lines in Euclidean Plane`, `Program to calculate area of Circumcircle of an Equilateral Triangle` -> `Area of Circumcircle of an Equilateral Triangle`, and `Program to find third side of triangle using law of cosines` -> `Third side of triangle using law of cosines`.
-- Batch 114 currently lifts the catalog locally from 637 to 640 entries with `Triangles formed from a set of lines in Euclidean Plane`, `Area of Circumcircle of an Equilateral Triangle`, and `Third side of triangle using law of cosines`.
+- Batch 114 lifts the catalog from 637 to 640 entries with `Triangles formed from a set of lines in Euclidean Plane`, `Area of Circumcircle of an Equilateral Triangle`, and `Third side of triangle using law of cosines`.
 - Focused `gray-matter` plus JavaScript-fence validators passed for all three batch-114 entries.
 - The GeeksforGeeks `Triangle` section is now exhausted in source order after `Third side of triangle using law of cosines`; drafting advances to `Rectangle | Square | Circle`.
-- The next source-order research on the Geometric Algorithms page begins at `Check whether a given point lies inside a rectangle or not`; the next Rectangle titles `Check whether a given point lies inside a rectangle or not`, `Program for Area And Perimeter Of Rectangle`, and `Find if two rectangles overlap` are currently absent by exact-title check.
+- All three opening Rectangle entries already match their destination titles.
+- `Program for Area And Perimeter Of Rectangle` remains distinct from the published `Area` entry because the local `Area` article only exposes rectangle area, while this source article pairs it with perimeter under a rectangle-specific prompt surface.
+- Batch 115 currently lifts the catalog locally from 640 to 643 entries with `Check whether a given point lies inside a rectangle or not`, `Program for Area And Perimeter Of Rectangle`, and `Find if two rectangles overlap`.
+- Focused `gray-matter` plus JavaScript-fence validators passed for all three batch-115 entries.
+- The next source-order research on the Geometric Algorithms page begins at `How to check if given four points form a square`; the next `Rectangle | Square | Circle` titles `How to check if given four points form a square`, `Number of rectangles in N*M grid`, and `Program to find Circumference of a Circle` are currently absent by exact-title check.
 - Batch 92 carries the vetted Dynamic Programming hard stretch through `Longest repeating and non-overlapping substring` and then consumes the clean `Advanced Concepts` absences `Count Ways To Assign Unique Cap To Every Person`, `Digit DP | Introduction`, and `Sum over Subsets | Dynamic Programming`.
 - The Dynamic Programming items skipped between `Program to find amount of water in a given glass` and `Largest Cross Bordered Square` remain already represented locally: `Longest Common Subsequence`, `Longest Increasing Subsequence`, `Edit Distance`, `0-1 Knapsack Problem`, `Partition Problem`, `Longest Palindromic Subsequence`, `Bellman-Ford Algorithm`, and `Floyd Warshall Algorithm`.
 - `The painter's partition problem` remains skipped because the local `Find minimum time to finish all jobs with given constraints` entry already covers that partition-minimax problem and includes the alias `painter partition with multiplier`.

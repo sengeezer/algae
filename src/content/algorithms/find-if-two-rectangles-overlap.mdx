@@ -1,0 +1,98 @@
+---
+title: Find if two rectangles overlap
+slug: find-if-two-rectangles-overlap
+category: Mathematics
+summary: "Reject the two non-overlap cases first: one rectangle completely left of the other or completely above the other."
+description: "Find if two rectangles overlap is the axis-aligned geometry predicate that decides whether two rectangles share any region or boundary contact."
+dataStructures:
+  - Array
+techniques:
+  - Coordinate Geometry
+  - Bounding Box Comparison
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - rectangle overlap test
+  - do two rectangles intersect
+useCases:
+  - Detecting collisions or layout intersections between axis-aligned regions
+  - Rejecting disjoint rectangles with a constant-time separating-axis shortcut
+  - Building interval-style reasoning over two spatial dimensions
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The rectangles overlap unless one is entirely left of the other or entirely above the other.
+interviewSignals:
+  - The rectangles are represented by top-left and bottom-right corners.
+  - The rectangles are axis-aligned, so a min-max comparison is enough.
+  - The shortest solution reasons from non-overlap conditions rather than constructing the intersection.
+relatedSlugs:
+  - check-whether-a-given-point-lies-inside-a-rectangle-or-not
+  - interval-merging
+  - program-for-area-and-perimeter-of-rectangle
+provenance:
+  - title: "GeeksforGeeks - Find if two rectangles overlap"
+    href: https://www.geeksforgeeks.org/dsa/find-two-rectangles-overlap/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is the geometry version of interval overlap. Instead of trying to compute the intersection region directly, you write down the two ways overlap can fail in an axis-aligned plane and negate them.
+
+## Worked Example
+
+With `l1 = [0, 10]`, `r1 = [10, 0]`, `l2 = [5, 5]`, and `r2 = [15, 0]`, the rectangles overlap because neither rectangle is strictly to the left of or above the other.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function findIfTwoRectanglesOverlap(l1, r1, l2, r2) {
+  if (l1[0] > r2[0] || l2[0] > r1[0]) {
+    return false;
+  }
+
+  if (r1[1] > l2[1] || r2[1] > l1[1]) {
+    return false;
+  }
+
+  return true;
+}
+```
+
+```ts
+type Point = [number, number];
+
+export function findIfTwoRectanglesOverlap(
+  l1: Point,
+  r1: Point,
+  l2: Point,
+  r2: Point,
+): boolean {
+  if (l1[0] > r2[0] || l2[0] > r1[0]) {
+    return false;
+  }
+
+  if (r1[1] > l2[1] || r2[1] > l1[1]) {
+    return false;
+  }
+
+  return true;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Should edge-touching count as overlap in your chosen interpretation?
+- How would you extend this to rotated rectangles?
+- How does the logic change if the coordinate system uses downward-positive `y` values?
+
+## Common Pitfalls
+
+- Forgetting that this shortcut assumes axis-aligned rectangles.
+- Using `>=` instead of `>` when the problem treats touching edges as overlap.
+- Swapping top-left and bottom-right conventions without noticing the sign change.

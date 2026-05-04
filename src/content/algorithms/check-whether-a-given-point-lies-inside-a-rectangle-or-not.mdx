@@ -1,0 +1,153 @@
+---
+title: Check whether a given point lies inside a rectangle or not
+slug: check-whether-a-given-point-lies-inside-a-rectangle-or-not
+category: Mathematics
+summary: Compare the rectangle area with the sum of the four triangle areas formed with the query point.
+description: "Check whether a given point lies inside a rectangle or not is the constant-time containment test that treats a rectangle as a four-vertex polygon and checks whether a point preserves its total area."
+dataStructures:
+  - Array
+techniques:
+  - Coordinate Geometry
+  - Area Comparison
+  - Point-in-Polygon
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - point inside rectangle
+  - rectangle containment test
+useCases:
+  - Checking whether a point falls within a rectangular zone
+  - Extending triangle-area containment logic to four-sided convex polygons
+  - Supporting hit-testing in geometry or graphics tooling
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The implementation evaluates a constant number of shoelace-style area expressions because a rectangle has exactly four edges.
+interviewSignals:
+  - The input is four rectangle vertices and one query point.
+  - The rectangle may be rotated, so an axis-aligned min-max shortcut is not always enough.
+  - Boundary points are usually treated as inside unless the prompt says strictly interior.
+relatedSlugs:
+  - check-whether-a-given-point-lies-inside-a-triangle-or-not
+  - find-if-two-rectangles-overlap
+  - area
+provenance:
+  - title: "GeeksforGeeks - Check whether a given point lies inside a rectangle or not"
+    href: https://www.geeksforgeeks.org/dsa/check-whether-given-point-lies-inside-rectangle-not/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is the rectangle version of the earlier point-in-triangle predicate. Once the rectangle vertices are given in perimeter order, the query point is inside exactly when the four triangle areas created with the edges add up to the area of the rectangle itself.
+
+## Worked Example
+
+For rectangle `[[10, 10], [10, -10], [-10, -10], [-10, 10]]` and point `[0, 0]`, the triangle-area sum matches the rectangle area, so the point lies inside.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function checkWhetherAGivenPointLiesInsideARectangleOrNot(rectangle, point) {
+  if (rectangle.length !== 4) {
+    throw new RangeError("Rectangle must contain exactly four vertices in perimeter order");
+  }
+
+  function polygonArea(points) {
+    let total = 0;
+
+    for (let index = 0; index < points.length; index += 1) {
+      const next = (index + 1) % points.length;
+      total += points[index][0] * points[next][1] - points[next][0] * points[index][1];
+    }
+
+    return Math.abs(total) / 2;
+  }
+
+  function triangleArea(a, b, c) {
+    return Math.abs(
+      a[0] * (b[1] - c[1])
+      + b[0] * (c[1] - a[1])
+      + c[0] * (a[1] - b[1])
+    ) / 2;
+  }
+
+  const whole = polygonArea(rectangle);
+
+  if (whole === 0) {
+    return false;
+  }
+
+  let parts = 0;
+
+  for (let index = 0; index < rectangle.length; index += 1) {
+    const next = (index + 1) % rectangle.length;
+    parts += triangleArea(rectangle[index], rectangle[next], point);
+  }
+
+  return Math.abs(whole - parts) < 1e-9;
+}
+```
+
+```ts
+type Point = [number, number];
+
+export function checkWhetherAGivenPointLiesInsideARectangleOrNot(
+  rectangle: Point[],
+  point: Point,
+): boolean {
+  if (rectangle.length !== 4) {
+    throw new RangeError('Rectangle must contain exactly four vertices in perimeter order');
+  }
+
+  const polygonArea = (points: Point[]): number => {
+    let total = 0;
+
+    for (let index = 0; index < points.length; index += 1) {
+      const next = (index + 1) % points.length;
+      total += points[index][0] * points[next][1] - points[next][0] * points[index][1];
+    }
+
+    return Math.abs(total) / 2;
+  };
+
+  const triangleArea = (a: Point, b: Point, c: Point): number => {
+    return Math.abs(
+      a[0] * (b[1] - c[1])
+      + b[0] * (c[1] - a[1])
+      + c[0] * (a[1] - b[1])
+    ) / 2;
+  };
+
+  const whole = polygonArea(rectangle);
+
+  if (whole === 0) {
+    return false;
+  }
+
+  let parts = 0;
+
+  for (let index = 0; index < rectangle.length; index += 1) {
+    const next = (index + 1) % rectangle.length;
+    parts += triangleArea(rectangle[index], rectangle[next], point);
+  }
+
+  return Math.abs(whole - parts) < 1e-9;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you adapt this if the rectangle were guaranteed axis-aligned?
+- Why do the vertices need to be supplied in perimeter order for this exact area decomposition?
+- How would you exclude boundary points from the predicate?
+
+## Common Pitfalls
+
+- Assuming the rectangle is axis-aligned when the prompt allows rotation.
+- Treating an arbitrary permutation of the four vertices as if it were polygon order.
+- Using exact floating-point equality instead of a tolerance.
