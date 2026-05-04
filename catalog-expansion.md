@@ -1163,7 +1163,7 @@ This one-hundred-seventh expansion slice lifts the catalog from 589 to 597 entri
 
 ## Batch 108 added
 
-This one-hundred-eighth expansion slice lifts the local catalog from 597 to 605 entries.
+This one-hundred-eighth expansion slice lifts the catalog from 597 to 605 entries.
 
 - Solving Cryptarithmetic Puzzles
 - Magnet Puzzle
@@ -1176,7 +1176,7 @@ This one-hundred-eighth expansion slice lifts the local catalog from 597 to 605 
 
 ## Next candidates from the same sources
 
-- The local catalog now reaches 605 entries after the first GeeksforGeeks Backtracking page slice; `main` remains at 597 until batch 108 is published.
+- The published catalog now reaches 605 entries on `main` after the first GeeksforGeeks Backtracking page slice.
 - The Trie Data Structure common-interview queue is exhausted in source order after the published batch-107 slice.
 - The GeeksforGeeks Square Root (Sqrt) Decomposition Algorithm page is a duplicate-only detour in source order: its overview article remains a semantic duplicate of the published `Square Root Decomposition` entry, so drafting advances to the GeeksforGeeks Backtracking page.
 - Batch 108 uses the verified destination title cleanup `Word Addition Cryptographic Puzzle` -> `Solving Cryptarithmetic Puzzles` and `Combinational Sum` -> `Target Sum Combinations`.
