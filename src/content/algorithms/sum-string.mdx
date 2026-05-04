@@ -1,0 +1,190 @@
+---
+title: Check if a given string is sum-string
+slug: sum-string
+category: Strings
+summary: Try every opening split for the first two numbers, then verify recursively that each following chunk equals their string-sum.
+description: "Check if a given string is sum-string asks whether a digit string can be partitioned into more than two numbers so each number equals the sum of the previous two."
+dataStructures:
+  - String
+techniques:
+  - Backtracking
+  - String Arithmetic
+  - Recursion
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - sum-string
+  - additive number string
+  - check additive sequence in string
+useCases:
+  - Validating numeric strings that exceed native integer limits
+  - Practicing recursive split enumeration with string addition
+  - Detecting Fibonacci-like additive partitions inside a string
+complexity:
+  time: O(n^3)
+  space: O(n)
+  notes: "The search tries O(n^2) opening splits, and each recursive verification may consume O(n) total string-add and comparison work."
+interviewSignals:
+  - The input is one digit string rather than an array of numbers.
+  - Large chunks make direct integer parsing unsafe.
+  - The relationship between consecutive parts is additive and recursive.
+relatedSlugs:
+  - string-addition
+  - backtracking-search
+provenance:
+  - title: "GeeksforGeeks - Check if a given string is sum-string"
+    href: https://www.geeksforgeeks.org/dsa/check-given-string-sum-string/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This problem looks like plain string splitting until you notice that numeric overflow is part of the trap. The safe approach keeps everything as strings, adds digit by digit, and checks whether the next substring matches the expected sum.
+
+## Worked Example
+
+`12243660` is a sum-string because it can be split as `12, 24, 36, 60`, and each number equals the sum of the previous two. `123456` fails because no opening split makes the rest of the string line up with repeated sums.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function isSumString(text) {
+  if (typeof text !== 'string' || /[^0-9]/.test(text)) {
+    throw new TypeError('Input must be a digit string');
+  }
+
+  for (let firstLength = 1; firstLength <= Math.floor(text.length / 2); firstLength += 1) {
+    for (let secondLength = 1; firstLength + secondLength < text.length; secondLength += 1) {
+      if (hasLeadingZero(text.slice(0, firstLength)) || hasLeadingZero(text.slice(firstLength, firstLength + secondLength))) {
+        continue;
+      }
+
+      if (checkSequence(text, 0, firstLength, secondLength)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+function checkSequence(text, start, firstLength, secondLength) {
+  const first = text.slice(start, start + firstLength);
+  const second = text.slice(start + firstLength, start + firstLength + secondLength);
+  const sum = addStrings(first, second);
+  const nextStart = start + firstLength + secondLength;
+
+  if (!text.startsWith(sum, nextStart)) {
+    return false;
+  }
+
+  if (nextStart + sum.length === text.length) {
+    return true;
+  }
+
+  return checkSequence(text, start + firstLength, secondLength, sum.length);
+}
+
+function addStrings(left, right) {
+  let carry = 0;
+  let result = '';
+  let leftIndex = left.length - 1;
+  let rightIndex = right.length - 1;
+
+  while (leftIndex >= 0 || rightIndex >= 0 || carry > 0) {
+    const digitLeft = leftIndex >= 0 ? Number(left[leftIndex]) : 0;
+    const digitRight = rightIndex >= 0 ? Number(right[rightIndex]) : 0;
+    const total = digitLeft + digitRight + carry;
+    result = String(total % 10) + result;
+    carry = Math.floor(total / 10);
+    leftIndex -= 1;
+    rightIndex -= 1;
+  }
+
+  return result;
+}
+
+function hasLeadingZero(text) {
+  return text.length > 1 && text[0] === '0';
+}
+```
+
+```ts
+export function isSumString(text: string): boolean {
+  if (/[^0-9]/.test(text)) {
+    throw new TypeError('Input must be a digit string');
+  }
+
+  for (let firstLength = 1; firstLength <= Math.floor(text.length / 2); firstLength += 1) {
+    for (let secondLength = 1; firstLength + secondLength < text.length; secondLength += 1) {
+      const first = text.slice(0, firstLength);
+      const second = text.slice(firstLength, firstLength + secondLength);
+      if (hasLeadingZero(first) || hasLeadingZero(second)) {
+        continue;
+      }
+
+      if (checkSequence(text, 0, firstLength, secondLength)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+function checkSequence(text: string, start: number, firstLength: number, secondLength: number): boolean {
+  const first = text.slice(start, start + firstLength);
+  const second = text.slice(start + firstLength, start + firstLength + secondLength);
+  const sum = addStrings(first, second);
+  const nextStart = start + firstLength + secondLength;
+
+  if (!text.startsWith(sum, nextStart)) {
+    return false;
+  }
+
+  if (nextStart + sum.length === text.length) {
+    return true;
+  }
+
+  return checkSequence(text, start + firstLength, secondLength, sum.length);
+}
+
+function addStrings(left: string, right: string): string {
+  let carry = 0;
+  let result = '';
+  let leftIndex = left.length - 1;
+  let rightIndex = right.length - 1;
+
+  while (leftIndex >= 0 || rightIndex >= 0 || carry > 0) {
+    const digitLeft = leftIndex >= 0 ? Number(left[leftIndex]) : 0;
+    const digitRight = rightIndex >= 0 ? Number(right[rightIndex]) : 0;
+    const total = digitLeft + digitRight + carry;
+    result = String(total % 10) + result;
+    carry = Math.floor(total / 10);
+    leftIndex -= 1;
+    rightIndex -= 1;
+  }
+
+  return result;
+}
+
+function hasLeadingZero(text: string): boolean {
+  return text.length > 1 && text[0] === '0';
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you return one valid partition instead of only true or false?
+- Why is string-based addition safer than parsing to integers here?
+- How would you compare this with the additive-number problem statement from other interview sources?
+
+## Common Pitfalls
+
+- Allowing segments like `01` or `001` even though leading zeroes are forbidden.
+- Parsing long substrings into native numbers and overflowing.
+- Forgetting that the string must split into more than two numbers.

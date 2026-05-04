@@ -1,0 +1,113 @@
+---
+title: Find all Unique Subsets
+slug: find-all-unique-subsets
+category: Arrays
+summary: Sort the input, grow subsets recursively, and skip equal values at the same depth so duplicates never enter the result.
+description: "Find all Unique Subsets extends subset generation to arrays with repeated values, using ordering plus same-level duplicate skipping to avoid repeated subsets."
+dataStructures:
+  - Array
+techniques:
+  - Backtracking
+  - Sorting
+  - Recursion
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - distinct subsets of a given set
+  - unique subsets with duplicates
+useCases:
+  - Enumerating subsets from arrays that contain repeated values
+  - Demonstrating why sorting helps prune duplicate branches
+  - Converting brute-force subset generation into unique-output enumeration
+complexity:
+  time: O(n * 2^n)
+  space: O(n)
+  notes: "There are still exponentially many valid subsets, but sorting lets the recursion skip duplicate choices at the same depth."
+interviewSignals:
+  - The array may contain duplicates, but the output must not.
+  - Order inside a subset is irrelevant.
+  - Sorting before recursion is the expected simplification.
+relatedSlugs:
+  - generate-subsets
+  - all-combinations-of-size-k
+provenance:
+  - title: "GeeksforGeeks - Find all Unique Subsets"
+    href: https://www.geeksforgeeks.org/dsa/find-distinct-subsets-given-set/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is the duplicate-aware version of subset generation. The interview trick is recognizing that duplicate values only cause trouble when you branch on them from the same recursion depth, which is why sorting and skipping equal neighbors works.
+
+## Worked Example
+
+For `[1, 2, 2]`, the valid unique subsets are `[]`, `[1]`, `[2]`, `[1, 2]`, `[2, 2]`, and `[1, 2, 2]`. The second `2` is allowed only when the first `2` is already part of the current branch.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function findAllUniqueSubsets(values) {
+  const sorted = [...values].sort((left, right) => left - right);
+  const result = [];
+  const subset = [];
+
+  function backtrack(start) {
+    result.push([...subset]);
+
+    for (let index = start; index < sorted.length; index += 1) {
+      if (index > start && sorted[index] === sorted[index - 1]) {
+        continue;
+      }
+
+      subset.push(sorted[index]);
+      backtrack(index + 1);
+      subset.pop();
+    }
+  }
+
+  backtrack(0);
+  return result;
+}
+```
+
+```ts
+export function findAllUniqueSubsets(values: number[]): number[][] {
+  const sorted = [...values].sort((left, right) => left - right);
+  const result: number[][] = [];
+  const subset: number[] = [];
+
+  const backtrack = (start: number): void => {
+    result.push([...subset]);
+
+    for (let index = start; index < sorted.length; index += 1) {
+      if (index > start && sorted[index] === sorted[index - 1]) {
+        continue;
+      }
+
+      subset.push(sorted[index]);
+      backtrack(index + 1);
+      subset.pop();
+    }
+  };
+
+  backtrack(0);
+  return result;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why is it safe to skip equal values only when `index > start`?
+- How would you return subsets in lexicographic order if the prompt required it?
+- How does this compare with the iterative duplicate-handling approach?
+
+## Common Pitfalls
+
+- Skipping every duplicate globally instead of only duplicates at the same recursion depth.
+- Forgetting to sort first, which makes duplicate skipping unreliable.
+- Mutating and storing the same subset array without copying it.

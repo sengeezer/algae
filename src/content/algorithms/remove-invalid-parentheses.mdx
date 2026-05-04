@@ -1,0 +1,175 @@
+---
+title: Remove Invalid Parentheses
+slug: remove-invalid-parentheses
+category: Strings
+summary: Explore strings level by level so the first balanced layer guarantees the minimum number of deletions.
+description: "Remove Invalid Parentheses finds every balanced result reachable with the fewest removals, typically by breadth-first search over deletion states or by carefully pruned recursive generation."
+dataStructures:
+  - String
+  - Set
+  - Queue
+techniques:
+  - Breadth-First Search
+  - Backtracking
+  - State Deduplication
+difficulty: Hard
+interviewFrequency: High
+aliases:
+  - minimum removals to balance parentheses
+  - remove invalid parenthesis
+useCases:
+  - Generating all minimally edited balanced strings
+  - Distinguishing shortest-edit search from plain validation
+  - Using BFS to guarantee minimal removals
+complexity:
+  time: O(2^n)
+  space: O(2^n)
+  notes: "The search may touch exponentially many deletion states, but BFS stops as soon as it finds balanced strings at the minimum removal depth."
+interviewSignals:
+  - The task asks for all valid strings, not just one.
+  - Only the minimum number of deletions is allowed.
+  - Duplicate intermediate strings must be avoided.
+relatedSlugs:
+  - generate-parentheses
+  - backtracking-search
+provenance:
+  - title: "GeeksforGeeks - Remove Invalid Parentheses"
+    href: https://www.geeksforgeeks.org/dsa/remove-invalid-parentheses/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+The tricky part is not checking validity, it is guaranteeing minimum removals while returning every answer at that minimum depth. BFS is a natural fit because the first balanced level corresponds exactly to the fewest deleted parentheses.
+
+## Worked Example
+
+For `()())()`, deleting one parenthesis can produce `()()()` or `(())()`. BFS finds both at depth `1` and stops before exploring deeper states that would remove too many characters.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function removeInvalidParentheses(text) {
+  if (typeof text !== 'string') {
+    throw new TypeError('Input must be a string');
+  }
+
+  const results = [];
+  const queue = [text];
+  const visited = new Set([text]);
+  let foundLevel = false;
+
+  while (queue.length > 0) {
+    const current = queue.shift();
+
+    if (isBalanced(current)) {
+      results.push(current);
+      foundLevel = true;
+    }
+
+    if (foundLevel) {
+      continue;
+    }
+
+    for (let index = 0; index < current.length; index += 1) {
+      if (current[index] !== '(' && current[index] !== ')') {
+        continue;
+      }
+
+      const next = current.slice(0, index) + current.slice(index + 1);
+      if (!visited.has(next)) {
+        visited.add(next);
+        queue.push(next);
+      }
+    }
+  }
+
+  return [...new Set(results)];
+}
+
+function isBalanced(text) {
+  let balance = 0;
+
+  for (const char of text) {
+    if (char === '(') {
+      balance += 1;
+    } else if (char === ')') {
+      balance -= 1;
+      if (balance < 0) {
+        return false;
+      }
+    }
+  }
+
+  return balance === 0;
+}
+```
+
+```ts
+export function removeInvalidParentheses(text: string): string[] {
+  const results: string[] = [];
+  const queue: string[] = [text];
+  const visited = new Set<string>([text]);
+  let foundLevel = false;
+
+  while (queue.length > 0) {
+    const current = queue.shift() as string;
+
+    if (isBalanced(current)) {
+      results.push(current);
+      foundLevel = true;
+    }
+
+    if (foundLevel) {
+      continue;
+    }
+
+    for (let index = 0; index < current.length; index += 1) {
+      if (current[index] !== '(' && current[index] !== ')') {
+        continue;
+      }
+
+      const next = current.slice(0, index) + current.slice(index + 1);
+      if (!visited.has(next)) {
+        visited.add(next);
+        queue.push(next);
+      }
+    }
+  }
+
+  return [...new Set(results)];
+}
+
+function isBalanced(text: string): boolean {
+  let balance = 0;
+
+  for (const char of text) {
+    if (char === '(') {
+      balance += 1;
+    } else if (char === ')') {
+      balance -= 1;
+      if (balance < 0) {
+        return false;
+      }
+    }
+  }
+
+  return balance === 0;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you switch from BFS to a DFS that still guarantees minimum removals?
+- Why can validity be checked with a counter here instead of a full stack?
+- How would the solution change if multiple bracket types were allowed?
+
+## Common Pitfalls
+
+- Continuing to deeper BFS levels after valid answers have already been found.
+- Forgetting to deduplicate intermediate strings.
+- Returning only one balanced string when the prompt asks for all of them.

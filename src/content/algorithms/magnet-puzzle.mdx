@@ -1,0 +1,407 @@
+---
+title: Magnet Puzzle
+slug: magnet-puzzle
+category: Matrices
+summary: Fill paired board slots with `+-`, `-+`, or blanks while backtracking against row, column, and adjacency constraints.
+description: "Magnet Puzzle is the constrained board-search problem where domino-shaped slots must satisfy polarity counts and forbid equal signs from touching orthogonally."
+dataStructures:
+  - Matrix
+  - Array
+techniques:
+  - Backtracking
+  - Constraint Satisfaction
+  - Pruning
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - magnet puzzle
+  - polarized domino puzzle
+useCases:
+  - Solving grid constraint puzzles with local and global rules
+  - Demonstrating partial-state pruning in recursive search
+  - Modeling paired placements on a board
+complexity:
+  time: O(3^s)
+  space: O(r * c)
+  notes: "s is the number of domino slots; each slot can try plus-minus, minus-plus, or blank, but row and column bounds prune aggressively."
+interviewSignals:
+  - The board contains paired slots rather than independent cells.
+  - Rows and columns impose exact or optional polarity counts.
+  - Local adjacency rules let you reject placements before the board is complete.
+relatedSlugs:
+  - backtracking-search
+  - rat-in-a-maze
+provenance:
+  - title: "GeeksforGeeks - Magnet Puzzle"
+    href: https://www.geeksforgeeks.org/dsa/magnet-puzzle/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is a compact constraint-satisfaction problem. Every placement affects nearby cells immediately because equal polarities cannot touch, and it also affects global row and column budgets, so good pruning matters more than raw search.
+
+## Worked Example
+
+If a horizontal `L/R` slot starts at `(0, 0)`, the solver can try `+-`, `-+`, or leave both cells blank. A branch is invalid immediately if placing `+` would exceed the row or column limit for plus signs, or if an adjacent cell already contains `+`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function magnetPuzzle(top, bottom, left, right, rules) {
+  const rows = rules.length;
+  const cols = rules[0].length;
+  const board = Array.from({ length: rows }, () => new Array(cols).fill('X'));
+  const slots = collectSlots(rules);
+
+  const plusRow = new Array(rows).fill(0);
+  const minusRow = new Array(rows).fill(0);
+  const plusCol = new Array(cols).fill(0);
+  const minusCol = new Array(cols).fill(0);
+
+  const patterns = [
+    ['+', '-'],
+    ['-', '+'],
+    ['X', 'X'],
+  ];
+
+  function search(index) {
+    if (index === slots.length) {
+      return constraintsSatisfied(top, bottom, left, right, plusRow, minusRow, plusCol, minusCol);
+    }
+
+    const slot = slots[index];
+    for (const pattern of patterns) {
+      if (!canPlace(slot, pattern, board, top, bottom, left, right, plusRow, minusRow, plusCol, minusCol)) {
+        continue;
+      }
+
+      applyPattern(slot, pattern, board, plusRow, minusRow, plusCol, minusCol, 1);
+      if (search(index + 1)) {
+        return board.map((rowValues) => [...rowValues]);
+      }
+      applyPattern(slot, pattern, board, plusRow, minusRow, plusCol, minusCol, -1);
+    }
+
+    return null;
+  }
+
+  return search(0);
+}
+
+function collectSlots(rules) {
+  const slots = [];
+
+  for (let row = 0; row < rules.length; row += 1) {
+    for (let col = 0; col < rules[row].length; col += 1) {
+      if (rules[row][col] === 'L') {
+        slots.push({ cells: [[row, col], [row, col + 1]] });
+      }
+      if (rules[row][col] === 'T') {
+        slots.push({ cells: [[row, col], [row + 1, col]] });
+      }
+    }
+  }
+
+  return slots;
+}
+
+function canPlace(slot, pattern, board, top, bottom, left, right, plusRow, minusRow, plusCol, minusCol) {
+  for (let index = 0; index < slot.cells.length; index += 1) {
+    const [row, col] = slot.cells[index];
+    const value = pattern[index];
+
+    if (value === 'X') {
+      continue;
+    }
+
+    if (touchesSameSign(board, row, col, value, slot.cells)) {
+      return false;
+    }
+
+    const nextPlusRow = plusRow[row] + (value === '+' ? 1 : 0);
+    const nextMinusRow = minusRow[row] + (value === '-' ? 1 : 0);
+    const nextPlusCol = plusCol[col] + (value === '+' ? 1 : 0);
+    const nextMinusCol = minusCol[col] + (value === '-' ? 1 : 0);
+
+    if ((left[row] !== -1 && nextPlusRow > left[row]) || (right[row] !== -1 && nextMinusRow > right[row])) {
+      return false;
+    }
+
+    if ((top[col] !== -1 && nextPlusCol > top[col]) || (bottom[col] !== -1 && nextMinusCol > bottom[col])) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function touchesSameSign(board, row, col, value, slotCells) {
+  const blocked = new Set(slotCells.map(([slotRow, slotCol]) => `${slotRow}:${slotCol}`));
+  const directions = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+
+  for (const [deltaRow, deltaCol] of directions) {
+    const nextRow = row + deltaRow;
+    const nextCol = col + deltaCol;
+    if (nextRow < 0 || nextCol < 0 || nextRow >= board.length || nextCol >= board[0].length) {
+      continue;
+    }
+
+    if (blocked.has(`${nextRow}:${nextCol}`)) {
+      continue;
+    }
+
+    if (board[nextRow][nextCol] === value) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function applyPattern(slot, pattern, board, plusRow, minusRow, plusCol, minusCol, direction) {
+  for (let index = 0; index < slot.cells.length; index += 1) {
+    const [row, col] = slot.cells[index];
+    const value = pattern[index];
+    board[row][col] = direction === 1 ? value : 'X';
+
+    if (value === '+') {
+      plusRow[row] += direction;
+      plusCol[col] += direction;
+    }
+
+    if (value === '-') {
+      minusRow[row] += direction;
+      minusCol[col] += direction;
+    }
+  }
+}
+
+function constraintsSatisfied(top, bottom, left, right, plusRow, minusRow, plusCol, minusCol) {
+  for (let row = 0; row < plusRow.length; row += 1) {
+    if ((left[row] !== -1 && plusRow[row] !== left[row]) || (right[row] !== -1 && minusRow[row] !== right[row])) {
+      return false;
+    }
+  }
+
+  for (let col = 0; col < plusCol.length; col += 1) {
+    if ((top[col] !== -1 && plusCol[col] !== top[col]) || (bottom[col] !== -1 && minusCol[col] !== bottom[col])) {
+      return false;
+    }
+  }
+
+  return true;
+}
+```
+
+```ts
+type Slot = {
+  cells: Array<readonly [number, number]>;
+};
+
+export function magnetPuzzle(
+  top: number[],
+  bottom: number[],
+  left: number[],
+  right: number[],
+  rules: string[][],
+): string[][] | null {
+  const rows = rules.length;
+  const cols = rules[0].length;
+  const board = Array.from({ length: rows }, () => new Array<string>(cols).fill('X'));
+  const slots = collectSlots(rules);
+
+  const plusRow = new Array<number>(rows).fill(0);
+  const minusRow = new Array<number>(rows).fill(0);
+  const plusCol = new Array<number>(cols).fill(0);
+  const minusCol = new Array<number>(cols).fill(0);
+
+  const patterns: string[][] = [
+    ['+', '-'],
+    ['-', '+'],
+    ['X', 'X'],
+  ];
+
+  const search = (index: number): string[][] | null => {
+    if (index === slots.length) {
+      return constraintsSatisfied(top, bottom, left, right, plusRow, minusRow, plusCol, minusCol)
+        ? board.map((rowValues) => [...rowValues])
+        : null;
+    }
+
+    const slot = slots[index];
+    for (const pattern of patterns) {
+      if (!canPlace(slot, pattern, board, top, bottom, left, right, plusRow, minusRow, plusCol, minusCol)) {
+        continue;
+      }
+
+      applyPattern(slot, pattern, board, plusRow, minusRow, plusCol, minusCol, 1);
+      const solved = search(index + 1);
+      if (solved) {
+        return solved;
+      }
+      applyPattern(slot, pattern, board, plusRow, minusRow, plusCol, minusCol, -1);
+    }
+
+    return null;
+  };
+
+  return search(0);
+}
+
+function collectSlots(rules: string[][]): Slot[] {
+  const slots: Slot[] = [];
+
+  for (let row = 0; row < rules.length; row += 1) {
+    for (let col = 0; col < rules[row].length; col += 1) {
+      if (rules[row][col] === 'L') {
+        slots.push({ cells: [[row, col], [row, col + 1]] });
+      }
+      if (rules[row][col] === 'T') {
+        slots.push({ cells: [[row, col], [row + 1, col]] });
+      }
+    }
+  }
+
+  return slots;
+}
+
+function canPlace(
+  slot: Slot,
+  pattern: string[],
+  board: string[][],
+  top: number[],
+  bottom: number[],
+  left: number[],
+  right: number[],
+  plusRow: number[],
+  minusRow: number[],
+  plusCol: number[],
+  minusCol: number[],
+): boolean {
+  for (let index = 0; index < slot.cells.length; index += 1) {
+    const [row, col] = slot.cells[index];
+    const value = pattern[index];
+
+    if (value === 'X') {
+      continue;
+    }
+
+    if (touchesSameSign(board, row, col, value, slot.cells)) {
+      return false;
+    }
+
+    const nextPlusRow = plusRow[row] + (value === '+' ? 1 : 0);
+    const nextMinusRow = minusRow[row] + (value === '-' ? 1 : 0);
+    const nextPlusCol = plusCol[col] + (value === '+' ? 1 : 0);
+    const nextMinusCol = minusCol[col] + (value === '-' ? 1 : 0);
+
+    if ((left[row] !== -1 && nextPlusRow > left[row]) || (right[row] !== -1 && nextMinusRow > right[row])) {
+      return false;
+    }
+
+    if ((top[col] !== -1 && nextPlusCol > top[col]) || (bottom[col] !== -1 && nextMinusCol > bottom[col])) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function touchesSameSign(
+  board: string[][],
+  row: number,
+  col: number,
+  value: string,
+  slotCells: Array<readonly [number, number]>,
+): boolean {
+  const blocked = new Set(slotCells.map(([slotRow, slotCol]) => `${slotRow}:${slotCol}`));
+  const directions = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+
+  for (const [deltaRow, deltaCol] of directions) {
+    const nextRow = row + deltaRow;
+    const nextCol = col + deltaCol;
+    if (nextRow < 0 || nextCol < 0 || nextRow >= board.length || nextCol >= board[0].length) {
+      continue;
+    }
+
+    if (blocked.has(`${nextRow}:${nextCol}`)) {
+      continue;
+    }
+
+    if (board[nextRow][nextCol] === value) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function applyPattern(
+  slot: Slot,
+  pattern: string[],
+  board: string[][],
+  plusRow: number[],
+  minusRow: number[],
+  plusCol: number[],
+  minusCol: number[],
+  direction: 1 | -1,
+): void {
+  for (let index = 0; index < slot.cells.length; index += 1) {
+    const [row, col] = slot.cells[index];
+    const value = pattern[index];
+    board[row][col] = direction === 1 ? value : 'X';
+
+    if (value === '+') {
+      plusRow[row] += direction;
+      plusCol[col] += direction;
+    }
+
+    if (value === '-') {
+      minusRow[row] += direction;
+      minusCol[col] += direction;
+    }
+  }
+}
+
+function constraintsSatisfied(
+  top: number[],
+  bottom: number[],
+  left: number[],
+  right: number[],
+  plusRow: number[],
+  minusRow: number[],
+  plusCol: number[],
+  minusCol: number[],
+): boolean {
+  for (let row = 0; row < plusRow.length; row += 1) {
+    if ((left[row] !== -1 && plusRow[row] !== left[row]) || (right[row] !== -1 && minusRow[row] !== right[row])) {
+      return false;
+    }
+  }
+
+  for (let col = 0; col < plusCol.length; col += 1) {
+    if ((top[col] !== -1 && plusCol[col] !== top[col]) || (bottom[col] !== -1 && minusCol[col] !== bottom[col])) {
+      return false;
+    }
+  }
+
+  return true;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- What extra pruning would you add from the number of remaining undecided cells in a row or column?
+- Why is it natural to treat `L` and `T` cells as the only decision points?
+- How would you encode this as an exact-cover problem instead of handwritten backtracking?
+
+## Common Pitfalls
+
+- Forgetting that the blank option is legal for a slot.
+- Checking row and column totals only at the end instead of pruning when counts already exceed limits.
+- Testing adjacency against the other half of the same slot and rejecting valid placements.

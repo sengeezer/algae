@@ -1,0 +1,139 @@
+---
+title: Find if there is a path of more than k weight from a source
+slug: path-of-more-than-k-weight-from-a-source
+category: Graphs
+summary: Run DFS with backtracking over simple paths and stop as soon as the remaining threshold falls to zero or below.
+description: "Find if there is a path of more than k weight from a source is the weighted simple-path search where recursion tracks remaining distance and visited nodes prevent cycles."
+dataStructures:
+  - Graph
+  - Adjacency List
+  - Set
+techniques:
+  - Depth-First Search
+  - Backtracking
+  - Pruning
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - path more than k length from source
+  - weighted path threshold search
+useCases:
+  - Testing existence of a sufficiently heavy simple path
+  - Showing why greedy edge selection fails in weighted graph search
+  - Practicing DFS with undoable visited state
+complexity:
+  time: O(V!)
+  space: O(V)
+  notes: "In the worst case the search explores every simple path from the source, though it stops early once the remaining threshold is met."
+interviewSignals:
+  - The path must be simple, so revisiting a node is forbidden.
+  - The question asks for existence, not the actual longest path.
+  - Greedy local edge choices are insufficient because shorter edges can unlock longer total paths.
+relatedSlugs:
+  - depth-first-search
+  - hamiltonian-cycle
+provenance:
+  - title: "GeeksforGeeks - Find if there is a path of more than k weight from a source"
+    href: https://www.geeksforgeeks.org/dsa/find-if-there-is-a-path-of-more-than-k-length-from-a-source/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is a DFS question disguised as a weighted-graph puzzle. The core idea is to carry the remaining threshold downward through recursion and to backtrack the visited set because the same node may participate in different candidate paths.
+
+## Worked Example
+
+If the source is `0` and the target is `58`, a path like `0 -> 7 -> 1 -> 2 -> 8 -> 6 -> 5 -> 3 -> 4` can succeed even though some individual edges are not the heaviest available at each step. That is why the search must consider full paths, not greedy edge picks.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function pathOfMoreThanKWeightFromSource(vertexCount, edgeList, source, minimumWeight) {
+  const graph = Array.from({ length: vertexCount }, () => []);
+  for (const [from, to, weight] of edgeList) {
+    graph[from].push([to, weight]);
+    graph[to].push([from, weight]);
+  }
+
+  const visited = new Set([source]);
+
+  function dfs(node, remaining) {
+    if (remaining <= 0) {
+      return true;
+    }
+
+    for (const [next, weight] of graph[node]) {
+      if (visited.has(next)) {
+        continue;
+      }
+
+      visited.add(next);
+      if (dfs(next, remaining - weight)) {
+        return true;
+      }
+      visited.delete(next);
+    }
+
+    return false;
+  }
+
+  return dfs(source, minimumWeight);
+}
+```
+
+```ts
+export function pathOfMoreThanKWeightFromSource(
+  vertexCount: number,
+  edgeList: Array<[number, number, number]>,
+  source: number,
+  minimumWeight: number,
+): boolean {
+  const graph: Array<Array<[number, number]>> = Array.from({ length: vertexCount }, () => []);
+
+  for (const [from, to, weight] of edgeList) {
+    graph[from].push([to, weight]);
+    graph[to].push([from, weight]);
+  }
+
+  const visited = new Set<number>([source]);
+
+  const dfs = (node: number, remaining: number): boolean => {
+    if (remaining <= 0) {
+      return true;
+    }
+
+    for (const [next, weight] of graph[node]) {
+      if (visited.has(next)) {
+        continue;
+      }
+
+      visited.add(next);
+      if (dfs(next, remaining - weight)) {
+        return true;
+      }
+      visited.delete(next);
+    }
+
+    return false;
+  };
+
+  return dfs(source, minimumWeight);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you also return one valid path instead of only true or false?
+- What changes if the graph is directed rather than undirected?
+- Why is this problem different from finding the longest path in a DAG?
+
+## Common Pitfalls
+
+- Reusing the same visited set without removing nodes during backtracking.
+- Assuming the locally largest edge must belong to a successful path.
+- Treating the graph as directed when the input edges are undirected.

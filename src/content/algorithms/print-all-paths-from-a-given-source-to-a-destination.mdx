@@ -1,0 +1,128 @@
+---
+title: Print all paths from a given source to a destination
+slug: print-all-paths-from-a-given-source-to-a-destination
+category: Graphs
+summary: Use DFS to build each source-to-destination route incrementally, storing a copy whenever the traversal reaches the target.
+description: "Print all paths from a given source to a destination enumerates every route in a directed acyclic graph, usually by backtracking over the current path stack."
+dataStructures:
+  - Graph
+  - Adjacency List
+  - Array
+techniques:
+  - Depth-First Search
+  - Backtracking
+  - Path Enumeration
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - all paths between source and destination in a DAG
+  - enumerate source-destination paths
+useCases:
+  - Listing every dependency chain through a DAG
+  - Practicing DFS with path snapshots
+  - Contrasting existence search with full path enumeration
+complexity:
+  time: O(P * V)
+  space: O(V)
+  notes: "P is the number of source-to-destination paths; the output can be exponential in the number of vertices."
+interviewSignals:
+  - The graph is a DAG, so recursive path enumeration is safe without cycle handling.
+  - The prompt asks for every path, not just the count.
+  - The current path must be copied when a solution is recorded.
+relatedSlugs:
+  - depth-first-search
+  - breadth-first-search
+provenance:
+  - title: "GeeksforGeeks - Print all paths from a given source to a destination"
+    href: https://www.geeksforgeeks.org/dsa/find-paths-given-source-destination/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is the enumeration version of path search. Once the graph is a DAG, the recursion can safely grow a current route, emit it at the destination, and then pop the last node to continue exploring siblings.
+
+## Worked Example
+
+In a graph with edges `0 -> 1`, `1 -> 2`, `1 -> 3`, and `2 -> 3`, the paths from `0` to `3` are `[0, 1, 3]` and `[0, 1, 2, 3]`. DFS naturally discovers one, backtracks, and then discovers the other.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function printAllPathsFromAGivenSourceToADestination(vertexCount, edges, source, destination) {
+  const graph = Array.from({ length: vertexCount }, () => []);
+  for (const [from, to] of edges) {
+    graph[from].push(to);
+  }
+
+  const path = [];
+  const result = [];
+
+  function dfs(node) {
+    path.push(node);
+
+    if (node === destination) {
+      result.push([...path]);
+    } else {
+      for (const next of graph[node]) {
+        dfs(next);
+      }
+    }
+
+    path.pop();
+  }
+
+  dfs(source);
+  return result;
+}
+```
+
+```ts
+export function printAllPathsFromAGivenSourceToADestination(
+  vertexCount: number,
+  edges: Array<[number, number]>,
+  source: number,
+  destination: number,
+): number[][] {
+  const graph: number[][] = Array.from({ length: vertexCount }, () => []);
+  for (const [from, to] of edges) {
+    graph[from].push(to);
+  }
+
+  const path: number[] = [];
+  const result: number[][] = [];
+
+  const dfs = (node: number): void => {
+    path.push(node);
+
+    if (node === destination) {
+      result.push([...path]);
+    } else {
+      for (const next of graph[node]) {
+        dfs(next);
+      }
+    }
+
+    path.pop();
+  };
+
+  dfs(source);
+  return result;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you change the solution to count paths without materializing them?
+- What extra protection is needed if the graph may contain cycles?
+- When would a BFS-based path enumerator be preferable?
+
+## Common Pitfalls
+
+- Forgetting to remove the current node from the path during backtracking.
+- Reusing the same `path` array reference in the result without copying it.
+- Applying this directly to cyclic graphs without a visited-on-path check.

@@ -1161,16 +1161,29 @@ This one-hundred-seventh expansion slice lifts the catalog from 589 to 597 entri
 - Auto-complete feature using Trie
 - Pattern Searching using a Trie of all Suffixes
 
+## Batch 108 added
+
+This one-hundred-eighth expansion slice lifts the local catalog from 597 to 605 entries.
+
+- Solving Cryptarithmetic Puzzles
+- Magnet Puzzle
+- Remove Invalid Parentheses
+- Check if a given string is sum-string
+- Find all Unique Subsets
+- Find if there is a path of more than k weight from a source
+- Print all paths from a given source to a destination
+- Target Sum Combinations
+
 ## Next candidates from the same sources
 
-- The published catalog now reaches 597 entries on `main` after the first Trie common-interview slice.
-- On the Trie Data Structure page, the overview article remains a semantic duplicate of the published `Trie` entry, and the `Trie Data Structure - Commonly Asked Questions` page is treated as the active queue source rather than a catalog entry.
-- Batch 107 uses the verified destination title cleanup `Trie | (Delete)` -> `Trie Delete` and `Trie | (Display Content)` -> `Displaying content of Trie`.
-- `Minimum Word Break`, `Unique rows in boolean matrix`, `Count of distinct substrings`, `Sorting array of strings (or words) using Trie`, `Auto-complete feature using Trie`, and `Pattern Searching using a Trie of all Suffixes` already match their destination titles.
-- `Word Boggle` remains duplicate-level coverage because the published `Boggle` entry already covers that board-search problem semantically.
-- The Trie common-interview queue is now exhausted in source order after the local batch-107 slice.
-- The next vetted source branch after the exhausted Trie queue is the GeeksforGeeks Square Root (Sqrt) Decomposition Algorithm page: https://www.geeksforgeeks.org/dsa/square-root-sqrt-decomposition-algorithm/
-- On that Square Root page, the overview article remains a semantic duplicate of the published `Square Root Decomposition` entry.
+- The local catalog now reaches 605 entries after the first GeeksforGeeks Backtracking page slice; `main` remains at 597 until batch 108 is published.
+- The Trie Data Structure common-interview queue is exhausted in source order after the published batch-107 slice.
+- The GeeksforGeeks Square Root (Sqrt) Decomposition Algorithm page is a duplicate-only detour in source order: its overview article remains a semantic duplicate of the published `Square Root Decomposition` entry, so drafting advances to the GeeksforGeeks Backtracking page.
+- Batch 108 uses the verified destination title cleanup `Word Addition Cryptographic Puzzle` -> `Solving Cryptarithmetic Puzzles` and `Combinational Sum` -> `Target Sum Combinations`.
+- `Magnet Puzzle`, `Remove Invalid Parentheses`, `Check if a given string is sum-string`, `Find all Unique Subsets`, `Find if there is a path of more than k weight from a source`, and `Print all paths from a given source to a destination` already match their destination titles.
+- On the Backtracking page, `Permutations of a String`, `The Knight’s tour problem`, `Rat in a Maze`, `N Queen Problem`, `8 queen problem`, `Subset Sum problem`, `m Coloring Problem`, `Hamiltonian Cycle`, `Sudoku`, and `Find all subsets` remain duplicate-level coverage because equivalent local entries are already published.
+- The `Tug of War` source URL currently resolves to `Equal Partition`; it is skipped as a semantic collision with the published `Partition` coverage rather than drafted under a misleading new title.
+- The next backtracking work starts immediately after `Target Sum Combinations`, with `Warnsdorff's algorithm for Knight's tour problem` as the first unresolved duplicate check and the following route/grid problems as the likeliest clean continuation.
 - Batch 92 carries the vetted Dynamic Programming hard stretch through `Longest repeating and non-overlapping substring` and then consumes the clean `Advanced Concepts` absences `Count Ways To Assign Unique Cap To Every Person`, `Digit DP | Introduction`, and `Sum over Subsets | Dynamic Programming`.
 - The Dynamic Programming items skipped between `Program to find amount of water in a given glass` and `Largest Cross Bordered Square` remain already represented locally: `Longest Common Subsequence`, `Longest Increasing Subsequence`, `Edit Distance`, `0-1 Knapsack Problem`, `Partition Problem`, `Longest Palindromic Subsequence`, `Bellman-Ford Algorithm`, and `Floyd Warshall Algorithm`.
 - `The painter's partition problem` remains skipped because the local `Find minimum time to finish all jobs with given constraints` entry already covers that partition-minimax problem and includes the alias `painter partition with multiplier`.

@@ -1,0 +1,119 @@
+---
+title: Target Sum Combinations
+slug: target-sum-combinations
+category: Arrays
+summary: Reuse each candidate as many times as needed by recursing on the same index until the remaining target hits zero or drops below zero.
+description: "Target Sum Combinations is the backtracking problem that enumerates all unique multisets of distinct candidates whose values sum to a target."
+dataStructures:
+  - Array
+techniques:
+  - Backtracking
+  - Recursion
+  - Branch Pruning
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - combinational sum
+  - combination sum
+useCases:
+  - Generating all additive combinations that can reuse values
+  - Distinguishing include-same-index recursion from subset-style recursion
+  - Practicing target-decrement backtracking
+complexity:
+  time: O(n^(target / minValue))
+  space: O(target / minValue)
+  notes: "The recursion tree can branch on each candidate while the depth is bounded by repeatedly taking the smallest value."
+interviewSignals:
+  - Candidates can be reused unlimited times.
+  - The output contains full combinations, not just a count or feasibility answer.
+  - A negative remaining target is a direct pruning condition.
+relatedSlugs:
+  - all-combinations-of-size-k
+  - find-all-unique-subsets
+provenance:
+  - title: "GeeksforGeeks - Target Sum Combinations"
+    href: https://www.geeksforgeeks.org/dsa/combinational-sum/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is one of the standard backtracking templates. The crucial detail is that choosing a value does not force you to advance to the next index, because the same candidate may be reused any number of times.
+
+## Worked Example
+
+For candidates `[1, 2, 3]` and target `5`, the valid combinations are `[1, 1, 1, 1, 1]`, `[1, 1, 1, 2]`, `[1, 1, 3]`, `[1, 2, 2]`, and `[2, 3]`. The recursive tree keeps the index on the same value after including it so repeated picks remain legal.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function targetSumCombinations(values, target) {
+  const sorted = [...new Set(values)].sort((left, right) => left - right);
+  const result = [];
+  const combination = [];
+
+  function backtrack(index, remaining) {
+    if (remaining === 0) {
+      result.push([...combination]);
+      return;
+    }
+
+    if (remaining < 0 || index === sorted.length) {
+      return;
+    }
+
+    combination.push(sorted[index]);
+    backtrack(index, remaining - sorted[index]);
+    combination.pop();
+
+    backtrack(index + 1, remaining);
+  }
+
+  backtrack(0, target);
+  return result;
+}
+```
+
+```ts
+export function targetSumCombinations(values: number[], target: number): number[][] {
+  const sorted = [...new Set(values)].sort((left, right) => left - right);
+  const result: number[][] = [];
+  const combination: number[] = [];
+
+  const backtrack = (index: number, remaining: number): void => {
+    if (remaining === 0) {
+      result.push([...combination]);
+      return;
+    }
+
+    if (remaining < 0 || index === sorted.length) {
+      return;
+    }
+
+    combination.push(sorted[index]);
+    backtrack(index, remaining - sorted[index]);
+    combination.pop();
+
+    backtrack(index + 1, remaining);
+  };
+
+  backtrack(0, target);
+  return result;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How does the recursion change when each candidate may be used at most once?
+- Why is keeping the same index after inclusion the defining step here?
+- How would you sort the output combinations if the prompt required stable lexicographic order?
+
+## Common Pitfalls
+
+- Advancing to `index + 1` immediately after including a value, which incorrectly forbids reuse.
+- Forgetting to prune when the remaining target goes negative.
+- Emitting duplicate combinations when the input contains repeated candidates.
