@@ -1,0 +1,207 @@
+---
+title: Find paths from corner cell to middle cell in maze
+slug: find-paths-from-corner-cell-to-middle-cell-in-maze
+category: Matrix
+summary: Start from each corner, jump exactly the number written in the current cell, and backtrack over the four cardinal directions until a path reaches the center.
+description: "Find paths from corner cell to middle cell in maze is the exact-jump backtracking problem that enumerates every corner-to-center route in a square grid without revisiting cells inside one route."
+dataStructures:
+  - Matrix
+  - Array
+techniques:
+  - Backtracking
+  - Depth-First Search
+  - State Tracking
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - corner to middle maze
+  - maze jump to center
+useCases:
+  - Practicing exact-length moves instead of one-step grid traversal
+  - Enumerating all valid routes instead of deciding feasibility alone
+  - Reasoning about visited-state pruning in matrix backtracking
+complexity:
+  time: O(4^(n^2))
+  space: O(n^2)
+  notes: "Each visited cell can branch to four jump directions, while the visited matrix and current route both scale with the board area."
+interviewSignals:
+  - The move distance is fixed by the current cell value.
+  - The search starts from all four corners, not just the top-left cell.
+  - A cell cannot be revisited within the same candidate route.
+relatedSlugs:
+  - rat-in-a-maze
+  - print-all-paths-from-a-given-source-to-a-destination
+  - backtracking-search
+provenance:
+  - title: "GeeksforGeeks - Find paths from corner cell to middle cell in maze"
+    href: https://www.geeksforgeeks.org/dsa/find-paths-from-corner-cell-to-middle-cell-in-maze/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This prompt looks like a maze problem, but the move rule changes the shape of the search completely. You do not step one cell at a time. Instead, each square tells you the exact jump length, so the search becomes a graph of exact transitions that must be explored with cycle protection.
+
+## Worked Example
+
+For
+
+```txt
+[
+  [1, 1, 1],
+  [1, 0, 1],
+  [1, 1, 1],
+]
+```
+
+the middle cell is `(1, 1)`. From the top-left corner, one valid route is `(0, 0) -> (0, 1) -> (1, 1)`. The top-left corner also has `(0, 0) -> (1, 0) -> (1, 1)`, and the other corners contribute symmetric routes.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function findPathsFromCornerCellToMiddleCellInMaze(mat) {
+  const n = mat.length;
+
+  if (n === 0 || mat.some((row) => row.length !== n)) {
+    return [];
+  }
+
+  const targetRow = Math.floor(n / 2);
+  const targetColumn = Math.floor(n / 2);
+  const visited = Array.from({ length: n }, () => Array(n).fill(false));
+  const route = [];
+  const result = [];
+  const directions = [
+    [-1, 0],
+    [1, 0],
+    [0, -1],
+    [0, 1],
+  ];
+  const corners = [
+    [0, 0],
+    [0, n - 1],
+    [n - 1, 0],
+    [n - 1, n - 1],
+  ];
+  const seenStarts = new Set();
+
+  function search(row, column) {
+    if (row < 0 || row >= n || column < 0 || column >= n || visited[row][column]) {
+      return;
+    }
+
+    visited[row][column] = true;
+    route.push([row, column]);
+
+    if (row === targetRow && column === targetColumn) {
+      result.push(route.map(([currentRow, currentColumn]) => [currentRow, currentColumn]));
+    } else {
+      const jump = mat[row][column];
+
+      if (jump > 0) {
+        for (const [rowDelta, columnDelta] of directions) {
+          search(row + rowDelta * jump, column + columnDelta * jump);
+        }
+      }
+    }
+
+    route.pop();
+    visited[row][column] = false;
+  }
+
+  for (const [startRow, startColumn] of corners) {
+    const key = `${startRow}:${startColumn}`;
+
+    if (seenStarts.has(key)) {
+      continue;
+    }
+
+    seenStarts.add(key);
+    search(startRow, startColumn);
+  }
+
+  return result;
+}
+```
+
+```ts
+export function findPathsFromCornerCellToMiddleCellInMaze(mat: number[][]): number[][][] {
+  const n = mat.length;
+
+  if (n === 0 || mat.some((row) => row.length !== n)) {
+    return [];
+  }
+
+  const targetRow = Math.floor(n / 2);
+  const targetColumn = Math.floor(n / 2);
+  const visited = Array.from({ length: n }, () => Array<boolean>(n).fill(false));
+  const route: number[][] = [];
+  const result: number[][][] = [];
+  const directions: Array<[number, number]> = [
+    [-1, 0],
+    [1, 0],
+    [0, -1],
+    [0, 1],
+  ];
+  const corners: Array<[number, number]> = [
+    [0, 0],
+    [0, n - 1],
+    [n - 1, 0],
+    [n - 1, n - 1],
+  ];
+  const seenStarts = new Set<string>();
+
+  const search = (row: number, column: number): void => {
+    if (row < 0 || row >= n || column < 0 || column >= n || visited[row][column]) {
+      return;
+    }
+
+    visited[row][column] = true;
+    route.push([row, column]);
+
+    if (row === targetRow && column === targetColumn) {
+      result.push(route.map(([currentRow, currentColumn]) => [currentRow, currentColumn]));
+    } else {
+      const jump = mat[row][column];
+
+      if (jump > 0) {
+        for (const [rowDelta, columnDelta] of directions) {
+          search(row + rowDelta * jump, column + columnDelta * jump);
+        }
+      }
+    }
+
+    route.pop();
+    visited[row][column] = false;
+  };
+
+  for (const [startRow, startColumn] of corners) {
+    const key = `${startRow}:${startColumn}`;
+
+    if (seenStarts.has(key)) {
+      continue;
+    }
+
+    seenStarts.add(key);
+    search(startRow, startColumn);
+  }
+
+  return result;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would the search change if each cell allowed any jump from `1` through `mat[i][j]` instead of an exact jump?
+- What would you return if the prompt asked only whether at least one corner can reach the center?
+- How would you avoid re-exploring equivalent states if the board were much larger?
+
+## Common Pitfalls
+
+- Treating the cell value as a maximum jump instead of an exact jump length.
+- Forgetting to clear the visited mark during backtracking.
+- Assuming there is only one starting corner.

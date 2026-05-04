@@ -1,0 +1,170 @@
+---
+title: Partition into k Equal Sum Subsets
+slug: partition-into-k-equal-sum-subsets
+category: Arrays
+summary: Fill one subset bucket at a time, backtracking whenever adding the next value would overshoot the required per-subset target.
+description: "Partition into k Equal Sum Subsets is the subset-assignment backtracking problem where every element must be placed exactly once and all k buckets must end with the same sum."
+dataStructures:
+  - Array
+techniques:
+  - Backtracking
+  - Recursion
+  - Branch Pruning
+difficulty: Hard
+interviewFrequency: High
+aliases:
+  - partition of a set into k subsets with equal sum
+  - k equal sum partition
+useCases:
+  - Validating whether work items can be balanced evenly across groups
+  - Practicing subset-bucket recursion with symmetry pruning
+  - Recognizing when divisibility checks eliminate the whole search
+complexity:
+  time: O(k * 2^n)
+  space: O(n + k)
+  notes: "The search is still exponential in the worst case, but descending sort order and empty-bucket pruning remove many symmetric branches in practice."
+interviewSignals:
+  - Every value must belong to exactly one subset.
+  - The answer is feasibility, not the subsets themselves.
+  - Simple divisibility and max-element checks should happen before recursion.
+relatedSlugs:
+  - partition
+  - subset-sum-problem
+  - bitmask-dp
+provenance:
+  - title: "GeeksforGeeks - Partition into k Equal Sum Subsets"
+    href: https://www.geeksforgeeks.org/dsa/partition-set-k-subsets-equal-sum/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is a classic escalation from subset sum. Instead of filling one target subset once, you have to place every element into one of `k` buckets and maintain a global invariant that each bucket must eventually reach the same target.
+
+## Worked Example
+
+For `arr = [2, 1, 4, 5, 6]` and `k = 3`, the total sum is `18`, so every subset must sum to `6`. One valid grouping is `[6]`, `[1, 5]`, and `[2, 4]`, so the answer is true.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function partitionIntoKEqualSumSubsets(values, bucketCount) {
+  const total = values.reduce((sum, value) => sum + value, 0);
+
+  if (bucketCount === 1) {
+    return true;
+  }
+
+  if (values.length < bucketCount || total % bucketCount !== 0) {
+    return false;
+  }
+
+  const target = total / bucketCount;
+  const sorted = [...values].sort((left, right) => right - left);
+
+  if (sorted[0] > target) {
+    return false;
+  }
+
+  const subsetSums = new Array(bucketCount).fill(0);
+
+  function search(index) {
+    if (index === sorted.length) {
+      return subsetSums.every((sum) => sum === target);
+    }
+
+    const value = sorted[index];
+
+    for (let bucket = 0; bucket < bucketCount; bucket += 1) {
+      if (subsetSums[bucket] + value > target) {
+        continue;
+      }
+
+      subsetSums[bucket] += value;
+
+      if (search(index + 1)) {
+        return true;
+      }
+
+      subsetSums[bucket] -= value;
+
+      if (subsetSums[bucket] === 0) {
+        break;
+      }
+    }
+
+    return false;
+  }
+
+  return search(0);
+}
+```
+
+```ts
+export function partitionIntoKEqualSumSubsets(values: number[], bucketCount: number): boolean {
+  const total = values.reduce((sum, value) => sum + value, 0);
+
+  if (bucketCount === 1) {
+    return true;
+  }
+
+  if (values.length < bucketCount || total % bucketCount !== 0) {
+    return false;
+  }
+
+  const target = total / bucketCount;
+  const sorted = [...values].sort((left, right) => right - left);
+
+  if (sorted[0] > target) {
+    return false;
+  }
+
+  const subsetSums = new Array<number>(bucketCount).fill(0);
+
+  const search = (index: number): boolean => {
+    if (index === sorted.length) {
+      return subsetSums.every((sum) => sum === target);
+    }
+
+    const value = sorted[index];
+
+    for (let bucket = 0; bucket < bucketCount; bucket += 1) {
+      if (subsetSums[bucket] + value > target) {
+        continue;
+      }
+
+      subsetSums[bucket] += value;
+
+      if (search(index + 1)) {
+        return true;
+      }
+
+      subsetSums[bucket] -= value;
+
+      if (subsetSums[bucket] === 0) {
+        break;
+      }
+    }
+
+    return false;
+  };
+
+  return search(0);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you return the actual subsets instead of only a boolean?
+- Why does breaking after the first empty bucket avoid symmetric duplicate work?
+- When is the bitmask-DP formulation preferable to recursive bucket filling?
+
+## Common Pitfalls
+
+- Skipping the total-sum divisibility check before recursing.
+- Forgetting that buckets with the same current sum are symmetric states.
+- Allowing a single element larger than the target bucket sum.

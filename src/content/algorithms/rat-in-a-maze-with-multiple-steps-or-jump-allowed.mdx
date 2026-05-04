@@ -1,0 +1,172 @@
+---
+title: Rat in a Maze with multiple steps or jump allowed
+slug: rat-in-a-maze-with-multiple-steps-or-jump-allowed
+category: Matrix
+summary: Explore every rightward and downward jump allowed by each cell, keeping the shortest successful path matrix and preserving right-first tie breaking.
+description: "Rat in a Maze with multiple steps or jump allowed is the variable-jump maze backtracking problem where each positive cell grants a maximum jump length and the answer is the shortest valid path matrix."
+dataStructures:
+  - Matrix
+  - Array
+techniques:
+  - Backtracking
+  - Depth-First Search
+  - Branch and Bound
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - rat maze with multiple jumps
+  - rat in a maze with jumps
+useCases:
+  - Extending the standard rat-in-a-maze template to variable-length moves
+  - Practicing shortest-solution tracking during recursive search
+  - Understanding how branch ordering affects tie-breaking
+complexity:
+  time: O(2^(n^2))
+  space: O(n^2)
+  notes: "The search can branch on many jump lengths from each reachable cell, while the path matrix and recursion depth are bounded by the grid area."
+interviewSignals:
+  - Each positive cell is a maximum jump budget, not an exact jump.
+  - The output is a path matrix, not just a boolean answer.
+  - Among valid solutions, the prompt prefers the fewest hops and then right-first exploration.
+relatedSlugs:
+  - rat-in-a-maze
+  - backtracking-search
+  - find-paths-from-corner-cell-to-middle-cell-in-maze
+provenance:
+  - title: "GeeksforGeeks - Rat in a Maze with multiple steps or jump allowed"
+    href: https://www.geeksforgeeks.org/dsa/rat-in-a-maze-with-multiple-steps-jump-allowed/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is a good follow-up to the standard rat-in-a-maze problem because the state transition changes from one-step moves to a range of legal jumps. That forces you to search over candidate jump lengths while still preserving the path and backtracking cleanly.
+
+## Worked Example
+
+For
+
+```txt
+[
+  [2, 1, 0, 0],
+  [3, 0, 0, 1],
+  [0, 1, 0, 1],
+  [0, 0, 0, 1],
+]
+```
+
+one shortest solution is to go from `(0, 0)` down to `(1, 0)`, jump right to `(1, 3)`, and then move down to the destination `(3, 3)`. The returned matrix marks exactly those cells with `1`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function ratInAMazeWithMultipleStepsOrJumpAllowed(mat) {
+  const n = mat.length;
+
+  if (n === 0 || mat.some((row) => row.length !== n) || mat[0][0] === 0 || mat[n - 1][n - 1] === 0) {
+    return [[-1]];
+  }
+
+  const path = Array.from({ length: n }, () => Array(n).fill(0));
+  let bestPath = null;
+  let bestHops = Number.POSITIVE_INFINITY;
+
+  function search(row, column, hops) {
+    if (row < 0 || row >= n || column < 0 || column >= n || mat[row][column] === 0) {
+      return;
+    }
+
+    if (hops >= bestHops) {
+      return;
+    }
+
+    path[row][column] = 1;
+
+    if (row === n - 1 && column === n - 1) {
+      bestHops = hops;
+      bestPath = path.map((currentRow) => [...currentRow]);
+      path[row][column] = 0;
+      return;
+    }
+
+    const jumpLimit = mat[row][column];
+
+    for (let jump = 1; jump <= jumpLimit; jump += 1) {
+      search(row, column + jump, hops + 1);
+    }
+
+    for (let jump = 1; jump <= jumpLimit; jump += 1) {
+      search(row + jump, column, hops + 1);
+    }
+
+    path[row][column] = 0;
+  }
+
+  search(0, 0, 0);
+  return bestPath ?? [[-1]];
+}
+```
+
+```ts
+export function ratInAMazeWithMultipleStepsOrJumpAllowed(mat: number[][]): number[][] {
+  const n = mat.length;
+
+  if (n === 0 || mat.some((row) => row.length !== n) || mat[0][0] === 0 || mat[n - 1][n - 1] === 0) {
+    return [[-1]];
+  }
+
+  const path = Array.from({ length: n }, () => Array<number>(n).fill(0));
+  let bestPath: number[][] | null = null;
+  let bestHops = Number.POSITIVE_INFINITY;
+
+  const search = (row: number, column: number, hops: number): void => {
+    if (row < 0 || row >= n || column < 0 || column >= n || mat[row][column] === 0) {
+      return;
+    }
+
+    if (hops >= bestHops) {
+      return;
+    }
+
+    path[row][column] = 1;
+
+    if (row === n - 1 && column === n - 1) {
+      bestHops = hops;
+      bestPath = path.map((currentRow) => [...currentRow]);
+      path[row][column] = 0;
+      return;
+    }
+
+    const jumpLimit = mat[row][column];
+
+    for (let jump = 1; jump <= jumpLimit; jump += 1) {
+      search(row, column + jump, hops + 1);
+    }
+
+    for (let jump = 1; jump <= jumpLimit; jump += 1) {
+      search(row + jump, column, hops + 1);
+    }
+
+    path[row][column] = 0;
+  };
+
+  search(0, 0, 0);
+  return bestPath ?? [[-1]];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you rewrite this with BFS to guarantee the minimum-hop answer directly?
+- Why does exploring rightward jumps before downward jumps implement the source tie-break rule?
+- What changes if diagonal jumps become legal too?
+
+## Common Pitfalls
+
+- Treating the cell value as an exact jump instead of a maximum jump.
+- Returning the first path found even when a shorter one exists.
+- Forgetting that the required output is the marked path matrix, not the move list.

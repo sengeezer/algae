@@ -1,0 +1,223 @@
+---
+title: Shortest Safe route in a Matrix
+slug: shortest-safe-route-in-a-matrix
+category: Matrix
+summary: Pre-mark every landmine and its neighbors as unsafe, then run multi-source BFS from the first column to find the minimum safe path length to the last column.
+description: "Shortest Safe route in a Matrix is the grid-routing problem where cells adjacent to landmines are forbidden, so the solution combines preprocessing with breadth-first search."
+dataStructures:
+  - Matrix
+  - Queue
+techniques:
+  - Breadth-First Search
+  - Preprocessing
+  - Multi-Source Traversal
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - shortest safe route with landmines
+  - safe path in minefield matrix
+useCases:
+  - Modeling navigation through hazardous cells and their exclusion zones
+  - Practicing BFS from multiple valid starts
+  - Separating preprocessing from the main shortest-path search
+complexity:
+  time: O(m*n)
+  space: O(m*n)
+  notes: "Each cell is processed a constant number of times: once while marking unsafe positions and once during BFS."
+interviewSignals:
+  - A cell is usable only if it is `1` and no orthogonal neighbor is a landmine.
+  - The route may start from any safe cell in the first column.
+  - Because all moves cost the same, BFS gives the shortest path length directly.
+relatedSlugs:
+  - longest-possible-route-in-a-matrix
+  - breadth-first-search
+  - breadth-first-shortest-path
+provenance:
+  - title: "GeeksforGeeks - Shortest Safe route in a Matrix"
+    href: https://www.geeksforgeeks.org/dsa/find-shortest-safe-route-in-a-path-with-landmines/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+The trap here is that the obstacle set is not just the landmines themselves. Every neighbor of a landmine is unsafe too. Once you preprocess that rule, the remaining problem becomes a clean shortest-path search from multiple first-column starting points.
+
+## Worked Example
+
+On an all-ones `3 x 3` grid, every cell is safe, so the shortest safe route from the first column to the last column is `2` moves. For example, starting at `(0, 0)` and moving right twice reaches the last column immediately.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function shortestSafeRouteInAMatrix(mat) {
+  const rowCount = mat.length;
+
+  if (rowCount === 0) {
+    return -1;
+  }
+
+  const columnCount = mat[0].length;
+  const directions = [
+    [-1, 0],
+    [1, 0],
+    [0, -1],
+    [0, 1],
+  ];
+  const safe = mat.map((row) => row.map((cell) => cell === 1));
+
+  for (let row = 0; row < rowCount; row += 1) {
+    for (let column = 0; column < columnCount; column += 1) {
+      if (mat[row][column] !== 0) {
+        continue;
+      }
+
+      safe[row][column] = false;
+
+      for (const [rowDelta, columnDelta] of directions) {
+        const nextRow = row + rowDelta;
+        const nextColumn = column + columnDelta;
+
+        if (nextRow >= 0 && nextRow < rowCount && nextColumn >= 0 && nextColumn < columnCount) {
+          safe[nextRow][nextColumn] = false;
+        }
+      }
+    }
+  }
+
+  const queue = [];
+  const visited = Array.from({ length: rowCount }, () => Array(columnCount).fill(false));
+
+  for (let row = 0; row < rowCount; row += 1) {
+    if (!safe[row][0]) {
+      continue;
+    }
+
+    queue.push([row, 0, 0]);
+    visited[row][0] = true;
+  }
+
+  for (let head = 0; head < queue.length; head += 1) {
+    const [row, column, distance] = queue[head];
+
+    if (column === columnCount - 1) {
+      return distance;
+    }
+
+    for (const [rowDelta, columnDelta] of directions) {
+      const nextRow = row + rowDelta;
+      const nextColumn = column + columnDelta;
+
+      if (
+        nextRow < 0
+        || nextRow >= rowCount
+        || nextColumn < 0
+        || nextColumn >= columnCount
+        || !safe[nextRow][nextColumn]
+        || visited[nextRow][nextColumn]
+      ) {
+        continue;
+      }
+
+      visited[nextRow][nextColumn] = true;
+      queue.push([nextRow, nextColumn, distance + 1]);
+    }
+  }
+
+  return -1;
+}
+```
+
+```ts
+export function shortestSafeRouteInAMatrix(mat: number[][]): number {
+  const rowCount = mat.length;
+
+  if (rowCount === 0) {
+    return -1;
+  }
+
+  const columnCount = mat[0].length;
+  const directions: Array<[number, number]> = [
+    [-1, 0],
+    [1, 0],
+    [0, -1],
+    [0, 1],
+  ];
+  const safe = mat.map((row) => row.map((cell) => cell === 1));
+
+  for (let row = 0; row < rowCount; row += 1) {
+    for (let column = 0; column < columnCount; column += 1) {
+      if (mat[row][column] !== 0) {
+        continue;
+      }
+
+      safe[row][column] = false;
+
+      for (const [rowDelta, columnDelta] of directions) {
+        const nextRow = row + rowDelta;
+        const nextColumn = column + columnDelta;
+
+        if (nextRow >= 0 && nextRow < rowCount && nextColumn >= 0 && nextColumn < columnCount) {
+          safe[nextRow][nextColumn] = false;
+        }
+      }
+    }
+  }
+
+  const queue: Array<[number, number, number]> = [];
+  const visited = Array.from({ length: rowCount }, () => Array<boolean>(columnCount).fill(false));
+
+  for (let row = 0; row < rowCount; row += 1) {
+    if (!safe[row][0]) {
+      continue;
+    }
+
+    queue.push([row, 0, 0]);
+    visited[row][0] = true;
+  }
+
+  for (let head = 0; head < queue.length; head += 1) {
+    const [row, column, distance] = queue[head];
+
+    if (column === columnCount - 1) {
+      return distance;
+    }
+
+    for (const [rowDelta, columnDelta] of directions) {
+      const nextRow = row + rowDelta;
+      const nextColumn = column + columnDelta;
+
+      if (
+        nextRow < 0
+        || nextRow >= rowCount
+        || nextColumn < 0
+        || nextColumn >= columnCount
+        || !safe[nextRow][nextColumn]
+        || visited[nextRow][nextColumn]
+      ) {
+        continue;
+      }
+
+      visited[nextRow][nextColumn] = true;
+      queue.push([nextRow, nextColumn, distance + 1]);
+    }
+  }
+
+  return -1;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you also reconstruct one shortest safe route, not only its length?
+- Why is multi-source BFS cleaner than launching a separate search from each first-column row?
+- What changes if diagonal adjacency to a landmine also makes a cell unsafe?
+
+## Common Pitfalls
+
+- Treating only the landmine cells as blocked and forgetting their neighbors.
+- Starting BFS from every first-column cell instead of only the safe ones.
+- Using DFS for a shortest-path problem with uniform edge costs.

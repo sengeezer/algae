@@ -1,0 +1,181 @@
+---
+title: Longest Possible Route in a Matrix
+slug: longest-possible-route-in-a-matrix
+category: Matrix
+summary: Backtrack over the four orthogonal moves, marking visited cells so you can maximize route length without revisiting a free cell.
+description: "Longest Possible Route in a Matrix is the simple-path grid search problem where you must maximize the length from a given source to a destination while avoiding hurdles and repeated cells."
+dataStructures:
+  - Matrix
+  - Array
+techniques:
+  - Backtracking
+  - Depth-First Search
+  - Visited State Tracking
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - longest route in matrix with hurdles
+  - longest simple path in a grid
+useCases:
+  - Finding the maximum simple path through a constrained grid
+  - Practicing DFS with backtracking on four-direction movement
+  - Contrasting longest-path search with the much easier shortest-path variants
+complexity:
+  time: O(4^(m*n))
+  space: O(m*n)
+  notes: "The search explores many simple paths, while the visited matrix and recursion stack are bounded by the board size."
+interviewSignals:
+  - Cells marked `0` are blocked hurdles.
+  - You may move up, down, left, or right.
+  - Revisiting a cell is forbidden, so the answer is a longest simple path.
+relatedSlugs:
+  - shortest-safe-route-in-a-matrix
+  - print-all-paths-from-a-given-source-to-a-destination
+  - backtracking-search
+provenance:
+  - title: "GeeksforGeeks - Longest Possible Route in a Matrix"
+    href: https://www.geeksforgeeks.org/dsa/longest-possible-route-in-a-matrix-with-hurdles/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+Most grid interview questions ask for the shortest path. This one flips the objective and becomes harder because greedily moving toward the destination is often wrong. You have to explore and backtrack over simple paths to know whether a detour can still finish at the target with a longer total route.
+
+## Worked Example
+
+On a `3 x 3` matrix full of `1`s, the longest route from `(0, 0)` to `(2, 2)` can visit every cell exactly once before finishing, so the answer is `8` moves.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function longestPossibleRouteInAMatrix(mat, source, destination) {
+  const rowCount = mat.length;
+
+  if (rowCount === 0) {
+    return -1;
+  }
+
+  const columnCount = mat[0].length;
+  const visited = Array.from({ length: rowCount }, () => Array(columnCount).fill(false));
+  const [targetRow, targetColumn] = destination;
+  const directions = [
+    [-1, 0],
+    [1, 0],
+    [0, -1],
+    [0, 1],
+  ];
+
+  function search(row, column) {
+    if (
+      row < 0
+      || row >= rowCount
+      || column < 0
+      || column >= columnCount
+      || mat[row][column] === 0
+      || visited[row][column]
+    ) {
+      return Number.NEGATIVE_INFINITY;
+    }
+
+    if (row === targetRow && column === targetColumn) {
+      return 0;
+    }
+
+    visited[row][column] = true;
+    let best = Number.NEGATIVE_INFINITY;
+
+    for (const [rowDelta, columnDelta] of directions) {
+      best = Math.max(best, search(row + rowDelta, column + columnDelta));
+    }
+
+    visited[row][column] = false;
+
+    if (best === Number.NEGATIVE_INFINITY) {
+      return best;
+    }
+
+    return best + 1;
+  }
+
+  const [startRow, startColumn] = source;
+  const answer = search(startRow, startColumn);
+  return answer === Number.NEGATIVE_INFINITY ? -1 : answer;
+}
+```
+
+```ts
+export function longestPossibleRouteInAMatrix(
+  mat: number[][],
+  source: [number, number],
+  destination: [number, number],
+): number {
+  const rowCount = mat.length;
+
+  if (rowCount === 0) {
+    return -1;
+  }
+
+  const columnCount = mat[0].length;
+  const visited = Array.from({ length: rowCount }, () => Array<boolean>(columnCount).fill(false));
+  const [targetRow, targetColumn] = destination;
+  const directions: Array<[number, number]> = [
+    [-1, 0],
+    [1, 0],
+    [0, -1],
+    [0, 1],
+  ];
+
+  const search = (row: number, column: number): number => {
+    if (
+      row < 0
+      || row >= rowCount
+      || column < 0
+      || column >= columnCount
+      || mat[row][column] === 0
+      || visited[row][column]
+    ) {
+      return Number.NEGATIVE_INFINITY;
+    }
+
+    if (row === targetRow && column === targetColumn) {
+      return 0;
+    }
+
+    visited[row][column] = true;
+    let best = Number.NEGATIVE_INFINITY;
+
+    for (const [rowDelta, columnDelta] of directions) {
+      best = Math.max(best, search(row + rowDelta, column + columnDelta));
+    }
+
+    visited[row][column] = false;
+
+    if (best === Number.NEGATIVE_INFINITY) {
+      return best;
+    }
+
+    return best + 1;
+  };
+
+  const [startRow, startColumn] = source;
+  const answer = search(startRow, startColumn);
+  return answer === Number.NEGATIVE_INFINITY ? -1 : answer;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would the answer change if revisiting cells were allowed?
+- Why is this much harder than the shortest-path version on the same grid?
+- How would you also recover the cells in the longest route, not only its length?
+
+## Common Pitfalls
+
+- Forgetting to unmark `visited` during backtracking.
+- Using BFS even though the task is maximizing a simple path length.
+- Returning `0` for dead ends, which incorrectly treats impossible branches as valid short paths.

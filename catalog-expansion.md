@@ -1174,16 +1174,34 @@ This one-hundred-eighth expansion slice lifts the catalog from 597 to 605 entrie
 - Print all paths from a given source to a destination
 - Target Sum Combinations
 
+## Batch 109 added
+
+This one-hundred-ninth expansion slice lifts the catalog from 605 to 613 entries.
+
+- Find paths from corner cell to middle cell in maze
+- Maximum number possible by doing at-most K swaps
+- Rat in a Maze with multiple steps or jump allowed
+- Word Break Problem using Backtracking
+- Partition into k Equal Sum Subsets
+- Longest Possible Route in a Matrix
+- Shortest Safe route in a Matrix
+- Print all longest common sub-sequences in lexicographical order
+
 ## Next candidates from the same sources
 
-- The published catalog now reaches 605 entries on `main` after the first GeeksforGeeks Backtracking page slice.
+- The published catalog now reaches 613 entries on `main` after the second GeeksforGeeks Backtracking page slice.
 - The Trie Data Structure common-interview queue is exhausted in source order after the published batch-107 slice.
 - The GeeksforGeeks Square Root (Sqrt) Decomposition Algorithm page is a duplicate-only detour in source order: its overview article remains a semantic duplicate of the published `Square Root Decomposition` entry, so drafting advances to the GeeksforGeeks Backtracking page.
 - Batch 108 uses the verified destination title cleanup `Word Addition Cryptographic Puzzle` -> `Solving Cryptarithmetic Puzzles` and `Combinational Sum` -> `Target Sum Combinations`.
 - `Magnet Puzzle`, `Remove Invalid Parentheses`, `Check if a given string is sum-string`, `Find all Unique Subsets`, `Find if there is a path of more than k weight from a source`, and `Print all paths from a given source to a destination` already match their destination titles.
 - On the Backtracking page, `Permutations of a String`, `The Knight’s tour problem`, `Rat in a Maze`, `N Queen Problem`, `8 queen problem`, `Subset Sum problem`, `m Coloring Problem`, `Hamiltonian Cycle`, `Sudoku`, and `Find all subsets` remain duplicate-level coverage because equivalent local entries are already published.
 - The `Tug of War` source URL currently resolves to `Equal Partition`; it is skipped as a semantic collision with the published `Partition` coverage rather than drafted under a misleading new title.
-- The next backtracking work starts immediately after `Target Sum Combinations`, with `Warnsdorff's algorithm for Knight's tour problem` as the first unresolved duplicate check and the following route/grid problems as the likeliest clean continuation.
+- `Warnsdorff's algorithm for Knight's tour problem` remains duplicate-level coverage because the published `Knight Tour` entry already treats heuristic ordering, including Warnsdorff, as part of the same problem surface.
+- `N Queen in O(n) space`, `Printing all solutions in N-Queen Problem`, and `Power Set in Lexicographic order` remain duplicate-level variants of the published `N Queens` and subset-generation coverage, while the backtracking-page palindromic-partitions link resolves to problem coverage already represented by the published `Palindrome Partitioning` entry.
+- `Word Break Problem using Backtracking` remains distinct from the published `Word Break` and `Minimum Word Break` entries because the source article enumerates all valid segmentations rather than only checking feasibility or minimizing cuts.
+- Batch 109 uses the verified destination title cleanup `Rat in a Maze with multiple jump allowed` -> `Rat in a Maze with multiple steps or jump allowed`, `Partition of a set into K subsets with equal sum` -> `Partition into k Equal Sum Subsets`, `Longest Possible Route in a Matrix with Hurdles` -> `Longest Possible Route in a Matrix`, and `Shortest safe route in a path with landmines` -> `Shortest Safe route in a Matrix`.
+- `Find paths from corner cell to middle cell in maze`, `Maximum number possible by doing at-most K swaps`, `Word Break Problem using Backtracking`, and `Print all longest common sub-sequences in lexicographical order` already match their destination titles.
+- The next source-order research on the GeeksforGeeks Backtracking page begins immediately after `Print all longest common sub-sequences in lexicographical order`.
 - Batch 92 carries the vetted Dynamic Programming hard stretch through `Longest repeating and non-overlapping substring` and then consumes the clean `Advanced Concepts` absences `Count Ways To Assign Unique Cap To Every Person`, `Digit DP | Introduction`, and `Sum over Subsets | Dynamic Programming`.
 - The Dynamic Programming items skipped between `Program to find amount of water in a given glass` and `Largest Cross Bordered Square` remain already represented locally: `Longest Common Subsequence`, `Longest Increasing Subsequence`, `Edit Distance`, `0-1 Knapsack Problem`, `Partition Problem`, `Longest Palindromic Subsequence`, `Bellman-Ford Algorithm`, and `Floyd Warshall Algorithm`.
 - `The painter's partition problem` remains skipped because the local `Find minimum time to finish all jobs with given constraints` entry already covers that partition-minimax problem and includes the alias `painter partition with multiplier`.

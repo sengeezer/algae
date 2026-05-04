@@ -1,0 +1,155 @@
+---
+title: Maximum number possible by doing at-most K swaps
+slug: maximum-number-possible-by-doing-at-most-k-swaps
+category: Strings
+summary: Place the largest possible digit at each position, backtracking over every improving swap that can still lead to a better prefix within the remaining budget.
+description: "Maximum number possible by doing at-most K swaps is the backtracking string-optimization problem where each swap must be spent only on choices that can improve the resulting number."
+dataStructures:
+  - String
+  - Array
+techniques:
+  - Backtracking
+  - Greedy Pruning
+  - Recursion
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - maximum number with k swaps
+  - maximize number after swaps
+useCases:
+  - Practicing prefix-first optimization with backtracking
+  - Handling duplicate digits without missing optimal answers
+  - Distinguishing productive swaps from no-op exploration
+complexity:
+  time: O((n^2)^k)
+  space: O(k + n)
+  notes: "In the worst case each level explores many improving swaps, while recursion depth is bounded by the swap budget."
+interviewSignals:
+  - You are maximizing the resulting number, not counting swaps or paths.
+  - Only swaps that improve the current prefix matter.
+  - Repeated maximum digits can force multiple recursive branches.
+relatedSlugs:
+  - create-permutations
+  - generate-permutations
+  - next-greater-element
+provenance:
+  - title: "GeeksforGeeks - Maximum number possible by doing at-most K swaps"
+    href: https://www.geeksforgeeks.org/dsa/find-maximum-number-possible-by-doing-at-most-k-swaps/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This problem combines greedy thinking with controlled backtracking. The greedy part says each position should hold the largest digit still reachable. The backtracking part is needed because repeated max digits can produce different downstream opportunities, so one local choice is not always enough.
+
+## Worked Example
+
+For `s = "7599"` and `k = 2`, the optimal answer is `"9975"`. One valid sequence is swapping the `5` with the rightmost `9` to get `7995`, then swapping the `7` with the remaining `9` to get `9975`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function maximumNumberPossibleByDoingAtMostKSwaps(text, maxSwaps) {
+  const digits = text.split("");
+  let best = text;
+
+  function backtrack(index, remainingSwaps) {
+    const candidate = digits.join("");
+
+    if (candidate > best) {
+      best = candidate;
+    }
+
+    if (remainingSwaps === 0 || index === digits.length) {
+      return;
+    }
+
+    let maxDigit = digits[index];
+
+    for (let cursor = index + 1; cursor < digits.length; cursor += 1) {
+      if (digits[cursor] > maxDigit) {
+        maxDigit = digits[cursor];
+      }
+    }
+
+    if (maxDigit === digits[index]) {
+      backtrack(index + 1, remainingSwaps);
+      return;
+    }
+
+    for (let cursor = digits.length - 1; cursor > index; cursor -= 1) {
+      if (digits[cursor] !== maxDigit) {
+        continue;
+      }
+
+      [digits[index], digits[cursor]] = [digits[cursor], digits[index]];
+      backtrack(index + 1, remainingSwaps - 1);
+      [digits[index], digits[cursor]] = [digits[cursor], digits[index]];
+    }
+  }
+
+  backtrack(0, maxSwaps);
+  return best;
+}
+```
+
+```ts
+export function maximumNumberPossibleByDoingAtMostKSwaps(text: string, maxSwaps: number): string {
+  const digits = text.split("");
+  let best = text;
+
+  const backtrack = (index: number, remainingSwaps: number): void => {
+    const candidate = digits.join("");
+
+    if (candidate > best) {
+      best = candidate;
+    }
+
+    if (remainingSwaps === 0 || index === digits.length) {
+      return;
+    }
+
+    let maxDigit = digits[index];
+
+    for (let cursor = index + 1; cursor < digits.length; cursor += 1) {
+      if (digits[cursor] > maxDigit) {
+        maxDigit = digits[cursor];
+      }
+    }
+
+    if (maxDigit === digits[index]) {
+      backtrack(index + 1, remainingSwaps);
+      return;
+    }
+
+    for (let cursor = digits.length - 1; cursor > index; cursor -= 1) {
+      if (digits[cursor] !== maxDigit) {
+        continue;
+      }
+
+      [digits[index], digits[cursor]] = [digits[cursor], digits[index]];
+      backtrack(index + 1, remainingSwaps - 1);
+      [digits[index], digits[cursor]] = [digits[cursor], digits[index]];
+    }
+  };
+
+  backtrack(0, maxSwaps);
+  return best;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you modify the recursion to return one concrete swap sequence as well as the best number?
+- Why is it safe to skip swaps that do not improve the current digit?
+- How would you support inputs that may contain leading zeroes after swaps?
+
+## Common Pitfalls
+
+- Exploring all pair swaps even when the current digit is already optimal.
+- Forgetting that repeated maximum digits may lead to different later states.
+- Treating the result as a numeric type and losing leading-zero behavior that belongs to the string problem.

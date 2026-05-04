@@ -1,0 +1,126 @@
+---
+title: Word Break Problem using Backtracking
+slug: word-break-problem-using-backtracking
+category: Strings
+summary: Try every dictionary-backed prefix, append it to the current sentence, and backtrack so you enumerate every full segmentation instead of stopping at feasibility.
+description: "Word Break Problem using Backtracking is the sentence-enumeration variant of word break, where the recursion returns every valid dictionary segmentation of the input string."
+dataStructures:
+  - String
+  - Array
+  - Set
+techniques:
+  - Backtracking
+  - Depth-First Search
+  - Hashing
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - all word breaks
+  - enumerate word break sentences
+useCases:
+  - Producing every valid sentence decomposition of a token stream
+  - Contrasting enumeration backtracking with boolean prefix DP
+  - Practicing state restoration while building string outputs
+complexity:
+  time: O((2^n) * n)
+  space: O(n + dictionary)
+  notes: "The recursion may explore exponentially many prefix partitions, while the active sentence stack grows with the string length."
+interviewSignals:
+  - The task asks for all valid segmentations, not only a boolean answer.
+  - Dictionary words may be reused multiple times.
+  - Prefix checks drive the branching structure.
+relatedSlugs:
+  - word-break
+  - trie
+  - palindrome-partitioning
+provenance:
+  - title: "GeeksforGeeks - Word Break Problem using Backtracking"
+    href: https://www.geeksforgeeks.org/dsa/word-break-problem-using-backtracking/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is the natural follow-up once the standard Word Break feasibility question is understood. Instead of stopping as soon as one segmentation works, you keep exploring all valid prefixes and emit every full sentence that reaches the end of the string.
+
+## Worked Example
+
+For `s = "catsanddog"` and dictionary `{"cat", "cats", "and", "sand", "dog"}`, the valid answers are `"cat sand dog"` and `"cats and dog"`. Both survive because each recursive level keeps trying longer prefixes after a shorter valid one succeeds.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function wordBreakProblemUsingBacktracking(text, words) {
+  const dictionary = new Set(words);
+  const sentence = [];
+  const result = [];
+
+  function search(start) {
+    if (start === text.length) {
+      result.push(sentence.join(" "));
+      return;
+    }
+
+    for (let end = start + 1; end <= text.length; end += 1) {
+      const word = text.slice(start, end);
+
+      if (!dictionary.has(word)) {
+        continue;
+      }
+
+      sentence.push(word);
+      search(end);
+      sentence.pop();
+    }
+  }
+
+  search(0);
+  return result;
+}
+```
+
+```ts
+export function wordBreakProblemUsingBacktracking(text: string, words: string[]): string[] {
+  const dictionary = new Set(words);
+  const sentence: string[] = [];
+  const result: string[] = [];
+
+  const search = (start: number): void => {
+    if (start === text.length) {
+      result.push(sentence.join(" "));
+      return;
+    }
+
+    for (let end = start + 1; end <= text.length; end += 1) {
+      const word = text.slice(start, end);
+
+      if (!dictionary.has(word)) {
+        continue;
+      }
+
+      sentence.push(word);
+      search(end);
+      sentence.pop();
+    }
+  };
+
+  search(0);
+  return result;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you memoize suffix results to avoid recomputing the same tail repeatedly?
+- How would you return only the number of valid segmentations instead of the sentences themselves?
+- When would a trie be preferable to slicing every candidate substring directly?
+
+## Common Pitfalls
+
+- Reusing the boolean DP intuition and stopping after the first valid sentence.
+- Forgetting to pop the last word after each recursive call.
+- Using linear dictionary scans instead of constant-time membership checks.

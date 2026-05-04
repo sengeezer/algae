@@ -1,0 +1,187 @@
+---
+title: Print all longest common sub-sequences in lexicographical order
+slug: print-all-longest-common-sub-sequences-in-lexicographical-order
+category: Dynamic Programming
+summary: Build the LCS-length table first, then backtrack only through states that preserve the optimal length while deduplicating and sorting the resulting sequences.
+description: "Print all longest common sub-sequences in lexicographical order is the enumeration variant of LCS, combining dynamic programming for lengths with backtracking over the optimal subproblem frontier."
+dataStructures:
+  - String
+  - Matrix
+  - Set
+techniques:
+  - Dynamic Programming
+  - Backtracking
+  - Memoization
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - all lcs in sorted order
+  - lexicographic longest common subsequences
+useCases:
+  - Enumerating every optimal shared subsequence between two strings
+  - Reusing DP tables to prune a combinatorial reconstruction step
+  - Deduplicating multiple reconstruction paths that yield the same subsequence
+complexity:
+  time: O(m*n + outputCount * lcsLength * log(outputCount))
+  space: O(m*n + outputCount * lcsLength)
+  notes: "The DP table is polynomial, but reconstruction cost depends on how many distinct optimal subsequences actually exist."
+interviewSignals:
+  - You must output every longest common subsequence, not just the length.
+  - Lexicographical ordering matters.
+  - Multiple optimal DP branches may produce duplicate strings, so deduplication is required.
+relatedSlugs:
+  - longest-common-subsequence
+  - shortest-common-supersequence
+  - word-break-problem-using-backtracking
+provenance:
+  - title: "GeeksforGeeks - Print all longest common sub-sequences in lexicographical order"
+    href: https://www.geeksforgeeks.org/dsa/print-longest-common-sub-sequences-lexicographical-order/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This problem starts from standard LCS, then asks for reconstruction at full combinatorial scale. The DP table still tells you the best achievable length from every suffix pair, but you need a second pass to enumerate every string that actually achieves that optimum.
+
+## Worked Example
+
+For `"abc"` and `"bac"`, the LCS length is `2`. The valid longest common subsequences are `"ac"` and `"bc"`, and the required output order is `['ac', 'bc']`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function printAllLongestCommonSubSequencesInLexicographicalOrder(first, second) {
+  const rowCount = first.length;
+  const columnCount = second.length;
+  const dp = Array.from({ length: rowCount + 1 }, () => Array(columnCount + 1).fill(0));
+
+  for (let row = rowCount - 1; row >= 0; row -= 1) {
+    for (let column = columnCount - 1; column >= 0; column -= 1) {
+      if (first[row] === second[column]) {
+        dp[row][column] = dp[row + 1][column + 1] + 1;
+      } else {
+        dp[row][column] = Math.max(dp[row + 1][column], dp[row][column + 1]);
+      }
+    }
+  }
+
+  if (dp[0][0] === 0) {
+    return [];
+  }
+
+  const memo = new Map();
+
+  function build(row, column) {
+    const key = `${row}:${column}`;
+
+    if (memo.has(key)) {
+      return memo.get(key);
+    }
+
+    const result = new Set();
+
+    if (row === rowCount || column === columnCount) {
+      result.add("");
+    } else if (first[row] === second[column]) {
+      for (const suffix of build(row + 1, column + 1)) {
+        result.add(first[row] + suffix);
+      }
+    } else {
+      if (dp[row + 1][column] === dp[row][column]) {
+        for (const sequence of build(row + 1, column)) {
+          result.add(sequence);
+        }
+      }
+
+      if (dp[row][column + 1] === dp[row][column]) {
+        for (const sequence of build(row, column + 1)) {
+          result.add(sequence);
+        }
+      }
+    }
+
+    memo.set(key, result);
+    return result;
+  }
+
+  return [...build(0, 0)].filter((sequence) => sequence.length === dp[0][0]).sort();
+}
+```
+
+```ts
+export function printAllLongestCommonSubSequencesInLexicographicalOrder(
+  first: string,
+  second: string,
+): string[] {
+  const rowCount = first.length;
+  const columnCount = second.length;
+  const dp = Array.from({ length: rowCount + 1 }, () => Array<number>(columnCount + 1).fill(0));
+
+  for (let row = rowCount - 1; row >= 0; row -= 1) {
+    for (let column = columnCount - 1; column >= 0; column -= 1) {
+      if (first[row] === second[column]) {
+        dp[row][column] = dp[row + 1][column + 1] + 1;
+      } else {
+        dp[row][column] = Math.max(dp[row + 1][column], dp[row][column + 1]);
+      }
+    }
+  }
+
+  if (dp[0][0] === 0) {
+    return [];
+  }
+
+  const memo = new Map<string, Set<string>>();
+
+  const build = (row: number, column: number): Set<string> => {
+    const key = `${row}:${column}`;
+
+    if (memo.has(key)) {
+      return memo.get(key) ?? new Set<string>();
+    }
+
+    const result = new Set<string>();
+
+    if (row === rowCount || column === columnCount) {
+      result.add('');
+    } else if (first[row] === second[column]) {
+      for (const suffix of build(row + 1, column + 1)) {
+        result.add(first[row] + suffix);
+      }
+    } else {
+      if (dp[row + 1][column] === dp[row][column]) {
+        for (const sequence of build(row + 1, column)) {
+          result.add(sequence);
+        }
+      }
+
+      if (dp[row][column + 1] === dp[row][column]) {
+        for (const sequence of build(row, column + 1)) {
+          result.add(sequence);
+        }
+      }
+    }
+
+    memo.set(key, result);
+    return result;
+  };
+
+  return [...build(0, 0)].filter((sequence) => sequence.length === dp[0][0]).sort();
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you reduce memory if you needed only the LCS length and not the sequences?
+- Why does a `Set` matter during reconstruction even though the DP table already stores optimal lengths?
+- How would you stream the answers in sorted order without materializing the full list first?
+
+## Common Pitfalls
+
+- Reconstructing from both DP branches without deduplicating equal strings.
+- Printing every common subsequence instead of only those with maximal length.
+- Forgetting to sort the final answers lexicographically.
