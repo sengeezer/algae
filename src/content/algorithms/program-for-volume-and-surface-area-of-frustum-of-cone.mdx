@@ -1,0 +1,106 @@
+---
+title: Program for Volume and Surface area of Frustum of Cone
+slug: program-for-volume-and-surface-area-of-frustum-of-cone
+category: Mathematics
+summary: Compute the volume, curved surface area, and total surface area from the small radius, large radius, height, and slant height.
+description: "Program for Volume and Surface area of Frustum of Cone is the direct-formula 3D geometry helper that derives all key frustum measurements from its radii and heights."
+dataStructures:
+  - Number
+techniques:
+  - Direct Formula Application
+  - 3D Geometry
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - frustum of cone measurements
+  - volume and surface area of frustum
+useCases:
+  - Computing standard measurements for truncated cones in CAD or graphics helpers
+  - Solving 3D geometry prompts that ask for multiple frustum outputs at once
+  - Comparing curved-surface and total-surface formulas in solids problems
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: All three formulas are constant-time arithmetic once the radii, height, and slant height are known.
+interviewSignals:
+  - The prompt asks for volume and two different surface measures in one pass.
+  - The two radii correspond to the top and bottom circular faces of the frustum.
+  - Slant height is needed for the curved surface area, while vertical height is needed for volume.
+relatedSlugs:
+  - find-the-perimeter-of-a-cylinder
+  - volume
+  - area-of-a-circumscribed-circle-of-a-square
+provenance:
+  - title: "GeeksforGeeks - Program for Volume and Surface area of Frustum of Cone"
+    href: https://www.geeksforgeeks.org/dsa/program-for-volume-and-surface-area-of-frustum-of-cone/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This prompt combines three standard frustum measurements. The main interview detail is keeping the roles of vertical height and slant height separate: volume uses the vertical height, while curved surface area uses the slant height.
+
+## Worked Example
+
+For small radius `3`, big radius `8`, height `12`, and slant height `13`, the volume is about `1218.9374`, the curved surface area is about `449.2477`, and the total surface area is about `678.5840`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function programForVolumeAndSurfaceAreaOfFrustumOfCone(smallRadius, bigRadius, height, slantHeight) {
+  const values = [smallRadius, bigRadius, height, slantHeight];
+  if (!values.every(Number.isFinite) || values.some((value) => value < 0) || bigRadius < smallRadius) {
+    throw new RangeError("Frustum dimensions must be non-negative, with big radius at least the small radius");
+  }
+
+  const volume = (Math.PI * height * (smallRadius * smallRadius + bigRadius * bigRadius + smallRadius * bigRadius)) / 3;
+  const curvedSurfaceArea = Math.PI * slantHeight * (bigRadius + smallRadius);
+  const totalSurfaceArea = curvedSurfaceArea + Math.PI * (smallRadius * smallRadius + bigRadius * bigRadius);
+
+  return {
+    volume,
+    curvedSurfaceArea,
+    totalSurfaceArea,
+  };
+}
+```
+
+```ts
+export function programForVolumeAndSurfaceAreaOfFrustumOfCone(
+  smallRadius: number,
+  bigRadius: number,
+  height: number,
+  slantHeight: number,
+): { volume: number; curvedSurfaceArea: number; totalSurfaceArea: number } {
+  const values = [smallRadius, bigRadius, height, slantHeight];
+  if (!values.every(Number.isFinite) || values.some((value) => value < 0) || bigRadius < smallRadius) {
+    throw new RangeError('Frustum dimensions must be non-negative, with big radius at least the small radius');
+  }
+
+  const volume = (Math.PI * height * (smallRadius * smallRadius + bigRadius * bigRadius + smallRadius * bigRadius)) / 3;
+  const curvedSurfaceArea = Math.PI * slantHeight * (bigRadius + smallRadius);
+  const totalSurfaceArea = curvedSurfaceArea + Math.PI * (smallRadius * smallRadius + bigRadius * bigRadius);
+
+  return {
+    volume,
+    curvedSurfaceArea,
+    totalSurfaceArea,
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why does the volume formula include the mixed term `r * R`?
+- What changes if the prompt gives only radii and vertical height but not slant height?
+- How would you validate that a supplied slant height is geometrically consistent with the other dimensions?
+
+## Common Pitfalls
+
+- Mixing up the vertical height and the slant height.
+- Omitting the areas of the two circular faces when computing total surface area.
+- Reversing the big and small radii without validating the inputs.

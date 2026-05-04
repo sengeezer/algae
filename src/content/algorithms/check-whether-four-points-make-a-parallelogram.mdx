@@ -1,0 +1,149 @@
+---
+title: Check whether four points make a parallelogram
+slug: check-whether-four-points-make-a-parallelogram
+category: Mathematics
+summary: Detect one repeated midpoint among all six point pairs and reject degenerate collinear or duplicate-point cases.
+description: "Check whether four points make a parallelogram is the coordinate-geometry predicate that uses diagonal midpoint equality to validate an unordered four-point set."
+dataStructures:
+  - Array
+  - Map
+techniques:
+  - Coordinate Geometry
+  - Midpoint Invariant
+  - Degeneracy Detection
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - four points form a parallelogram
+  - parallelogram from four coordinates
+useCases:
+  - Validating quadrilateral shapes from unordered point sets
+  - Detecting when two segments can serve as diagonals of a parallelogram
+  - Screening out degenerate collinear or duplicate-point inputs in geometry helpers
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: There are only six point pairs, so the midpoint counting logic is constant time for four points.
+interviewSignals:
+  - The points arrive unordered.
+  - A valid parallelogram has diagonals that bisect each other.
+  - Collinear points can fake a repeated midpoint and must be rejected explicitly.
+relatedSlugs:
+  - find-all-possible-coordinates-of-parallelogram
+  - number-of-parallelograms-when-n-horizontal-parallel-lines-intersect-m-vertical-parallel-lines
+  - program-for-circumference-of-a-parallelogram
+provenance:
+  - title: "GeeksforGeeks - Check whether four points make a parallelogram"
+    href: https://www.geeksforgeeks.org/dsa/check-whether-four-points-make-parallelogram/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+The coordinates are unordered, so checking side vectors directly is awkward. The cleaner invariant is that the diagonals of a parallelogram bisect each other, which means exactly one midpoint appears twice among the six pairwise midpoints, provided the shape is not degenerate.
+
+## Worked Example
+
+The points `(0, 0)`, `(4, 0)`, `(1, 3)`, and `(5, 3)` form a parallelogram because the two diagonals share the same midpoint and the points are not collinear.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function checkWhetherFourPointsMakeAParallelogram(points) {
+  if (
+    !Array.isArray(points)
+    || points.length !== 4
+    || !points.every((point) => Array.isArray(point) && point.length === 2 && point.every(Number.isFinite))
+  ) {
+    throw new RangeError("Points must be an array of four coordinate pairs");
+  }
+
+  const uniquePointCount = new Set(points.map(([x, y]) => `${x},${y}`)).size;
+  if (uniquePointCount !== 4) {
+    return false;
+  }
+
+  const [firstPoint] = points;
+  const secondPoint = points.find(([x, y]) => x !== firstPoint[0] || y !== firstPoint[1]);
+  if (!secondPoint) {
+    return false;
+  }
+
+  const directionX = secondPoint[0] - firstPoint[0];
+  const directionY = secondPoint[1] - firstPoint[1];
+  const allCollinear = points.every(([x, y]) => directionX * (y - firstPoint[1]) === directionY * (x - firstPoint[0]));
+  if (allCollinear) {
+    return false;
+  }
+
+  const midpointCounts = new Map();
+  for (let left = 0; left < 4; left += 1) {
+    for (let right = left + 1; right < 4; right += 1) {
+      const key = `${points[left][0] + points[right][0]},${points[left][1] + points[right][1]}`;
+      midpointCounts.set(key, (midpointCounts.get(key) ?? 0) + 1);
+    }
+  }
+
+  return [...midpointCounts.values()].filter((count) => count === 2).length === 1;
+}
+```
+
+```ts
+type Point = [number, number];
+
+export function checkWhetherFourPointsMakeAParallelogram(points: Point[]): boolean {
+  if (
+    !Array.isArray(points)
+    || points.length !== 4
+    || !points.every((point) => point.length === 2 && point.every(Number.isFinite))
+  ) {
+    throw new RangeError('Points must be an array of four coordinate pairs');
+  }
+
+  const uniquePointCount = new Set(points.map(([x, y]) => `${x},${y}`)).size;
+  if (uniquePointCount !== 4) {
+    return false;
+  }
+
+  const [firstPoint] = points;
+  const secondPoint = points.find(([x, y]) => x !== firstPoint[0] || y !== firstPoint[1]);
+  if (!secondPoint) {
+    return false;
+  }
+
+  const directionX = secondPoint[0] - firstPoint[0];
+  const directionY = secondPoint[1] - firstPoint[1];
+  const allCollinear = points.every(
+    ([x, y]) => directionX * (y - firstPoint[1]) === directionY * (x - firstPoint[0]),
+  );
+  if (allCollinear) {
+    return false;
+  }
+
+  const midpointCounts = new Map<string, number>();
+  for (let left = 0; left < 4; left += 1) {
+    for (let right = left + 1; right < 4; right += 1) {
+      const key = `${points[left][0] + points[right][0]},${points[left][1] + points[right][1]}`;
+      midpointCounts.set(key, (midpointCounts.get(key) ?? 0) + 1);
+    }
+  }
+
+  return [...midpointCounts.values()].filter((count) => count === 2).length === 1;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why does midpoint equality of the diagonals characterize a parallelogram?
+- How would you rewrite this to avoid using a map at all?
+- What additional checks are needed to avoid accepting a degenerate line segment arrangement?
+
+## Common Pitfalls
+
+- Assuming the input points are already listed in polygon order.
+- Forgetting to reject duplicate points or fully collinear inputs.
+- Comparing floating midpoints directly instead of comparing doubled midpoint coordinates.

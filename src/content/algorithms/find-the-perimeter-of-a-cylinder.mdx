@@ -1,0 +1,83 @@
+---
+title: Find the perimeter of a cylinder
+slug: find-the-perimeter-of-a-cylinder
+category: Mathematics
+summary: Treat the side projection of the cylinder as a rectangle with width equal to the diameter and height equal to the cylinder height.
+description: "Find the perimeter of a cylinder is the direct-formula geometry helper that interprets cylinder perimeter as the perimeter of its side-view rectangle."
+dataStructures:
+  - Number
+techniques:
+  - Direct Formula Application
+  - Projection Simplification
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - cylinder perimeter
+  - perimeter of cylinder side view
+useCases:
+  - Basic 3D-shape formula prompts framed through 2D projections
+  - Small geometry helpers for shape diagrams and educational tools
+  - Distinguishing between curved-surface circumference and a projected perimeter prompt
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The source prompt uses the side projection of the cylinder, which becomes a rectangle of dimensions `diameter` by `height`.
+interviewSignals:
+  - The statement acknowledges that a 3D solid does not have perimeter in the usual 2D sense.
+  - The intended interpretation is the perimeter of the side-view rectangle.
+  - Diameter is provided directly, so no radius conversion is needed.
+relatedSlugs:
+  - program-for-volume-and-surface-area-of-frustum-of-cone
+  - volume
+  - program-to-find-circumference-of-a-circle
+provenance:
+  - title: "GeeksforGeeks - Find the perimeter of a cylinder"
+    href: https://www.geeksforgeeks.org/dsa/find-perimeter-cylinder/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+The trick here is interpretive rather than algebraic. A cylinder is three-dimensional, so it does not have a standard planar perimeter, but the source prompt defines the measure using the side projection, which is just a rectangle with dimensions `diameter` and `height`.
+
+## Worked Example
+
+For `diameter = 5` and `height = 10`, the perimeter is `2 * (5 + 10) = 30`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function findThePerimeterOfACylinder(diameter, height) {
+  if (!Number.isFinite(diameter) || !Number.isFinite(height) || diameter < 0 || height < 0) {
+    throw new RangeError("Diameter and height must be non-negative numbers");
+  }
+
+  return 2 * (diameter + height);
+}
+```
+
+```ts
+export function findThePerimeterOfACylinder(diameter: number, height: number): number {
+  if (!Number.isFinite(diameter) || !Number.isFinite(height) || diameter < 0 || height < 0) {
+    throw new RangeError('Diameter and height must be non-negative numbers');
+  }
+
+  return 2 * (diameter + height);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why is this called a perimeter problem even though the cylinder is 3D?
+- How does this differ from the circumference of the cylinder's circular base?
+- Would the formula change if the prompt used radius instead of diameter?
+
+## Common Pitfalls
+
+- Confusing this side-view perimeter with the circumference of the base circle.
+- Halving the diameter unnecessarily.
+- Forgetting that the formula comes from a rectangle, not from a curved surface length.
