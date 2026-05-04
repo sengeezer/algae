@@ -1,0 +1,83 @@
+---
+title: Find number of diagonals in n sided convex polygon
+slug: find-number-of-diagonals-in-n-sided-convex-polygon
+category: Mathematics
+summary: Count all non-adjacent vertex pairs with the formula `n * (n - 3) / 2`.
+description: "Find number of diagonals in n sided convex polygon is the constant-time counting formula that computes how many distinct diagonals a convex polygon has."
+dataStructures:
+  - Number
+techniques:
+  - Counting Formula
+  - Combinatorics
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - number of diagonals in convex polygon
+  - convex polygon diagonal count
+useCases:
+  - Counting non-edge vertex pairs in convex polygons
+  - Building geometry interview warmups around polygon structure
+  - Deriving combinatorial formulas from per-vertex reasoning
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: Each vertex connects to `n - 3` diagonals, but every diagonal is counted from both endpoints, so the total must be halved.
+interviewSignals:
+  - The polygon is convex, so every non-adjacent vertex pair is a valid diagonal.
+  - The intended move is counting pairs, not drawing or enumerating every segment.
+  - The final formula comes from a per-vertex count with double-count correction.
+relatedSlugs:
+  - area-of-a-polygon-with-given-n-ordered-vertices
+  - tangents-between-two-convex-polygons
+  - triangles-formed-from-a-set-of-lines-in-euclidean-plane
+provenance:
+  - title: "GeeksforGeeks - Find number of diagonals in n sided convex polygon"
+    href: https://www.geeksforgeeks.org/dsa/find-number-diagonals-n-sided-convex-polygon/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is a clean combinatorics-on-geometry prompt. From any vertex in a convex `n`-gon, you can connect to every other vertex except itself and the two adjacent neighbors, which leaves `n - 3` diagonal choices.
+
+## Worked Example
+
+For `n = 5`, the polygon has `5 * (5 - 3) / 2 = 5` diagonals.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function findNumberOfDiagonalsInNSidedConvexPolygon(sides) {
+  if (!Number.isInteger(sides) || sides < 3) {
+    throw new RangeError("A polygon must have at least three sides");
+  }
+
+  return (sides * (sides - 3)) / 2;
+}
+```
+
+```ts
+export function findNumberOfDiagonalsInNSidedConvexPolygon(sides: number): number {
+  if (!Number.isInteger(sides) || sides < 3) {
+    throw new RangeError('A polygon must have at least three sides');
+  }
+
+  return (sides * (sides - 3)) / 2;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why is convexity enough to guarantee that every non-adjacent vertex pair forms a diagonal?
+- How does this formula relate to `n choose 2` minus the polygon edges?
+- What answer should a triangle produce, and why?
+
+## Common Pitfalls
+
+- Forgetting to divide by `2` after counting from every vertex.
+- Allowing polygons with fewer than three sides as if they were valid inputs.
+- Confusing diagonals with all line segments between vertices, including edges.

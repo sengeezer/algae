@@ -1,0 +1,188 @@
+---
+title: Tangents between two Convex Polygons
+slug: tangents-between-two-convex-polygons
+category: Geometry
+summary: Search for the shared supporting lines that keep both convex polygons on one side and report the upper and lower tangents.
+description: "Tangents between two Convex Polygons is the common-tangent geometry routine that finds the upper and lower supporting lines joining two disjoint convex polygons."
+dataStructures:
+  - Array
+  - Object
+techniques:
+  - Computational Geometry
+  - Supporting Lines
+  - Cross Products
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - common tangents of convex polygons
+  - upper and lower tangents between convex polygons
+  - convex polygon supporting lines
+useCases:
+  - Stitching convex hull fragments during divide-and-conquer hull construction
+  - Finding outer visibility lines between disjoint convex shapes
+  - Teaching supporting-line reasoning in computational geometry
+complexity:
+  time: O(n * m * (n + m))
+  space: O(1)
+  notes: This local helper uses a direct candidate-pair scan instead of the more specialized tangent-walking procedure from the source article, which keeps the implementation compact and easy to validate.
+interviewSignals:
+  - The polygons are convex and disjoint, so common supporting lines are well-defined.
+  - The prompt wants upper and lower tangents, not every line through two vertices.
+  - Cross-product side checks are the cheapest way to verify a candidate support line.
+relatedSlugs:
+  - convex-hull-using-divide-and-conquer-algorithm
+  - quickhull-algorithm-for-convex-hull
+  - how-to-check-if-a-given-point-lies-inside-or-outside-a-polygon
+provenance:
+  - title: "GeeksforGeeks - Tangents between two Convex Polygons"
+    href: https://www.geeksforgeeks.org/dsa/tangents-two-convex-polygons/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This problem sits on the convex-hull boundary between geometry theory and implementation. The stable invariant is that a common tangent is a line through one vertex of each polygon such that every vertex of both polygons lies on the same side of that line.
+
+## Worked Example
+
+For polygons `[[2, 2], [3, 3], [5, 2], [4, 0], [3, 1]]` and `[[-1, 0], [0, 1], [1, 0], [0, -2]]`, the upper tangent joins `(0, 1)` to `(3, 3)` and the lower tangent joins `(0, -2)` to `(4, 0)`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function tangentsBetweenTwoConvexPolygons(polygonA, polygonB) {
+  if (!Array.isArray(polygonA) || !Array.isArray(polygonB) || polygonA.length < 3 || polygonB.length < 3) {
+    throw new RangeError("Both polygons must contain at least three vertices");
+  }
+
+  function centroidX(polygon) {
+    return polygon.reduce((sum, point) => sum + point.x, 0) / polygon.length;
+  }
+
+  const [leftPolygon, rightPolygon] = centroidX(polygonA) <= centroidX(polygonB)
+    ? [polygonA, polygonB]
+    : [polygonB, polygonA];
+
+  function side(lineStart, lineEnd, point) {
+    return (lineEnd.x - lineStart.x) * (point.y - lineStart.y) - (lineEnd.y - lineStart.y) * (point.x - lineStart.x);
+  }
+
+  function yScore(lineStart, lineEnd) {
+    return lineStart.y + lineEnd.y;
+  }
+
+  let upperTangent = null;
+  let lowerTangent = null;
+
+  for (const leftPoint of leftPolygon) {
+    for (const rightPoint of rightPolygon) {
+      let allNonPositive = true;
+      let allNonNegative = true;
+
+      for (const point of [...leftPolygon, ...rightPolygon]) {
+        const signedSide = side(leftPoint, rightPoint, point);
+        if (signedSide > 1e-9) {
+          allNonPositive = false;
+        }
+        if (signedSide < -1e-9) {
+          allNonNegative = false;
+        }
+      }
+
+      const candidate = { leftPoint, rightPoint };
+      if (allNonPositive && (!upperTangent || yScore(leftPoint, rightPoint) > yScore(upperTangent.leftPoint, upperTangent.rightPoint))) {
+        upperTangent = candidate;
+      }
+      if (allNonNegative && (!lowerTangent || yScore(leftPoint, rightPoint) < yScore(lowerTangent.leftPoint, lowerTangent.rightPoint))) {
+        lowerTangent = candidate;
+      }
+    }
+  }
+
+  if (!upperTangent || !lowerTangent) {
+    throw new RangeError("Polygons must be disjoint convex polygons with distinct upper and lower tangents");
+  }
+
+  return { upperTangent, lowerTangent };
+}
+```
+
+```ts
+type Point = { x: number; y: number };
+type Tangent = { leftPoint: Point; rightPoint: Point };
+
+export function tangentsBetweenTwoConvexPolygons(
+  polygonA: Point[],
+  polygonB: Point[],
+): { upperTangent: Tangent; lowerTangent: Tangent } {
+  if (polygonA.length < 3 || polygonB.length < 3) {
+    throw new RangeError('Both polygons must contain at least three vertices');
+  }
+
+  function centroidX(polygon: Point[]): number {
+    return polygon.reduce((sum, point) => sum + point.x, 0) / polygon.length;
+  }
+
+  const [leftPolygon, rightPolygon] = centroidX(polygonA) <= centroidX(polygonB)
+    ? [polygonA, polygonB]
+    : [polygonB, polygonA];
+
+  function side(lineStart: Point, lineEnd: Point, point: Point): number {
+    return (lineEnd.x - lineStart.x) * (point.y - lineStart.y) - (lineEnd.y - lineStart.y) * (point.x - lineStart.x);
+  }
+
+  function yScore(lineStart: Point, lineEnd: Point): number {
+    return lineStart.y + lineEnd.y;
+  }
+
+  let upperTangent: Tangent | null = null;
+  let lowerTangent: Tangent | null = null;
+
+  for (const leftPoint of leftPolygon) {
+    for (const rightPoint of rightPolygon) {
+      let allNonPositive = true;
+      let allNonNegative = true;
+
+      for (const point of [...leftPolygon, ...rightPolygon]) {
+        const signedSide = side(leftPoint, rightPoint, point);
+        if (signedSide > 1e-9) {
+          allNonPositive = false;
+        }
+        if (signedSide < -1e-9) {
+          allNonNegative = false;
+        }
+      }
+
+      const candidate: Tangent = { leftPoint, rightPoint };
+      if (allNonPositive && (!upperTangent || yScore(leftPoint, rightPoint) > yScore(upperTangent.leftPoint, upperTangent.rightPoint))) {
+        upperTangent = candidate;
+      }
+      if (allNonNegative && (!lowerTangent || yScore(leftPoint, rightPoint) < yScore(lowerTangent.leftPoint, lowerTangent.rightPoint))) {
+        lowerTangent = candidate;
+      }
+    }
+  }
+
+  if (!upperTangent || !lowerTangent) {
+    throw new RangeError('Polygons must be disjoint convex polygons with distinct upper and lower tangents');
+  }
+
+  return { upperTangent, lowerTangent };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you reduce the brute-force pair scan to the rotating walk described in the article?
+- Why does a support line qualify as a tangent once every point stays on one side?
+- How does this relate to merging hulls in divide-and-conquer convex hull algorithms?
+
+## Common Pitfalls
+
+- Assuming every line through one vertex of each polygon is a tangent candidate that works.
+- Forgetting to normalize which polygon is left versus right before classifying upper and lower tangents.
+- Using this on intersecting or non-convex polygons without additional checks.

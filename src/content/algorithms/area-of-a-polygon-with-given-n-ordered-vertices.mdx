@@ -1,0 +1,104 @@
+---
+title: Area of a polygon with given n ordered vertices
+slug: area-of-a-polygon-with-given-n-ordered-vertices
+category: Geometry
+summary: Use the shoelace formula over the ordered vertices and take half of the absolute signed sum.
+description: "Area of a polygon with given n ordered vertices is the shoelace-formula geometry routine that computes the area of any simple polygon from its ordered boundary points."
+dataStructures:
+  - Array
+  - Object
+techniques:
+  - Computational Geometry
+  - Shoelace Formula
+  - Cross Products
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - polygon area from ordered vertices
+  - shoelace formula
+  - area of polygon vertices
+useCases:
+  - Computing the area of arbitrary simple polygons from boundary coordinates
+  - Comparing polygon winding orders without changing the final area
+  - Building GIS or graphics helpers that work beyond fixed shapes
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The sign of the raw sum depends on clockwise versus counterclockwise order, so the final area uses the absolute value.
+interviewSignals:
+  - The vertices are already given in clockwise or anticlockwise order.
+  - The prompt is broader than triangle or rectangle area because the polygon can have any number of sides.
+  - The intended move is the shoelace formula rather than triangulating explicitly.
+relatedSlugs:
+  - area
+  - how-to-check-if-a-given-point-lies-inside-or-outside-a-polygon
+  - tangents-between-two-convex-polygons
+provenance:
+  - title: "GeeksforGeeks - Area of a polygon with given n ordered vertices"
+    href: https://www.geeksforgeeks.org/dsa/area-of-a-polygon-with-given-n-ordered-vertices/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is the canonical polygon-area prompt once the boundary vertices are already ordered. The main interview step is recognizing that the shoelace sum gives the signed area in one pass without needing to split the polygon into individual triangles manually.
+
+## Worked Example
+
+For the ordered square `(0, 0)`, `(4, 0)`, `(4, 4)`, `(0, 4)`, the shoelace formula returns area `16`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function areaOfAPolygonWithGivenNOrderedVertices(vertices) {
+  if (!Array.isArray(vertices) || vertices.length < 3) {
+    throw new RangeError("Polygon must contain at least three ordered vertices");
+  }
+
+  let doubledArea = 0;
+
+  for (let index = 0; index < vertices.length; index += 1) {
+    const current = vertices[index];
+    const next = vertices[(index + 1) % vertices.length];
+    doubledArea += current.x * next.y - next.x * current.y;
+  }
+
+  return Math.abs(doubledArea) / 2;
+}
+```
+
+```ts
+type Point = { x: number; y: number };
+
+export function areaOfAPolygonWithGivenNOrderedVertices(vertices: Point[]): number {
+  if (vertices.length < 3) {
+    throw new RangeError('Polygon must contain at least three ordered vertices');
+  }
+
+  let doubledArea = 0;
+
+  for (let index = 0; index < vertices.length; index += 1) {
+    const current = vertices[index];
+    const next = vertices[(index + 1) % vertices.length];
+    doubledArea += current.x * next.y - next.x * current.y;
+  }
+
+  return Math.abs(doubledArea) / 2;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why does reversing the vertex order flip the sign but not the final area?
+- How does the shoelace formula relate to summing triangle cross products against the origin?
+- What changes if the polygon vertices are not provided in boundary order?
+
+## Common Pitfalls
+
+- Forgetting the wraparound term from the last vertex back to the first.
+- Returning the signed result directly instead of its absolute value.
+- Treating this as the same problem as the simpler fixed-shape `Area` helper.

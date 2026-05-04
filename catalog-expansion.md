@@ -1313,11 +1313,19 @@ This one-hundred-twenty-third expansion slice lifts the catalog from 664 to 667 
 
 ## Batch 124 added
 
-This one-hundred-twenty-fourth expansion slice currently lifts the catalog locally from 667 to 670 entries.
+This one-hundred-twenty-fourth expansion slice lifts the catalog from 667 to 670 entries.
 
 - Pythagorean Quadruple
 - LS3/NS3 sphere generation algorithm and its implementation
 - How to check if a given point lies inside or outside a polygon?
+
+## Batch 125 added
+
+This one-hundred-twenty-fifth expansion slice currently lifts the catalog locally from 670 to 673 entries.
+
+- Area of a polygon with given n ordered vertices
+- Tangents between two Convex Polygons
+- Find number of diagonals in n sided convex polygon
 
 ## Next candidates from the same sources
 
@@ -1402,9 +1410,14 @@ This one-hundred-twenty-fourth expansion slice currently lifts the catalog local
 - `Pythagorean Quadruple`, `LS3/NS3 sphere generation algorithm and its implementation`, and `How to check if a given point lies inside or outside a polygon?` already match their destination titles.
 - `How to check if a given point lies inside or outside a polygon?` remains distinct from the published triangle-point and line-intersection coverage because it handles arbitrary polygons with a boundary-aware ray-casting test.
 - The GeeksforGeeks `3D Objects` section is now exhausted in source order after `LS3/NS3 sphere generation algorithm and its implementation`; drafting advances into `Polygon and Convex Hull`.
-- Batch 124 currently lifts the catalog locally from 667 to 670 entries with `Pythagorean Quadruple`, `LS3/NS3 sphere generation algorithm and its implementation`, and `How to check if a given point lies inside or outside a polygon?`.
+- Batch 124 lifts the catalog from 667 to 670 entries with `Pythagorean Quadruple`, `LS3/NS3 sphere generation algorithm and its implementation`, and `How to check if a given point lies inside or outside a polygon?`.
 - Focused `gray-matter` plus JavaScript-fence validators passed for all three batch-124 entries.
-- The next clean source-order titles are `Area of a polygon with given n ordered vertices`, `Tangents between two Convex Polygons`, and `Find number of diagonals in n sided convex polygon`, and they are currently absent by exact-title check.
+- `Area of a polygon with given n ordered vertices`, `Tangents between two Convex Polygons`, and `Find number of diagonals in n sided convex polygon` already match their destination titles.
+- `Area of a polygon with given n ordered vertices` remains distinct from the published `Area` entry because this prompt handles arbitrary ordered polygon boundaries with the shoelace formula instead of fixed-shape formulas.
+- The GeeksforGeeks `Polygon and Convex Hull` queue now advances past the already-published `Quickhull Algorithm for Convex Hull` entry after `Convex Hull using Jarvis’ Algorithm or Wrapping`.
+- Batch 125 currently lifts the catalog locally from 670 to 673 entries with `Area of a polygon with given n ordered vertices`, `Tangents between two Convex Polygons`, and `Find number of diagonals in n sided convex polygon`.
+- Focused `gray-matter` plus JavaScript-fence validators passed for all three batch-125 entries.
+- The next clean source-order titles are `Convex Hull using Jarvis’ Algorithm or Wrapping`, `Deleting points from Convex Hull`, and `Minimum area of a Polygon with three points given`, while `Quickhull Algorithm for Convex Hull` is already published exact coverage between them.
 - Batch 92 carries the vetted Dynamic Programming hard stretch through `Longest repeating and non-overlapping substring` and then consumes the clean `Advanced Concepts` absences `Count Ways To Assign Unique Cap To Every Person`, `Digit DP | Introduction`, and `Sum over Subsets | Dynamic Programming`.
 - The Dynamic Programming items skipped between `Program to find amount of water in a given glass` and `Largest Cross Bordered Square` remain already represented locally: `Longest Common Subsequence`, `Longest Increasing Subsequence`, `Edit Distance`, `0-1 Knapsack Problem`, `Partition Problem`, `Longest Palindromic Subsequence`, `Bellman-Ford Algorithm`, and `Floyd Warshall Algorithm`.
 - `The painter's partition problem` remains skipped because the local `Find minimum time to finish all jobs with given constraints` entry already covers that partition-minimax problem and includes the alias `painter partition with multiplier`.
