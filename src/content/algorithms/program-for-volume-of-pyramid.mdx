@@ -1,0 +1,155 @@
+---
+title: Program for volume of Pyramid
+slug: program-for-volume-of-pyramid
+category: Mathematics
+summary: Select the base-shape formula and multiply by the appropriate `1 / 3`, `1 / 6`, `5 / 6`, or `1` factor.
+description: "Program for volume of Pyramid is the formula-selection 3D geometry helper that computes volume for several common pyramid base shapes."
+dataStructures:
+  - Object
+techniques:
+  - Direct Formula Application
+  - Case Dispatch
+  - 3D Geometry
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - pyramid volume
+  - volume of square or triangular pyramid
+useCases:
+  - Computing volumes for multiple standard pyramid base types from one helper
+  - Comparing how base geometry changes the constant factor in pyramid formulas
+  - Supporting educational shape calculators with one dispatch point
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The source article bundles several common pyramid bases, so the local helper selects the correct formula from the base type.
+interviewSignals:
+  - The prompt title is generic, but the source content covers multiple base shapes.
+  - Each base type changes only the multiplicative constant or base-area term.
+  - The universal pattern is still base area times height divided by three.
+relatedSlugs:
+  - volume
+  - program-to-calculate-volume-of-ellipsoid
+  - calculate-volume-and-surface-area-of-a-cone
+provenance:
+  - title: "GeeksforGeeks - Program for volume of Pyramid"
+    href: https://www.geeksforgeeks.org/dsa/program-for-volume-of-pyramid/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+The source article is really a small family of pyramid-volume formulas. The clean local abstraction is to treat the problem as a base-shape dispatch where each case computes base area and then applies the `1 / 3` pyramid-volume factor.
+
+## Worked Example
+
+For a square pyramid with base side `4` and height `9`, the volume is `(1 / 3) * 4^2 * 9 = 48`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function programForVolumeOfPyramid(pyramid) {
+  if (!pyramid || typeof pyramid !== "object" || typeof pyramid.baseType !== "string") {
+    throw new RangeError("Pyramid description must include a baseType");
+  }
+
+  switch (pyramid.baseType) {
+    case "square": {
+      const { side, height } = pyramid;
+      if (![side, height].every(Number.isFinite) || side < 0 || height < 0) {
+        throw new RangeError("Square pyramid dimensions must be non-negative numbers");
+      }
+
+      return (side * side * height) / 3;
+    }
+    case "triangular": {
+      const { base, altitude, height } = pyramid;
+      if (![base, altitude, height].every(Number.isFinite) || base < 0 || altitude < 0 || height < 0) {
+        throw new RangeError("Triangular pyramid dimensions must be non-negative numbers");
+      }
+
+      return (base * altitude * height) / 6;
+    }
+    case "pentagonal": {
+      const { side, apothem, height } = pyramid;
+      if (![side, apothem, height].every(Number.isFinite) || side < 0 || apothem < 0 || height < 0) {
+        throw new RangeError("Pentagonal pyramid dimensions must be non-negative numbers");
+      }
+
+      return (5 * side * apothem * height) / 6;
+    }
+    case "hexagonal": {
+      const { side, apothem, height } = pyramid;
+      if (![side, apothem, height].every(Number.isFinite) || side < 0 || apothem < 0 || height < 0) {
+        throw new RangeError("Hexagonal pyramid dimensions must be non-negative numbers");
+      }
+
+      return side * apothem * height;
+    }
+    default:
+      throw new RangeError("Unsupported pyramid base type");
+  }
+}
+```
+
+```ts
+type SquarePyramid = { baseType: 'square'; side: number; height: number };
+type TriangularPyramid = { baseType: 'triangular'; base: number; altitude: number; height: number };
+type PentagonalPyramid = { baseType: 'pentagonal'; side: number; apothem: number; height: number };
+type HexagonalPyramid = { baseType: 'hexagonal'; side: number; apothem: number; height: number };
+
+type Pyramid = SquarePyramid | TriangularPyramid | PentagonalPyramid | HexagonalPyramid;
+
+export function programForVolumeOfPyramid(pyramid: Pyramid): number {
+  switch (pyramid.baseType) {
+    case 'square': {
+      const { side, height } = pyramid;
+      if (![side, height].every(Number.isFinite) || side < 0 || height < 0) {
+        throw new RangeError('Square pyramid dimensions must be non-negative numbers');
+      }
+
+      return (side * side * height) / 3;
+    }
+    case 'triangular': {
+      const { base, altitude, height } = pyramid;
+      if (![base, altitude, height].every(Number.isFinite) || base < 0 || altitude < 0 || height < 0) {
+        throw new RangeError('Triangular pyramid dimensions must be non-negative numbers');
+      }
+
+      return (base * altitude * height) / 6;
+    }
+    case 'pentagonal': {
+      const { side, apothem, height } = pyramid;
+      if (![side, apothem, height].every(Number.isFinite) || side < 0 || apothem < 0 || height < 0) {
+        throw new RangeError('Pentagonal pyramid dimensions must be non-negative numbers');
+      }
+
+      return (5 * side * apothem * height) / 6;
+    }
+    case 'hexagonal': {
+      const { side, apothem, height } = pyramid;
+      if (![side, apothem, height].every(Number.isFinite) || side < 0 || apothem < 0 || height < 0) {
+        throw new RangeError('Hexagonal pyramid dimensions must be non-negative numbers');
+      }
+
+      return side * apothem * height;
+    }
+  }
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why does every pyramid formula still look like base area times height divided by three?
+- How would you extend this to other regular polygon bases?
+- Why did the source article's approximate constants lead to slightly off decimal outputs?
+
+## Common Pitfalls
+
+- Using the source article's rounded constants instead of exact fractions.
+- Mixing up the pyramid height with a base-side measurement.
+- Treating all base shapes as if they used the same base-area formula.

@@ -1,0 +1,89 @@
+---
+title: Program to calculate volume of Ellipsoid
+slug: program-to-calculate-volume-of-ellipsoid
+category: Mathematics
+summary: Multiply the three semi-axes by `4 / 3 * pi` to get the ellipsoid volume.
+description: "Program to calculate volume of Ellipsoid is the direct-formula 3D geometry helper that computes enclosed volume from the three semi-axis lengths."
+dataStructures:
+  - Number
+techniques:
+  - Direct Formula Application
+  - 3D Geometry
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - ellipsoid volume
+  - volume of ellipsoid
+useCases:
+  - Computing volumes of stretched spheres and axis-aligned 3D solids
+  - Solving basic 3D geometry prompts with three independent radii
+  - Building formula helpers for graphics or CAD-style measurements
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The formula is the sphere volume formula extended by scaling along three perpendicular semi-axes.
+interviewSignals:
+  - The input uses three semi-axes rather than one radius.
+  - The intended solution is formula-based with no iteration.
+  - Negative axis lengths are invalid even in a simple direct helper.
+relatedSlugs:
+  - volume
+  - program-for-volume-and-surface-area-of-frustum-of-cone
+  - calculate-volume-and-surface-area-of-a-cone
+provenance:
+  - title: "GeeksforGeeks - Program to calculate volume of Ellipsoid"
+    href: https://www.geeksforgeeks.org/dsa/program-calculate-volume-ellipsoid/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is the ellipsoid analogue of the sphere-volume formula. The key observation is that the sphere's single radius is replaced by three independent semi-axes, so the volume scales by their product instead of by `r^3`.
+
+## Worked Example
+
+For semi-axes `2.3`, `3.4`, and `5.7`, the volume is about `186.711135`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function programToCalculateVolumeOfEllipsoid(axisA, axisB, axisC) {
+  const axes = [axisA, axisB, axisC];
+  if (!axes.every(Number.isFinite) || axes.some((axis) => axis < 0)) {
+    throw new RangeError("Ellipsoid semi-axes must be non-negative numbers");
+  }
+
+  return (4 * Math.PI * axisA * axisB * axisC) / 3;
+}
+```
+
+```ts
+export function programToCalculateVolumeOfEllipsoid(
+  axisA: number,
+  axisB: number,
+  axisC: number,
+): number {
+  const axes = [axisA, axisB, axisC];
+  if (!axes.every(Number.isFinite) || axes.some((axis) => axis < 0)) {
+    throw new RangeError('Ellipsoid semi-axes must be non-negative numbers');
+  }
+
+  return (4 * Math.PI * axisA * axisB * axisC) / 3;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How does this reduce to the sphere formula when all three semi-axes are equal?
+- Why are the inputs semi-axes rather than full diameters?
+- How would you compute the volume if the prompt gave diameters instead?
+
+## Common Pitfalls
+
+- Forgetting the `4 / 3` factor.
+- Using full axis lengths instead of semi-axis lengths.
+- Treating negative axis lengths as valid input.

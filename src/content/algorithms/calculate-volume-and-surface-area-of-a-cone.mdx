@@ -1,0 +1,95 @@
+---
+title: Calculate volume and surface area of a cone
+slug: calculate-volume-and-surface-area-of-a-cone
+category: Mathematics
+summary: Compute cone volume from radius and height, and compute total surface area from radius and slant height.
+description: "Calculate volume and surface area of a cone is the direct-formula 3D geometry helper that returns both the enclosed volume and the total outer area."
+dataStructures:
+  - Number
+techniques:
+  - Direct Formula Application
+  - 3D Geometry
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - cone volume and surface area
+  - measurements of a cone
+useCases:
+  - Solving combined volume-and-surface-area prompts for cones
+  - Extending a volume-only solid helper with surface measurements
+  - Teaching the difference between height-driven and slant-driven formulas
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: Volume uses the vertical height, while total surface area uses the slant height and includes the circular base.
+interviewSignals:
+  - The prompt combines two formulas that use different height notions.
+  - The existing generic volume helper is not enough because this prompt adds surface area.
+  - Slant height is required even when the vertical height is already given.
+relatedSlugs:
+  - volume
+  - program-for-volume-and-surface-area-of-frustum-of-cone
+  - find-the-perimeter-of-a-cylinder
+provenance:
+  - title: "GeeksforGeeks - Calculate volume and surface area of a cone"
+    href: https://www.geeksforgeeks.org/dsa/calculate-volume-surface-area-cone/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This prompt is distinct from a plain cone-volume helper because it combines two formulas with different inputs. The vertical height drives the volume, while the slant height drives the lateral part of the total surface area.
+
+## Worked Example
+
+For `radius = 5`, `slantHeight = 13`, and `height = 12`, the volume is about `314.159265` and the total surface area is about `282.743339`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function calculateVolumeAndSurfaceAreaOfACone(radius, slantHeight, height) {
+  const values = [radius, slantHeight, height];
+  if (!values.every(Number.isFinite) || values.some((value) => value < 0)) {
+    throw new RangeError("Cone dimensions must be non-negative numbers");
+  }
+
+  return {
+    volume: (Math.PI * radius * radius * height) / 3,
+    surfaceArea: Math.PI * radius * slantHeight + Math.PI * radius * radius,
+  };
+}
+```
+
+```ts
+export function calculateVolumeAndSurfaceAreaOfACone(
+  radius: number,
+  slantHeight: number,
+  height: number,
+): { volume: number; surfaceArea: number } {
+  const values = [radius, slantHeight, height];
+  if (!values.every(Number.isFinite) || values.some((value) => value < 0)) {
+    throw new RangeError('Cone dimensions must be non-negative numbers');
+  }
+
+  return {
+    volume: (Math.PI * radius * radius * height) / 3,
+    surfaceArea: Math.PI * radius * slantHeight + Math.PI * radius * radius,
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why does surface area use slant height while volume uses vertical height?
+- How would you derive the slant height if only radius and vertical height were given?
+- What would change if the prompt asked for curved surface area only?
+
+## Common Pitfalls
+
+- Reusing the vertical height in the surface-area formula.
+- Forgetting to include the base area in the total surface area.
+- Treating this as a duplicate of the volume-only cone helper.

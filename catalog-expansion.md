@@ -1289,11 +1289,19 @@ This one-hundred-twentieth expansion slice lifts the catalog from 655 to 658 ent
 
 ## Batch 121 added
 
-This one-hundred-twenty-first expansion slice currently lifts the catalog locally from 658 to 661 entries.
+This one-hundred-twenty-first expansion slice lifts the catalog from 658 to 661 entries.
 
 - Check whether four points make a parallelogram
 - Find the perimeter of a cylinder
 - Program for Volume and Surface area of Frustum of Cone
+
+## Batch 122 added
+
+This one-hundred-twenty-second expansion slice currently lifts the catalog locally from 661 to 664 entries.
+
+- Program to calculate volume of Ellipsoid
+- Program for volume of Pyramid
+- Calculate volume and surface area of a cone
 
 ## Next candidates from the same sources
 
@@ -1364,10 +1372,13 @@ This one-hundred-twenty-first expansion slice currently lifts the catalog locall
 - `Check whether four points make a parallelogram`, `Find the perimeter of a cylinder`, and `Program for Volume and Surface area of Frustum of Cone` already match their destination titles.
 - `Find the Missing Point of Parallelogram` is duplicate-level coverage of the freshly drafted `Find all possible coordinates of parallelogram` entry because it applies the same vector identity to return any one valid fourth point instead of enumerating all valid completions.
 - The GeeksforGeeks `Quadrilateral` section is now exhausted in source order after `Check whether four points make a parallelogram`; drafting advances into `3D Objects`.
-- Batch 121 currently lifts the catalog locally from 658 to 661 entries with `Check whether four points make a parallelogram`, `Find the perimeter of a cylinder`, and `Program for Volume and Surface area of Frustum of Cone`.
+- Batch 121 lifts the catalog from 658 to 661 entries with `Check whether four points make a parallelogram`, `Find the perimeter of a cylinder`, and `Program for Volume and Surface area of Frustum of Cone`.
 - Focused `gray-matter` plus JavaScript-fence validators passed for all three batch-121 entries.
+- `Program to calculate volume of Ellipsoid`, `Program for volume of Pyramid`, and `Calculate volume and surface area of a cone` already match their destination titles.
 - `Calculate volume and surface area of a cone` remains distinct from the published `Volume` entry because the local `Volume` article already covers cone volume but not the added cone surface-area prompt surface.
-- The next clean source-order titles are `Program to calculate volume of Ellipsoid`, `Program for volume of Pyramid`, and `Calculate volume and surface area of a cone`, and they are currently absent by exact-title check.
+- Batch 122 currently lifts the catalog locally from 661 to 664 entries with `Program to calculate volume of Ellipsoid`, `Program for volume of Pyramid`, and `Calculate volume and surface area of a cone`.
+- Focused `gray-matter` plus JavaScript-fence validators passed for all three batch-122 entries.
+- The next clean source-order titles are `Calculate Volume and Surface area Of Sphere`, `Program for Volume and Surface Area of Cuboid`, and `Program for Volume and Surface Area of Cube`, and they are currently absent by exact-title check.
 - Batch 92 carries the vetted Dynamic Programming hard stretch through `Longest repeating and non-overlapping substring` and then consumes the clean `Advanced Concepts` absences `Count Ways To Assign Unique Cap To Every Person`, `Digit DP | Introduction`, and `Sum over Subsets | Dynamic Programming`.
 - The Dynamic Programming items skipped between `Program to find amount of water in a given glass` and `Largest Cross Bordered Square` remain already represented locally: `Longest Common Subsequence`, `Longest Increasing Subsequence`, `Edit Distance`, `0-1 Knapsack Problem`, `Partition Problem`, `Longest Palindromic Subsequence`, `Bellman-Ford Algorithm`, and `Floyd Warshall Algorithm`.
 - `The painter's partition problem` remains skipped because the local `Find minimum time to finish all jobs with given constraints` entry already covers that partition-minimax problem and includes the alias `painter partition with multiplier`.
