@@ -1,0 +1,91 @@
+---
+title: Calculate Volume and Surface area Of Sphere
+slug: calculate-volume-and-surface-area-of-sphere
+category: Mathematics
+summary: Use the same radius to compute both `4 / 3 * pi * r^3` for volume and `4 * pi * r^2` for surface area.
+description: "Calculate Volume and Surface area Of Sphere is the direct-formula 3D geometry helper that returns both the enclosed volume and total outer area for a sphere."
+dataStructures:
+  - Number
+techniques:
+  - Direct Formula Application
+  - 3D Geometry
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - sphere volume and surface area
+  - measurements of a sphere
+useCases:
+  - Solving combined sphere-measurement prompts with one radius input
+  - Comparing how sphere volume and area scale differently with radius
+  - Building simple geometry utilities for rendering or physics exercises
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: Both formulas use the same radius, but one grows cubically and the other quadratically.
+interviewSignals:
+  - A single radius drives both outputs.
+  - The prompt combines two formulas with different exponents on the same input.
+  - This is distinct from a volume-only solid helper because it also asks for surface area.
+relatedSlugs:
+  - volume
+  - program-to-calculate-volume-of-ellipsoid
+  - calculate-volume-and-surface-area-of-a-cone
+provenance:
+  - title: "GeeksforGeeks - Calculate Volume and Surface area Of Sphere"
+    href: https://www.geeksforgeeks.org/dsa/calculate-volume-surface-area-sphere/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This prompt packages the two canonical sphere formulas together. The only real trick is not mixing up the quadratic surface-area formula with the cubic volume formula when both are driven by the same radius.
+
+## Worked Example
+
+For `radius = 5`, the volume is about `523.598776` and the surface area is about `314.159265`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function calculateVolumeAndSurfaceAreaOfSphere(radius) {
+  if (!Number.isFinite(radius) || radius < 0) {
+    throw new RangeError("Sphere radius must be a non-negative number");
+  }
+
+  return {
+    volume: (4 * Math.PI * radius ** 3) / 3,
+    surfaceArea: 4 * Math.PI * radius ** 2,
+  };
+}
+```
+
+```ts
+export function calculateVolumeAndSurfaceAreaOfSphere(
+  radius: number,
+): { volume: number; surfaceArea: number } {
+  if (!Number.isFinite(radius) || radius < 0) {
+    throw new RangeError('Sphere radius must be a non-negative number');
+  }
+
+  return {
+    volume: (4 * Math.PI * radius ** 3) / 3,
+    surfaceArea: 4 * Math.PI * radius ** 2,
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why does doubling the radius multiply volume by `8` but surface area by only `4`?
+- How does the sphere formula compare to the ellipsoid formula when all semi-axes are equal?
+- What changes if the prompt gives diameter instead of radius?
+
+## Common Pitfalls
+
+- Forgetting the `4 / 3` factor in the volume formula.
+- Reusing `r^3` in the surface-area formula.
+- Treating a negative radius as a valid physical input.

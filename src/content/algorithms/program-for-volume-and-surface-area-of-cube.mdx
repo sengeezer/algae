@@ -1,0 +1,91 @@
+---
+title: Program for Volume and Surface Area of Cube
+slug: program-for-volume-and-surface-area-of-cube
+category: Mathematics
+summary: Raise the side length to the third power for volume and multiply its square by `6` for total surface area.
+description: "Program for Volume and Surface Area of Cube is the direct-formula 3D geometry helper that returns both the enclosed volume and the total area of the six equal square faces."
+dataStructures:
+  - Number
+techniques:
+  - Direct Formula Application
+  - 3D Geometry
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - cube volume and surface area
+  - measurements of a cube
+useCases:
+  - Solving cube measurement prompts from a single side length
+  - Showing the specialization of cuboid formulas when all sides match
+  - Supporting simple geometry practice utilities with exact closed-form formulas
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: A cube is just the equal-edge special case of a cuboid, but the simplified formulas are common interview warmups.
+interviewSignals:
+  - A single edge length determines every face and the whole solid.
+  - The article's sample labels the volume line as `Area`, so the prompt surface benefits from a cleaner local normalization.
+  - Existing volume-only coverage is not enough because this prompt also asks for total surface area.
+relatedSlugs:
+  - volume
+  - program-for-surface-area-and-volume-of-cuboid
+  - calculate-volume-and-surface-area-of-sphere
+provenance:
+  - title: "GeeksforGeeks - Program for Volume and Surface Area of Cube"
+    href: https://www.geeksforgeeks.org/dsa/program-volume-surface-area-cube/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+Cube prompts are the simplest combined solid-measurement exercise. Because every face is the same square, the formulas collapse to one power for volume and one constant-factor multiple of the squared side for area.
+
+## Worked Example
+
+For `side = 3`, the volume is `27` and the total surface area is `54`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function programForVolumeAndSurfaceAreaOfCube(side) {
+  if (!Number.isFinite(side) || side < 0) {
+    throw new RangeError("Cube side length must be a non-negative number");
+  }
+
+  return {
+    volume: side ** 3,
+    surfaceArea: 6 * side ** 2,
+  };
+}
+```
+
+```ts
+export function programForVolumeAndSurfaceAreaOfCube(
+  side: number,
+): { volume: number; surfaceArea: number } {
+  if (!Number.isFinite(side) || side < 0) {
+    throw new RangeError('Cube side length must be a non-negative number');
+  }
+
+  return {
+    volume: side ** 3,
+    surfaceArea: 6 * side ** 2,
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How do these formulas follow immediately from the cuboid formulas?
+- What would change if the prompt asked for lateral surface area instead of total surface area?
+- Why is this still worth separating from the general cuboid helper in interview prep material?
+
+## Common Pitfalls
+
+- Using `6 * side ** 3` instead of `6 * side ** 2` for surface area.
+- Copying the source article's mislabeled output without clarifying that the first value is really volume.
+- Accepting negative side lengths as if they described a valid cube.

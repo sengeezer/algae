@@ -1,0 +1,95 @@
+---
+title: Program for Surface Area and Volume of Cuboid
+slug: program-for-surface-area-and-volume-of-cuboid
+category: Mathematics
+summary: Combine the three rectangular face products for total surface area, then multiply all three dimensions for volume.
+description: "Program for Surface Area and Volume of Cuboid is the direct-formula 3D geometry helper that computes both total surface area and enclosed volume from length, width, and height."
+dataStructures:
+  - Number
+techniques:
+  - Direct Formula Application
+  - 3D Geometry
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - cuboid surface area and volume
+  - measurements of a cuboid
+useCases:
+  - Returning both area and volume for rectangular solids in one helper
+  - Solving interview prompts that present the result as a two-value pair
+  - Teaching how each pair of cuboid faces contributes to total area
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The source article returns area first and volume second, but the local helper uses named fields for clarity.
+interviewSignals:
+  - The prompt gives three independent edge lengths.
+  - Surface area comes from summing the three distinct face rectangles twice.
+  - Existing volume-only coverage is not enough because this prompt adds total surface area.
+relatedSlugs:
+  - volume
+  - calculate-volume-and-surface-area-of-sphere
+  - program-for-volume-and-surface-area-of-cube
+provenance:
+  - title: "GeeksforGeeks - Program for Surface Area and Volume of Cuboid"
+    href: https://www.geeksforgeeks.org/dsa/program-for-volume-and-surface-area-of-cuboid/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+Cuboid prompts are the rectangular-box version of the combined-measurement pattern. The main check is whether you decompose the area into the three unique face rectangles and remember that each occurs twice.
+
+## Worked Example
+
+For `length = 2`, `width = 3`, and `height = 4`, the total surface area is `52` and the volume is `24`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function programForSurfaceAreaAndVolumeOfCuboid(length, width, height) {
+  const dimensions = [length, width, height];
+  if (!dimensions.every(Number.isFinite) || dimensions.some((dimension) => dimension < 0)) {
+    throw new RangeError("Cuboid dimensions must be non-negative numbers");
+  }
+
+  return {
+    surfaceArea: 2 * (length * width + width * height + length * height),
+    volume: length * width * height,
+  };
+}
+```
+
+```ts
+export function programForSurfaceAreaAndVolumeOfCuboid(
+  length: number,
+  width: number,
+  height: number,
+): { surfaceArea: number; volume: number } {
+  const dimensions = [length, width, height];
+  if (!dimensions.every(Number.isFinite) || dimensions.some((dimension) => dimension < 0)) {
+    throw new RangeError('Cuboid dimensions must be non-negative numbers');
+  }
+
+  return {
+    surfaceArea: 2 * (length * width + width * height + length * height),
+    volume: length * width * height,
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why are there only three distinct face-area products even though a cuboid has six faces?
+- How does this simplify when all three dimensions are equal?
+- If the prompt wanted lateral surface area only, which terms would remain?
+
+## Common Pitfalls
+
+- Forgetting the leading `2` in the total surface-area formula.
+- Mixing up the three face products or dropping one of them.
+- Returning positional results without documenting which value is area and which is volume.
