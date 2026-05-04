@@ -1,0 +1,154 @@
+---
+title: Check whether a point exists in circle sector or not
+slug: check-whether-a-point-exists-in-circle-sector-or-not
+category: Mathematics
+summary: Convert the point to a normalized polar angle and test both the radial bound and the wrapped sector angle interval.
+description: "Check whether a point exists in circle sector or not is the constant-time geometry predicate that combines a circle-radius test with an angular interval check."
+dataStructures:
+  - Number
+techniques:
+  - Coordinate Geometry
+  - Polar Coordinates
+  - Angle Normalization
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - point in circle sector
+  - circle sector containment
+useCases:
+  - Testing whether a click or marker lies inside a radial wedge
+  - Filtering polar-coordinate regions without scanning geometry meshes
+  - Validating game or chart sectors with wraparound angles
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The full check is constant time because it only needs one distance computation and one normalized angle comparison.
+interviewSignals:
+  - The sector is defined by a start angle and a percentage of the full circle.
+  - A correct solution must handle sectors that wrap past 360 degrees.
+  - "`atan2` is safer than `atan(y / x)` because it keeps quadrant information."
+relatedSlugs:
+  - program-to-find-circumference-of-a-circle
+  - check-if-two-given-circles-touch-or-intersect-each-other
+  - program-to-find-area-of-a-circular-segment
+provenance:
+  - title: "GeeksforGeeks - Check whether a point exists in circle sector or not."
+    href: https://www.geeksforgeeks.org/dsa/check-whether-point-exists-circle-sector-not/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This prompt looks like a plain distance check until the angular bound appears. The real interview move is to translate the Cartesian point into a normalized polar angle, convert the sector percentage into degrees, and then compare against a possibly wrapped interval.
+
+## Worked Example
+
+For `radius = 8`, `startAngle = 0`, and `percentage = 25`, the sector spans `90` degrees. The point `(3, 4)` has distance `5` from the origin and angle about `53.13` degrees, so it lies inside the sector.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function checkWhetherAPointExistsInCircleSectorOrNot(radius, startAngle, percentage, x, y) {
+  if (
+    !Number.isFinite(radius)
+    || !Number.isFinite(startAngle)
+    || !Number.isFinite(percentage)
+    || !Number.isFinite(x)
+    || !Number.isFinite(y)
+    || radius < 0
+    || percentage < 0
+    || percentage > 100
+  ) {
+    throw new RangeError("Invalid circle sector parameters");
+  }
+
+  const distanceSq = x * x + y * y;
+  if (distanceSq > radius * radius) {
+    return false;
+  }
+
+  const sectorAngle = (percentage / 100) * 360;
+  if (sectorAngle >= 360) {
+    return true;
+  }
+
+  const normalizeAngle = (angle) => ((angle % 360) + 360) % 360;
+  const pointAngle = normalizeAngle((Math.atan2(y, x) * 180) / Math.PI);
+  const normalizedStart = normalizeAngle(startAngle);
+  const normalizedEnd = normalizeAngle(normalizedStart + sectorAngle);
+
+  if (sectorAngle === 0) {
+    return distanceSq === 0;
+  }
+
+  if (normalizedStart <= normalizedEnd) {
+    return pointAngle >= normalizedStart && pointAngle <= normalizedEnd;
+  }
+
+  return pointAngle >= normalizedStart || pointAngle <= normalizedEnd;
+}
+```
+
+```ts
+export function checkWhetherAPointExistsInCircleSectorOrNot(
+  radius: number,
+  startAngle: number,
+  percentage: number,
+  x: number,
+  y: number,
+): boolean {
+  if (
+    !Number.isFinite(radius)
+    || !Number.isFinite(startAngle)
+    || !Number.isFinite(percentage)
+    || !Number.isFinite(x)
+    || !Number.isFinite(y)
+    || radius < 0
+    || percentage < 0
+    || percentage > 100
+  ) {
+    throw new RangeError('Invalid circle sector parameters');
+  }
+
+  const distanceSq = x * x + y * y;
+  if (distanceSq > radius * radius) {
+    return false;
+  }
+
+  const sectorAngle = (percentage / 100) * 360;
+  if (sectorAngle >= 360) {
+    return true;
+  }
+
+  const normalizeAngle = (angle: number): number => ((angle % 360) + 360) % 360;
+  const pointAngle = normalizeAngle((Math.atan2(y, x) * 180) / Math.PI);
+  const normalizedStart = normalizeAngle(startAngle);
+  const normalizedEnd = normalizeAngle(normalizedStart + sectorAngle);
+
+  if (sectorAngle === 0) {
+    return distanceSq === 0;
+  }
+
+  if (normalizedStart <= normalizedEnd) {
+    return pointAngle >= normalizedStart && pointAngle <= normalizedEnd;
+  }
+
+  return pointAngle >= normalizedStart || pointAngle <= normalizedEnd;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you adapt the check if the circle were centered at `(cx, cy)` instead of the origin?
+- Why is `atan2` preferable to `atan(y / x)` here?
+- How do you handle sectors that cross the `360 -> 0` wraparound boundary?
+
+## Common Pitfalls
+
+- Comparing radians from `atan` against degree-based sector inputs.
+- Forgetting to normalize negative angles from points below the x-axis.
+- Ignoring the wraparound case when the sector end angle exceeds `360` degrees.

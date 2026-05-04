@@ -1,0 +1,155 @@
+---
+title: Check if two given circles touch or intersect each other
+slug: check-if-two-given-circles-touch-or-intersect-each-other
+category: Mathematics
+summary: Compare the squared center distance against the squared sum and difference of the radii to classify the circle relation.
+description: "Check if two given circles touch or intersect each other is the constant-time geometry classification that uses center distance and radius thresholds to distinguish disjoint, tangent, intersecting, and contained circles."
+dataStructures:
+  - Object
+techniques:
+  - Coordinate Geometry
+  - Distance Squared Comparison
+  - Case Classification
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - circle intersection classification
+  - two circles overlap or touch
+useCases:
+  - Collision classification between circular regions
+  - Geometry filters that need tangent versus overlap handling
+  - Fast pruning in spatial simulation or rendering code
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: Comparing squared distances avoids the unnecessary square root from the textbook formula.
+interviewSignals:
+  - The prompt can be solved without computing the actual distance.
+  - Internal tangency and one-circle-inside-another cases need separate handling.
+  - Coincident circles are an important edge case even when the source article omits them.
+relatedSlugs:
+  - check-whether-a-point-exists-in-circle-sector-or-not
+  - program-to-find-circumference-of-a-circle
+  - find-if-two-rectangles-overlap
+provenance:
+  - title: "GeeksforGeeks - Check if two given circles touch or intersect each other"
+    href: https://www.geeksforgeeks.org/dsa/check-two-given-circles-touch-intersect/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is a small but useful geometry classifier. The direct formula for center distance is familiar, but the stronger interview move is to compare squared values and cleanly split the cases into coincident, contained, tangent, intersecting, or disjoint.
+
+## Worked Example
+
+Circle `A = (0, 0, 5)` and circle `B = (6, 0, 4)` intersect because the center distance is `6`, which is smaller than `5 + 4` and larger than `|5 - 4|`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function checkIfTwoGivenCirclesTouchOrIntersectEachOther(circleA, circleB) {
+  const values = [
+    circleA?.x,
+    circleA?.y,
+    circleA?.radius,
+    circleB?.x,
+    circleB?.y,
+    circleB?.radius,
+  ];
+
+  if (!values.every(Number.isFinite) || circleA.radius < 0 || circleB.radius < 0) {
+    throw new RangeError("Circle centers and radii must be finite, with non-negative radii");
+  }
+
+  const dx = circleA.x - circleB.x;
+  const dy = circleA.y - circleB.y;
+  const distanceSq = dx * dx + dy * dy;
+  const radiusSum = circleA.radius + circleB.radius;
+  const radiusDiff = Math.abs(circleA.radius - circleB.radius);
+
+  if (distanceSq === 0 && circleA.radius === circleB.radius) {
+    return "coincident";
+  }
+
+  if (distanceSq < radiusDiff * radiusDiff) {
+    return circleA.radius > circleB.radius ? "circle-b-inside-a" : "circle-a-inside-b";
+  }
+
+  if (distanceSq === radiusDiff * radiusDiff || distanceSq === radiusSum * radiusSum) {
+    return "touch";
+  }
+
+  if (distanceSq < radiusSum * radiusSum) {
+    return "intersect";
+  }
+
+  return "disjoint";
+}
+```
+
+```ts
+type Circle = {
+  x: number;
+  y: number;
+  radius: number;
+};
+
+export function checkIfTwoGivenCirclesTouchOrIntersectEachOther(
+  circleA: Circle,
+  circleB: Circle,
+): string {
+  const values = [
+    circleA?.x,
+    circleA?.y,
+    circleA?.radius,
+    circleB?.x,
+    circleB?.y,
+    circleB?.radius,
+  ];
+
+  if (!values.every(Number.isFinite) || circleA.radius < 0 || circleB.radius < 0) {
+    throw new RangeError('Circle centers and radii must be finite, with non-negative radii');
+  }
+
+  const dx = circleA.x - circleB.x;
+  const dy = circleA.y - circleB.y;
+  const distanceSq = dx * dx + dy * dy;
+  const radiusSum = circleA.radius + circleB.radius;
+  const radiusDiff = Math.abs(circleA.radius - circleB.radius);
+
+  if (distanceSq === 0 && circleA.radius === circleB.radius) {
+    return 'coincident';
+  }
+
+  if (distanceSq < radiusDiff * radiusDiff) {
+    return circleA.radius > circleB.radius ? 'circle-b-inside-a' : 'circle-a-inside-b';
+  }
+
+  if (distanceSq === radiusDiff * radiusDiff || distanceSq === radiusSum * radiusSum) {
+    return 'touch';
+  }
+
+  if (distanceSq < radiusSum * radiusSum) {
+    return 'intersect';
+  }
+
+  return 'disjoint';
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you distinguish internal tangency from external tangency?
+- Why is comparing squared distances preferable to computing `sqrt` first?
+- What classification should coincident circles return in your API?
+
+## Common Pitfalls
+
+- Missing the contained-circle case and treating it as an intersection.
+- Comparing floating distances for equality after taking a square root.
+- Forgetting that equal centers and equal radii represent infinitely many intersection points.

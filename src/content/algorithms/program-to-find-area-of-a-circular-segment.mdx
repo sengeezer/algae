@@ -1,0 +1,116 @@
+---
+title: Program to find area of a Circular Segment
+slug: program-to-find-area-of-a-circular-segment
+category: Mathematics
+summary: Compute the minor segment as sector area minus triangle area, then subtract from the full circle to get the major segment.
+description: "Program to find area of a Circular Segment is the direct-formula geometry helper that combines sector area and isosceles-triangle area to measure both circle segments."
+dataStructures:
+  - Number
+techniques:
+  - Trigonometry
+  - Direct Formula Application
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - circular segment area
+  - area of minor and major segment
+useCases:
+  - Computing segment areas for geometry and CAD-style calculations
+  - Converting circle-sector measurements into filled region sizes
+  - Supporting visualization code that renders chord-bounded areas
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The only nontrivial step is converting the central angle from degrees to radians before applying `sin`.
+interviewSignals:
+  - The segment area is not just the sector area; the triangle must be removed.
+  - The input angle is the minor-segment angle, so the major segment is the complement inside the full circle.
+  - Degree-to-radian conversion is easy to miss under interview pressure.
+relatedSlugs:
+  - program-to-find-circumference-of-a-circle
+  - area
+  - area-of-circumcircle-of-an-equilateral-triangle
+provenance:
+  - title: "GeeksforGeeks - Program to find area of a Circular Segment"
+    href: https://www.geeksforgeeks.org/dsa/program-find-area-circular-segment/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+The formula is a short composition of two standard geometry ideas: area of a sector and area of the isosceles triangle formed by the chord endpoints and the center. The prompt is useful because it checks whether you recognize that a segment is a sector with the triangle carved out.
+
+## Worked Example
+
+For `radius = 10` and `angle = 90`, the minor segment area is about `28.5398` and the major segment area is about `285.6195`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function programToFindAreaOfACircularSegment(radius, angleDegrees) {
+  if (
+    !Number.isFinite(radius)
+    || !Number.isFinite(angleDegrees)
+    || radius < 0
+    || angleDegrees < 0
+    || angleDegrees > 180
+  ) {
+    throw new RangeError("Radius must be non-negative and angle must be between 0 and 180 degrees");
+  }
+
+  const angleRadians = (angleDegrees * Math.PI) / 180;
+  const sectorArea = Math.PI * radius * radius * (angleDegrees / 360);
+  const triangleArea = 0.5 * radius * radius * Math.sin(angleRadians);
+  const minorSegmentArea = sectorArea - triangleArea;
+  const circleArea = Math.PI * radius * radius;
+
+  return {
+    minorSegmentArea,
+    majorSegmentArea: circleArea - minorSegmentArea,
+  };
+}
+```
+
+```ts
+export function programToFindAreaOfACircularSegment(
+  radius: number,
+  angleDegrees: number,
+): { minorSegmentArea: number; majorSegmentArea: number } {
+  if (
+    !Number.isFinite(radius)
+    || !Number.isFinite(angleDegrees)
+    || radius < 0
+    || angleDegrees < 0
+    || angleDegrees > 180
+  ) {
+    throw new RangeError('Radius must be non-negative and angle must be between 0 and 180 degrees');
+  }
+
+  const angleRadians = (angleDegrees * Math.PI) / 180;
+  const sectorArea = Math.PI * radius * radius * (angleDegrees / 360);
+  const triangleArea = 0.5 * radius * radius * Math.sin(angleRadians);
+  const minorSegmentArea = sectorArea - triangleArea;
+  const circleArea = Math.PI * radius * radius;
+
+  return {
+    minorSegmentArea,
+    majorSegmentArea: circleArea - minorSegmentArea,
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would the formula change if the input angle described the major segment instead?
+- Why does the triangle term use `sin(angle)` after converting the angle to radians?
+- What numeric issues matter if the angle is extremely close to `0` or `180` degrees?
+
+## Common Pitfalls
+
+- Returning the sector area directly without subtracting the triangle.
+- Passing degrees into `Math.sin` without converting to radians.
+- Accepting angles larger than `180` even though the prompt describes the minor segment.
