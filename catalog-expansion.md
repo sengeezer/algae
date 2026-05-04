@@ -1200,9 +1200,16 @@ This one-hundred-tenth expansion slice lifts the catalog from 613 to 621 entries
 - Search in a Row-wise and Column-wise Sorted 2D Array using Divide and Conquer algorithm
 - 8 puzzle Problem
 
+## Batch 111 added
+
+This one-hundred-eleventh expansion slice currently lifts the catalog locally from 621 to 623 entries.
+
+- Job Assignment Problem using Branch And Bound
+- Generate Binary Strings of length N using Branch and Bound
+
 ## Next candidates from the same sources
 
-- The catalog now reaches 621 entries locally after the GeeksforGeeks Divide and Conquer page and the first clean Branch and Bound item.
+- The published catalog now reaches 621 entries on `main` after the GeeksforGeeks Divide and Conquer page and the first clean Branch and Bound item.
 - The Trie Data Structure common-interview queue is exhausted in source order after the published batch-107 slice.
 - The GeeksforGeeks Square Root (Sqrt) Decomposition Algorithm page is a duplicate-only detour in source order: its overview article remains a semantic duplicate of the published `Square Root Decomposition` entry, so drafting advances to the GeeksforGeeks Backtracking page.
 - Batch 108 uses the verified destination title cleanup `Word Addition Cryptographic Puzzle` -> `Solving Cryptarithmetic Puzzles` and `Combinational Sum` -> `Target Sum Combinations`.
@@ -1223,7 +1230,10 @@ This one-hundred-tenth expansion slice lifts the catalog from 613 to 621 entries
 - On the Branch and Bound page, `Branch and Bound | Set 1 (Introduction with 0/1 Knapsack)`, `Branch and Bound | Set 2 (Implementation of 0/1 Knapsack)`, and `0/1 Knapsack using Least Cost Branch and Bound` remain duplicate-level coverage of the published `0/1 Knapsack` entry.
 - `8 puzzle Problem` is the first clean Branch and Bound item and already matches its destination title.
 - `Branch and Bound | Set 5 (N Queen Problem)` remains duplicate-level coverage of the published `N Queens` entry, while `Branch And Bound | Set 6 (Traveling Salesman Problem)` and `Travelling Salesman Problem (TSP) using Reduced Matrix Method` remain duplicate-level coverage of the published `Traveling Salesman Problem` entry.
-- The next clean Branch and Bound candidates after `8 puzzle Problem` are `Job Assignment Problem using Branch And Bound` and `Generate Binary Strings of length N using Branch and Bound`.
+- Batch 111 currently lifts the catalog locally from 621 to 623 entries with `Job Assignment Problem using Branch And Bound` and `Generate Binary Strings of length N using Branch and Bound`.
+- Both new Branch and Bound entries already match their destination titles.
+- `Job Assignment Problem using Branch And Bound` remains distinct from the published `Bipartite Matching` entry because it minimizes total weighted assignment cost rather than maximizing unweighted one-to-one matches.
+- The GeeksforGeeks Branch and Bound page is exhausted in source order after `Generate Binary Strings of length N using Branch and Bound`; the remaining tail is quick links only, so the next source branch now needs fresh vetting.
 - Batch 92 carries the vetted Dynamic Programming hard stretch through `Longest repeating and non-overlapping substring` and then consumes the clean `Advanced Concepts` absences `Count Ways To Assign Unique Cap To Every Person`, `Digit DP | Introduction`, and `Sum over Subsets | Dynamic Programming`.
 - The Dynamic Programming items skipped between `Program to find amount of water in a given glass` and `Largest Cross Bordered Square` remain already represented locally: `Longest Common Subsequence`, `Longest Increasing Subsequence`, `Edit Distance`, `0-1 Knapsack Problem`, `Partition Problem`, `Longest Palindromic Subsequence`, `Bellman-Ford Algorithm`, and `Floyd Warshall Algorithm`.
 - `The painter's partition problem` remains skipped because the local `Find minimum time to finish all jobs with given constraints` entry already covers that partition-minimax problem and includes the alias `painter partition with multiplier`.

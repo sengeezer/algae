@@ -1,0 +1,117 @@
+---
+title: Generate Binary Strings of length N using Branch and Bound
+slug: generate-binary-strings-of-length-n-using-branch-and-bound
+category: Strings
+summary: Grow partial prefixes level by level by appending `0` and `1` until every prefix reaches length `N`.
+description: "Generate Binary Strings of length N using Branch and Bound is the state-space-tree enumeration of all n-bit strings, typically implemented as queue-based expansion of partial prefixes."
+dataStructures:
+  - Queue
+  - String
+  - Array
+techniques:
+  - Branch and Bound
+  - Breadth-First Search
+  - State Space Tree
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - generate all binary strings of length n
+  - n bit string generation
+  - binary strings with state space tree
+useCases:
+  - Enumerating every binary pattern of a fixed width
+  - Demonstrating queue-based expansion of a state-space tree
+  - Contrasting level-order generation with recursive backtracking
+complexity:
+  time: O(n * 2^n)
+  space: O(n * 2^n)
+  notes: "There is no meaningful pruning here; the queue stores partial prefixes and the full output itself dominates the total work."
+interviewSignals:
+  - The prompt asks for every binary string, not just the count.
+  - Queue-driven or level-order generation is acceptable.
+  - The state space is a full binary tree of prefixes.
+relatedSlugs:
+  - breadth-first-search
+  - backtracking-search
+  - bitmask-dp
+provenance:
+  - title: "GeeksforGeeks - Generate Binary Strings of length N using Branch and Bound"
+    href: https://www.geeksforgeeks.org/dsa/generate-binary-strings-of-length-n-using-branch-and-bound/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This problem is mostly pedagogical. The source labels it branch and bound, but the real mechanic is breadth-first generation over a binary decision tree where each level fixes one more bit. That makes it a clean example of expanding partial solutions systematically until they become complete outputs.
+
+## Worked Example
+
+For `N = 3`, start from the empty prefix, then expand to `0` and `1`, then to `00`, `01`, `10`, `11`, and finally to `000` through `111`. The final output is `['000', '001', '010', '011', '100', '101', '110', '111']`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function generateBinaryStringsOfLengthNUsingBranchAndBound(length) {
+  if (!Number.isInteger(length) || length < 0) {
+    throw new RangeError("Length must be a non-negative integer");
+  }
+
+  const queue = [""];
+  const result = [];
+
+  while (queue.length > 0) {
+    const prefix = queue.shift();
+
+    if (prefix.length === length) {
+      result.push(prefix);
+      continue;
+    }
+
+    queue.push(`${prefix}0`);
+    queue.push(`${prefix}1`);
+  }
+
+  return result;
+}
+```
+
+```ts
+export function generateBinaryStringsOfLengthNUsingBranchAndBound(length: number): string[] {
+  if (!Number.isInteger(length) || length < 0) {
+    throw new RangeError('Length must be a non-negative integer');
+  }
+
+  const queue: string[] = [''];
+  const result: string[] = [];
+
+  while (queue.length > 0) {
+    const prefix = queue.shift() as string;
+
+    if (prefix.length === length) {
+      result.push(prefix);
+      continue;
+    }
+
+    queue.push(`${prefix}0`);
+    queue.push(`${prefix}1`);
+  }
+
+  return result;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why is this closer to plain state-space enumeration than to a pruning-heavy branch-and-bound search?
+- How would you switch from queue-based generation to recursive backtracking?
+- What changes if the strings must avoid consecutive `1` bits?
+
+## Common Pitfalls
+
+- Claiming the algorithm prunes the search when it actually enumerates every leaf.
+- Forgetting that the empty string is the only correct output when `N = 0`.
+- Building all integers first and converting them later when direct prefix expansion is clearer.

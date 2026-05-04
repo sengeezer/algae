@@ -1,0 +1,356 @@
+---
+title: Job Assignment Problem using Branch And Bound
+slug: job-assignment-problem-using-branch-and-bound
+category: Graphs
+summary: Expand the partial worker-to-job assignment with the lowest path cost plus optimistic remaining-row cost, so hopeless schedules fall behind immediately.
+description: "Job Assignment Problem using Branch And Bound is the minimum-cost one-to-one assignment search that explores partial schedules in best-first order using a lower bound on the remaining workers."
+dataStructures:
+  - Matrix
+  - Heap
+  - Array
+techniques:
+  - Branch and Bound
+  - Best-First Search
+  - Lower Bound Estimation
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - assignment problem with branch and bound
+  - minimum cost job assignment
+  - worker job assignment
+useCases:
+  - Assigning one worker to one job with different costs per pairing
+  - Showing why locally cheapest assignments can still miss the global minimum
+  - Comparing branch and bound against Hungarian algorithm or brute-force permutations
+complexity:
+  time: O(k * n^2)
+  space: O(k * n)
+  notes: "Here k is the number of live partial assignments actually explored. The row-minimum lower bound prunes aggressively in practice, but the worst-case search space still grows factorially."
+interviewSignals:
+  - The input is a square cost matrix with exactly one job per worker.
+  - A greedy row-by-row minimum can paint itself into a corner.
+  - The prompt asks for the exact minimum assignment, not just any feasible schedule.
+relatedSlugs:
+  - bipartite-matching
+  - 8-puzzle-problem
+  - traveling-salesman-problem
+provenance:
+  - title: "GeeksforGeeks - Job Assignment Problem using Branch And Bound"
+    href: https://www.geeksforgeeks.org/dsa/job-assignment-problem-using-branch-and-bound/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is the weighted version of "match people to tasks," where feasibility is easy but optimality is not. The useful interview move is to score each partial assignment by the cost already committed plus an optimistic lower bound for the workers that are still unassigned, then always expand the cheapest-looking live node first.
+
+## Worked Example
+
+For `[[9, 2, 7, 8], [6, 4, 3, 7], [5, 8, 1, 8], [7, 6, 9, 4]]`, the optimal assignment is worker `0 -> 1`, worker `1 -> 0`, worker `2 -> 2`, worker `3 -> 3`, for total cost `2 + 6 + 1 + 4 = 13`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function jobAssignmentProblemUsingBranchAndBound(costMatrix) {
+  const size = costMatrix.length;
+
+  if (size === 0 || !costMatrix.every((row) => row.length === size)) {
+    throw new RangeError("Cost matrix must be non-empty and square");
+  }
+
+  class MinHeap {
+    constructor() {
+      this.data = [];
+    }
+
+    size() {
+      return this.data.length;
+    }
+
+    push(value) {
+      this.data.push(value);
+      this.bubbleUp(this.data.length - 1);
+    }
+
+    pop() {
+      if (this.data.length === 0) {
+        return null;
+      }
+
+      const top = this.data[0];
+      const last = this.data.pop();
+
+      if (this.data.length > 0) {
+        this.data[0] = last;
+        this.bubbleDown(0);
+      }
+
+      return top;
+    }
+
+    bubbleUp(index) {
+      while (index > 0) {
+        const parent = Math.floor((index - 1) / 2);
+
+        if (this.data[parent].priority <= this.data[index].priority) {
+          break;
+        }
+
+        [this.data[parent], this.data[index]] = [this.data[index], this.data[parent]];
+        index = parent;
+      }
+    }
+
+    bubbleDown(index) {
+      while (true) {
+        let candidate = index;
+        const leftChild = index * 2 + 1;
+        const rightChild = index * 2 + 2;
+
+        if (leftChild < this.data.length && this.data[leftChild].priority < this.data[candidate].priority) {
+          candidate = leftChild;
+        }
+
+        if (rightChild < this.data.length && this.data[rightChild].priority < this.data[candidate].priority) {
+          candidate = rightChild;
+        }
+
+        if (candidate === index) {
+          break;
+        }
+
+        [this.data[index], this.data[candidate]] = [this.data[candidate], this.data[index]];
+        index = candidate;
+      }
+    }
+  }
+
+  function lowerBound(nextWorker, assignedJobs) {
+    let bound = 0;
+
+    for (let worker = nextWorker; worker < size; worker += 1) {
+      let rowMinimum = Number.POSITIVE_INFINITY;
+
+      for (let job = 0; job < size; job += 1) {
+        if (!assignedJobs[job]) {
+          rowMinimum = Math.min(rowMinimum, costMatrix[worker][job]);
+        }
+      }
+
+      bound += rowMinimum;
+    }
+
+    return bound;
+  }
+
+  const heap = new MinHeap();
+  const initialAssigned = new Array(size).fill(false);
+  heap.push({
+    worker: 0,
+    assignedJobs: initialAssigned,
+    chosenJobs: [],
+    pathCost: 0,
+    priority: lowerBound(0, initialAssigned),
+  });
+
+  while (heap.size() > 0) {
+    const current = heap.pop();
+
+    if (current.worker === size) {
+      return {
+        cost: current.pathCost,
+        assignment: current.chosenJobs.map((job, worker) => [worker, job]),
+      };
+    }
+
+    for (let job = 0; job < size; job += 1) {
+      if (current.assignedJobs[job]) {
+        continue;
+      }
+
+      const nextAssignedJobs = current.assignedJobs.slice();
+      nextAssignedJobs[job] = true;
+
+      const nextChosenJobs = [...current.chosenJobs, job];
+      const nextPathCost = current.pathCost + costMatrix[current.worker][job];
+      const nextWorker = current.worker + 1;
+
+      heap.push({
+        worker: nextWorker,
+        assignedJobs: nextAssignedJobs,
+        chosenJobs: nextChosenJobs,
+        pathCost: nextPathCost,
+        priority: nextPathCost + lowerBound(nextWorker, nextAssignedJobs),
+      });
+    }
+  }
+
+  return null;
+}
+```
+
+```ts
+type AssignmentResult = {
+  cost: number;
+  assignment: Array<[number, number]>;
+};
+
+type SearchNode = {
+  worker: number;
+  assignedJobs: boolean[];
+  chosenJobs: number[];
+  pathCost: number;
+  priority: number;
+};
+
+export function jobAssignmentProblemUsingBranchAndBound(costMatrix: number[][]): AssignmentResult | null {
+  const size = costMatrix.length;
+
+  if (size === 0 || !costMatrix.every((row) => row.length === size)) {
+    throw new RangeError('Cost matrix must be non-empty and square');
+  }
+
+  class MinHeap {
+    private data: SearchNode[] = [];
+
+    size(): number {
+      return this.data.length;
+    }
+
+    push(value: SearchNode): void {
+      this.data.push(value);
+      this.bubbleUp(this.data.length - 1);
+    }
+
+    pop(): SearchNode | null {
+      if (this.data.length === 0) {
+        return null;
+      }
+
+      const top = this.data[0];
+      const last = this.data.pop() as SearchNode;
+
+      if (this.data.length > 0) {
+        this.data[0] = last;
+        this.bubbleDown(0);
+      }
+
+      return top;
+    }
+
+    private bubbleUp(index: number): void {
+      while (index > 0) {
+        const parent = Math.floor((index - 1) / 2);
+
+        if (this.data[parent].priority <= this.data[index].priority) {
+          break;
+        }
+
+        [this.data[parent], this.data[index]] = [this.data[index], this.data[parent]];
+        index = parent;
+      }
+    }
+
+    private bubbleDown(index: number): void {
+      while (true) {
+        let candidate = index;
+        const leftChild = index * 2 + 1;
+        const rightChild = index * 2 + 2;
+
+        if (leftChild < this.data.length && this.data[leftChild].priority < this.data[candidate].priority) {
+          candidate = leftChild;
+        }
+
+        if (rightChild < this.data.length && this.data[rightChild].priority < this.data[candidate].priority) {
+          candidate = rightChild;
+        }
+
+        if (candidate === index) {
+          break;
+        }
+
+        [this.data[index], this.data[candidate]] = [this.data[candidate], this.data[index]];
+        index = candidate;
+      }
+    }
+  }
+
+  const lowerBound = (nextWorker: number, assignedJobs: boolean[]): number => {
+    let bound = 0;
+
+    for (let worker = nextWorker; worker < size; worker += 1) {
+      let rowMinimum = Number.POSITIVE_INFINITY;
+
+      for (let job = 0; job < size; job += 1) {
+        if (!assignedJobs[job]) {
+          rowMinimum = Math.min(rowMinimum, costMatrix[worker][job]);
+        }
+      }
+
+      bound += rowMinimum;
+    }
+
+    return bound;
+  };
+
+  const heap = new MinHeap();
+  const initialAssigned = new Array<boolean>(size).fill(false);
+  heap.push({
+    worker: 0,
+    assignedJobs: initialAssigned,
+    chosenJobs: [],
+    pathCost: 0,
+    priority: lowerBound(0, initialAssigned),
+  });
+
+  while (heap.size() > 0) {
+    const current = heap.pop() as SearchNode;
+
+    if (current.worker === size) {
+      return {
+        cost: current.pathCost,
+        assignment: current.chosenJobs.map((job, worker) => [worker, job] as [number, number]),
+      };
+    }
+
+    for (let job = 0; job < size; job += 1) {
+      if (current.assignedJobs[job]) {
+        continue;
+      }
+
+      const nextAssignedJobs = current.assignedJobs.slice();
+      nextAssignedJobs[job] = true;
+
+      const nextChosenJobs = [...current.chosenJobs, job];
+      const nextPathCost = current.pathCost + costMatrix[current.worker][job];
+      const nextWorker = current.worker + 1;
+
+      heap.push({
+        worker: nextWorker,
+        assignedJobs: nextAssignedJobs,
+        chosenJobs: nextChosenJobs,
+        pathCost: nextPathCost,
+        priority: nextPathCost + lowerBound(nextWorker, nextAssignedJobs),
+      });
+    }
+  }
+
+  return null;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why is the row-minimum estimate admissible even though it may reuse the same job in multiple rows?
+- How does this compare with the Hungarian algorithm on dense cost matrices?
+- How would you strengthen the lower bound so more subtrees are pruned early?
+
+## Common Pitfalls
+
+- Treating this as maximum bipartite matching even though the objective here is minimum total cost.
+- Using a lower bound that is not actually optimistic, which can break best-first correctness.
+- Committing to the locally cheapest job for each worker without considering downstream conflicts.
