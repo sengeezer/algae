@@ -1,0 +1,83 @@
+---
+title: Number of rectangles in N*M grid
+slug: number-of-rectangles-in-n-m-grid
+category: Mathematics
+summary: Count rectangles by choosing two distinct vertical grid lines and two distinct horizontal grid lines.
+description: "Number of rectangles in N*M grid is the combinatorial counting problem that turns a grid into line choices instead of enumerating every sub-rectangle directly."
+dataStructures:
+  - Number
+techniques:
+  - Combinatorics
+  - Closed Form Formula
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - rectangles in grid
+  - count rectangles in grid
+useCases:
+  - Counting sub-rectangles in grid-based geometry or DP problems
+  - Replacing nested enumeration with a closed-form combinatorial count
+  - Contrasting rectangle counts with related square-counting variants
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The closed form comes from choosing two of the `N + 1` horizontal lines and two of the `M + 1` vertical lines.
+interviewSignals:
+  - The prompt asks for the total count, not to list the rectangles.
+  - The direct nested scan is recognizable but unnecessary once the line-choice model is seen.
+  - The rectangle and square variants are related but not identical.
+relatedSlugs:
+  - how-to-check-if-given-four-points-form-a-square
+  - program-for-area-and-perimeter-of-rectangle
+  - sum-of-areas-of-rectangles-possible-for-an-array
+provenance:
+  - title: "GeeksforGeeks - Number of rectangles in N*M grid"
+    href: https://www.geeksforgeeks.org/dsa/number-rectangles-nm-grid/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is a standard recognition problem: the brute-force scan over all sizes works, but the cleaner solution is to stop thinking about rectangles as filled regions and instead think about choosing their boundary lines. A rectangle is determined by any two distinct horizontal lines and any two distinct vertical lines.
+
+## Worked Example
+
+For `N = 2` and `M = 2`, the total is `9`: four `1 x 1` rectangles, two `1 x 2`, two `2 x 1`, and one `2 x 2` rectangle.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function numberOfRectanglesInNMGrid(rows, columns) {
+  if (!Number.isInteger(rows) || !Number.isInteger(columns) || rows < 0 || columns < 0) {
+    throw new RangeError("Grid dimensions must be non-negative integers");
+  }
+
+  return (rows * (rows + 1) * columns * (columns + 1)) / 4;
+}
+```
+
+```ts
+export function numberOfRectanglesInNMGrid(rows: number, columns: number): number {
+  if (!Number.isInteger(rows) || !Number.isInteger(columns) || rows < 0 || columns < 0) {
+    throw new RangeError('Grid dimensions must be non-negative integers');
+  }
+
+  return (rows * (rows + 1) * columns * (columns + 1)) / 4;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you count only squares instead of all rectangles?
+- Why does the combinatorial view immediately imply the `O(1)` formula?
+- How would you handle extremely large dimensions where overflow matters?
+
+## Common Pitfalls
+
+- Mixing up rows and columns with the number of grid lines.
+- Re-deriving the answer with nested loops when the closed form is already available.
+- Forgetting that zero-sized dimensions should be rejected or treated consistently.

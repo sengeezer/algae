@@ -1,0 +1,127 @@
+---
+title: Check if given four points form a square
+slug: check-if-given-four-points-form-a-square
+category: Mathematics
+summary: Check that the four smallest pairwise squared distances are equal non-zero sides and the two largest are equal diagonals.
+description: "Check if given four points form a square is the constant-time geometry predicate that verifies side equality and diagonal structure from four planar points."
+dataStructures:
+  - Array
+techniques:
+  - Coordinate Geometry
+  - Distance Squared Comparison
+  - Case Normalization
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - four points form a square
+  - square from four coordinates
+useCases:
+  - Validating square geometry from unordered point sets
+  - Avoiding square roots when only distance equality matters
+  - Distinguishing squares from rhombi or repeated-point degeneracy
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: There are only six pairwise distances, so the full check is constant time even after sorting them.
+interviewSignals:
+  - The input is four unordered points rather than side lengths.
+  - Equal side lengths alone are not enough because a rhombus can pass that test.
+  - Squared distances are sufficient and avoid unnecessary floating-point work.
+relatedSlugs:
+  - find-if-two-rectangles-overlap
+  - check-whether-a-given-point-lies-inside-a-rectangle-or-not
+  - euclidean-distance
+provenance:
+  - title: "GeeksforGeeks - Check if given four points form a square"
+    href: https://www.geeksforgeeks.org/dsa/check-given-four-points-form-square/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+The prompt sounds shape-specific, but the real trick is to normalize away the input order. Once you compute all six pairwise squared distances, a valid square has exactly four equal non-zero side distances and two equal diagonal distances, with each diagonal equal to twice a side distance.
+
+## Worked Example
+
+For points `[20, 10]`, `[10, 20]`, `[20, 20]`, and `[10, 10]`, the four side distances are equal and the two diagonals match, so the points form a square.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function checkIfGivenFourPointsFormASquare(p1, p2, p3, p4) {
+  function distSq(a, b) {
+    const dx = a[0] - b[0];
+    const dy = a[1] - b[1];
+    return dx * dx + dy * dy;
+  }
+
+  const distances = [
+    distSq(p1, p2),
+    distSq(p1, p3),
+    distSq(p1, p4),
+    distSq(p2, p3),
+    distSq(p2, p4),
+    distSq(p3, p4),
+  ].sort((left, right) => left - right);
+
+  return (
+    distances[0] > 0
+    && distances[0] === distances[1]
+    && distances[1] === distances[2]
+    && distances[2] === distances[3]
+    && distances[4] === distances[5]
+    && distances[4] === 2 * distances[0]
+  );
+}
+```
+
+```ts
+type Point = [number, number];
+
+export function checkIfGivenFourPointsFormASquare(
+  p1: Point,
+  p2: Point,
+  p3: Point,
+  p4: Point,
+): boolean {
+  const distSq = (a: Point, b: Point): number => {
+    const dx = a[0] - b[0];
+    const dy = a[1] - b[1];
+    return dx * dx + dy * dy;
+  };
+
+  const distances = [
+    distSq(p1, p2),
+    distSq(p1, p3),
+    distSq(p1, p4),
+    distSq(p2, p3),
+    distSq(p2, p4),
+    distSq(p3, p4),
+  ].sort((left, right) => left - right);
+
+  return (
+    distances[0] > 0
+    && distances[0] === distances[1]
+    && distances[1] === distances[2]
+    && distances[2] === distances[3]
+    && distances[4] === distances[5]
+    && distances[4] === 2 * distances[0]
+  );
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why is comparing squared distances better than taking square roots here?
+- How would you distinguish a square from a general rectangle if the side lengths were not equal?
+- What happens if two of the input points are identical?
+
+## Common Pitfalls
+
+- Checking only that four sides are equal and forgetting the diagonal condition.
+- Assuming the points arrive in cyclic order.
+- Using floating-point distances when integer squared distances are enough.

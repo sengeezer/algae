@@ -1,0 +1,83 @@
+---
+title: Program to find Circumference of a Circle
+slug: program-to-find-circumference-of-a-circle
+category: Mathematics
+summary: Multiply the radius by `2 * pi` to obtain the circle's boundary length.
+description: "Program to find Circumference of a Circle is the direct-formula geometry helper that converts a circle radius into its perimeter-length measurement."
+dataStructures:
+  - Number
+techniques:
+  - Direct Formula Application
+  - Input Validation
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - circumference of a circle
+  - circle perimeter
+useCases:
+  - Computing boundary length for circular geometry tasks
+  - Pairing circle circumference with circle-area helpers in formula questions
+  - Building small math utilities for geometry and rendering code
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The answer is a single arithmetic expression once the radius is validated.
+interviewSignals:
+  - The input is only a radius.
+  - The intended solution is formula-based, not iterative or geometric construction.
+  - Radius validity matters even in a simple constant-time helper.
+relatedSlugs:
+  - area
+  - area-of-circumcircle-of-an-equilateral-triangle
+  - program-for-area-and-perimeter-of-rectangle
+provenance:
+  - title: "GeeksforGeeks - Program to find Circumference of a Circle"
+    href: https://www.geeksforgeeks.org/dsa/program-find-circumference-circle/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is one of the simplest shape-formula prompts in the geometric catalog. It still matters because interviewers often pair it with area-of-a-circle or use it as a warm-up for checking whether the candidate handles direct formulas and input validation cleanly.
+
+## Worked Example
+
+For `radius = 5`, the circumference is `2 * pi * 5`, which is about `31.415927`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function programToFindCircumferenceOfACircle(radius) {
+  if (typeof radius !== "number" || !Number.isFinite(radius) || radius < 0) {
+    throw new RangeError("Radius must be a non-negative number");
+  }
+
+  return 2 * Math.PI * radius;
+}
+```
+
+```ts
+export function programToFindCircumferenceOfACircle(radius: number): number {
+  if (!Number.isFinite(radius) || radius < 0) {
+    throw new RangeError('Radius must be a non-negative number');
+  }
+
+  return 2 * Math.PI * radius;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why is circumference linear in radius while area is quadratic?
+- How would you format the result if the prompt requires exactly three decimal places?
+- Should radius `0` be accepted as a degenerate circle with circumference `0`?
+
+## Common Pitfalls
+
+- Confusing circumference with area.
+- Using diameter in the formula without adjusting correctly.
+- Rejecting zero radius even when the prompt permits the degenerate case.
