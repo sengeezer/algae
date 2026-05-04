@@ -1257,11 +1257,19 @@ This one-hundred-sixteenth expansion slice lifts the catalog from 643 to 646 ent
 
 ## Batch 117 added
 
-This one-hundred-seventeenth expansion slice currently lifts the catalog locally from 646 to 649 entries.
+This one-hundred-seventeenth expansion slice lifts the catalog from 646 to 649 entries.
 
 - Check whether a point exists in circle sector or not
 - Check if two given circles touch or intersect each other
 - Program to find area of a Circular Segment
+
+## Batch 118 added
+
+This one-hundred-eighteenth expansion slice currently lifts the catalog locally from 649 to 652 entries.
+
+- Check if a line touches or intersects a circle
+- Area of a Circumscribed Circle of a Square
+- Find minimum radius such that atleast k point lie inside the circle
 
 ## Next candidates from the same sources
 
@@ -1314,9 +1322,13 @@ This one-hundred-seventeenth expansion slice currently lifts the catalog locally
 - Focused `gray-matter` plus JavaScript-fence validators passed for all three batch-116 entries.
 - Destination-title cleanup in the next clean `Rectangle | Square | Circle` queue is `Check whether a point exists in circle sector or not.` -> `Check whether a point exists in circle sector or not`.
 - `Check if two given circles touch or intersect each other` and `Program to find area of a Circular Segment` already match their destination titles.
-- Batch 117 currently lifts the catalog locally from 646 to 649 entries with `Check whether a point exists in circle sector or not`, `Check if two given circles touch or intersect each other`, and `Program to find area of a Circular Segment`.
+- Batch 117 lifts the catalog from 646 to 649 entries with `Check whether a point exists in circle sector or not`, `Check if two given circles touch or intersect each other`, and `Program to find area of a Circular Segment`.
 - Focused `gray-matter` plus JavaScript-fence validators passed for all three batch-117 entries.
-- The next source-order research on the Geometric Algorithms page advances to `Check if a line touches or intersects a circle`; the next clean `Rectangle | Square | Circle` titles `Check if a line touches or intersects a circle`, `Area of a Circumscribed Circle of a Square`, and `Find minimum radius such that atleast k point lie inside the circle` are currently absent by exact-title check.
+- All three next circle-tail entries already match their destination titles.
+- Batch 118 currently lifts the catalog locally from 649 to 652 entries with `Check if a line touches or intersects a circle`, `Area of a Circumscribed Circle of a Square`, and `Find minimum radius such that atleast k point lie inside the circle`.
+- Focused `gray-matter` plus JavaScript-fence validators passed for all three batch-118 entries.
+- The GeeksforGeeks `Rectangle | Square | Circle` section is now almost exhausted in source order; the remaining tail begins at `Angular Sweep (Maximum points that can be enclosed in a circle of given radius)` before drafting crosses into `Quadrilateral`.
+- The next clean source-order titles are `Angular Sweep (Maximum points that can be enclosed in a circle of given radius)`, `Number of parallelograms when n horizontal parallel lines intersect m vertical parallellines`, and `Program for Circumference of a Parallelogram`, and they are currently absent by exact-title check.
 - Batch 92 carries the vetted Dynamic Programming hard stretch through `Longest repeating and non-overlapping substring` and then consumes the clean `Advanced Concepts` absences `Count Ways To Assign Unique Cap To Every Person`, `Digit DP | Introduction`, and `Sum over Subsets | Dynamic Programming`.
 - The Dynamic Programming items skipped between `Program to find amount of water in a given glass` and `Largest Cross Bordered Square` remain already represented locally: `Longest Common Subsequence`, `Longest Increasing Subsequence`, `Edit Distance`, `0-1 Knapsack Problem`, `Partition Problem`, `Longest Palindromic Subsequence`, `Bellman-Ford Algorithm`, and `Floyd Warshall Algorithm`.
 - `The painter's partition problem` remains skipped because the local `Find minimum time to finish all jobs with given constraints` entry already covers that partition-minimax problem and includes the alias `painter partition with multiplier`.

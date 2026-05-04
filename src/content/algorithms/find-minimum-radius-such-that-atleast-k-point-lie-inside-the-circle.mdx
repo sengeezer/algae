@@ -1,0 +1,105 @@
+---
+title: Find minimum radius such that atleast k point lie inside the circle
+slug: find-minimum-radius-such-that-atleast-k-point-lie-inside-the-circle
+category: Mathematics
+summary: Compute each point's squared distance from the origin, sort them, and take the kth smallest squared distance.
+description: "Find minimum radius such that atleast k point lie inside the circle is the order-statistics geometry problem where the minimal origin-centered radius is determined by the kth nearest point."
+dataStructures:
+  - Array
+techniques:
+  - Sorting
+  - Order Statistics
+  - Distance Squared Comparison
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - minimum radius for k points
+  - kth nearest point radius from origin
+useCases:
+  - Choosing the smallest origin-centered circular bound that covers enough points
+  - Reframing radius queries as kth-order statistics on squared distances
+  - Avoiding square roots when only radius ordering matters
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: The source article returns the square of the minimum radius, which is enough because distance ordering is preserved without square roots.
+interviewSignals:
+  - The circle center is fixed at the origin.
+  - The prompt asks for at least `k` covered points, not the exact point identities.
+  - Squared distances are sufficient because only ordering matters.
+relatedSlugs:
+  - k-closest-points-to-origin
+  - check-whether-a-point-exists-in-circle-sector-or-not
+  - euclidean-distance
+provenance:
+  - title: "GeeksforGeeks - Find minimum radius such that atleast k point lie inside the circle"
+    href: https://www.geeksforgeeks.org/dsa/find-minimum-radius-atleast-k-point-lie-inside-circle/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+The problem reads like a search over radii, but once the circle center is fixed at the origin, the radius only needs to reach the kth nearest point. That turns the problem into sorting squared distances and selecting the kth value.
+
+## Worked Example
+
+For points `(1, 1)`, `(-1, -1)`, and `(1, -1)` with `k = 3`, the squared distances are all `2`, so the minimum required radius squared is `2`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function findMinimumRadiusSuchThatAtleastKPointLieInsideTheCircle(points, k) {
+  if (!Array.isArray(points) || !Number.isInteger(k) || k < 1 || k > points.length) {
+    throw new RangeError("k must be between 1 and the number of points");
+  }
+
+  const squaredDistances = points.map(([x, y]) => {
+    if (!Number.isFinite(x) || !Number.isFinite(y)) {
+      throw new RangeError("Point coordinates must be finite numbers");
+    }
+
+    return x * x + y * y;
+  }).sort((left, right) => left - right);
+
+  return squaredDistances[k - 1];
+}
+```
+
+```ts
+export function findMinimumRadiusSuchThatAtleastKPointLieInsideTheCircle(
+  points: Array<[number, number]>,
+  k: number,
+): number {
+  if (!Number.isInteger(k) || k < 1 || k > points.length) {
+    throw new RangeError('k must be between 1 and the number of points');
+  }
+
+  const squaredDistances = points
+    .map(([x, y]) => {
+      if (!Number.isFinite(x) || !Number.isFinite(y)) {
+        throw new RangeError('Point coordinates must be finite numbers');
+      }
+
+      return x * x + y * y;
+    })
+    .sort((left, right) => left - right);
+
+  return squaredDistances[k - 1];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you reduce the sorting cost if you only needed the kth value?
+- Why is returning radius squared enough for this prompt?
+- How would the problem change if the circle center were not fixed at the origin?
+
+## Common Pitfalls
+
+- Taking square roots even though they are not needed for ordering.
+- Forgetting that the answer is the kth smallest distance, not the maximum distance.
+- Returning the radius instead of the requested squared radius.

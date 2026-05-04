@@ -1,0 +1,127 @@
+---
+title: Check if a line touches or intersects a circle
+slug: check-if-a-line-touches-or-intersects-a-circle
+category: Mathematics
+summary: Compare the squared point-to-line distance from the circle center against the squared radius to classify outside, tangent, or intersecting lines.
+description: "Check if a line touches or intersects a circle is the constant-time geometry classifier that uses the perpendicular distance from the center to the line."
+dataStructures:
+  - Number
+techniques:
+  - Coordinate Geometry
+  - Distance Comparison
+  - Case Classification
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - line circle intersection test
+  - line touches circle
+useCases:
+  - Fast collision checks between analytic lines and circular regions
+  - Geometry engines that need tangent versus intersection classification
+  - Validating visibility or clipping boundaries against circular obstacles
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: Squared comparisons avoid an unnecessary square root and preserve exactness for integer inputs.
+interviewSignals:
+  - The line is given in general form `a*x + b*y + c = 0`.
+  - The key observation is that classification depends only on the center-to-line distance.
+  - Tangency occurs exactly when that distance equals the radius.
+relatedSlugs:
+  - check-if-two-given-circles-touch-or-intersect-each-other
+  - program-to-find-circumference-of-a-circle
+  - euclidean-distance
+provenance:
+  - title: "GeeksforGeeks - Check if a line touches or intersects a circle"
+    href: https://www.geeksforgeeks.org/dsa/check-line-touches-intersects-circle/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+The prompt looks geometric, but the core is just a distance comparison. Once you know the perpendicular distance from a point to a line, the whole problem reduces to comparing that distance with the circle radius to decide whether the line stays outside, touches once, or cuts through the circle.
+
+## Worked Example
+
+For center `(0, 0)`, radius `5`, and line `3x + 4y + 25 = 0`, the distance from the center to the line is `25 / sqrt(3^2 + 4^2) = 5`, so the line touches the circle.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function checkIfALineTouchesOrIntersectsACircle(a, b, c, centerX, centerY, radius) {
+  if (
+    !Number.isFinite(a)
+    || !Number.isFinite(b)
+    || !Number.isFinite(c)
+    || !Number.isFinite(centerX)
+    || !Number.isFinite(centerY)
+    || !Number.isFinite(radius)
+    || radius < 0
+    || (a === 0 && b === 0)
+  ) {
+    throw new RangeError("Invalid line or circle parameters");
+  }
+
+  const numerator = a * centerX + b * centerY + c;
+  const numeratorSq = numerator * numerator;
+  const denominator = a * a + b * b;
+  const radiusSqScaled = radius * radius * denominator;
+
+  if (numeratorSq === radiusSqScaled) {
+    return "touch";
+  }
+
+  return numeratorSq < radiusSqScaled ? "intersect" : "outside";
+}
+```
+
+```ts
+export function checkIfALineTouchesOrIntersectsACircle(
+  a: number,
+  b: number,
+  c: number,
+  centerX: number,
+  centerY: number,
+  radius: number,
+): string {
+  if (
+    !Number.isFinite(a)
+    || !Number.isFinite(b)
+    || !Number.isFinite(c)
+    || !Number.isFinite(centerX)
+    || !Number.isFinite(centerY)
+    || !Number.isFinite(radius)
+    || radius < 0
+    || (a === 0 && b === 0)
+  ) {
+    throw new RangeError('Invalid line or circle parameters');
+  }
+
+  const numerator = a * centerX + b * centerY + c;
+  const numeratorSq = numerator * numerator;
+  const denominator = a * a + b * b;
+  const radiusSqScaled = radius * radius * denominator;
+
+  if (numeratorSq === radiusSqScaled) {
+    return 'touch';
+  }
+
+  return numeratorSq < radiusSqScaled ? 'intersect' : 'outside';
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you adapt the check to a line segment instead of an infinite line?
+- Why is comparing squared quantities cleaner than calling `sqrt`?
+- How would floating-point tolerances change the tangency test?
+
+## Common Pitfalls
+
+- Forgetting that `a = 0` and `b = 0` do not define a valid line.
+- Computing the distance with integer truncation.
+- Treating a tangent line as an intersection without distinguishing the exact-equality case.
