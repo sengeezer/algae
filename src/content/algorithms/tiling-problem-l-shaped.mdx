@@ -1,0 +1,236 @@
+---
+title: Tiling Problem - L Shaped
+slug: tiling-problem-l-shaped
+category: Matrix
+summary: Put one tromino across the center to create a missing cell in each quadrant, then recurse on the four smaller boards.
+description: "Tiling Problem - L Shaped is the tromino tiling recursion where a single missing cell in a power-of-two board is propagated into four smaller subproblems by one central L-shaped placement."
+dataStructures:
+  - Matrix
+  - Array
+techniques:
+  - Divide and Conquer
+  - Recursion
+  - Matrix Construction
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - l shaped tromino tiling
+  - missing cell board tiling
+useCases:
+  - Demonstrating recursive self-similarity on geometric subproblems
+  - Filling a power-of-two board while preserving one forbidden cell per quadrant
+  - Constructing one valid tiling rather than counting all tilings
+complexity:
+  time: O(n^2)
+  space: O(n^2)
+  notes: "Each board cell is written exactly once, while the returned matrix itself dominates auxiliary storage."
+interviewSignals:
+  - The board size is a power of two.
+  - Exactly one square must remain uncovered.
+  - The recursive insight is to manufacture the three new missing cells at the center.
+relatedSlugs:
+  - matrix-multiplication
+  - backtracking-search
+  - paper-cut-into-minimum-number-of-squares
+provenance:
+  - title: "GeeksforGeeks - Tiling Problem - L Shaped"
+    href: https://www.geeksforgeeks.org/dsa/tiling-problem-using-divide-and-conquer-algorithm/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This problem is memorable because the recursive step is constructive, not merely analytical. One central tromino turns a single missing square into four smaller boards that each now have exactly one missing square, which makes the subproblem identical to the original one.
+
+## Worked Example
+
+For `n = 2` with missing cell `(0, 0)`, the only valid tiling is `[[-1, 1], [1, 1]]`. For `n = 4` with missing cell `(0, 1)`, the recursion first places one center tromino, then solves the four `2 x 2` quadrants independently.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function tilingProblemLShaped(size, missingCell) {
+  if (size <= 0 || (size & (size - 1)) !== 0) {
+    throw new RangeError("Board size must be a positive power of two");
+  }
+
+  const [missingRow, missingColumn] = missingCell;
+
+  if (
+    missingRow < 0 || missingRow >= size
+    || missingColumn < 0 || missingColumn >= size
+  ) {
+    throw new RangeError("Missing cell must lie inside the board");
+  }
+
+  const board = Array.from({ length: size }, () => Array(size).fill(0));
+  board[missingRow][missingColumn] = -1;
+  let tileId = 0;
+
+  function solve(top, left, currentSize, holeRow, holeColumn) {
+    if (currentSize === 2) {
+      tileId += 1;
+
+      for (let row = top; row < top + 2; row += 1) {
+        for (let column = left; column < left + 2; column += 1) {
+          if (row === holeRow && column === holeColumn) {
+            continue;
+          }
+
+          board[row][column] = tileId;
+        }
+      }
+
+      return;
+    }
+
+    const half = currentSize / 2;
+    const midRow = top + half;
+    const midColumn = left + half;
+    const centers = [
+      [midRow - 1, midColumn - 1],
+      [midRow - 1, midColumn],
+      [midRow, midColumn - 1],
+      [midRow, midColumn],
+    ];
+
+    const holeQuadrant =
+      holeRow < midRow
+        ? (holeColumn < midColumn ? 0 : 1)
+        : (holeColumn < midColumn ? 2 : 3);
+
+    tileId += 1;
+    const currentTile = tileId;
+
+    for (let quadrant = 0; quadrant < centers.length; quadrant += 1) {
+      if (quadrant === holeQuadrant) {
+        continue;
+      }
+
+      const [row, column] = centers[quadrant];
+      board[row][column] = currentTile;
+    }
+
+    const quadrantHoles = [
+      holeQuadrant === 0 ? [holeRow, holeColumn] : centers[0],
+      holeQuadrant === 1 ? [holeRow, holeColumn] : centers[1],
+      holeQuadrant === 2 ? [holeRow, holeColumn] : centers[2],
+      holeQuadrant === 3 ? [holeRow, holeColumn] : centers[3],
+    ];
+
+    solve(top, left, half, quadrantHoles[0][0], quadrantHoles[0][1]);
+    solve(top, midColumn, half, quadrantHoles[1][0], quadrantHoles[1][1]);
+    solve(midRow, left, half, quadrantHoles[2][0], quadrantHoles[2][1]);
+    solve(midRow, midColumn, half, quadrantHoles[3][0], quadrantHoles[3][1]);
+  }
+
+  solve(0, 0, size, missingRow, missingColumn);
+  return board;
+}
+```
+
+```ts
+export function tilingProblemLShaped(
+  size: number,
+  missingCell: [number, number],
+): number[][] {
+  if (size <= 0 || (size & (size - 1)) !== 0) {
+    throw new RangeError('Board size must be a positive power of two');
+  }
+
+  const [missingRow, missingColumn] = missingCell;
+
+  if (
+    missingRow < 0 || missingRow >= size
+    || missingColumn < 0 || missingColumn >= size
+  ) {
+    throw new RangeError('Missing cell must lie inside the board');
+  }
+
+  const board = Array.from({ length: size }, () => Array<number>(size).fill(0));
+  board[missingRow][missingColumn] = -1;
+  let tileId = 0;
+
+  const solve = (
+    top: number,
+    left: number,
+    currentSize: number,
+    holeRow: number,
+    holeColumn: number,
+  ): void => {
+    if (currentSize === 2) {
+      tileId += 1;
+
+      for (let row = top; row < top + 2; row += 1) {
+        for (let column = left; column < left + 2; column += 1) {
+          if (row === holeRow && column === holeColumn) {
+            continue;
+          }
+
+          board[row][column] = tileId;
+        }
+      }
+
+      return;
+    }
+
+    const half = currentSize / 2;
+    const midRow = top + half;
+    const midColumn = left + half;
+    const centers: Array<[number, number]> = [
+      [midRow - 1, midColumn - 1],
+      [midRow - 1, midColumn],
+      [midRow, midColumn - 1],
+      [midRow, midColumn],
+    ];
+
+    const holeQuadrant =
+      holeRow < midRow
+        ? (holeColumn < midColumn ? 0 : 1)
+        : (holeColumn < midColumn ? 2 : 3);
+
+    tileId += 1;
+    const currentTile = tileId;
+
+    for (let quadrant = 0; quadrant < centers.length; quadrant += 1) {
+      if (quadrant === holeQuadrant) {
+        continue;
+      }
+
+      const [row, column] = centers[quadrant];
+      board[row][column] = currentTile;
+    }
+
+    const quadrantHoles: Array<[number, number]> = [
+      holeQuadrant === 0 ? [holeRow, holeColumn] : centers[0],
+      holeQuadrant === 1 ? [holeRow, holeColumn] : centers[1],
+      holeQuadrant === 2 ? [holeRow, holeColumn] : centers[2],
+      holeQuadrant === 3 ? [holeRow, holeColumn] : centers[3],
+    ];
+
+    solve(top, left, half, quadrantHoles[0][0], quadrantHoles[0][1]);
+    solve(top, midColumn, half, quadrantHoles[1][0], quadrantHoles[1][1]);
+    solve(midRow, left, half, quadrantHoles[2][0], quadrantHoles[2][1]);
+    solve(midRow, midColumn, half, quadrantHoles[3][0], quadrantHoles[3][1]);
+  };
+
+  solve(0, 0, size, missingRow, missingColumn);
+  return board;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why does one center tromino create exactly the right subproblem shape in all four quadrants?
+- How would you prove correctness by induction on the board size?
+- What changes if the board size is not a power of two?
+
+## Common Pitfalls
+
+- Marking the center tromino after the recursive calls instead of before them.
+- Misidentifying which quadrant contains the original missing cell.
+- Overwriting the designated missing square in the `2 x 2` base case.

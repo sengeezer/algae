@@ -1187,9 +1187,22 @@ This one-hundred-ninth expansion slice lifts the catalog from 605 to 613 entries
 - Shortest Safe route in a Matrix
 - Print all longest common sub-sequences in lexicographical order
 
+## Batch 110 added
+
+This one-hundred-tenth expansion slice lifts the catalog from 613 to 621 entries.
+
+- Convex Hull using Divide and Conquer Algorithm
+- Quickhull Algorithm for Convex Hull
+- Maximum and minimum of an array using minimum number of comparisons
+- Find frequency of each element in a limited range array in less than O(n) time
+- Tiling Problem - L Shaped
+- The Skyline Problem
+- Search in a Row-wise and Column-wise Sorted 2D Array using Divide and Conquer algorithm
+- 8 puzzle Problem
+
 ## Next candidates from the same sources
 
-- The published catalog now reaches 613 entries on `main` after the second GeeksforGeeks Backtracking page slice.
+- The catalog now reaches 621 entries locally after the GeeksforGeeks Divide and Conquer page and the first clean Branch and Bound item.
 - The Trie Data Structure common-interview queue is exhausted in source order after the published batch-107 slice.
 - The GeeksforGeeks Square Root (Sqrt) Decomposition Algorithm page is a duplicate-only detour in source order: its overview article remains a semantic duplicate of the published `Square Root Decomposition` entry, so drafting advances to the GeeksforGeeks Backtracking page.
 - Batch 108 uses the verified destination title cleanup `Word Addition Cryptographic Puzzle` -> `Solving Cryptarithmetic Puzzles` and `Combinational Sum` -> `Target Sum Combinations`.
@@ -1201,7 +1214,16 @@ This one-hundred-ninth expansion slice lifts the catalog from 605 to 613 entries
 - `Word Break Problem using Backtracking` remains distinct from the published `Word Break` and `Minimum Word Break` entries because the source article enumerates all valid segmentations rather than only checking feasibility or minimizing cuts.
 - Batch 109 uses the verified destination title cleanup `Rat in a Maze with multiple jump allowed` -> `Rat in a Maze with multiple steps or jump allowed`, `Partition of a set into K subsets with equal sum` -> `Partition into k Equal Sum Subsets`, `Longest Possible Route in a Matrix with Hurdles` -> `Longest Possible Route in a Matrix`, and `Shortest safe route in a path with landmines` -> `Shortest Safe route in a Matrix`.
 - `Find paths from corner cell to middle cell in maze`, `Maximum number possible by doing at-most K swaps`, `Word Break Problem using Backtracking`, and `Print all longest common sub-sequences in lexicographical order` already match their destination titles.
-- The next source-order research on the GeeksforGeeks Backtracking page begins immediately after `Print all longest common sub-sequences in lexicographical order`.
+- The GeeksforGeeks Backtracking page is exhausted in source order after `Print all longest common sub-sequences in lexicographical order`; the remaining tail is quick links only.
+- The next vetted source branch after the exhausted Backtracking page is the GeeksforGeeks Divide and Conquer page: https://www.geeksforgeeks.org/dsa/divide-and-conquer/
+- On the Divide and Conquer page, `Binary Search`, `Merge Sort`, `Quick Sort`, `Calculate pow(x, n)`, `Karatsuba algorithm for fast multiplication`, `Strassen's Matrix Multiplication`, `Square root of an integer`, `Count Inversions`, `Allocate minimum number of pages`, and `Modular Exponentiation` remain duplicate-level coverage. `Strassen's Matrix Multiplication` resolves to the broader `Matrix Multiplication` article already represented locally, `Allocate minimum number of pages` remains covered by the published `Find minimum time to finish all jobs with given constraints` entry, and `Modular Exponentiation` remains covered by `Modular Binary Exponentiation Recursive`.
+- Destination-title cleanup in the first clean Divide and Conquer queue is `Convex Hull (Simple Divide and Conquer Algorithm)` -> `Convex Hull using Divide and Conquer Algorithm`, `Max and min using minimum comparisons` -> `Maximum and minimum of an array using minimum number of comparisons`, `Frequency in a limited range array` -> `Find frequency of each element in a limited range array in less than O(n) time`, `Tiling Problem` -> `Tiling Problem - L Shaped`, and `Search in a Row and Column-wise Sorted Grid` -> `Search in a Row-wise and Column-wise Sorted 2D Array using Divide and Conquer algorithm`.
+- The first clean Divide and Conquer queue is `Convex Hull using Divide and Conquer Algorithm`, `Quickhull Algorithm for Convex Hull`, `Maximum and minimum of an array using minimum number of comparisons`, `Find frequency of each element in a limited range array in less than O(n) time`, `Tiling Problem - L Shaped`, `The Skyline Problem`, and `Search in a Row-wise and Column-wise Sorted 2D Array using Divide and Conquer algorithm`.
+- The Divide and Conquer page is exhausted after that seven-item clean queue; the trailing `Binary Search Based Problems`, `Merge Sort Based Problems`, and `Quick Sort Based Problems` links are aggregator pages, so drafting advances to GeeksforGeeks Branch and Bound.
+- On the Branch and Bound page, `Branch and Bound | Set 1 (Introduction with 0/1 Knapsack)`, `Branch and Bound | Set 2 (Implementation of 0/1 Knapsack)`, and `0/1 Knapsack using Least Cost Branch and Bound` remain duplicate-level coverage of the published `0/1 Knapsack` entry.
+- `8 puzzle Problem` is the first clean Branch and Bound item and already matches its destination title.
+- `Branch and Bound | Set 5 (N Queen Problem)` remains duplicate-level coverage of the published `N Queens` entry, while `Branch And Bound | Set 6 (Traveling Salesman Problem)` and `Travelling Salesman Problem (TSP) using Reduced Matrix Method` remain duplicate-level coverage of the published `Traveling Salesman Problem` entry.
+- The next clean Branch and Bound candidates after `8 puzzle Problem` are `Job Assignment Problem using Branch And Bound` and `Generate Binary Strings of length N using Branch and Bound`.
 - Batch 92 carries the vetted Dynamic Programming hard stretch through `Longest repeating and non-overlapping substring` and then consumes the clean `Advanced Concepts` absences `Count Ways To Assign Unique Cap To Every Person`, `Digit DP | Introduction`, and `Sum over Subsets | Dynamic Programming`.
 - The Dynamic Programming items skipped between `Program to find amount of water in a given glass` and `Largest Cross Bordered Square` remain already represented locally: `Longest Common Subsequence`, `Longest Increasing Subsequence`, `Edit Distance`, `0-1 Knapsack Problem`, `Partition Problem`, `Longest Palindromic Subsequence`, `Bellman-Ford Algorithm`, and `Floyd Warshall Algorithm`.
 - `The painter's partition problem` remains skipped because the local `Find minimum time to finish all jobs with given constraints` entry already covers that partition-minimax problem and includes the alias `painter partition with multiplier`.

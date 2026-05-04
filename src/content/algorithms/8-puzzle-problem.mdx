@@ -1,0 +1,471 @@
+---
+title: 8 puzzle Problem
+slug: 8-puzzle-problem
+category: Graphs
+summary: Expand the live board state with the lowest `moves + misplaced-tiles` score first, so the search stays focused on the most promising puzzle configurations.
+description: "8 puzzle Problem is the informed state-space search for a 3x3 sliding puzzle, using a branch-and-bound priority queue and a simple misplaced-tiles lower bound to guide exploration."
+dataStructures:
+  - Matrix
+  - Heap
+  - Map
+techniques:
+  - Branch and Bound
+  - Heuristic Search
+  - Priority Queue
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - eight puzzle
+  - sliding puzzle with branch and bound
+useCases:
+  - Searching puzzle state spaces with a lower-bound heuristic
+  - Contrasting uninformed BFS or DFS with cost-guided exploration
+  - Recovering a full move sequence instead of only the final distance
+complexity:
+  time: O(s log s)
+  space: O(s)
+  notes: "Here s is the number of explored puzzle states; for the 8-puzzle the reachable state space is finite, and the priority queue orders states by moves taken plus misplaced-tile bound."
+interviewSignals:
+  - The board has one blank tile and legal moves swap it with one neighbor.
+  - BFS is correct but wastes work because every frontier state looks equally urgent.
+  - A simple lower bound like misplaced tiles can rank live states.
+relatedSlugs:
+  - a-star-search
+  - priority-queue
+  - breadth-first-search
+provenance:
+  - title: "GeeksforGeeks - 8 puzzle Problem"
+    href: https://www.geeksforgeeks.org/dsa/8-puzzle-problem-using-branch-and-bound/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This problem is the classic demonstration that uninformed traversal is not enough when the state space grows quickly. Branch and bound improves the search by expanding the board with the smallest estimated total cost first, where the estimate is the actual move count so far plus a lower bound on how far the puzzle still is from the goal.
+
+## Worked Example
+
+For `[[1, 2, 3], [4, 5, 6], [7, 0, 8]]`, the puzzle is one move away from the goal. Sliding `8` left into the blank yields `[[1, 2, 3], [4, 5, 6], [7, 8, 0]]`, so the returned path has two boards: the start and the goal.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function eightPuzzleProblem(startBoard) {
+  const goalKey = "123456780";
+  const directions = [
+    [0, -1],
+    [0, 1],
+    [-1, 0],
+    [1, 0],
+  ];
+
+  class MinHeap {
+    constructor() {
+      this.data = [];
+    }
+
+    size() {
+      return this.data.length;
+    }
+
+    push(value) {
+      this.data.push(value);
+      this.bubbleUp(this.data.length - 1);
+    }
+
+    pop() {
+      if (this.data.length === 0) {
+        return null;
+      }
+
+      const top = this.data[0];
+      const last = this.data.pop();
+
+      if (this.data.length > 0) {
+        this.data[0] = last;
+        this.bubbleDown(0);
+      }
+
+      return top;
+    }
+
+    bubbleUp(index) {
+      while (index > 0) {
+        const parent = Math.floor((index - 1) / 2);
+
+        if (this.data[parent].priority <= this.data[index].priority) {
+          break;
+        }
+
+        [this.data[parent], this.data[index]] = [this.data[index], this.data[parent]];
+        index = parent;
+      }
+    }
+
+    bubbleDown(index) {
+      while (true) {
+        let candidate = index;
+        const leftChild = index * 2 + 1;
+        const rightChild = index * 2 + 2;
+
+        if (leftChild < this.data.length && this.data[leftChild].priority < this.data[candidate].priority) {
+          candidate = leftChild;
+        }
+
+        if (rightChild < this.data.length && this.data[rightChild].priority < this.data[candidate].priority) {
+          candidate = rightChild;
+        }
+
+        if (candidate === index) {
+          break;
+        }
+
+        [this.data[index], this.data[candidate]] = [this.data[candidate], this.data[index]];
+        index = candidate;
+      }
+    }
+  }
+
+  function clone(board) {
+    return board.map((row) => [...row]);
+  }
+
+  function serialize(board) {
+    return board.flat().join("");
+  }
+
+  function misplacedTiles(board) {
+    let misplaced = 0;
+
+    for (let row = 0; row < 3; row += 1) {
+      for (let column = 0; column < 3; column += 1) {
+        const value = board[row][column];
+        if (value !== 0 && value !== row * 3 + column + 1) {
+          misplaced += 1;
+        }
+      }
+    }
+
+    return misplaced;
+  }
+
+  function inversionCount(flattened) {
+    let inversions = 0;
+
+    for (let left = 0; left < flattened.length; left += 1) {
+      if (flattened[left] === 0) {
+        continue;
+      }
+
+      for (let right = left + 1; right < flattened.length; right += 1) {
+        if (flattened[right] !== 0 && flattened[left] > flattened[right]) {
+          inversions += 1;
+        }
+      }
+    }
+
+    return inversions;
+  }
+
+  function findZero(board) {
+    for (let row = 0; row < 3; row += 1) {
+      for (let column = 0; column < 3; column += 1) {
+        if (board[row][column] === 0) {
+          return [row, column];
+        }
+      }
+    }
+
+    throw new Error("Board must contain a zero tile");
+  }
+
+  const flat = startBoard.flat();
+
+  if (flat.length !== 9) {
+    throw new RangeError("Board must be 3 x 3");
+  }
+
+  if (inversionCount(flat) % 2 === 1) {
+    return null;
+  }
+
+  const [zeroRow, zeroColumn] = findZero(startBoard);
+  const queue = new MinHeap();
+  const startKey = serialize(startBoard);
+  queue.push({
+    board: clone(startBoard),
+    zeroRow,
+    zeroColumn,
+    depth: 0,
+    priority: misplacedTiles(startBoard),
+    path: [clone(startBoard)],
+  });
+
+  const bestDepth = new Map([[startKey, 0]]);
+
+  while (queue.size() > 0) {
+    const current = queue.pop();
+    const currentKey = serialize(current.board);
+
+    if (currentKey === goalKey) {
+      return current.path;
+    }
+
+    if (current.depth > (bestDepth.get(currentKey) ?? Number.POSITIVE_INFINITY)) {
+      continue;
+    }
+
+    for (const [rowDelta, columnDelta] of directions) {
+      const nextRow = current.zeroRow + rowDelta;
+      const nextColumn = current.zeroColumn + columnDelta;
+
+      if (nextRow < 0 || nextRow >= 3 || nextColumn < 0 || nextColumn >= 3) {
+        continue;
+      }
+
+      const nextBoard = clone(current.board);
+      nextBoard[current.zeroRow][current.zeroColumn] = nextBoard[nextRow][nextColumn];
+      nextBoard[nextRow][nextColumn] = 0;
+
+      const nextDepth = current.depth + 1;
+      const nextKey = serialize(nextBoard);
+
+      if (nextDepth >= (bestDepth.get(nextKey) ?? Number.POSITIVE_INFINITY)) {
+        continue;
+      }
+
+      bestDepth.set(nextKey, nextDepth);
+      queue.push({
+        board: nextBoard,
+        zeroRow: nextRow,
+        zeroColumn: nextColumn,
+        depth: nextDepth,
+        priority: nextDepth + misplacedTiles(nextBoard),
+        path: [...current.path, nextBoard],
+      });
+    }
+  }
+
+  return null;
+}
+```
+
+```ts
+type PuzzleState = {
+  board: number[][];
+  zeroRow: number;
+  zeroColumn: number;
+  depth: number;
+  priority: number;
+  path: number[][][];
+};
+
+export function eightPuzzleProblem(startBoard: number[][]): number[][][] | null {
+  const goalKey = '123456780';
+  const directions: Array<[number, number]> = [
+    [0, -1],
+    [0, 1],
+    [-1, 0],
+    [1, 0],
+  ];
+
+  class MinHeap {
+    private data: PuzzleState[] = [];
+
+    size(): number {
+      return this.data.length;
+    }
+
+    push(value: PuzzleState): void {
+      this.data.push(value);
+      this.bubbleUp(this.data.length - 1);
+    }
+
+    pop(): PuzzleState | null {
+      if (this.data.length === 0) {
+        return null;
+      }
+
+      const top = this.data[0];
+      const last = this.data.pop() as PuzzleState;
+
+      if (this.data.length > 0) {
+        this.data[0] = last;
+        this.bubbleDown(0);
+      }
+
+      return top;
+    }
+
+    private bubbleUp(index: number): void {
+      while (index > 0) {
+        const parent = Math.floor((index - 1) / 2);
+
+        if (this.data[parent].priority <= this.data[index].priority) {
+          break;
+        }
+
+        [this.data[parent], this.data[index]] = [this.data[index], this.data[parent]];
+        index = parent;
+      }
+    }
+
+    private bubbleDown(index: number): void {
+      while (true) {
+        let candidate = index;
+        const leftChild = index * 2 + 1;
+        const rightChild = index * 2 + 2;
+
+        if (leftChild < this.data.length && this.data[leftChild].priority < this.data[candidate].priority) {
+          candidate = leftChild;
+        }
+
+        if (rightChild < this.data.length && this.data[rightChild].priority < this.data[candidate].priority) {
+          candidate = rightChild;
+        }
+
+        if (candidate === index) {
+          break;
+        }
+
+        [this.data[index], this.data[candidate]] = [this.data[candidate], this.data[index]];
+        index = candidate;
+      }
+    }
+  }
+
+  const clone = (board: number[][]): number[][] => board.map((row) => [...row]);
+  const serialize = (board: number[][]): string => board.flat().join('');
+
+  const misplacedTiles = (board: number[][]): number => {
+    let misplaced = 0;
+
+    for (let row = 0; row < 3; row += 1) {
+      for (let column = 0; column < 3; column += 1) {
+        const value = board[row][column];
+        if (value !== 0 && value !== row * 3 + column + 1) {
+          misplaced += 1;
+        }
+      }
+    }
+
+    return misplaced;
+  };
+
+  const inversionCount = (flattened: number[]): number => {
+    let inversions = 0;
+
+    for (let left = 0; left < flattened.length; left += 1) {
+      if (flattened[left] === 0) {
+        continue;
+      }
+
+      for (let right = left + 1; right < flattened.length; right += 1) {
+        if (flattened[right] !== 0 && flattened[left] > flattened[right]) {
+          inversions += 1;
+        }
+      }
+    }
+
+    return inversions;
+  };
+
+  const findZero = (board: number[][]): [number, number] => {
+    for (let row = 0; row < 3; row += 1) {
+      for (let column = 0; column < 3; column += 1) {
+        if (board[row][column] === 0) {
+          return [row, column];
+        }
+      }
+    }
+
+    throw new Error('Board must contain a zero tile');
+  };
+
+  const flat = startBoard.flat();
+
+  if (flat.length !== 9) {
+    throw new RangeError('Board must be 3 x 3');
+  }
+
+  if (inversionCount(flat) % 2 === 1) {
+    return null;
+  }
+
+  const [zeroRow, zeroColumn] = findZero(startBoard);
+  const queue = new MinHeap();
+  const startKey = serialize(startBoard);
+
+  queue.push({
+    board: clone(startBoard),
+    zeroRow,
+    zeroColumn,
+    depth: 0,
+    priority: misplacedTiles(startBoard),
+    path: [clone(startBoard)],
+  });
+
+  const bestDepth = new Map<string, number>([[startKey, 0]]);
+
+  while (queue.size() > 0) {
+    const current = queue.pop() as PuzzleState;
+    const currentKey = serialize(current.board);
+
+    if (currentKey === goalKey) {
+      return current.path;
+    }
+
+    if (current.depth > (bestDepth.get(currentKey) ?? Number.POSITIVE_INFINITY)) {
+      continue;
+    }
+
+    for (const [rowDelta, columnDelta] of directions) {
+      const nextRow = current.zeroRow + rowDelta;
+      const nextColumn = current.zeroColumn + columnDelta;
+
+      if (nextRow < 0 || nextRow >= 3 || nextColumn < 0 || nextColumn >= 3) {
+        continue;
+      }
+
+      const nextBoard = clone(current.board);
+      nextBoard[current.zeroRow][current.zeroColumn] = nextBoard[nextRow][nextColumn];
+      nextBoard[nextRow][nextColumn] = 0;
+
+      const nextDepth = current.depth + 1;
+      const nextKey = serialize(nextBoard);
+
+      if (nextDepth >= (bestDepth.get(nextKey) ?? Number.POSITIVE_INFINITY)) {
+        continue;
+      }
+
+      bestDepth.set(nextKey, nextDepth);
+      queue.push({
+        board: nextBoard,
+        zeroRow: nextRow,
+        zeroColumn: nextColumn,
+        depth: nextDepth,
+        priority: nextDepth + misplacedTiles(nextBoard),
+        path: [...current.path, nextBoard],
+      });
+    }
+  }
+
+  return null;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why does `moves + misplacedTiles` act as a lower bound for the remaining solution cost?
+- How would you swap the misplaced-tiles heuristic for Manhattan distance?
+- Why is inversion parity a cheap solvability check for the 3x3 puzzle?
+
+## Common Pitfalls
+
+- Expanding states in plain BFS order and losing the whole point of branch-and-bound ranking.
+- Revisiting an already-seen board even when it has not improved on the best known depth.
+- Counting the blank tile as misplaced inside the heuristic.

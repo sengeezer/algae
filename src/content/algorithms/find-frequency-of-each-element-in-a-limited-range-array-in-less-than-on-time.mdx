@@ -1,0 +1,138 @@
+---
+title: Find frequency of each element in a limited range array in less than O(n) time
+slug: find-frequency-of-each-element-in-a-limited-range-array-in-less-than-on-time
+category: Searching
+summary: Walk across the sorted array by distinct value, using binary search to jump directly to each value's last occurrence before moving on.
+description: "Find frequency of each element in a limited range array in less than O(n) time is the sorted-array counting problem that spends work on distinct values rather than scanning every position linearly."
+dataStructures:
+  - Array
+techniques:
+  - Binary Search
+  - Range Compression
+  - Frequency Counting
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - frequency of limited range array elements
+  - count frequencies in sorted array with binary search
+useCases:
+  - Jumping across repeated runs in a sorted array
+  - Turning count output into last-occurrence searches
+  - Explaining output-sensitive work in arrays with many duplicates
+complexity:
+  time: O(m log n)
+  space: O(m)
+  notes: "The working memory is O(1) beyond the returned result, and m is the number of distinct values rather than the full array length."
+interviewSignals:
+  - The array is sorted and the prompt wants less than linear traversal.
+  - You only need one summary record per distinct value.
+  - The problem cares about runs of equal values more than individual positions.
+relatedSlugs:
+  - binary-search
+  - frequency-sort
+  - interpolation-search
+provenance:
+  - title: "GeeksforGeeks - Find frequency of each element in a limited range array in less than O(n) time"
+    href: https://www.geeksforgeeks.org/dsa/find-frequency-of-each-element-in-a-limited-range-array-in-less-than-on-time/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This question is really about exploiting sorted duplicates. Once you know the current value, the next useful fact is not the next index but the last index where that same value appears. Binary search gives that jump directly, so the algorithm scales with the number of distinct runs.
+
+## Worked Example
+
+For `[2, 2, 6, 6, 7, 7, 7, 11]`, binary search jumps from the first `2` to index `1`, then from the first `6` to index `3`, then from the first `7` to index `6`. The final output is `[[2, 2], [6, 2], [7, 3], [11, 1]]`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function findFrequencyOfEachElementInALimitedRangeArrayInLessThanOnTime(values) {
+  function lastOccurrence(target, start) {
+    let left = start;
+    let right = values.length - 1;
+    let answer = start;
+
+    while (left <= right) {
+      const middle = left + Math.floor((right - left) / 2);
+
+      if (values[middle] === target) {
+        answer = middle;
+        left = middle + 1;
+      } else if (values[middle] < target) {
+        left = middle + 1;
+      } else {
+        right = middle - 1;
+      }
+    }
+
+    return answer;
+  }
+
+  const result = [];
+
+  for (let index = 0; index < values.length;) {
+    const value = values[index];
+    const endIndex = lastOccurrence(value, index);
+    result.push([value, endIndex - index + 1]);
+    index = endIndex + 1;
+  }
+
+  return result;
+}
+```
+
+```ts
+export function findFrequencyOfEachElementInALimitedRangeArrayInLessThanOnTime(
+  values: number[],
+): Array<[number, number]> {
+  const lastOccurrence = (target: number, start: number): number => {
+    let left = start;
+    let right = values.length - 1;
+    let answer = start;
+
+    while (left <= right) {
+      const middle = left + Math.floor((right - left) / 2);
+
+      if (values[middle] === target) {
+        answer = middle;
+        left = middle + 1;
+      } else if (values[middle] < target) {
+        left = middle + 1;
+      } else {
+        right = middle - 1;
+      }
+    }
+
+    return answer;
+  };
+
+  const result: Array<[number, number]> = [];
+
+  for (let index = 0; index < values.length;) {
+    const value = values[index];
+    const endIndex = lastOccurrence(value, index);
+    result.push([value, endIndex - index + 1]);
+    index = endIndex + 1;
+  }
+
+  return result;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why does the running time depend on the number of distinct values instead of the array length?
+- How would you adapt this if the array were unsorted?
+- When is a plain linear scan still the better practical choice despite the asymptotics here?
+
+## Common Pitfalls
+
+- Scanning each run linearly after using binary search once.
+- Forgetting that the array must stay sorted for the jump logic to work.
+- Claiming O(1) total space while returning an output list that grows with the number of distinct values.

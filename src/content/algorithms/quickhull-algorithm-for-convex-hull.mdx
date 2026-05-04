@@ -1,0 +1,247 @@
+---
+title: Quickhull Algorithm for Convex Hull
+slug: quickhull-algorithm-for-convex-hull
+category: Mathematics
+summary: Start from the leftmost and rightmost points, then recursively keep only the farthest point from each hull edge and discard the interior triangle.
+description: "Quickhull Algorithm for Convex Hull is the QuickSort-like geometric recursion that repeatedly chooses the farthest exterior point from a hull edge and splits the remaining candidates around it."
+dataStructures:
+  - Array
+  - Set
+techniques:
+  - Divide and Conquer
+  - Computational Geometry
+  - Recursive Partitioning
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - quick hull
+  - quicksort style convex hull
+useCases:
+  - Building a hull by repeatedly discarding interior triangles
+  - Practicing geometric partition logic similar to Quick Sort
+  - Extracting an outer boundary from scattered 2D points
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: "Average behavior matches Quick Sort style partitioning, but badly ordered point sets can degrade the recursion to O(n^2)."
+interviewSignals:
+  - The prompt emphasizes the farthest point from a line segment.
+  - Interior points inside a triangle can be pruned immediately.
+  - The solution naturally recurses on two smaller exterior regions.
+relatedSlugs:
+  - convex-hull-using-divide-and-conquer-algorithm
+  - quick-sort
+  - binary-search
+provenance:
+  - title: "GeeksforGeeks - Quickhull Algorithm for Convex Hull"
+    href: https://www.geeksforgeeks.org/dsa/quickhull-algorithm-convex-hull/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+Quickhull is useful when you want an interview-friendly divide-and-conquer hull without implementing a full tangent merge. The farthest point from a segment must lie on the hull, and every point inside the triangle formed by that point and the segment endpoints can be thrown away immediately.
+
+## Worked Example
+
+For `[[0, 3], [1, 1], [2, 2], [4, 4], [0, 0], [1, 2], [3, 1], [3, 3]]`, the outer hull is `[[0, 0], [3, 1], [4, 4], [0, 3]]` in counterclockwise order.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function quickhullAlgorithmForConvexHull(points) {
+  function uniqueSorted(items) {
+    return [...new Set(items.map(([x, y]) => `${x},${y}`))]
+      .map((key) => key.split(",").map(Number))
+      .sort((left, right) => (left[0] - right[0]) || (left[1] - right[1]));
+  }
+
+  function cross(a, b, c) {
+    return (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]);
+  }
+
+  function monotonicChain(items) {
+    if (items.length <= 1) {
+      return items.map((point) => [...point]);
+    }
+
+    const sorted = uniqueSorted(items);
+    const lower = [];
+
+    for (const point of sorted) {
+      while (lower.length >= 2 && cross(lower[lower.length - 2], lower[lower.length - 1], point) <= 0) {
+        lower.pop();
+      }
+
+      lower.push(point);
+    }
+
+    const upper = [];
+
+    for (let index = sorted.length - 1; index >= 0; index -= 1) {
+      const point = sorted[index];
+
+      while (upper.length >= 2 && cross(upper[upper.length - 2], upper[upper.length - 1], point) <= 0) {
+        upper.pop();
+      }
+
+      upper.push(point);
+    }
+
+    lower.pop();
+    upper.pop();
+    return [...lower, ...upper].map((point) => [...point]);
+  }
+
+  const uniquePoints = uniqueSorted(points);
+
+  if (uniquePoints.length <= 2) {
+    return uniquePoints;
+  }
+
+  const leftMost = uniquePoints[0];
+  const rightMost = uniquePoints[uniquePoints.length - 1];
+  const hullPoints = new Set([`${leftMost[0]},${leftMost[1]}`, `${rightMost[0]},${rightMost[1]}`]);
+
+  function addHull(candidates, start, end, side) {
+    let farthestPoint = null;
+    let maxDistance = 0;
+
+    for (const point of candidates) {
+      const signedArea = cross(start, end, point);
+
+      if ((side === 1 && signedArea <= 0) || (side === -1 && signedArea >= 0)) {
+        continue;
+      }
+
+      const distance = Math.abs(signedArea);
+
+      if (distance > maxDistance) {
+        maxDistance = distance;
+        farthestPoint = point;
+      }
+    }
+
+    if (farthestPoint === null) {
+      return;
+    }
+
+    hullPoints.add(`${farthestPoint[0]},${farthestPoint[1]}`);
+    addHull(candidates, start, farthestPoint, -Math.sign(cross(start, farthestPoint, end) || side));
+    addHull(candidates, farthestPoint, end, -Math.sign(cross(farthestPoint, end, start) || side));
+  }
+
+  addHull(uniquePoints, leftMost, rightMost, 1);
+  addHull(uniquePoints, leftMost, rightMost, -1);
+
+  return monotonicChain(
+    [...hullPoints].map((key) => key.split(",").map(Number)),
+  );
+}
+```
+
+```ts
+export function quickhullAlgorithmForConvexHull(points: number[][]): number[][] {
+  const uniqueSorted = (items: number[][]): number[][] => {
+    return [...new Set(items.map(([x, y]) => `${x},${y}`))]
+      .map((key) => key.split(',').map(Number))
+      .sort((left, right) => (left[0] - right[0]) || (left[1] - right[1]));
+  };
+
+  const cross = (a: number[], b: number[], c: number[]): number => {
+    return (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]);
+  };
+
+  const monotonicChain = (items: number[][]): number[][] => {
+    if (items.length <= 1) {
+      return items.map((point) => [...point]);
+    }
+
+    const sorted = uniqueSorted(items);
+    const lower: number[][] = [];
+
+    for (const point of sorted) {
+      while (lower.length >= 2 && cross(lower[lower.length - 2], lower[lower.length - 1], point) <= 0) {
+        lower.pop();
+      }
+
+      lower.push(point);
+    }
+
+    const upper: number[][] = [];
+
+    for (let index = sorted.length - 1; index >= 0; index -= 1) {
+      const point = sorted[index];
+
+      while (upper.length >= 2 && cross(upper[upper.length - 2], upper[upper.length - 1], point) <= 0) {
+        upper.pop();
+      }
+
+      upper.push(point);
+    }
+
+    lower.pop();
+    upper.pop();
+    return [...lower, ...upper].map((point) => [...point]);
+  };
+
+  const uniquePoints = uniqueSorted(points);
+
+  if (uniquePoints.length <= 2) {
+    return uniquePoints;
+  }
+
+  const leftMost = uniquePoints[0];
+  const rightMost = uniquePoints[uniquePoints.length - 1];
+  const hullPoints = new Set<string>([`${leftMost[0]},${leftMost[1]}`, `${rightMost[0]},${rightMost[1]}`]);
+
+  const addHull = (candidates: number[][], start: number[], end: number[], side: number): void => {
+    let farthestPoint: number[] | null = null;
+    let maxDistance = 0;
+
+    for (const point of candidates) {
+      const signedArea = cross(start, end, point);
+
+      if ((side === 1 && signedArea <= 0) || (side === -1 && signedArea >= 0)) {
+        continue;
+      }
+
+      const distance = Math.abs(signedArea);
+
+      if (distance > maxDistance) {
+        maxDistance = distance;
+        farthestPoint = point;
+      }
+    }
+
+    if (farthestPoint === null) {
+      return;
+    }
+
+    hullPoints.add(`${farthestPoint[0]},${farthestPoint[1]}`);
+    addHull(candidates, start, farthestPoint, -Math.sign(cross(start, farthestPoint, end) || side));
+    addHull(candidates, farthestPoint, end, -Math.sign(cross(farthestPoint, end, start) || side));
+  };
+
+  addHull(uniquePoints, leftMost, rightMost, 1);
+  addHull(uniquePoints, leftMost, rightMost, -1);
+
+  return monotonicChain([...hullPoints].map((key) => key.split(',').map(Number)));
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why can every point inside the triangle formed by the farthest point and the current segment be discarded?
+- How does Quickhull compare with Graham scan on already structured input?
+- How would you adapt the output if collinear boundary points must all be preserved?
+
+## Common Pitfalls
+
+- Forgetting that at least three distinct points are needed for a non-degenerate hull.
+- Returning hull points in arbitrary set order instead of an actual boundary walk.
+- Failing to de-duplicate repeated points before the recursion starts.

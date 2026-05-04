@@ -1,0 +1,203 @@
+---
+title: Convex Hull using Divide and Conquer Algorithm
+slug: convex-hull-using-divide-and-conquer-algorithm
+category: Mathematics
+summary: Recursively solve the hull on the left and right halves of the sorted points, then merge only the boundary candidates instead of the full set.
+description: "Convex Hull using Divide and Conquer Algorithm is the computational-geometry variant that splits the point set by x-coordinate, solves smaller hulls, and combines their boundary candidates into the final enclosing polygon."
+dataStructures:
+  - Array
+  - Set
+techniques:
+  - Divide and Conquer
+  - Computational Geometry
+  - Convex Hull
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - divide and conquer convex hull
+  - recursive convex hull merge
+useCases:
+  - Splitting geometric work across smaller independent point sets
+  - Pruning interior points before the merge step
+  - Contrasting recursive hull construction with one-pass hull scans
+complexity:
+  time: O(n log^2 n)
+  space: O(n)
+  notes: "This implementation keeps the divide-and-conquer structure but rebuilds the merged hull from the two half-hulls' boundary points, which is simpler to code than explicit tangent walking."
+interviewSignals:
+  - The prompt asks for the outer polygon enclosing a set of 2D points.
+  - The source or interviewer explicitly mentions divide and conquer.
+  - Interior points should disappear naturally during the merge.
+relatedSlugs:
+  - quickhull-algorithm-for-convex-hull
+  - quick-sort
+  - merge-sort
+provenance:
+  - title: "GeeksforGeeks - Convex Hull using Divide and Conquer Algorithm"
+    href: https://www.geeksforgeeks.org/dsa/convex-hull-using-divide-and-conquer-algorithm/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is the recursive counterpart to the more common one-pass convex-hull algorithms. The important insight is that once you know the hull of the left half and the hull of the right half, every interior point can be ignored during the combine step because only boundary candidates can survive into the final hull.
+
+## Worked Example
+
+For the points `[[-5, -3], [-1, -5], [1, -4], [0, 0], [-1, 1]]`, the hull keeps only the outer boundary points and discards the interior point `[0, 0]`. One valid counterclockwise hull is `[[-5, -3], [-1, -5], [1, -4], [-1, 1]]`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function convexHullUsingDivideAndConquerAlgorithm(points) {
+  function uniqueSorted(items) {
+    return [...new Set(items.map(([x, y]) => `${x},${y}`))]
+      .map((key) => key.split(",").map(Number))
+      .sort((left, right) => (left[0] - right[0]) || (left[1] - right[1]));
+  }
+
+  function cross(origin, first, second) {
+    return (
+      (first[0] - origin[0]) * (second[1] - origin[1])
+      - (first[1] - origin[1]) * (second[0] - origin[0])
+    );
+  }
+
+  function monotonicChain(items) {
+    if (items.length <= 1) {
+      return items.map((point) => [...point]);
+    }
+
+    const sorted = uniqueSorted(items);
+    const lower = [];
+
+    for (const point of sorted) {
+      while (lower.length >= 2 && cross(lower[lower.length - 2], lower[lower.length - 1], point) <= 0) {
+        lower.pop();
+      }
+
+      lower.push(point);
+    }
+
+    const upper = [];
+
+    for (let index = sorted.length - 1; index >= 0; index -= 1) {
+      const point = sorted[index];
+
+      while (upper.length >= 2 && cross(upper[upper.length - 2], upper[upper.length - 1], point) <= 0) {
+        upper.pop();
+      }
+
+      upper.push(point);
+    }
+
+    lower.pop();
+    upper.pop();
+    return [...lower, ...upper].map((point) => [...point]);
+  }
+
+  function solve(items) {
+    if (items.length <= 5) {
+      return monotonicChain(items);
+    }
+
+    const middle = Math.floor(items.length / 2);
+    const leftHull = solve(items.slice(0, middle));
+    const rightHull = solve(items.slice(middle));
+    return monotonicChain([...leftHull, ...rightHull]);
+  }
+
+  const sortedPoints = uniqueSorted(points);
+
+  if (sortedPoints.length <= 2) {
+    return sortedPoints;
+  }
+
+  return solve(sortedPoints);
+}
+```
+
+```ts
+export function convexHullUsingDivideAndConquerAlgorithm(points: number[][]): number[][] {
+  const uniqueSorted = (items: number[][]): number[][] => {
+    return [...new Set(items.map(([x, y]) => `${x},${y}`))]
+      .map((key) => key.split(',').map(Number))
+      .sort((left, right) => (left[0] - right[0]) || (left[1] - right[1]));
+  };
+
+  const cross = (origin: number[], first: number[], second: number[]): number => {
+    return (
+      (first[0] - origin[0]) * (second[1] - origin[1])
+      - (first[1] - origin[1]) * (second[0] - origin[0])
+    );
+  };
+
+  const monotonicChain = (items: number[][]): number[][] => {
+    if (items.length <= 1) {
+      return items.map((point) => [...point]);
+    }
+
+    const sorted = uniqueSorted(items);
+    const lower: number[][] = [];
+
+    for (const point of sorted) {
+      while (lower.length >= 2 && cross(lower[lower.length - 2], lower[lower.length - 1], point) <= 0) {
+        lower.pop();
+      }
+
+      lower.push(point);
+    }
+
+    const upper: number[][] = [];
+
+    for (let index = sorted.length - 1; index >= 0; index -= 1) {
+      const point = sorted[index];
+
+      while (upper.length >= 2 && cross(upper[upper.length - 2], upper[upper.length - 1], point) <= 0) {
+        upper.pop();
+      }
+
+      upper.push(point);
+    }
+
+    lower.pop();
+    upper.pop();
+    return [...lower, ...upper].map((point) => [...point]);
+  };
+
+  const solve = (items: number[][]): number[][] => {
+    if (items.length <= 5) {
+      return monotonicChain(items);
+    }
+
+    const middle = Math.floor(items.length / 2);
+    const leftHull = solve(items.slice(0, middle));
+    const rightHull = solve(items.slice(middle));
+    return monotonicChain([...leftHull, ...rightHull]);
+  };
+
+  const sortedPoints = uniqueSorted(points);
+
+  if (sortedPoints.length <= 2) {
+    return sortedPoints;
+  }
+
+  return solve(sortedPoints);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you replace the merge-by-rebuild step with explicit upper and lower tangent walking?
+- Why is it still safe to ignore non-hull points from each half during the merge?
+- When would a monotonic-chain or Graham-scan implementation be simpler than divide and conquer in practice?
+
+## Common Pitfalls
+
+- Merging the full left and right point sets instead of just their boundary candidates.
+- Forgetting to de-duplicate coincident points before recursing.
+- Treating clockwise turns as valid hull edges when you intend a strict outer hull.

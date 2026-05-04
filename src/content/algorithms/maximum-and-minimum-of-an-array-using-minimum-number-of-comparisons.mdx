@@ -1,0 +1,152 @@
+---
+title: Maximum and minimum of an array using minimum number of comparisons
+slug: maximum-and-minimum-of-an-array-using-minimum-number-of-comparisons
+category: Arrays
+summary: Compare values in pairs so each pair spends one internal comparison and only two more updates to the running minimum and maximum.
+description: "Maximum and minimum of an array using minimum number of comparisons is the comparison-budget optimization that finds both extremes together instead of scanning separately for each one."
+dataStructures:
+  - Array
+techniques:
+  - Pairwise Comparison
+  - Reduction
+  - Array Traversal
+difficulty: Easy
+interviewFrequency: High
+aliases:
+  - min and max with minimum comparisons
+  - pairwise min max
+useCases:
+  - Reducing redundant comparisons when both extremes are needed
+  - Explaining why one pass is not automatically comparison-optimal
+  - Practicing careful odd-length and even-length initialization
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: "The pairwise method uses about 3n/2 comparisons instead of the 2n comparisons spent by independent min and max scans."
+interviewSignals:
+  - The prompt explicitly asks for the minimum number of comparisons.
+  - Both the smallest and largest value are required.
+  - Separate scans are correct but comparison-wasteful.
+relatedSlugs:
+  - binary-search
+  - quick-sort
+  - merge-sort
+provenance:
+  - title: "GeeksforGeeks - Maximum and minimum of an array using minimum number of comparisons"
+    href: https://www.geeksforgeeks.org/dsa/maximum-and-minimum-in-an-array/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+The trap here is that a single left-to-right pass with two independent comparisons per element is not comparison-optimal. Once you compare values in pairs first, only the smaller member of the pair can challenge the global minimum and only the larger member can challenge the global maximum.
+
+## Worked Example
+
+For `[3, 5, 4, 1, 9]`, initialize both answers from the first odd element `3`, then process `(5, 4)` and `(1, 9)` as pairs. The result is `[1, 9]`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function maximumAndMinimumOfAnArrayUsingMinimumNumberOfComparisons(values) {
+  if (!Array.isArray(values) || values.length === 0) {
+    throw new RangeError("Values must be a non-empty array");
+  }
+
+  let index = 0;
+  let minimum;
+  let maximum;
+
+  if (values.length % 2 === 1) {
+    minimum = values[0];
+    maximum = values[0];
+    index = 1;
+  } else {
+    if (values[0] < values[1]) {
+      minimum = values[0];
+      maximum = values[1];
+    } else {
+      minimum = values[1];
+      maximum = values[0];
+    }
+
+    index = 2;
+  }
+
+  while (index < values.length - 1) {
+    let localMinimum = values[index];
+    let localMaximum = values[index + 1];
+
+    if (localMinimum > localMaximum) {
+      [localMinimum, localMaximum] = [localMaximum, localMinimum];
+    }
+
+    minimum = Math.min(minimum, localMinimum);
+    maximum = Math.max(maximum, localMaximum);
+    index += 2;
+  }
+
+  return [minimum, maximum];
+}
+```
+
+```ts
+export function maximumAndMinimumOfAnArrayUsingMinimumNumberOfComparisons(
+  values: number[],
+): [number, number] {
+  if (values.length === 0) {
+    throw new RangeError('Values must be a non-empty array');
+  }
+
+  let index = 0;
+  let minimum: number;
+  let maximum: number;
+
+  if (values.length % 2 === 1) {
+    minimum = values[0];
+    maximum = values[0];
+    index = 1;
+  } else {
+    if (values[0] < values[1]) {
+      minimum = values[0];
+      maximum = values[1];
+    } else {
+      minimum = values[1];
+      maximum = values[0];
+    }
+
+    index = 2;
+  }
+
+  while (index < values.length - 1) {
+    let localMinimum = values[index];
+    let localMaximum = values[index + 1];
+
+    if (localMinimum > localMaximum) {
+      [localMinimum, localMaximum] = [localMaximum, localMinimum];
+    }
+
+    minimum = Math.min(minimum, localMinimum);
+    maximum = Math.max(maximum, localMaximum);
+    index += 2;
+  }
+
+  return [minimum, maximum];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Derive the exact comparison count for odd-length and even-length arrays.
+- How would you write the divide-and-conquer recurrence for the same task?
+- Why is scanning once with two comparisons per element correct but not optimal?
+
+## Common Pitfalls
+
+- Initializing even-length arrays incorrectly and double-counting the first two values.
+- Comparing each element to both global extremes without the pairwise shortcut.
+- Forgetting that odd-length arrays need a different starting state than even-length arrays.

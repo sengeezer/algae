@@ -1,0 +1,273 @@
+---
+title: The Skyline Problem
+slug: the-skyline-problem
+category: Heap
+summary: Sweep from left to right across all building boundaries while a max-heap tracks the tallest active building at each x-coordinate.
+description: "The Skyline Problem is the sweep-line interval-visibility problem where key points are emitted only when the maximum active building height changes."
+dataStructures:
+  - Array
+  - Heap
+techniques:
+  - Sweep Line
+  - Priority Queue
+  - Sorting
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - skyline key points
+  - building outline problem
+useCases:
+  - Converting overlapping intervals into visible boundary changes
+  - Maintaining the best active candidate with a heap during a sweep
+  - Emitting compressed output only when the visible height changes
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: "The practical interview solution is the sweep-line heap variant, even when the source index groups the problem under divide and conquer material."
+interviewSignals:
+  - Buildings are intervals with heights and shared ground level.
+  - The answer is a list of key points, not a rasterized drawing.
+  - Overlapping buildings hide shorter ones until their taller blockers expire.
+relatedSlugs:
+  - priority-queue
+  - merge-overlapping-intervals
+  - interval-merging
+provenance:
+  - title: "GeeksforGeeks - The Skyline Problem"
+    href: https://www.geeksforgeeks.org/dsa/the-skyline-problem-using-divide-and-conquer-algorithm/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+The core idea is to stop thinking about every covered x-position and focus only on event points. Each left or right wall can change which building is currently visible, so a sweep line plus a max-heap gives the skyline by reacting only where the visible maximum height changes.
+
+## Worked Example
+
+For `[[1, 5, 11], [2, 7, 6], [3, 9, 13]]`, the visible outline is `[[1, 11], [3, 13], [9, 0]]`. The second building never contributes its own key point because it stays hidden under taller neighbors.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function theSkylineProblem(buildings) {
+  class MaxHeap {
+    constructor() {
+      this.data = [];
+    }
+
+    size() {
+      return this.data.length;
+    }
+
+    peek() {
+      return this.data[0];
+    }
+
+    push(value) {
+      this.data.push(value);
+      this.bubbleUp(this.data.length - 1);
+    }
+
+    pop() {
+      if (this.data.length === 0) {
+        return null;
+      }
+
+      const top = this.data[0];
+      const last = this.data.pop();
+
+      if (this.data.length > 0) {
+        this.data[0] = last;
+        this.bubbleDown(0);
+      }
+
+      return top;
+    }
+
+    compare(left, right) {
+      return left[0] === right[0] ? left[1] - right[1] : left[0] - right[0];
+    }
+
+    bubbleUp(index) {
+      while (index > 0) {
+        const parent = Math.floor((index - 1) / 2);
+
+        if (this.compare(this.data[parent], this.data[index]) >= 0) {
+          break;
+        }
+
+        [this.data[parent], this.data[index]] = [this.data[index], this.data[parent]];
+        index = parent;
+      }
+    }
+
+    bubbleDown(index) {
+      while (true) {
+        let candidate = index;
+        const leftChild = index * 2 + 1;
+        const rightChild = index * 2 + 2;
+
+        if (leftChild < this.data.length && this.compare(this.data[leftChild], this.data[candidate]) > 0) {
+          candidate = leftChild;
+        }
+
+        if (rightChild < this.data.length && this.compare(this.data[rightChild], this.data[candidate]) > 0) {
+          candidate = rightChild;
+        }
+
+        if (candidate === index) {
+          break;
+        }
+
+        [this.data[index], this.data[candidate]] = [this.data[candidate], this.data[index]];
+        index = candidate;
+      }
+    }
+  }
+
+  const sortedBuildings = [...buildings].sort((left, right) => left[0] - right[0]);
+  const xCoordinates = [...new Set(sortedBuildings.flatMap(([left, right]) => [left, right]))].sort((a, b) => a - b);
+  const heap = new MaxHeap();
+  const skyline = [];
+  let buildingIndex = 0;
+
+  for (const x of xCoordinates) {
+    while (buildingIndex < sortedBuildings.length && sortedBuildings[buildingIndex][0] <= x) {
+      const [, right, height] = sortedBuildings[buildingIndex];
+      heap.push([height, right]);
+      buildingIndex += 1;
+    }
+
+    while (heap.size() > 0 && heap.peek()[1] <= x) {
+      heap.pop();
+    }
+
+    const height = heap.size() > 0 ? heap.peek()[0] : 0;
+
+    if (skyline.length === 0 || skyline[skyline.length - 1][1] !== height) {
+      skyline.push([x, height]);
+    }
+  }
+
+  return skyline;
+}
+```
+
+```ts
+export function theSkylineProblem(buildings: Array<[number, number, number]>): number[][] {
+  class MaxHeap {
+    private data: Array<[number, number]> = [];
+
+    size(): number {
+      return this.data.length;
+    }
+
+    peek(): [number, number] | undefined {
+      return this.data[0];
+    }
+
+    push(value: [number, number]): void {
+      this.data.push(value);
+      this.bubbleUp(this.data.length - 1);
+    }
+
+    pop(): [number, number] | null {
+      if (this.data.length === 0) {
+        return null;
+      }
+
+      const top = this.data[0];
+      const last = this.data.pop() as [number, number];
+
+      if (this.data.length > 0) {
+        this.data[0] = last;
+        this.bubbleDown(0);
+      }
+
+      return top;
+    }
+
+    private compare(left: [number, number], right: [number, number]): number {
+      return left[0] === right[0] ? left[1] - right[1] : left[0] - right[0];
+    }
+
+    private bubbleUp(index: number): void {
+      while (index > 0) {
+        const parent = Math.floor((index - 1) / 2);
+
+        if (this.compare(this.data[parent], this.data[index]) >= 0) {
+          break;
+        }
+
+        [this.data[parent], this.data[index]] = [this.data[index], this.data[parent]];
+        index = parent;
+      }
+    }
+
+    private bubbleDown(index: number): void {
+      while (true) {
+        let candidate = index;
+        const leftChild = index * 2 + 1;
+        const rightChild = index * 2 + 2;
+
+        if (leftChild < this.data.length && this.compare(this.data[leftChild], this.data[candidate]) > 0) {
+          candidate = leftChild;
+        }
+
+        if (rightChild < this.data.length && this.compare(this.data[rightChild], this.data[candidate]) > 0) {
+          candidate = rightChild;
+        }
+
+        if (candidate === index) {
+          break;
+        }
+
+        [this.data[index], this.data[candidate]] = [this.data[candidate], this.data[index]];
+        index = candidate;
+      }
+    }
+  }
+
+  const sortedBuildings = [...buildings].sort((left, right) => left[0] - right[0]);
+  const xCoordinates = [...new Set(sortedBuildings.flatMap(([left, right]) => [left, right]))].sort((a, b) => a - b);
+  const heap = new MaxHeap();
+  const skyline: number[][] = [];
+  let buildingIndex = 0;
+
+  for (const x of xCoordinates) {
+    while (buildingIndex < sortedBuildings.length && sortedBuildings[buildingIndex][0] <= x) {
+      const [, right, height] = sortedBuildings[buildingIndex];
+      heap.push([height, right]);
+      buildingIndex += 1;
+    }
+
+    while (heap.size() > 0 && (heap.peek()?.[1] ?? -1) <= x) {
+      heap.pop();
+    }
+
+    const height = heap.size() > 0 ? heap.peek()?.[0] ?? 0 : 0;
+
+    if (skyline.length === 0 || skyline[skyline.length - 1][1] !== height) {
+      skyline.push([x, height]);
+    }
+  }
+
+  return skyline;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why do buildings that end at `x` stop contributing before the skyline height at that same `x` is computed?
+- How would you implement the same sweep with a multiset instead of a heap?
+- What changes if the output must preserve every collinear horizontal segment endpoint instead of compressing them?
+
+## Common Pitfalls
+
+- Emitting a point for every wall instead of only when the visible height changes.
+- Forgetting lazy removal of expired buildings from the heap.
+- Mishandling buildings that start exactly where another one ends.

@@ -1,0 +1,160 @@
+---
+title: Search in a Row-wise and Column-wise Sorted 2D Array using Divide and Conquer algorithm
+slug: search-in-a-row-wise-and-column-wise-sorted-2d-array-using-divide-and-conquer-algorithm
+category: Searching
+summary: Check the middle cell of a sorted submatrix, discard the impossible quadrant, and recurse only into the three regions that can still contain the key.
+description: "Search in a Row-wise and Column-wise Sorted 2D Array using Divide and Conquer algorithm is the recursive matrix-search variant that prunes one quadrant at each pivot comparison instead of scanning the whole grid."
+dataStructures:
+  - Matrix
+  - Array
+techniques:
+  - Divide and Conquer
+  - Matrix Search
+  - Recursive Pruning
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - divide and conquer sorted matrix search
+  - recursive search in sorted 2d array
+useCases:
+  - Reusing row-wise and column-wise monotonicity to prune submatrices
+  - Explaining a recursive alternative to the staircase search
+  - Returning a yes-or-no answer without flattening the matrix
+complexity:
+  time: O(n^1.58)
+  space: O(log n)
+  notes: "For an n x n matrix, the source recurrence is 3T(n/2) + O(1) because one quadrant becomes impossible after each middle comparison."
+interviewSignals:
+  - Every row and every column is sorted increasingly.
+  - The prompt specifically mentions divide and conquer instead of the linear staircase walk.
+  - One quadrant can be ruled out completely from the middle value alone.
+relatedSlugs:
+  - binary-search
+  - binary-search-tree
+  - matrix-multiplication
+provenance:
+  - title: "GeeksforGeeks - Search in a Row-wise and Column-wise Sorted 2D Array using Divide and Conquer algorithm"
+    href: https://www.geeksforgeeks.org/dsa/search-in-a-row-wise-and-column-wise-sorted-2d-array-using-divide-and-conquer-algorithm/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+Most interviewers expect the linear top-right staircase search for this matrix shape. This version is useful because it forces you to articulate the recursive pruning logic: after comparing the middle cell with the key, one whole quadrant becomes impossible and only three disjoint regions remain viable.
+
+## Worked Example
+
+For `key = 30` and `mat = [[3, 30], [20, 52]]`, the middle check reaches `30` immediately, so the answer is true. For `key = 62` in `[[3, 30, 38], [20, 52, 54], [35, 60, 69]]`, every recursive region eventually proves impossible, so the answer is false.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function searchInARowWiseAndColumnWiseSorted2DArrayUsingDivideAndConquerAlgorithm(mat, key) {
+  const rowCount = mat.length;
+
+  if (rowCount === 0) {
+    return false;
+  }
+
+  const columnCount = mat[0].length;
+
+  function search(top, bottom, left, right) {
+    if (top > bottom || left > right) {
+      return false;
+    }
+
+    if (key < mat[top][left] || key > mat[bottom][right]) {
+      return false;
+    }
+
+    const middleRow = top + Math.floor((bottom - top) / 2);
+    const middleColumn = left + Math.floor((right - left) / 2);
+    const middleValue = mat[middleRow][middleColumn];
+
+    if (middleValue === key) {
+      return true;
+    }
+
+    if (middleValue < key) {
+      return (
+        search(top, middleRow, middleColumn + 1, right)
+        || search(middleRow + 1, bottom, left, middleColumn)
+        || search(middleRow + 1, bottom, middleColumn + 1, right)
+      );
+    }
+
+    return (
+      search(top, middleRow - 1, left, middleColumn - 1)
+      || search(top, middleRow - 1, middleColumn, right)
+      || search(middleRow, bottom, left, middleColumn - 1)
+    );
+  }
+
+  return search(0, rowCount - 1, 0, columnCount - 1);
+}
+```
+
+```ts
+export function searchInARowWiseAndColumnWiseSorted2DArrayUsingDivideAndConquerAlgorithm(
+  mat: number[][],
+  key: number,
+): boolean {
+  const rowCount = mat.length;
+
+  if (rowCount === 0) {
+    return false;
+  }
+
+  const columnCount = mat[0].length;
+
+  const search = (top: number, bottom: number, left: number, right: number): boolean => {
+    if (top > bottom || left > right) {
+      return false;
+    }
+
+    if (key < mat[top][left] || key > mat[bottom][right]) {
+      return false;
+    }
+
+    const middleRow = top + Math.floor((bottom - top) / 2);
+    const middleColumn = left + Math.floor((right - left) / 2);
+    const middleValue = mat[middleRow][middleColumn];
+
+    if (middleValue === key) {
+      return true;
+    }
+
+    if (middleValue < key) {
+      return (
+        search(top, middleRow, middleColumn + 1, right)
+        || search(middleRow + 1, bottom, left, middleColumn)
+        || search(middleRow + 1, bottom, middleColumn + 1, right)
+      );
+    }
+
+    return (
+      search(top, middleRow - 1, left, middleColumn - 1)
+      || search(top, middleRow - 1, middleColumn, right)
+      || search(middleRow, bottom, left, middleColumn - 1)
+    );
+  };
+
+  return search(0, rowCount - 1, 0, columnCount - 1);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why does the middle comparison eliminate exactly one quadrant completely?
+- How does this compare with the O(n + m) top-right staircase search in practice?
+- How would you return the found coordinates instead of only a boolean answer?
+
+## Common Pitfalls
+
+- Recursing into all four quadrants even though one is already impossible.
+- Forgetting range pruning from the current submatrix corners.
+- Mixing up the middle row and middle column boundaries when building the recursive regions.
