@@ -1,0 +1,83 @@
+---
+title: Area of Circumcircle of an Equilateral Triangle
+slug: area-of-circumcircle-of-an-equilateral-triangle
+category: Mathematics
+summary: Use the equilateral-triangle circumradius `a / sqrt(3)` and plug it into the circle-area formula.
+description: "Area of Circumcircle of an Equilateral Triangle is the direct-geometry formula problem for the area of the unique circle through the triangle's three vertices."
+dataStructures:
+  - Number
+techniques:
+  - Direct Formula Application
+  - Triangle Geometry
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - circumcircle area of equilateral triangle
+  - circumscribed circle area of equilateral triangle
+useCases:
+  - Converting one equilateral-triangle measurement into a derived circle area
+  - Reusing special-case triangle geometry in formula questions
+  - Building quick reference utilities for geometry helpers
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The formula simplifies to `pi * a^2 / 3`, so the computation is a single constant-time arithmetic expression.
+interviewSignals:
+  - The input is only the side length of an equilateral triangle.
+  - The intended path is formula reduction rather than geometric construction.
+  - The circumradius relationship is the missing bridge to circle area.
+relatedSlugs:
+  - area
+  - program-to-find-circumcenter-of-a-triangle
+  - third-side-of-triangle-using-law-of-cosines
+provenance:
+  - title: "GeeksforGeeks - Program to calculate area of Circumcircle of an Equilateral Triangle"
+    href: https://www.geeksforgeeks.org/dsa/program-calculate-area-circumcircle-equilateral-triangle/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is one of the simpler derived-formula questions in the Triangle section. The only real step is to remember that the circumradius of an equilateral triangle with side `a` is `a / sqrt(3)`, which makes the circle area `pi * a^2 / 3`.
+
+## Worked Example
+
+For `side = 6`, the circumcircle area is `pi * 6^2 / 3 = 12pi`, which is about `37.6991118`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function areaOfCircumcircleOfAnEquilateralTriangle(side) {
+  if (typeof side !== "number" || !Number.isFinite(side) || side <= 0) {
+    throw new RangeError("Side length must be a positive number");
+  }
+
+  return Math.PI * side * side / 3;
+}
+```
+
+```ts
+export function areaOfCircumcircleOfAnEquilateralTriangle(side: number): number {
+  if (!Number.isFinite(side) || side <= 0) {
+    throw new RangeError('Side length must be a positive number');
+  }
+
+  return Math.PI * side * side / 3;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you derive the same formula starting from the equilateral triangle height?
+- What is the corresponding formula for the incircle area?
+- Why is this shortcut valid only for equilateral triangles?
+
+## Common Pitfalls
+
+- Mixing the circumradius with the inradius.
+- Using `pi * a^2` directly without the `/ 3` factor.
+- Accepting zero or negative side lengths as valid input.

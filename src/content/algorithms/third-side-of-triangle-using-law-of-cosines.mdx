@@ -1,0 +1,110 @@
+---
+title: Third side of triangle using law of cosines
+slug: third-side-of-triangle-using-law-of-cosines
+category: Mathematics
+summary: Compute the unknown side from the two known sides and their included angle with the law of cosines.
+description: "Third side of triangle using law of cosines is the trigonometric geometry helper that reconstructs the missing side length from two sides and the angle between them."
+dataStructures:
+  - Number
+techniques:
+  - Law of Cosines
+  - Trigonometry
+  - Direct Formula Application
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - third side by law of cosines
+  - missing side from two sides and angle
+useCases:
+  - Reconstructing a triangle side when SAS data is known
+  - Translating trigonometric relationships into direct geometry utilities
+  - Supporting follow-up questions that alternate between sides and angles
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The only work is one cosine evaluation and one square root after validating side lengths and the included angle.
+interviewSignals:
+  - The problem gives two sides and the included angle.
+  - The law of cosines is the intended formula rather than coordinate geometry.
+  - Angle units matter and should be normalized before computation.
+relatedSlugs:
+  - find-all-angles-of-a-given-triangle
+  - check-whether-triangle-is-valid-or-not-if-sides-are-given
+  - area-of-circumcircle-of-an-equilateral-triangle
+provenance:
+  - title: "GeeksforGeeks - Program to find third side of triangle using law of cosines"
+    href: https://www.geeksforgeeks.org/dsa/program-find-third-side-triangle-using-law-cosines/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is the side-recovery counterpart to the angle-recovery problem from the prior batch. When two sides and the included angle are known, the law of cosines gives the missing side immediately without converting the triangle into coordinates.
+
+## Worked Example
+
+For `a = 5`, `b = 8`, and included angle `49` degrees, the third side is about `6.04279`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function thirdSideOfTriangleUsingLawOfCosines(a, b, angleDegrees) {
+  if (
+    !Number.isFinite(a)
+    || !Number.isFinite(b)
+    || !Number.isFinite(angleDegrees)
+    || a <= 0
+    || b <= 0
+    || angleDegrees <= 0
+    || angleDegrees >= 180
+  ) {
+    throw new RangeError("Sides must be positive and the included angle must be between 0 and 180 degrees");
+  }
+
+  const angleRadians = angleDegrees * Math.PI / 180;
+  const squared = a * a + b * b - 2 * a * b * Math.cos(angleRadians);
+
+  return Math.sqrt(Math.max(0, squared));
+}
+```
+
+```ts
+export function thirdSideOfTriangleUsingLawOfCosines(
+  a: number,
+  b: number,
+  angleDegrees: number,
+): number {
+  if (
+    !Number.isFinite(a)
+    || !Number.isFinite(b)
+    || !Number.isFinite(angleDegrees)
+    || a <= 0
+    || b <= 0
+    || angleDegrees <= 0
+    || angleDegrees >= 180
+  ) {
+    throw new RangeError('Sides must be positive and the included angle must be between 0 and 180 degrees');
+  }
+
+  const angleRadians = angleDegrees * Math.PI / 180;
+  const squared = a * a + b * b - 2 * a * b * Math.cos(angleRadians);
+
+  return Math.sqrt(Math.max(0, squared));
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why must the given angle be the included angle between the two known sides?
+- How would you invert the formula to recover the angle when all three sides are known?
+- Why is clamping near zero useful before the square root?
+
+## Common Pitfalls
+
+- Feeding degrees into `Math.cos` without converting to radians.
+- Using a non-included angle and expecting the formula to stay valid.
+- Accepting angles of `0` or `180` degrees, which collapse the triangle.

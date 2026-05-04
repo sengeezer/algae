@@ -1222,7 +1222,7 @@ This one-hundred-twelfth expansion slice lifts the catalog from 623 to 631 entri
 
 ## Batch 113 added
 
-This one-hundred-thirteenth expansion slice currently lifts the catalog locally from 631 to 637 entries.
+This one-hundred-thirteenth expansion slice lifts the catalog from 631 to 637 entries.
 
 - Check whether triangle is valid or not if sides are given
 - Check whether a given point lies inside a triangle or not
@@ -1230,6 +1230,14 @@ This one-hundred-thirteenth expansion slice currently lifts the catalog locally 
 - Count Integral points inside a Triangle
 - Find all angles of a given triangle
 - Program to find Circumcenter of a Triangle
+
+## Batch 114 added
+
+This one-hundred-fourteenth expansion slice currently lifts the catalog locally from 637 to 640 entries.
+
+- Triangles formed from a set of lines in Euclidean Plane
+- Area of Circumcircle of an Equilateral Triangle
+- Third side of triangle using law of cosines
 
 ## Next candidates from the same sources
 
@@ -1264,10 +1272,14 @@ This one-hundred-thirteenth expansion slice currently lifts the catalog locally 
 - Focused `gray-matter` plus JavaScript-fence validators passed for all eight batch-112 entries.
 - Destination-title cleanup in the first clean Geometric `Triangle` queue is `Check triangle is valid or not` -> `Check whether triangle is valid or not if sides are given`, `Check if a given point lies inside a triangle` -> `Check whether a given point lies inside a triangle or not`, `All angles of a given triangle` -> `Find all angles of a given triangle`, and `Circumcenter of a Triangle` -> `Program to find Circumcenter of a Triangle`.
 - `Area of a triangle` remains duplicate-level coverage of the published `Area` entry because that entry already covers both Heron's formula and direct triangle-area computation.
-- Batch 113 currently lifts the catalog locally from 631 to 637 entries with `Check whether triangle is valid or not if sides are given`, `Check whether a given point lies inside a triangle or not`, `Check if right triangle possible from given area and hypotenuse`, `Count Integral points inside a Triangle`, `Find all angles of a given triangle`, and `Program to find Circumcenter of a Triangle`.
+- Batch 113 lifts the catalog from 631 to 637 entries with `Check whether triangle is valid or not if sides are given`, `Check whether a given point lies inside a triangle or not`, `Check if right triangle possible from given area and hypotenuse`, `Count Integral points inside a Triangle`, `Find all angles of a given triangle`, and `Program to find Circumcenter of a Triangle`.
 - `Check if right triangle possible from given area and hypotenuse` and `Count Integral points inside a Triangle` already match their destination titles.
 - Focused `gray-matter` plus JavaScript-fence validators passed for all six batch-113 entries.
-- The next source-order research on the Geometric Algorithms page begins at `Triangles formed from a set of lines in Euclidean Plane`; the next Triangle titles `Triangles formed from a set of lines in Euclidean Plane`, `Area of Circumcircle of an Equilateral Triangle`, and `Third side of triangle using law of cosines` are currently absent by exact-title check.
+- Destination-title cleanup in the final clean Geometric `Triangle` queue is `Number of Triangles that can be formed given a set of lines in Euclidean Plane` -> `Triangles formed from a set of lines in Euclidean Plane`, `Program to calculate area of Circumcircle of an Equilateral Triangle` -> `Area of Circumcircle of an Equilateral Triangle`, and `Program to find third side of triangle using law of cosines` -> `Third side of triangle using law of cosines`.
+- Batch 114 currently lifts the catalog locally from 637 to 640 entries with `Triangles formed from a set of lines in Euclidean Plane`, `Area of Circumcircle of an Equilateral Triangle`, and `Third side of triangle using law of cosines`.
+- Focused `gray-matter` plus JavaScript-fence validators passed for all three batch-114 entries.
+- The GeeksforGeeks `Triangle` section is now exhausted in source order after `Third side of triangle using law of cosines`; drafting advances to `Rectangle | Square | Circle`.
+- The next source-order research on the Geometric Algorithms page begins at `Check whether a given point lies inside a rectangle or not`; the next Rectangle titles `Check whether a given point lies inside a rectangle or not`, `Program for Area And Perimeter Of Rectangle`, and `Find if two rectangles overlap` are currently absent by exact-title check.
 - Batch 92 carries the vetted Dynamic Programming hard stretch through `Longest repeating and non-overlapping substring` and then consumes the clean `Advanced Concepts` absences `Count Ways To Assign Unique Cap To Every Person`, `Digit DP | Introduction`, and `Sum over Subsets | Dynamic Programming`.
 - The Dynamic Programming items skipped between `Program to find amount of water in a given glass` and `Largest Cross Bordered Square` remain already represented locally: `Longest Common Subsequence`, `Longest Increasing Subsequence`, `Edit Distance`, `0-1 Knapsack Problem`, `Partition Problem`, `Longest Palindromic Subsequence`, `Bellman-Ford Algorithm`, and `Floyd Warshall Algorithm`.
 - `The painter's partition problem` remains skipped because the local `Find minimum time to finish all jobs with given constraints` entry already covers that partition-minimax problem and includes the alias `painter partition with multiplier`.

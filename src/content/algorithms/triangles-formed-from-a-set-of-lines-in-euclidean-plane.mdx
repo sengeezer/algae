@@ -1,0 +1,169 @@
+---
+title: Triangles formed from a set of lines in Euclidean Plane
+slug: triangles-formed-from-a-set-of-lines-in-euclidean-plane
+category: Mathematics
+summary: Group lines by parallel direction and count how many ways to choose one line from three distinct slope classes.
+description: "Triangles formed from a set of lines in Euclidean Plane is the combinatorial geometry problem of counting triangles determined by distinct non-concurrent lines."
+dataStructures:
+  - Array
+  - Map
+techniques:
+  - Computational Geometry
+  - Combinatorics
+  - Hashing
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - number of triangles from lines
+  - triangles from set of lines
+useCases:
+  - Counting geometric figures from many line equations without enumerating every triplet
+  - Collapsing parallel lines into direction classes before combinatorial counting
+  - Demonstrating how geometry constraints can reduce to grouped counting
+complexity:
+  time: O(n log C)
+  space: O(n)
+  notes: The implementation normalizes line directions with gcd, groups parallel lines in a hash map, and accumulates the number of three-group choices in one pass.
+interviewSignals:
+  - The input is a set of line equations rather than points or segments.
+  - Parallel lines block triangle formation, so direction classes are the controlling abstraction.
+  - The source assumption rules out three non-parallel lines meeting at one point.
+relatedSlugs:
+  - program-to-find-line-passing-through-2-points
+  - program-to-find-slope-of-a-line
+  - count-maximum-points-on-same-line
+provenance:
+  - title: "GeeksforGeeks - Number of Triangles that can be formed given a set of lines in Euclidean Plane"
+    href: https://www.geeksforgeeks.org/dsa/number-triangles-can-formed-given-set-lines-euclidean-plane/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+The direct `n choose 3` scan works, but the real idea is to stop treating every line as unique. What matters first is whether two lines are parallel. Once lines are grouped by direction, every valid triangle comes from choosing one line from each of three different slope classes.
+
+## Worked Example
+
+For lines `x + 2y = 5`, `2x + 4y = 7`, `3x + 5y = 8`, and `4x + 5y = 6`, the first two are parallel and the other two have distinct slopes, so there are exactly `2` triangles.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function trianglesFormedFromASetOfLinesInEuclideanPlane(lines) {
+  function gcd(left, right) {
+    let a = Math.abs(left);
+    let b = Math.abs(right);
+
+    while (b !== 0) {
+      [a, b] = [b, a % b];
+    }
+
+    return a;
+  }
+
+  function directionKey(a, b) {
+    if (a === 0 && b === 0) {
+      throw new RangeError("Each line needs a non-zero normal vector");
+    }
+
+    const divisor = gcd(a, b) || 1;
+    let normalizedA = a / divisor;
+    let normalizedB = b / divisor;
+
+    if (normalizedA < 0 || (normalizedA === 0 && normalizedB < 0)) {
+      normalizedA = -normalizedA;
+      normalizedB = -normalizedB;
+    }
+
+    return `${normalizedA}/${normalizedB}`;
+  }
+
+  const groupCounts = new Map();
+
+  for (const [a, b] of lines) {
+    const key = directionKey(a, b);
+    groupCounts.set(key, (groupCounts.get(key) ?? 0) + 1);
+  }
+
+  let sum1 = 0;
+  let sum2 = 0;
+  let sum3 = 0;
+
+  for (const count of groupCounts.values()) {
+    sum3 += sum2 * count;
+    sum2 += sum1 * count;
+    sum1 += count;
+  }
+
+  return sum3;
+}
+```
+
+```ts
+type Line = [number, number, number];
+
+export function trianglesFormedFromASetOfLinesInEuclideanPlane(lines: Line[]): number {
+  const gcd = (left: number, right: number): number => {
+    let a = Math.abs(left);
+    let b = Math.abs(right);
+
+    while (b !== 0) {
+      [a, b] = [b, a % b];
+    }
+
+    return a;
+  };
+
+  const directionKey = (a: number, b: number): string => {
+    if (a === 0 && b === 0) {
+      throw new RangeError('Each line needs a non-zero normal vector');
+    }
+
+    const divisor = gcd(a, b) || 1;
+    let normalizedA = a / divisor;
+    let normalizedB = b / divisor;
+
+    if (normalizedA < 0 || (normalizedA === 0 && normalizedB < 0)) {
+      normalizedA = -normalizedA;
+      normalizedB = -normalizedB;
+    }
+
+    return `${normalizedA}/${normalizedB}`;
+  };
+
+  const groupCounts = new Map<string, number>();
+
+  for (const [a, b] of lines) {
+    const key = directionKey(a, b);
+    groupCounts.set(key, (groupCounts.get(key) ?? 0) + 1);
+  }
+
+  let sum1 = 0;
+  let sum2 = 0;
+  let sum3 = 0;
+
+  for (const count of groupCounts.values()) {
+    sum3 += sum2 * count;
+    sum2 += sum1 * count;
+    sum1 += count;
+  }
+
+  return sum3;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why do three lines from three distinct slope classes form a triangle only under the no-concurrency assumption?
+- How would you adapt the count if multiple non-parallel line pairs could intersect at the same point?
+- Why is a normalized `(a, b)` key safer than floating-point slope comparison?
+
+## Common Pitfalls
+
+- Comparing slopes with raw floating-point division instead of normalized coefficients.
+- Forgetting that the constant term `c` does not affect whether two lines are parallel.
+- Counting triplets of lines directly even after the problem collapses into grouped combinatorics.
