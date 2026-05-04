@@ -1,0 +1,94 @@
+---
+title: Number of parallelograms when n horizontal parallel lines intersect m vertical parallel lines
+slug: number-of-parallelograms-when-n-horizontal-parallel-lines-intersect-m-vertical-parallel-lines
+category: Mathematics
+summary: Choose any two horizontal lines and any two vertical lines, then multiply the two combinations.
+description: "Number of parallelograms when n horizontal parallel lines intersect m vertical parallel lines is the combinatorial counting problem that reduces directly to choosing line pairs."
+dataStructures:
+  - Number
+techniques:
+  - Combinatorics
+  - Closed Form Formula
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - count parallelograms from horizontal and vertical lines
+  - parallelograms from grid lines
+useCases:
+  - Counting quadrilateral regions induced by parallel-line arrangements
+  - Replacing enumeration with a closed-form combinatorial count
+  - Building intuition for geometry problems driven by line selection instead of coordinates
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The closed form is `C(n, 2) * C(m, 2)` because each parallelogram needs two horizontal and two vertical boundaries.
+interviewSignals:
+  - The shape count is determined by choosing boundary lines, not by scanning cells.
+  - The source wording may contain a typo in the final phrase, but the destination article title uses `parallel lines`.
+  - Inputs smaller than two in either direction produce zero parallelograms.
+relatedSlugs:
+  - number-of-rectangles-in-n-m-grid
+  - program-for-circumference-of-a-parallelogram
+  - area-of-a-circumscribed-circle-of-a-square
+provenance:
+  - title: "GeeksforGeeks - Number of parallelograms when n horizontal parallel lines intersect m vertical parallel lines"
+    href: https://www.geeksforgeeks.org/dsa/number-of-parallelograms-when-n-horizontal-parallel-lines-intersect-m-vertical-parallellines/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+The geometric picture can distract from the simple counting structure. A parallelogram is fully determined by picking any two horizontal parallels and any two vertical parallels, so the answer is just a product of two binomial coefficients.
+
+## Worked Example
+
+For `n = 3` and `m = 2`, the count is `C(3, 2) * C(2, 2) = 3 * 1 = 3`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function numberOfParallelogramsWhenNHorizontalParallelLinesIntersectMVerticalParallelLines(n, m) {
+  if (!Number.isInteger(n) || !Number.isInteger(m) || n < 0 || m < 0) {
+    throw new RangeError("Line counts must be non-negative integers");
+  }
+
+  if (n < 2 || m < 2) {
+    return 0;
+  }
+
+  return (n * (n - 1) * m * (m - 1)) / 4;
+}
+```
+
+```ts
+export function numberOfParallelogramsWhenNHorizontalParallelLinesIntersectMVerticalParallelLines(
+  n: number,
+  m: number,
+): number {
+  if (!Number.isInteger(n) || !Number.isInteger(m) || n < 0 || m < 0) {
+    throw new RangeError('Line counts must be non-negative integers');
+  }
+
+  if (n < 2 || m < 2) {
+    return 0;
+  }
+
+  return (n * (n - 1) * m * (m - 1)) / 4;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why is this the same counting shape as choosing rectangle boundaries in a grid?
+- How would the answer change if one family of lines were not parallel?
+- How would you derive the same result from `nC2 * mC2` instead of the simplified product form?
+
+## Common Pitfalls
+
+- Confusing the number of lines with the number of cells between lines.
+- Forgetting that at least two lines from each family are required.
+- Enumerating every possible shape instead of recognizing the direct combination count.

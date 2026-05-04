@@ -1265,11 +1265,19 @@ This one-hundred-seventeenth expansion slice lifts the catalog from 646 to 649 e
 
 ## Batch 118 added
 
-This one-hundred-eighteenth expansion slice currently lifts the catalog locally from 649 to 652 entries.
+This one-hundred-eighteenth expansion slice lifts the catalog from 649 to 652 entries.
 
 - Check if a line touches or intersects a circle
 - Area of a Circumscribed Circle of a Square
 - Find minimum radius such that atleast k point lie inside the circle
+
+## Batch 119 added
+
+This one-hundred-nineteenth expansion slice currently lifts the catalog locally from 652 to 655 entries.
+
+- Angular Sweep (Maximum points that can be enclosed in a circle of given radius)
+- Number of parallelograms when n horizontal parallel lines intersect m vertical parallel lines
+- Program for Circumference of a Parallelogram
 
 ## Next candidates from the same sources
 
@@ -1325,10 +1333,15 @@ This one-hundred-eighteenth expansion slice currently lifts the catalog locally 
 - Batch 117 lifts the catalog from 646 to 649 entries with `Check whether a point exists in circle sector or not`, `Check if two given circles touch or intersect each other`, and `Program to find area of a Circular Segment`.
 - Focused `gray-matter` plus JavaScript-fence validators passed for all three batch-117 entries.
 - All three next circle-tail entries already match their destination titles.
-- Batch 118 currently lifts the catalog locally from 649 to 652 entries with `Check if a line touches or intersects a circle`, `Area of a Circumscribed Circle of a Square`, and `Find minimum radius such that atleast k point lie inside the circle`.
+- Batch 118 lifts the catalog from 649 to 652 entries with `Check if a line touches or intersects a circle`, `Area of a Circumscribed Circle of a Square`, and `Find minimum radius such that atleast k point lie inside the circle`.
 - Focused `gray-matter` plus JavaScript-fence validators passed for all three batch-118 entries.
-- The GeeksforGeeks `Rectangle | Square | Circle` section is now almost exhausted in source order; the remaining tail begins at `Angular Sweep (Maximum points that can be enclosed in a circle of given radius)` before drafting crosses into `Quadrilateral`.
-- The next clean source-order titles are `Angular Sweep (Maximum points that can be enclosed in a circle of given radius)`, `Number of parallelograms when n horizontal parallel lines intersect m vertical parallellines`, and `Program for Circumference of a Parallelogram`, and they are currently absent by exact-title check.
+- `Angular Sweep (Maximum points that can be enclosed in a circle of given radius)` is the final clean `Rectangle | Square | Circle` title and already matches its destination title.
+- The GeeksforGeeks `Rectangle | Square | Circle` section is now exhausted in source order after `Angular Sweep (Maximum points that can be enclosed in a circle of given radius)`; drafting advances into `Quadrilateral`.
+- Destination-title cleanup in the first clean `Quadrilateral` queue is `Number of parallelograms when n horizontal parallel lines intersect m vertical parallellines` -> `Number of parallelograms when n horizontal parallel lines intersect m vertical parallel lines`.
+- `Program for Circumference of a Parallelogram` already matches its destination title.
+- Batch 119 currently lifts the catalog locally from 652 to 655 entries with `Angular Sweep (Maximum points that can be enclosed in a circle of given radius)`, `Number of parallelograms when n horizontal parallel lines intersect m vertical parallel lines`, and `Program for Circumference of a Parallelogram`.
+- Focused `gray-matter` plus JavaScript-fence validators passed for all three batch-119 entries.
+- The next clean source-order titles are `Program to calculate area and perimeter of Trapezium`, `Program to find area of a Trapezoid`, and `Find all possible coordinates of parallelogram`, and they are currently absent by exact-title check.
 - Batch 92 carries the vetted Dynamic Programming hard stretch through `Longest repeating and non-overlapping substring` and then consumes the clean `Advanced Concepts` absences `Count Ways To Assign Unique Cap To Every Person`, `Digit DP | Introduction`, and `Sum over Subsets | Dynamic Programming`.
 - The Dynamic Programming items skipped between `Program to find amount of water in a given glass` and `Largest Cross Bordered Square` remain already represented locally: `Longest Common Subsequence`, `Longest Increasing Subsequence`, `Edit Distance`, `0-1 Knapsack Problem`, `Partition Problem`, `Longest Palindromic Subsequence`, `Bellman-Ford Algorithm`, and `Floyd Warshall Algorithm`.
 - `The painter's partition problem` remains skipped because the local `Find minimum time to finish all jobs with given constraints` entry already covers that partition-minimax problem and includes the alias `painter partition with multiplier`.

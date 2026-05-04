@@ -1,0 +1,83 @@
+---
+title: Program for Circumference of a Parallelogram
+slug: program-for-circumference-of-a-parallelogram
+category: Mathematics
+summary: Double the sum of the two adjacent side lengths to get the full boundary length.
+description: "Program for Circumference of a Parallelogram is the direct-formula geometry helper that computes the perimeter from two adjacent sides."
+dataStructures:
+  - Number
+techniques:
+  - Direct Formula Application
+  - Input Validation
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - parallelogram perimeter
+  - circumference of a parallelogram
+useCases:
+  - Quick perimeter calculations for quadrilateral geometry prompts
+  - Supporting CAD or drawing tools that need boundary lengths
+  - Pairing perimeter helpers with area formulas in basic shape libraries
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: Opposite sides are equal in a parallelogram, so only two adjacent sides are needed.
+interviewSignals:
+  - The prompt gives adjacent side lengths instead of coordinates.
+  - The intended solution is a direct formula, not coordinate geometry.
+  - Non-negative side validation still matters even in a simple helper.
+relatedSlugs:
+  - number-of-parallelograms-when-n-horizontal-parallel-lines-intersect-m-vertical-parallel-lines
+  - program-for-area-and-perimeter-of-rectangle
+  - area-of-a-circumscribed-circle-of-a-square
+provenance:
+  - title: "GeeksforGeeks - Program for Circumference of a Parallelogram"
+    href: https://www.geeksforgeeks.org/dsa/program-circumference-parallelogram/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is a formula-recognition warm-up in the quadrilateral sequence. Because opposite sides of a parallelogram are equal, the total boundary length is just twice the sum of the two adjacent side lengths.
+
+## Worked Example
+
+For side lengths `10` and `8`, the circumference is `2 * (10 + 8) = 36`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function programForCircumferenceOfAParallelogram(a, b) {
+  if (!Number.isFinite(a) || !Number.isFinite(b) || a < 0 || b < 0) {
+    throw new RangeError("Side lengths must be non-negative numbers");
+  }
+
+  return 2 * (a + b);
+}
+```
+
+```ts
+export function programForCircumferenceOfAParallelogram(a: number, b: number): number {
+  if (!Number.isFinite(a) || !Number.isFinite(b) || a < 0 || b < 0) {
+    throw new RangeError('Side lengths must be non-negative numbers');
+  }
+
+  return 2 * (a + b);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you compute the area if the base and height were also given?
+- Why are only two side lengths needed instead of all four?
+- Should zero-length sides be treated as invalid or as a degenerate shape?
+
+## Common Pitfalls
+
+- Forgetting to double both adjacent sides.
+- Confusing circumference with area.
+- Assuming the shape must be a rectangle because only two side lengths are provided.

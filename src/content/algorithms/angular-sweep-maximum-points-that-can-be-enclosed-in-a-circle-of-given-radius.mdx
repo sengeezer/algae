@@ -1,0 +1,282 @@
+---
+title: Angular Sweep (Maximum points that can be enclosed in a circle of given radius)
+slug: angular-sweep-maximum-points-that-can-be-enclosed-in-a-circle-of-given-radius
+category: Mathematics
+summary: Rotate a fixed-radius circle around each pivot point and sweep entry and exit angles to track the maximum enclosed count.
+description: "Angular Sweep (Maximum points that can be enclosed in a circle of given radius) is the geometric sweep technique that converts a fixed-radius enclosure problem into angular interval events."
+dataStructures:
+  - Array
+techniques:
+  - Angular Sweep
+  - Computational Geometry
+  - Event Sorting
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - maximum points in a fixed radius circle
+  - angular sweep circle enclosure
+useCases:
+  - Finding the densest local circular neighborhood in a point cloud
+  - Solving fixed-radius clustering subproblems in geometry-heavy code
+  - Replacing cubic circle-construction scans with an angular event sweep
+complexity:
+  time: O(n^2 log n)
+  space: O(n)
+  notes: For each pivot point, the sweep sorts entry and exit events for every other point that can fit in the same fixed-radius circle.
+interviewSignals:
+  - The radius is fixed, but the circle center may move.
+  - Pairwise distances greater than twice the radius can be ignored.
+  - The key optimization is to sweep angles instead of explicitly testing every candidate circle.
+relatedSlugs:
+  - find-minimum-radius-such-that-atleast-k-point-lie-inside-the-circle
+  - check-whether-a-point-exists-in-circle-sector-or-not
+  - check-if-a-line-touches-or-intersects-a-circle
+provenance:
+  - title: "GeeksforGeeks - Angular Sweep (Maximum points that can be enclosed in a circle of given radius)"
+    href: https://www.geeksforgeeks.org/dsa/angular-sweep-maximum-points-can-enclosed-circle-given-radius/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+The naive solution tries every circle induced by pairs of points and checks all other points, which costs cubic time. The angular-sweep observation is that if one point is fixed on the circumference, each other reachable point contributes an angular interval during which it lies inside the circle, so the problem becomes an event sweep instead of a circle-enumeration brute force.
+
+## Worked Example
+
+For `radius = 1` and points `(6.47634, 7.69628)`, `(5.16828, 4.79915)`, and `(6.69533, 6.20378)`, the best circle encloses `2` points.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function angularSweepMaximumPointsThatCanBeEnclosedInACircleOfGivenRadius(points, radius) {
+  if (!Array.isArray(points) || !Number.isFinite(radius) || radius < 0) {
+    throw new RangeError("Points must be an array and radius must be a non-negative number");
+  }
+
+  if (points.length === 0) {
+    return 0;
+  }
+
+  const epsilon = 1e-9;
+  const twoPi = 2 * Math.PI;
+
+  if (radius === 0) {
+    const counts = new Map();
+    let maxDuplicates = 0;
+
+    for (const point of points) {
+      if (!Array.isArray(point) || point.length !== 2 || !point.every(Number.isFinite)) {
+        throw new RangeError("Each point must be a pair of finite numbers");
+      }
+
+      const key = `${point[0]},${point[1]}`;
+      const nextCount = (counts.get(key) ?? 0) + 1;
+      counts.set(key, nextCount);
+      maxDuplicates = Math.max(maxDuplicates, nextCount);
+    }
+
+    return maxDuplicates;
+  }
+
+  let answer = 1;
+
+  for (let pivotIndex = 0; pivotIndex < points.length; pivotIndex += 1) {
+    const pivot = points[pivotIndex];
+
+    if (!Array.isArray(pivot) || pivot.length !== 2 || !pivot.every(Number.isFinite)) {
+      throw new RangeError("Each point must be a pair of finite numbers");
+    }
+
+    const events = [];
+    let alwaysInside = 1;
+
+    for (let otherIndex = 0; otherIndex < points.length; otherIndex += 1) {
+      if (otherIndex === pivotIndex) {
+        continue;
+      }
+
+      const other = points[otherIndex];
+      if (!Array.isArray(other) || other.length !== 2 || !other.every(Number.isFinite)) {
+        throw new RangeError("Each point must be a pair of finite numbers");
+      }
+
+      const dx = other[0] - pivot[0];
+      const dy = other[1] - pivot[1];
+      const distance = Math.hypot(dx, dy);
+
+      if (distance <= epsilon) {
+        alwaysInside += 1;
+        continue;
+      }
+
+      if (distance > 2 * radius + epsilon) {
+        continue;
+      }
+
+      const baseAngle = Math.atan2(dy, dx);
+      const delta = Math.acos(Math.min(1, distance / (2 * radius)));
+      let start = baseAngle - delta;
+      let end = baseAngle + delta;
+
+      while (start < 0) {
+        start += twoPi;
+        end += twoPi;
+      }
+
+      while (start >= twoPi) {
+        start -= twoPi;
+        end -= twoPi;
+      }
+
+      if (end > twoPi) {
+        events.push([0, 1]);
+        events.push([end - twoPi, -1]);
+        events.push([start, 1]);
+        events.push([twoPi, -1]);
+      } else {
+        events.push([start, 1]);
+        events.push([end, -1]);
+      }
+    }
+
+    events.sort((left, right) => left[0] - right[0] || right[1] - left[1]);
+
+    let current = alwaysInside;
+    answer = Math.max(answer, current);
+
+    for (const [, delta] of events) {
+      current += delta;
+      answer = Math.max(answer, current);
+    }
+  }
+
+  return answer;
+}
+```
+
+```ts
+type Point = [number, number];
+
+export function angularSweepMaximumPointsThatCanBeEnclosedInACircleOfGivenRadius(
+  points: Point[],
+  radius: number,
+): number {
+  if (!Array.isArray(points) || !Number.isFinite(radius) || radius < 0) {
+    throw new RangeError('Points must be an array and radius must be a non-negative number');
+  }
+
+  if (points.length === 0) {
+    return 0;
+  }
+
+  const epsilon = 1e-9;
+  const twoPi = 2 * Math.PI;
+
+  if (radius === 0) {
+    const counts = new Map<string, number>();
+    let maxDuplicates = 0;
+
+    for (const point of points) {
+      if (point.length !== 2 || !point.every(Number.isFinite)) {
+        throw new RangeError('Each point must be a pair of finite numbers');
+      }
+
+      const key = `${point[0]},${point[1]}`;
+      const nextCount = (counts.get(key) ?? 0) + 1;
+      counts.set(key, nextCount);
+      maxDuplicates = Math.max(maxDuplicates, nextCount);
+    }
+
+    return maxDuplicates;
+  }
+
+  let answer = 1;
+
+  for (let pivotIndex = 0; pivotIndex < points.length; pivotIndex += 1) {
+    const pivot = points[pivotIndex];
+    if (pivot.length !== 2 || !pivot.every(Number.isFinite)) {
+      throw new RangeError('Each point must be a pair of finite numbers');
+    }
+
+    const events: Array<[number, number]> = [];
+    let alwaysInside = 1;
+
+    for (let otherIndex = 0; otherIndex < points.length; otherIndex += 1) {
+      if (otherIndex === pivotIndex) {
+        continue;
+      }
+
+      const other = points[otherIndex];
+      if (other.length !== 2 || !other.every(Number.isFinite)) {
+        throw new RangeError('Each point must be a pair of finite numbers');
+      }
+
+      const dx = other[0] - pivot[0];
+      const dy = other[1] - pivot[1];
+      const distance = Math.hypot(dx, dy);
+
+      if (distance <= epsilon) {
+        alwaysInside += 1;
+        continue;
+      }
+
+      if (distance > 2 * radius + epsilon) {
+        continue;
+      }
+
+      const baseAngle = Math.atan2(dy, dx);
+      const delta = Math.acos(Math.min(1, distance / (2 * radius)));
+      let start = baseAngle - delta;
+      let end = baseAngle + delta;
+
+      while (start < 0) {
+        start += twoPi;
+        end += twoPi;
+      }
+
+      while (start >= twoPi) {
+        start -= twoPi;
+        end -= twoPi;
+      }
+
+      if (end > twoPi) {
+        events.push([0, 1]);
+        events.push([end - twoPi, -1]);
+        events.push([start, 1]);
+        events.push([twoPi, -1]);
+      } else {
+        events.push([start, 1]);
+        events.push([end, -1]);
+      }
+    }
+
+    events.sort((left, right) => left[0] - right[0] || right[1] - left[1]);
+
+    let current = alwaysInside;
+    answer = Math.max(answer, current);
+
+    for (const [, delta] of events) {
+      current += delta;
+      answer = Math.max(answer, current);
+    }
+  }
+
+  return answer;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why can points farther than `2R` from the pivot be skipped immediately?
+- How would you adapt this if the circle radius were not fixed?
+- Where does the `acos(d / (2R))` term come from geometrically?
+
+## Common Pitfalls
+
+- Forgetting to handle angular intervals that wrap past `2π`.
+- Sorting exit events before entry events when the angles are equal.
+- Falling back to the cubic pair-of-points brute force without recognizing the angular event structure.
