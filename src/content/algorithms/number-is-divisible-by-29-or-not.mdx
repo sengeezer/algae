@@ -1,0 +1,114 @@
+---
+title: Number is divisible by 29 or not
+slug: number-is-divisible-by-29-or-not
+category: Mathematics
+summary: Check divisibility by 29 using the reduction rule add three times the last digit to the remaining prefix repeatedly.
+description: "Number is divisible by 29 or not applies a digit-reduction divisibility test that avoids full-width arithmetic while preserving modulo-29 equivalence."
+dataStructures:
+  - String
+techniques:
+  - Number Theory
+  - Divisibility Rules
+  - Modular Arithmetic
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - divisibility by 29
+  - check divisible by 29
+  - large number mod 29 rule
+useCases:
+  - Fast manual or programmatic checks for divisor 29
+  - Educational examples of nontrivial decimal divisibility transforms
+  - Overflow-safe checks for very large integer strings
+complexity:
+  time: O(d)
+  space: O(1)
+  notes: The reduction repeatedly shortens the number while preserving divisibility by 29.
+interviewSignals:
+  - The divisor is uncommon and suggests a special rule.
+  - Input may be too large for native integer parsing.
+  - The prompt asks for a lightweight arithmetic test.
+relatedSlugs:
+  - check-if-a-large-number-is-divisible-by-13-or-not
+  - check-if-a-large-number-is-divisible-by-11-or-not
+  - check-if-a-large-number-is-divisible-by-9-or-not
+provenance:
+  - title: "GeeksforGeeks - Number is divisible by 29 or not"
+    href: https://www.geeksforgeeks.org/dsa/number-is-divisible-by-29-or-not/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+A useful reduction for 29 is:
+
+1. Split number as `10a + b` where `b` is last digit.
+2. Replace it with `a + 3b`.
+3. Repeat until the value is small.
+
+This preserves divisibility by 29. If the reduced value is divisible by 29, the original number is too.
+
+## Worked Example
+
+- For `348`: `34 + 3*8 = 58`, and `58` is divisible by 29, so `348` is divisible by 29.
+- `363927598` reduces to a non-multiple of 29, so it is not divisible by 29.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function numberIsDivisibleBy29OrNot(value) {
+  const text = String(value).trim();
+  const normalized = text.startsWith('+') || text.startsWith('-') ? text.slice(1) : text;
+
+  if (normalized.length === 0 || !/^\d+$/.test(normalized)) {
+    throw new TypeError("Expected a decimal integer string or integer-like value");
+  }
+
+  // Keep values small and exact using BigInt through the reduction process.
+  let n = BigInt(normalized);
+  while (n >= 100n) {
+    const lastDigit = n % 10n;
+    n = n / 10n;
+    n += 3n * lastDigit;
+  }
+
+  return n % 29n === 0n;
+}
+```
+
+```ts
+export function numberIsDivisibleBy29OrNot(value: string | number | bigint): boolean {
+  const text = String(value).trim();
+  const normalized = text.startsWith('+') || text.startsWith('-') ? text.slice(1) : text;
+
+  if (normalized.length === 0 || !/^\d+$/.test(normalized)) {
+    throw new TypeError('Expected a decimal integer string or integer-like value');
+  }
+
+  // Keep values small and exact using BigInt through the reduction process.
+  let n = BigInt(normalized);
+  while (n >= 100n) {
+    const lastDigit = n % 10n;
+    n = n / 10n;
+    n += 3n * lastDigit;
+  }
+
+  return n % 29n === 0n;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why does the `a + 3b` transform preserve modulo-29 divisibility?
+- Can you implement a version that avoids `BigInt` entirely?
+- How would you derive similar rules for other divisors?
+
+## Common Pitfalls
+
+- Trying to parse huge values into `Number` and losing precision.
+- Applying the wrong multiplier in the reduction step.
+- Stopping reduction too early and misclassifying divisibility.

@@ -1,0 +1,106 @@
+---
+title: Check if a large number is divisible by 13 or not
+slug: check-if-a-large-number-is-divisible-by-13-or-not
+category: Mathematics
+summary: Check divisibility by 13 for very large integer strings using overflow-safe modular reduction.
+description: "Check if a large number is divisible by 13 or not computes the remainder digit by digit, avoiding fixed-width integer overflow for long decimal inputs."
+dataStructures:
+  - String
+techniques:
+  - Number Theory
+  - Divisibility Rules
+  - Modular Arithmetic
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - divisibility by 13
+  - large number divisible by 13
+  - string modulo 13
+useCases:
+  - Validating huge numeric identifiers against modulus constraints
+  - Stream-safe divisibility checks in parsers
+  - Interview exercises on modular arithmetic with strings
+complexity:
+  time: O(d)
+  space: O(1)
+  notes: A single left-to-right pass is enough by keeping only the running remainder modulo 13.
+interviewSignals:
+  - Input is too large for native integer types.
+  - Divisibility by a nontrivial constant is requested.
+  - The expected solution avoids big-integer conversion.
+relatedSlugs:
+  - check-if-a-large-number-is-divisible-by-9-or-not
+  - check-if-a-large-number-is-divisible-by-11-or-not
+  - number-is-divisible-by-29-or-not
+provenance:
+  - title: "GeeksforGeeks - Check if a larger number is divisible by 13 or not"
+    href: https://www.geeksforgeeks.org/dsa/check-large-number-divisible-13-not/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+For large numeric strings, direct integer parsing can overflow. The robust approach is to maintain a running remainder:
+
+`rem = (rem * 10 + digit) % 13`
+
+After processing all digits, the number is divisible by 13 exactly when `rem === 0`.
+
+## Worked Example
+
+- `2911285` gives final remainder `0`, so it is divisible by 13.
+- `27` gives remainder `1`, so it is not divisible by 13.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function checkIfALargeNumberIsDivisibleBy13OrNot(value) {
+  const text = String(value).trim();
+  const normalized = text.startsWith('+') || text.startsWith('-') ? text.slice(1) : text;
+
+  if (normalized.length === 0 || !/^\d+$/.test(normalized)) {
+    throw new TypeError("Expected a decimal integer string or integer-like value");
+  }
+
+  let remainder = 0;
+  for (const ch of normalized) {
+    remainder = (remainder * 10 + (ch.charCodeAt(0) - 48)) % 13;
+  }
+
+  return remainder === 0;
+}
+```
+
+```ts
+export function checkIfALargeNumberIsDivisibleBy13OrNot(value: string | number | bigint): boolean {
+  const text = String(value).trim();
+  const normalized = text.startsWith('+') || text.startsWith('-') ? text.slice(1) : text;
+
+  if (normalized.length === 0 || !/^\d+$/.test(normalized)) {
+    throw new TypeError('Expected a decimal integer string or integer-like value');
+  }
+
+  let remainder = 0;
+  for (const ch of normalized) {
+    remainder = (remainder * 10 + (ch.charCodeAt(0) - 48)) % 13;
+  }
+
+  return remainder === 0;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you compute remainder if digits are streamed in chunks?
+- Can you generalize this to any positive divisor `k`?
+- Why is this safer than converting the full value first?
+
+## Common Pitfalls
+
+- Parsing huge strings to fixed-width numbers.
+- Forgetting to validate input as integer-only digits.
+- Ignoring optional leading plus/minus signs.

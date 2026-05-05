@@ -1,0 +1,117 @@
+---
+title: Check if a large number is divisible by 15 or not
+slug: check-if-a-large-number-is-divisible-by-15-or-not
+category: Mathematics
+summary: Check large-number divisibility by 15 using combined tests for divisibility by 3 and 5.
+description: "Check if a large number is divisible by 15 or not uses digit-sum and last-digit rules so very long decimal strings can be validated without overflow."
+dataStructures:
+  - String
+techniques:
+  - Number Theory
+  - Divisibility Rules
+  - Modular Arithmetic
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - divisibility by 15
+  - large number divisible by 15
+  - check mod 15 from string
+useCases:
+  - Quick validity checks in data ingestion pipelines
+  - Overflow-safe arithmetic guards for large numeric text
+  - Interview practice for composite-divisor rules
+complexity:
+  time: O(d)
+  space: O(1)
+  notes: Divisibility by 5 uses only the final digit; divisibility by 3 uses one full digit-sum pass.
+interviewSignals:
+  - Input is represented as a long string.
+  - Divisor is composite with familiar factors.
+  - Prompt rewards rule composition over big-integer math.
+relatedSlugs:
+  - check-if-a-large-number-is-divisible-by-3-or-not
+  - check-if-a-large-number-is-divisible-by-5-or-not
+  - divisibility-by-12-for-a-large-number
+provenance:
+  - title: "GeeksforGeeks - Check if a large number is divisibility by 15"
+    href: https://www.geeksforgeeks.org/dsa/check-large-number-divisibility-15/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+Because `15 = 3 * 5` and 3 and 5 are coprime, a number is divisible by 15 iff it is divisible by both 3 and 5.
+
+For decimal strings:
+
+- divisible by 5: last digit is `0` or `5`
+- divisible by 3: sum of digits is divisible by 3
+
+## Worked Example
+
+- `31` ends with `1`, so it is not divisible by 5 and therefore not divisible by 15.
+- A large value ending in `0` with digit sum divisible by 3 is divisible by 15.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function checkIfALargeNumberIsDivisibleBy15OrNot(value) {
+  const text = String(value).trim();
+  const normalized = text.startsWith('+') || text.startsWith('-') ? text.slice(1) : text;
+
+  if (normalized.length === 0 || !/^\d+$/.test(normalized)) {
+    throw new TypeError("Expected a decimal integer string or integer-like value");
+  }
+
+  const last = normalized.charAt(normalized.length - 1);
+  if (last !== '0' && last !== '5') {
+    return false;
+  }
+
+  let digitSum = 0;
+  for (const ch of normalized) {
+    digitSum += ch.charCodeAt(0) - 48;
+  }
+
+  return digitSum % 3 === 0;
+}
+```
+
+```ts
+export function checkIfALargeNumberIsDivisibleBy15OrNot(value: string | number | bigint): boolean {
+  const text = String(value).trim();
+  const normalized = text.startsWith('+') || text.startsWith('-') ? text.slice(1) : text;
+
+  if (normalized.length === 0 || !/^\d+$/.test(normalized)) {
+    throw new TypeError('Expected a decimal integer string or integer-like value');
+  }
+
+  const last = normalized.charAt(normalized.length - 1);
+  if (last !== '0' && last !== '5') {
+    return false;
+  }
+
+  let digitSum = 0;
+  for (const ch of normalized) {
+    digitSum += ch.charCodeAt(0) - 48;
+  }
+
+  return digitSum % 3 === 0;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why does checking 3 and 5 work directly for 15?
+- How would you extend this pattern for divisibility by 45?
+- Which condition should run first for early exits?
+
+## Common Pitfalls
+
+- Checking only divisibility by 5 and forgetting divisibility by 3.
+- Accepting non-integer strings as valid input.
+- Parsing long values into fixed-width integers.

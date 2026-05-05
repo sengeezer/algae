@@ -1391,16 +1391,24 @@ This one-hundred-thirty-third expansion slice currently lifts the catalog locall
 
 ## Batch 134 added
 
-This one-hundred-thirty-fourth expansion slice currently lifts the catalog locally from 695 to 698 entries.
+This one-hundred-thirty-fourth expansion slice lifts the catalog from 695 to 698 entries.
 
 - Check if a large number is divisible by 9 or not
 - Check if a large number is divisible by 11 or not
 - Divisibility by 12 for a large number
 
+## Batch 135 added
+
+This one-hundred-thirty-fifth expansion slice currently lifts the catalog locally from 698 to 701 entries.
+
+- Check if a large number is divisible by 13 or not
+- Check if a large number is divisible by 15 or not
+- Number is divisible by 29 or not
+
 ## Next candidates from the same sources
 
-- The published catalog now reaches 692 entries on `main` after batch 132 landed at `ba05632`.
-- The local draft now reaches 698 entries after batch 134.
+- The published catalog now reaches 698 entries on `main` after batch 134 landed at `30af4b2`.
+- The local draft now reaches 701 entries after batch 135.
 - The GeeksforGeeks `Standard Problems on Geometric Algorithm` section is exhausted in source order after `Equable Shapes`.
 - The next vetted source branch after the exhausted Geometric Algorithms page is the GeeksforGeeks Mathematical Algorithms page: https://www.geeksforgeeks.org/dsa/mathematical-algorithms/
 - On the Mathematical Algorithms page, `GCD of Two Numbers` and `LCM of Two Numbers` remain duplicate-level coverage of the published `Find HCF` and `Find LCM` entries.
@@ -1413,7 +1421,9 @@ This one-hundred-thirty-fourth expansion slice currently lifts the catalog local
 - `Largest Subset with GCD 1` remains distinct from generic array-gcd prompts because the requested output surface is a subset-size decision (`n` or `-1`) derived from gcd closure.
 - Batch 133 uses destination-title cleanup `Divisibility by 4` -> `Check if a large number is divisible by 4 or not`, `Divisibility by 6` -> `Check if a large number is divisible by 6 or not`, and `Divisibility by 7` -> `Check divisibility by 7`.
 - Batch 134 uses destination-title cleanup `Divisibility by 9` -> `Check if a large number is divisible by 9 or not`, `Divisibility by 11` -> `Check if a large number is divisible by 11 or not`, and `Divisibility by 12` -> `Divisibility by 12 for a large number`.
-- The next clean Mathematical Algorithms queue is `Divisibility by 13`, `Divisibility by 15`, and `Divisibility by 29`.
+- Batch 135 uses destination-title cleanup `Divisibility by 13` -> `Check if a large number is divisible by 13 or not`, `Divisibility by 15` -> `Check if a large number is divisible by 15 or not`, and keeps `Number is divisible by 29 or not` as an exact destination title.
+- The Divisibility & Large Numbers subsection is now exhausted in source order through `Divisibility by 29`.
+- The next clean Mathematical Algorithms queue shifts to the Series subsection with `Juggler Sequence`, `Padovan Sequence`, and `Aliquot Sequence`.
 
 - The published catalog now reaches 623 entries on `main` after exhausting the GeeksforGeeks Branch and Bound page.
 - The Trie Data Structure common-interview queue is exhausted in source order after the published batch-107 slice.
