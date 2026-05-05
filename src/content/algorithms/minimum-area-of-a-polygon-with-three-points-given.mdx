@@ -1,0 +1,178 @@
+---
+title: Minimum area of a Polygon with three points given
+slug: minimum-area-of-a-polygon-with-three-points-given
+category: Geometry
+summary: Infer the smallest regular polygon that can contain the three points as vertices, then compute its area from the shared circumradius.
+description: "Minimum area of a Polygon with three points given is the geometry routine that reconstructs the smallest regular polygon consistent with three known vertices and returns its area."
+dataStructures:
+  - Object
+  - Number
+techniques:
+  - Computational Geometry
+  - Trigonometry
+  - Euclidean Algorithm
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - minimum area regular polygon from three points
+  - regular polygon through three points
+  - smallest regular polygon through given vertices
+useCases:
+  - Reconstructing the smallest regular n-gon passing through three known vertices
+  - Combining circumradius geometry with angle arithmetic
+  - Solving geometry prompts where side count is hidden and must be inferred
+complexity:
+  time: O(log(1 / epsilon))
+  space: O(1)
+  notes: The key step is inferring the smallest valid side count from the greatest common divisor of the triangle's angles in radians.
+interviewSignals:
+  - The polygon is regular, but the number of sides is unknown.
+  - Three points determine a circumcircle and a triangle whose angles are integer multiples of the polygon's central subdivision.
+  - The intended path combines circumradius, cosine-law angles, and a floating-point gcd.
+relatedSlugs:
+  - area-of-a-polygon-with-given-n-ordered-vertices
+  - third-side-of-triangle-using-law-of-cosines
+  - area-of-circumcircle-of-an-equilateral-triangle
+provenance:
+  - title: "GeeksforGeeks - Minimum area of a Polygon with three points given"
+    href: https://www.geeksforgeeks.org/dsa/minimum-area-polygon-three-points-given/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This prompt hides the number of polygon sides and forces you to recover it from geometry. The stable route is: build the triangle from the three points, compute its circumradius, infer the smallest regular `n` by taking the gcd of the triangle angles, then evaluate the regular-polygon area formula.
+
+## Worked Example
+
+For the points `(0, 0)`, `(1, 1)`, and `(0, 1)`, the smallest regular polygon is a square, so the minimum area is `1`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function minimumAreaOfAPolygonWithThreePointsGiven(pointA, pointB, pointC) {
+  const epsilon = 1e-7;
+
+  function distance(first, second) {
+    return Math.hypot(first.x - second.x, first.y - second.y);
+  }
+
+  function triangleArea(first, second, third) {
+    return Math.abs(
+      first.x * (second.y - third.y) + second.x * (third.y - first.y) + third.x * (first.y - second.y),
+    ) / 2;
+  }
+
+  function clamp(value) {
+    return Math.max(-1, Math.min(1, value));
+  }
+
+  function angle(opposite, sideOne, sideTwo) {
+    return Math.acos(clamp((sideOne ** 2 + sideTwo ** 2 - opposite ** 2) / (2 * sideOne * sideTwo)));
+  }
+
+  function gcdFloat(left, right) {
+    let first = Math.abs(left);
+    let second = Math.abs(right);
+    while (second > epsilon) {
+      const remainder = first % second;
+      first = second;
+      second = remainder;
+    }
+    return first;
+  }
+
+  const sideA = distance(pointB, pointC);
+  const sideB = distance(pointA, pointC);
+  const sideC = distance(pointA, pointB);
+  const area = triangleArea(pointA, pointB, pointC);
+
+  if (area < epsilon) {
+    throw new RangeError("Points must form a non-degenerate triangle");
+  }
+
+  const circumradius = (sideA * sideB * sideC) / (4 * area);
+  const angleA = angle(sideA, sideB, sideC);
+  const angleB = angle(sideB, sideA, sideC);
+  const angleC = angle(sideC, sideA, sideB);
+  const step = gcdFloat(gcdFloat(angleA, angleB), angleC);
+  const sides = Math.max(4, Math.round(Math.PI / step));
+
+  return (sides * circumradius ** 2 * Math.sin((2 * Math.PI) / sides)) / 2;
+}
+```
+
+```ts
+type Point = { x: number; y: number };
+
+export function minimumAreaOfAPolygonWithThreePointsGiven(
+  pointA: Point,
+  pointB: Point,
+  pointC: Point,
+): number {
+  const epsilon = 1e-7;
+
+  function distance(first: Point, second: Point): number {
+    return Math.hypot(first.x - second.x, first.y - second.y);
+  }
+
+  function triangleArea(first: Point, second: Point, third: Point): number {
+    return Math.abs(
+      first.x * (second.y - third.y) + second.x * (third.y - first.y) + third.x * (first.y - second.y),
+    ) / 2;
+  }
+
+  function clamp(value: number): number {
+    return Math.max(-1, Math.min(1, value));
+  }
+
+  function angle(opposite: number, sideOne: number, sideTwo: number): number {
+    return Math.acos(clamp((sideOne ** 2 + sideTwo ** 2 - opposite ** 2) / (2 * sideOne * sideTwo)));
+  }
+
+  function gcdFloat(left: number, right: number): number {
+    let first = Math.abs(left);
+    let second = Math.abs(right);
+    while (second > epsilon) {
+      const remainder = first % second;
+      first = second;
+      second = remainder;
+    }
+    return first;
+  }
+
+  const sideA = distance(pointB, pointC);
+  const sideB = distance(pointA, pointC);
+  const sideC = distance(pointA, pointB);
+  const area = triangleArea(pointA, pointB, pointC);
+
+  if (area < epsilon) {
+    throw new RangeError('Points must form a non-degenerate triangle');
+  }
+
+  const circumradius = (sideA * sideB * sideC) / (4 * area);
+  const angleA = angle(sideA, sideB, sideC);
+  const angleB = angle(sideB, sideA, sideC);
+  const angleC = angle(sideC, sideA, sideB);
+  const step = gcdFloat(gcdFloat(angleA, angleB), angleC);
+  const sides = Math.max(4, Math.round(Math.PI / step));
+
+  return (sides * circumradius ** 2 * Math.sin((2 * Math.PI) / sides)) / 2;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why does the gcd of the triangle angles recover the smallest regular polygon step?
+- Why is the circumradius shared by the final regular polygon and the triangle through the three points?
+- How would floating-point tolerance affect the inferred side count for nearly symmetric inputs?
+
+## Common Pitfalls
+
+- Treating the three points as a triangle-only area problem instead of a regular-polygon reconstruction problem.
+- Forgetting to clamp cosine-law inputs before calling `acos`.
+- Using a side-count estimate below `4` even though the prompt requires `n > 3`.

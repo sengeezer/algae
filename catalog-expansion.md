@@ -1321,13 +1321,26 @@ This one-hundred-twenty-fourth expansion slice lifts the catalog from 667 to 670
 
 ## Batch 125 added
 
-This one-hundred-twenty-fifth expansion slice currently lifts the catalog locally from 670 to 673 entries.
+This one-hundred-twenty-fifth expansion slice lifts the catalog from 670 to 673 entries.
 
 - Area of a polygon with given n ordered vertices
 - Tangents between two Convex Polygons
 - Find number of diagonals in n sided convex polygon
 
+## Batch 126 added
+
+This one-hundred-twenty-sixth expansion slice currently lifts the catalog locally from 673 to 676 entries.
+
+- Convex Hull using Jarvis' Algorithm or Wrapping
+- Deleting points from Convex Hull
+- Minimum area of a Polygon with three points given
+
 ## Next candidates from the same sources
+
+- The published catalog now reaches 673 entries on `main` after batch 125 landed at `08ccf80`.
+- The local draft now reaches 676 entries after batch 126.
+- The GeeksforGeeks `Polygon and Convex Hull` section is exhausted in source order after `Minimum area of a Polygon with three points given`; drafting advances into `Standard Problems on Geometric Algorithm`.
+- The next clean source-order titles are `Finding the vertex, focus and directrix of a parabola`, `Find Simple Closed Path for a given set of points`, and `Number of Integral Points between Two Points`.
 
 - The published catalog now reaches 623 entries on `main` after exhausting the GeeksforGeeks Branch and Bound page.
 - The Trie Data Structure common-interview queue is exhausted in source order after the published batch-107 slice.
@@ -1414,10 +1427,13 @@ This one-hundred-twenty-fifth expansion slice currently lifts the catalog locall
 - Focused `gray-matter` plus JavaScript-fence validators passed for all three batch-124 entries.
 - `Area of a polygon with given n ordered vertices`, `Tangents between two Convex Polygons`, and `Find number of diagonals in n sided convex polygon` already match their destination titles.
 - `Area of a polygon with given n ordered vertices` remains distinct from the published `Area` entry because this prompt handles arbitrary ordered polygon boundaries with the shoelace formula instead of fixed-shape formulas.
-- The GeeksforGeeks `Polygon and Convex Hull` queue now advances past the already-published `Quickhull Algorithm for Convex Hull` entry after `Convex Hull using Jarvis’ Algorithm or Wrapping`.
-- Batch 125 currently lifts the catalog locally from 670 to 673 entries with `Area of a polygon with given n ordered vertices`, `Tangents between two Convex Polygons`, and `Find number of diagonals in n sided convex polygon`.
-- Focused `gray-matter` plus JavaScript-fence validators passed for all three batch-125 entries.
-- The next clean source-order titles are `Convex Hull using Jarvis’ Algorithm or Wrapping`, `Deleting points from Convex Hull`, and `Minimum area of a Polygon with three points given`, while `Quickhull Algorithm for Convex Hull` is already published exact coverage between them.
+- The GeeksforGeeks `Polygon and Convex Hull` queue advanced past the already-published `Quickhull Algorithm for Convex Hull` entry between `Convex Hull using Jarvis' Algorithm or Wrapping` and `Deleting points from Convex Hull`.
+- Batch 125 is now published on `main` at commit `08ccf80`, lifting the catalog from 670 to 673 entries with `Area of a polygon with given n ordered vertices`, `Tangents between two Convex Polygons`, and `Find number of diagonals in n sided convex polygon`.
+- Focused `gray-matter` plus JavaScript-fence validators passed for all three batch-125 entries, and `npm run build` passed against the local 673-entry state with 678 static pages generated.
+- `Convex Hull using Jarvis' Algorithm or Wrapping`, `Deleting points from Convex Hull`, and `Minimum area of a Polygon with three points given` already match their destination titles.
+- `Deleting points from Convex Hull` remains distinct from the published hull-construction entries because it asks whether deleting one point changes the existing hull and only rebuilds when the removed point was on the boundary.
+- The GeeksforGeeks `Polygon and Convex Hull` section is now exhausted in source order after `Minimum area of a Polygon with three points given`; drafting advances into `Standard Problems on Geometric Algorithm`.
+- Batch 126 is now locally drafted, lifting the catalog from 673 to 676 entries with `Convex Hull using Jarvis' Algorithm or Wrapping`, `Deleting points from Convex Hull`, and `Minimum area of a Polygon with three points given`.
 - Batch 92 carries the vetted Dynamic Programming hard stretch through `Longest repeating and non-overlapping substring` and then consumes the clean `Advanced Concepts` absences `Count Ways To Assign Unique Cap To Every Person`, `Digit DP | Introduction`, and `Sum over Subsets | Dynamic Programming`.
 - The Dynamic Programming items skipped between `Program to find amount of water in a given glass` and `Largest Cross Bordered Square` remain already represented locally: `Longest Common Subsequence`, `Longest Increasing Subsequence`, `Edit Distance`, `0-1 Knapsack Problem`, `Partition Problem`, `Longest Palindromic Subsequence`, `Bellman-Ford Algorithm`, and `Floyd Warshall Algorithm`.
 - `The painter's partition problem` remains skipped because the local `Find minimum time to finish all jobs with given constraints` entry already covers that partition-minimax problem and includes the alias `painter partition with multiplier`.

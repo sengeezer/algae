@@ -1,0 +1,202 @@
+---
+title: "Convex Hull using Jarvis' Algorithm or Wrapping"
+slug: convex-hull-using-jarvis-algorithm-or-wrapping
+category: Geometry
+summary: Start from the leftmost point and repeatedly choose the most counterclockwise next point until the hull closes.
+description: "Convex Hull using Jarvis' Algorithm or Wrapping is the output-sensitive hull construction method that wraps the boundary one extreme point at a time."
+dataStructures:
+  - Array
+  - Object
+techniques:
+  - Computational Geometry
+  - Gift Wrapping
+  - Orientation Tests
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - jarvis march
+  - gift wrapping convex hull
+  - jarvis wrapping algorithm
+useCases:
+  - Building the outer boundary of a planar point set when hull size is small
+  - Teaching output-sensitive hull construction before Graham scan or Quickhull
+  - Producing a hull directly in boundary order for rendering or geometry checks
+complexity:
+  time: O(h * n)
+  space: O(h)
+  notes: The algorithm is output-sensitive because it scans all points once per hull vertex.
+interviewSignals:
+  - The prompt explicitly references Jarvis wrapping or gift wrapping.
+  - Orientation tests decide which candidate is the most counterclockwise next hull point.
+  - Collinear candidates require a farthest-point tie break to avoid skipping an extreme boundary point.
+relatedSlugs:
+  - convex-hull-using-divide-and-conquer-algorithm
+  - quickhull-algorithm-for-convex-hull
+  - tangents-between-two-convex-polygons
+provenance:
+  - title: "GeeksforGeeks - Convex Hull using Jarvis' Algorithm or Wrapping"
+    href: https://www.geeksforgeeks.org/dsa/convex-hull-using-jarvis-algorithm-or-wrapping/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+Jarvis march is the canonical hull algorithm when you want to explain convex hulls with only orientation tests. The process is easy to visualize: start at the leftmost point and keep wrapping around the outside by picking the most counterclockwise reachable boundary point.
+
+## Worked Example
+
+For the points `(0, 3)`, `(2, 2)`, `(1, 1)`, `(2, 1)`, `(3, 0)`, `(0, 0)`, and `(3, 3)`, the hull is `(0, 0)`, `(3, 0)`, `(3, 3)`, `(0, 3)`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function orientation(origin, first, second) {
+  return (first.x - origin.x) * (second.y - origin.y) - (first.y - origin.y) * (second.x - origin.x);
+}
+
+function squaredDistance(first, second) {
+  return (first.x - second.x) ** 2 + (first.y - second.y) ** 2;
+}
+
+function normalizeHull(hull) {
+  const signedArea = hull.reduce((sum, point, index) => {
+    const next = hull[(index + 1) % hull.length];
+    return sum + point.x * next.y - next.x * point.y;
+  }, 0);
+
+  const normalized = signedArea < 0 ? [...hull].reverse() : [...hull];
+  let startIndex = 0;
+  for (let index = 1; index < normalized.length; index += 1) {
+    const point = normalized[index];
+    const start = normalized[startIndex];
+    if (point.x < start.x || (point.x === start.x && point.y < start.y)) {
+      startIndex = index;
+    }
+  }
+
+  return normalized.slice(startIndex).concat(normalized.slice(0, startIndex));
+}
+
+function convexHullUsingJarvisAlgorithmOrWrapping(points) {
+  if (!Array.isArray(points) || points.length < 3) {
+    throw new RangeError("Convex hull requires at least three points");
+  }
+
+  const uniquePoints = [...new Map(points.map((point) => [`${point.x},${point.y}`, point])).values()];
+  if (uniquePoints.length < 3) {
+    throw new RangeError("Convex hull requires at least three distinct points");
+  }
+
+  const start = uniquePoints.reduce((best, point) =>
+    point.x < best.x || (point.x === best.x && point.y < best.y) ? point : best,
+  uniquePoints[0]);
+
+  const hull = [];
+  let current = start;
+
+  do {
+    hull.push(current);
+    let candidate = uniquePoints[0] === current ? uniquePoints[1] : uniquePoints[0];
+
+    for (const point of uniquePoints) {
+      if (point === current) {
+        continue;
+      }
+
+      const turn = orientation(current, candidate, point);
+      if (candidate === current || turn > 0 || (turn === 0 && squaredDistance(current, point) > squaredDistance(current, candidate))) {
+        candidate = point;
+      }
+    }
+
+    current = candidate;
+  } while (current !== start);
+
+  return normalizeHull(hull);
+}
+```
+
+```ts
+type Point = { x: number; y: number };
+
+function orientation(origin: Point, first: Point, second: Point): number {
+  return (first.x - origin.x) * (second.y - origin.y) - (first.y - origin.y) * (second.x - origin.x);
+}
+
+function squaredDistance(first: Point, second: Point): number {
+  return (first.x - second.x) ** 2 + (first.y - second.y) ** 2;
+}
+
+function normalizeHull(hull: Point[]): Point[] {
+  const signedArea = hull.reduce((sum, point, index) => {
+    const next = hull[(index + 1) % hull.length];
+    return sum + point.x * next.y - next.x * point.y;
+  }, 0);
+
+  const normalized = signedArea < 0 ? [...hull].reverse() : [...hull];
+  let startIndex = 0;
+  for (let index = 1; index < normalized.length; index += 1) {
+    const point = normalized[index];
+    const start = normalized[startIndex];
+    if (point.x < start.x || (point.x === start.x && point.y < start.y)) {
+      startIndex = index;
+    }
+  }
+
+  return normalized.slice(startIndex).concat(normalized.slice(0, startIndex));
+}
+
+export function convexHullUsingJarvisAlgorithmOrWrapping(points: Point[]): Point[] {
+  if (points.length < 3) {
+    throw new RangeError('Convex hull requires at least three points');
+  }
+
+  const uniquePoints = [...new Map(points.map((point) => [`${point.x},${point.y}`, point] as const)).values()];
+  if (uniquePoints.length < 3) {
+    throw new RangeError('Convex hull requires at least three distinct points');
+  }
+
+  const start = uniquePoints.reduce((best, point) =>
+    point.x < best.x || (point.x === best.x && point.y < best.y) ? point : best,
+  uniquePoints[0]);
+
+  const hull: Point[] = [];
+  let current = start;
+
+  do {
+    hull.push(current);
+    let candidate = uniquePoints[0] === current ? uniquePoints[1] : uniquePoints[0];
+
+    for (const point of uniquePoints) {
+      if (point === current) {
+        continue;
+      }
+
+      const turn = orientation(current, candidate, point);
+      if (candidate === current || turn > 0 || (turn === 0 && squaredDistance(current, point) > squaredDistance(current, candidate))) {
+        candidate = point;
+      }
+    }
+
+    current = candidate;
+  } while (current !== start);
+
+  return normalizeHull(hull);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why is Jarvis march output-sensitive while Graham scan is not?
+- Why does the farthest collinear point matter on each wrapping step?
+- When would you prefer Quickhull or divide-and-conquer instead?
+
+## Common Pitfalls
+
+- Forgetting to deduplicate identical points before wrapping.
+- Choosing a nearer collinear point and cutting off an extreme hull vertex.
+- Stopping after one scan instead of looping until the hull returns to the start.

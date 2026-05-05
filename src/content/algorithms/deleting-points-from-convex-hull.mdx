@@ -1,0 +1,197 @@
+---
+title: Deleting points from Convex Hull
+slug: deleting-points-from-convex-hull
+category: Geometry
+summary: Recompute the hull only when the deleted point belonged to the current hull; otherwise the hull stays unchanged.
+description: "Deleting points from Convex Hull is the geometric update routine that checks whether a removed point changes the boundary and rebuilds the hull only when necessary."
+dataStructures:
+  - Array
+  - Object
+techniques:
+  - Computational Geometry
+  - Hull Reconstruction
+  - Monotonic Chain
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - delete point from convex hull
+  - convex hull after removing a point
+  - dynamic convex hull deletion
+useCases:
+  - Updating geometric boundaries after removing one tracked point
+  - Teaching when a hull must be recomputed versus when it remains unchanged
+  - Handling repeated deletion queries in a simple recompute-on-demand model
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: This local helper uses monotonic-chain reconstruction when the deleted point was on the hull, matching the article's recompute-only-if-needed surface without depending on a divide-and-conquer implementation.
+interviewSignals:
+  - The point set is fixed except for one removal query.
+  - If the removed point was not on the hull, the hull does not change at all.
+  - The simplest correct strategy is to rebuild the hull after deletion only when the boundary changed.
+relatedSlugs:
+  - convex-hull-using-divide-and-conquer-algorithm
+  - convex-hull-using-jarvis-algorithm-or-wrapping
+  - quickhull-algorithm-for-convex-hull
+provenance:
+  - title: "GeeksforGeeks - Deleting points from Convex Hull"
+    href: https://www.geeksforgeeks.org/dsa/deleting-points-convex-hull/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This problem is really about understanding what the hull depends on. Removing an interior point changes nothing, but removing a hull vertex can expose a new boundary and force a full rebuild.
+
+## Worked Example
+
+For the initial set `(-2, 8)`, `(-1, 2)`, `(0, 1)`, `(1, 0)`, `(-3, 0)`, `(-1, -9)`, `(2, -6)`, `(3, 0)`, `(5, 3)`, `(2, 5)`, the hull is `(-3, 0)`, `(-1, -9)`, `(2, -6)`, `(5, 3)`, `(-2, 8)`. Removing `(-2, 8)` changes the hull to `(-3, 0)`, `(-1, -9)`, `(2, -6)`, `(5, 3)`, `(2, 5)`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function comparePoints(left, right) {
+  if (left.x !== right.x) {
+    return left.x - right.x;
+  }
+  return left.y - right.y;
+}
+
+function cross(origin, first, second) {
+  return (first.x - origin.x) * (second.y - origin.y) - (first.y - origin.y) * (second.x - origin.x);
+}
+
+function buildConvexHull(points) {
+  const sorted = [...new Map(points.map((point) => [`${point.x},${point.y}`, point])).values()].sort(comparePoints);
+  if (sorted.length <= 1) {
+    return sorted;
+  }
+
+  const lower = [];
+  for (const point of sorted) {
+    while (lower.length >= 2 && cross(lower[lower.length - 2], lower[lower.length - 1], point) <= 0) {
+      lower.pop();
+    }
+    lower.push(point);
+  }
+
+  const upper = [];
+  for (let index = sorted.length - 1; index >= 0; index -= 1) {
+    const point = sorted[index];
+    while (upper.length >= 2 && cross(upper[upper.length - 2], upper[upper.length - 1], point) <= 0) {
+      upper.pop();
+    }
+    upper.push(point);
+  }
+
+  lower.pop();
+  upper.pop();
+  return [...lower, ...upper];
+}
+
+function deletingPointsFromConvexHull(points, pointToRemove) {
+  if (!Array.isArray(points) || points.length < 3) {
+    throw new RangeError("Convex hull requires at least three points");
+  }
+
+  const initialHull = buildConvexHull(points);
+  const removedFromHull = initialHull.some((point) => point.x === pointToRemove.x && point.y === pointToRemove.y);
+
+  const remainingPoints = [];
+  let removed = false;
+  for (const point of points) {
+    if (!removed && point.x === pointToRemove.x && point.y === pointToRemove.y) {
+      removed = true;
+      continue;
+    }
+    remainingPoints.push(point);
+  }
+
+  const updatedHull = removedFromHull ? buildConvexHull(remainingPoints) : initialHull;
+  return { initialHull, updatedHull, removedFromHull };
+}
+```
+
+```ts
+type Point = { x: number; y: number };
+
+function comparePoints(left: Point, right: Point): number {
+  if (left.x !== right.x) {
+    return left.x - right.x;
+  }
+  return left.y - right.y;
+}
+
+function cross(origin: Point, first: Point, second: Point): number {
+  return (first.x - origin.x) * (second.y - origin.y) - (first.y - origin.y) * (second.x - origin.x);
+}
+
+function buildConvexHull(points: Point[]): Point[] {
+  const sorted = [...new Map(points.map((point) => [`${point.x},${point.y}`, point] as const)).values()].sort(comparePoints);
+  if (sorted.length <= 1) {
+    return sorted;
+  }
+
+  const lower: Point[] = [];
+  for (const point of sorted) {
+    while (lower.length >= 2 && cross(lower[lower.length - 2], lower[lower.length - 1], point) <= 0) {
+      lower.pop();
+    }
+    lower.push(point);
+  }
+
+  const upper: Point[] = [];
+  for (let index = sorted.length - 1; index >= 0; index -= 1) {
+    const point = sorted[index];
+    while (upper.length >= 2 && cross(upper[upper.length - 2], upper[upper.length - 1], point) <= 0) {
+      upper.pop();
+    }
+    upper.push(point);
+  }
+
+  lower.pop();
+  upper.pop();
+  return [...lower, ...upper];
+}
+
+export function deletingPointsFromConvexHull(
+  points: Point[],
+  pointToRemove: Point,
+): { initialHull: Point[]; updatedHull: Point[]; removedFromHull: boolean } {
+  if (points.length < 3) {
+    throw new RangeError('Convex hull requires at least three points');
+  }
+
+  const initialHull = buildConvexHull(points);
+  const removedFromHull = initialHull.some((point) => point.x === pointToRemove.x && point.y === pointToRemove.y);
+
+  const remainingPoints: Point[] = [];
+  let removed = false;
+  for (const point of points) {
+    if (!removed && point.x === pointToRemove.x && point.y === pointToRemove.y) {
+      removed = true;
+      continue;
+    }
+    remainingPoints.push(point);
+  }
+
+  const updatedHull = removedFromHull ? buildConvexHull(remainingPoints) : initialHull;
+  return { initialHull, updatedHull, removedFromHull };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why is it safe to leave the hull unchanged when the removed point was interior?
+- How would you support many deletion queries without rebuilding from scratch each time?
+- Why does the article reference hull construction as the real workhorse underneath deletion?
+
+## Common Pitfalls
+
+- Recomputing the hull unconditionally even when the deleted point was never on the boundary.
+- Forgetting to remove only one matching point when duplicates exist.
+- Returning the updated hull in an unstable order that makes comparisons hard.
