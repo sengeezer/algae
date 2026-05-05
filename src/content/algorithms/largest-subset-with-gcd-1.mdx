@@ -1,0 +1,132 @@
+---
+title: Largest Subset with GCD 1
+slug: largest-subset-with-gcd-1
+category: Mathematics
+summary: Return the size of the largest subset with gcd 1 by checking whether the whole set itself has gcd 1.
+description: "Largest Subset with GCD 1 is the gcd-closure observation where any subset with gcd 1 implies the full array also has gcd 1, collapsing the search to one reduction pass."
+dataStructures:
+  - Array
+techniques:
+  - Number Theory
+  - Euclidean Algorithm
+  - Greedy Observation
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - largest gcd one subset
+  - subset with gcd equal to one
+  - maximum subset gcd 1 size
+useCases:
+  - Reducing subset-gcd prompts from exponential search to linear reduction
+  - Detecting whether a full set is collectively coprime
+  - Reusing gcd accumulation in array-number-theory questions
+complexity:
+  time: O(n log m)
+  space: O(1)
+  notes: A single running gcd over the entire array is enough because gcd cannot increase as elements are added.
+interviewSignals:
+  - The problem asks for subset size, but the intended solution is not combinatorial search.
+  - Any valid subset with gcd 1 immediately implies the whole array also has gcd 1.
+  - Early exit at running gcd 1 is a common optimization.
+relatedSlugs:
+  - gcd-of-more-than-two-or-array-numbers
+  - find-hcf
+  - co-prime-check
+provenance:
+  - title: "GeeksforGeeks - Largest Subset with GCD 1"
+    href: https://www.geeksforgeeks.org/dsa/largest-subset-gcd-1/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+The trap is to think this needs subset enumeration. The key property is monotonic: if some subset has gcd `1`, adding more elements keeps gcd at `1`, so the largest such subset is the whole array.
+
+## Worked Example
+
+- For `[2, 3, 5]`, overall gcd is `1`, so the answer is the full size `3`.
+- For `[3, 18, 12]`, overall gcd is `3`, so no subset can reach gcd `1`, and the answer is `-1`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function gcd(left, right) {
+  let a = Math.abs(left);
+  let b = Math.abs(right);
+
+  while (b !== 0) {
+    [a, b] = [b, a % b];
+  }
+
+  return a;
+}
+
+function largestSubsetWithGcd1(values) {
+  if (!Array.isArray(values) || values.length === 0) {
+    throw new RangeError("Expected a non-empty array of positive integers");
+  }
+
+  let runningGcd = 0;
+  for (const value of values) {
+    if (!Number.isInteger(value) || value < 1) {
+      throw new RangeError("Array elements must be positive integers");
+    }
+
+    runningGcd = gcd(runningGcd, value);
+    if (runningGcd === 1) {
+      return values.length;
+    }
+  }
+
+  return -1;
+}
+```
+
+```ts
+function gcd(left: number, right: number): number {
+  let a = Math.abs(left);
+  let b = Math.abs(right);
+
+  while (b !== 0) {
+    [a, b] = [b, a % b];
+  }
+
+  return a;
+}
+
+export function largestSubsetWithGcd1(values: number[]): number {
+  if (values.length === 0) {
+    throw new RangeError('Expected a non-empty array of positive integers');
+  }
+
+  let runningGcd = 0;
+  for (const value of values) {
+    if (!Number.isInteger(value) || value < 1) {
+      throw new RangeError('Array elements must be positive integers');
+    }
+
+    runningGcd = gcd(runningGcd, value);
+    if (runningGcd === 1) {
+      return values.length;
+    }
+  }
+
+  return -1;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why does this property fail if the target gcd is not `1`?
+- How would you return one actual subset when gcd `1` exists?
+- Can you extend the same idea to dynamic updates on the array?
+
+## Common Pitfalls
+
+- Attempting subset generation or backtracking, which is unnecessary.
+- Returning `0` instead of `-1` when no subset with gcd `1` exists.
+- Ignoring early exit when the running gcd first becomes `1`.

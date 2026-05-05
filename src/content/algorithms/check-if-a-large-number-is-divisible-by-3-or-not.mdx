@@ -1,0 +1,102 @@
+---
+title: Check if a large number is divisible by 3 or not
+slug: check-if-a-large-number-is-divisible-by-3-or-not
+category: Mathematics
+summary: Test divisibility by 3 on huge inputs by summing digits modulo 3 instead of parsing full numeric width.
+description: "Check if a large number is divisible by 3 or not applies the digit-sum divisibility rule so very long numeric strings can be handled without fixed-width overflow."
+dataStructures:
+  - String
+techniques:
+  - Number Theory
+  - Divisibility Rules
+  - Modular Arithmetic
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - divisibility by 3 for large number
+  - large string divisible by three
+  - digit sum multiple of three check
+useCases:
+  - Validating divisibility on integer strings beyond normal numeric limits
+  - Building fast pre-checks in parsing pipelines
+  - Teaching modular arithmetic rules for base-10 numbers
+complexity:
+  time: O(d)
+  space: O(1)
+  notes: One pass over `d` digits is enough because each decimal place is congruent to `1` modulo `3`.
+interviewSignals:
+  - The input can be too large for built-in integer types.
+  - The prompt explicitly asks for divisibility by `3`.
+  - The intended solution references digit sums, not arbitrary big-integer parsing.
+relatedSlugs:
+  - divisibility-by-4
+  - divisibility-by-6
+  - divisibility-by-7
+provenance:
+  - title: "GeeksforGeeks - Check if a large number is divisible by 3 or not"
+    href: https://www.geeksforgeeks.org/dsa/check-large-number-divisible-3-not/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is a rule-based number-theory prompt. Because `10^k mod 3 = 1`, the full value modulo `3` equals the sum of its digits modulo `3`, even for extremely long strings.
+
+## Worked Example
+
+- `769452` has digit sum `7 + 6 + 9 + 4 + 5 + 2 = 33`, which is divisible by `3`, so the answer is true.
+- `123456758933312` has digit sum `58`, which is not divisible by `3`, so the answer is false.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function checkIfALargeNumberIsDivisibleBy3OrNot(value) {
+  const text = String(value).trim();
+  const normalized = text.startsWith('+') || text.startsWith('-') ? text.slice(1) : text;
+
+  if (normalized.length === 0 || !/^\d+$/.test(normalized)) {
+    throw new TypeError("Expected a decimal integer string or integer-like value");
+  }
+
+  let digitSum = 0;
+  for (const digit of normalized) {
+    digitSum += digit.charCodeAt(0) - 48;
+  }
+
+  return digitSum % 3 === 0;
+}
+```
+
+```ts
+export function checkIfALargeNumberIsDivisibleBy3OrNot(value: string | number | bigint): boolean {
+  const text = String(value).trim();
+  const normalized = text.startsWith('+') || text.startsWith('-') ? text.slice(1) : text;
+
+  if (normalized.length === 0 || !/^\d+$/.test(normalized)) {
+    throw new TypeError('Expected a decimal integer string or integer-like value');
+  }
+
+  let digitSum = 0;
+  for (const digit of normalized) {
+    digitSum += digit.charCodeAt(0) - 48;
+  }
+
+  return digitSum % 3 === 0;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you stream the digits without storing the full input string?
+- Why does the same approach not directly decide divisibility by `7`?
+- How can you combine this with the evenness check for divisibility by `6`?
+
+## Common Pitfalls
+
+- Parsing very large input into fixed-width integers and overflowing.
+- Forgetting to ignore an optional leading sign.
+- Accepting non-digit characters such as decimal points in an integer-only prompt.

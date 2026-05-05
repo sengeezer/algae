@@ -1,0 +1,157 @@
+---
+title: Summation of GCD of all the pairs up to n
+slug: summation-of-gcd-of-all-the-pairs-up-to-n
+category: Mathematics
+summary: Sum `gcd(i, j)` over all pairs `1 <= i < j <= n` using a totient-based divisor contribution table.
+description: "Summation of GCD of all the pairs up to n converts pairwise gcd aggregation into an Euler-totient divisor accumulation that avoids quadratic pair enumeration."
+dataStructures:
+  - Array
+  - Number
+techniques:
+  - Number Theory
+  - Euler Totient Function
+  - Sieve Precomputation
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - sum of gcd over all pairs 1 to n
+  - gcd pair summation
+  - totient based gcd sum
+useCases:
+  - Replacing nested gcd loops with arithmetic precomputation
+  - Practicing totient-based divisor transforms
+  - Answering repeated gcd-sum queries efficiently
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: Totients are precomputed in a sieve pass, then each divisor contributes to multiples where it can be the gcd.
+interviewSignals:
+  - The prompt asks for aggregate gcd behavior across all pairs up to `n`.
+  - A direct double loop is too slow for larger constraints.
+  - The editorial path usually pivots through Euler's Totient values.
+relatedSlugs:
+  - eulers-totient
+  - gcd-of-more-than-two-or-array-numbers
+  - find-hcf
+provenance:
+  - title: "GeeksforGeeks - Summation of GCD of all the pairs up to n"
+    href: https://www.geeksforgeeks.org/dsa/summation-gcd-pairs-n/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+The naive approach checks every pair and calls gcd each time. The efficient route counts how much each divisor contributes across multiples, and uses totients to measure coprime partner counts.
+
+## Worked Example
+
+- For `n = 4`, the sum is `gcd(1,2) + gcd(1,3) + gcd(1,4) + gcd(2,3) + gcd(2,4) + gcd(3,4) = 7`.
+- For `n = 12`, the total gcd-pair sum is `105`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function buildTotients(limit) {
+  const phi = Array.from({ length: limit + 1 }, (_, index) => index);
+
+  for (let value = 2; value <= limit; value += 1) {
+    if (phi[value] !== value) {
+      continue;
+    }
+
+    for (let multiple = value; multiple <= limit; multiple += value) {
+      phi[multiple] -= Math.floor(phi[multiple] / value);
+    }
+  }
+
+  phi[0] = 0;
+  if (limit >= 1) {
+    phi[1] = 1;
+  }
+
+  return phi;
+}
+
+function summationOfGcdOfAllThePairsUpToN(n) {
+  if (!Number.isInteger(n) || n < 1) {
+    throw new RangeError("Expected a positive integer");
+  }
+
+  const phi = buildTotients(n);
+  const contribution = Array(n + 1).fill(0);
+
+  for (let divisor = 1; divisor <= n; divisor += 1) {
+    for (let multiple = divisor * 2; multiple <= n; multiple += divisor) {
+      contribution[multiple] += divisor * phi[multiple / divisor];
+    }
+  }
+
+  let total = 0;
+  for (let value = 1; value <= n; value += 1) {
+    total += contribution[value];
+  }
+
+  return total;
+}
+```
+
+```ts
+function buildTotients(limit: number): number[] {
+  const phi = Array.from({ length: limit + 1 }, (_, index) => index);
+
+  for (let value = 2; value <= limit; value += 1) {
+    if (phi[value] !== value) {
+      continue;
+    }
+
+    for (let multiple = value; multiple <= limit; multiple += value) {
+      phi[multiple] -= Math.floor(phi[multiple] / value);
+    }
+  }
+
+  phi[0] = 0;
+  if (limit >= 1) {
+    phi[1] = 1;
+  }
+
+  return phi;
+}
+
+export function summationOfGcdOfAllThePairsUpToN(n: number): number {
+  if (!Number.isInteger(n) || n < 1) {
+    throw new RangeError('Expected a positive integer');
+  }
+
+  const phi = buildTotients(n);
+  const contribution: number[] = Array(n + 1).fill(0);
+
+  for (let divisor = 1; divisor <= n; divisor += 1) {
+    for (let multiple = divisor * 2; multiple <= n; multiple += divisor) {
+      contribution[multiple] += divisor * phi[multiple / divisor];
+    }
+  }
+
+  let total = 0;
+  for (let value = 1; value <= n; value += 1) {
+    total += contribution[value];
+  }
+
+  return total;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you preprocess once and answer many queries `f(n)` quickly?
+- Why does the inner formula use `phi[multiple / divisor]`?
+- When should you switch to `bigint` for larger `n` values?
+
+## Common Pitfalls
+
+- Enumerating all pairs directly and timing out for moderate constraints.
+- Including pairs `(i, i)` when the prompt defines only unordered distinct pairs.
+- Forgetting to initialize `phi[1]` correctly in totient construction.
