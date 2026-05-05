@@ -22,6 +22,10 @@
     "/usr/bin/printf": true,
     "exit": true,
     "/usr/bin/git": true,
-    "/bin/rm": true
+    "/bin/rm": true,
+    "test": true,
+    "/usr/bin/wc": true,
+    "/usr/bin/tail": true,
+    "printf": true
   }
 }
