@@ -1,0 +1,136 @@
+---
+title: Find perimeter of shapes formed with 1s in binary matrix
+slug: find-perimeter-of-shapes-formed-with-1s-in-binary-matrix
+category: Mathematics
+summary: Sum local boundary contributions by adding 4 for each 1-cell and subtracting one for each adjacent 1-neighbor.
+description: "Find perimeter of shapes formed with 1s in binary matrix is the grid-geometry scan that computes total exposed boundary length of the 1-region."
+dataStructures:
+  - Matrix
+  - Array
+techniques:
+  - Grid Traversal
+  - Local Contribution Counting
+  - Boundary Analysis
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - island perimeter
+  - matrix shape perimeter
+  - perimeter from binary grid
+useCases:
+  - Measuring boundary length of occupied cells in occupancy maps
+  - Computing perimeters in image-mask preprocessing
+  - Solving island-boundary style coding interview prompts
+complexity:
+  time: O(r * c)
+  space: O(1)
+  notes: Each cell is visited once, and only four neighbor checks are done per 1-cell.
+interviewSignals:
+  - Input is a binary matrix with one connected shape of 1s.
+  - The perimeter is based on horizontal and vertical unit edges.
+  - A direct DFS/BFS is unnecessary when local contributions suffice.
+relatedSlugs:
+  - max-area-of-island-largest-in-boolean-matrix
+  - shortest-path-in-a-binary-maze
+  - count-number-of-trees-in-a-forest
+provenance:
+  - title: "GeeksforGeeks - Find perimeter of shapes formed with 1s in binary matrix"
+    href: https://www.geeksforgeeks.org/dsa/find-perimeter-shapes-formed-1s-binary-matrix/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is a classic local-accounting problem: every occupied cell contributes four edges, and each shared side with another occupied cell removes one exposed edge. Summing these contributions gives the total perimeter directly.
+
+## Worked Example
+
+For matrix `[[1, 0], [1, 1]]`, the perimeter is `8`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function findPerimeterOfShapesFormedWith1sInBinaryMatrix(matrix) {
+  if (!Array.isArray(matrix) || matrix.length === 0 || !Array.isArray(matrix[0])) {
+    throw new RangeError("Expected a non-empty 2D matrix");
+  }
+
+  const rows = matrix.length;
+  const columns = matrix[0].length;
+  let perimeter = 0;
+
+  for (let row = 0; row < rows; row += 1) {
+    if (!Array.isArray(matrix[row]) || matrix[row].length !== columns) {
+      throw new RangeError("Matrix must be rectangular");
+    }
+
+    for (let column = 0; column < columns; column += 1) {
+      if (matrix[row][column] !== 0 && matrix[row][column] !== 1) {
+        throw new RangeError("Matrix values must be binary (0 or 1)");
+      }
+
+      if (matrix[row][column] === 1) {
+        let neighbors = 0;
+        if (row > 0 && matrix[row - 1][column] === 1) neighbors += 1;
+        if (row + 1 < rows && matrix[row + 1][column] === 1) neighbors += 1;
+        if (column > 0 && matrix[row][column - 1] === 1) neighbors += 1;
+        if (column + 1 < columns && matrix[row][column + 1] === 1) neighbors += 1;
+        perimeter += 4 - neighbors;
+      }
+    }
+  }
+
+  return perimeter;
+}
+```
+
+```ts
+export function findPerimeterOfShapesFormedWith1sInBinaryMatrix(matrix: number[][]): number {
+  if (matrix.length === 0 || matrix[0].length === 0) {
+    throw new RangeError('Expected a non-empty 2D matrix');
+  }
+
+  const rows = matrix.length;
+  const columns = matrix[0].length;
+  let perimeter = 0;
+
+  for (let row = 0; row < rows; row += 1) {
+    if (matrix[row].length !== columns) {
+      throw new RangeError('Matrix must be rectangular');
+    }
+
+    for (let column = 0; column < columns; column += 1) {
+      if (matrix[row][column] !== 0 && matrix[row][column] !== 1) {
+        throw new RangeError('Matrix values must be binary (0 or 1)');
+      }
+
+      if (matrix[row][column] === 1) {
+        let neighbors = 0;
+        if (row > 0 && matrix[row - 1][column] === 1) neighbors += 1;
+        if (row + 1 < rows && matrix[row + 1][column] === 1) neighbors += 1;
+        if (column > 0 && matrix[row][column - 1] === 1) neighbors += 1;
+        if (column + 1 < columns && matrix[row][column + 1] === 1) neighbors += 1;
+        perimeter += 4 - neighbors;
+      }
+    }
+  }
+
+  return perimeter;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why does subtracting neighbor count avoid double-counting shared edges?
+- How would this change if diagonal adjacency also contributed to boundary merging?
+- How would you compute perimeters for multiple disconnected components separately?
+
+## Common Pitfalls
+
+- Counting diagonal neighbors, which do not share perimeter edges.
+- Assuming rows are uniform without validating rectangular shape.
+- Forgetting to validate binary input values.

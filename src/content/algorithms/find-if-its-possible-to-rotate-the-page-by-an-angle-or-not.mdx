@@ -1,0 +1,107 @@
+---
+title: Find if it's possible to rotate the page by an angle or not.
+slug: find-if-its-possible-to-rotate-the-page-by-an-angle-or-not
+category: Mathematics
+summary: A valid rotation around b mapping a to b and b to c exists iff |ab| equals |bc| and points are not collinear.
+description: "Find if it's possible to rotate the page by an angle or not. is the geometric feasibility check that validates equal radii around the rotation center and rejects degenerate collinear triples."
+dataStructures:
+  - Object
+  - Number
+techniques:
+  - Coordinate Geometry
+  - Distance Invariants
+  - Collinearity Test
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - rotate three points feasibility
+  - page rotation check
+  - equal distance rotation condition
+useCases:
+  - Validating geometric transformations around a pivot point
+  - Screening whether a rotational mapping between consecutive points can exist
+  - Quick invariants check before constructing an explicit rotation matrix
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: Uses only squared-distance comparisons and one cross-product test.
+interviewSignals:
+  - The pivot point is fixed at b.
+  - Mapping requires a -> b and b -> c under a single rotation.
+  - Equal radius and non-collinearity are both necessary.
+relatedSlugs:
+  - check-if-two-given-circles-touch-or-intersect-each-other
+  - coordinate
+  - count-maximum-points-on-same-line
+provenance:
+  - title: "GeeksforGeeks - Find if it's possible to rotate the page by an angle or not."
+    href: https://www.geeksforgeeks.org/dsa/find-possible-rotate-page-angle-not/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+The key is to avoid constructing rotation angles directly. A valid rotation around `b` needs equal radius from `b` to source and target points (`|ab| = |bc|`). Collinearity must be rejected because it implies a zero or 180-degree degenerate alignment for this mapping surface.
+
+## Worked Example
+
+- `a = (0, 1)`, `b = (1, 1)`, `c = (1, 0)` returns `true` (`Yes`) because a 90-degree rotation works.
+- `a = (1, 1)`, `b = (0, 0)`, `c = (1000, 1000)` returns `false` (`No`) because distances from `b` are unequal.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function findIfItsPossibleToRotateThePageByAnAngleOrNot(a, b, c) {
+  function squaredDistance(first, second) {
+    const dx = first.x - second.x;
+    const dy = first.y - second.y;
+    return dx * dx + dy * dy;
+  }
+
+  const distanceAB = squaredDistance(a, b);
+  const distanceBC = squaredDistance(b, c);
+  if (distanceAB !== distanceBC || distanceAB === 0) {
+    return false;
+  }
+
+  const cross = (a.x - b.x) * (c.y - b.y) - (a.y - b.y) * (c.x - b.x);
+  return cross !== 0;
+}
+```
+
+```ts
+type Point = { x: number; y: number };
+
+export function findIfItsPossibleToRotateThePageByAnAngleOrNot(a: Point, b: Point, c: Point): boolean {
+  function squaredDistance(first: Point, second: Point): number {
+    const dx = first.x - second.x;
+    const dy = first.y - second.y;
+    return dx * dx + dy * dy;
+  }
+
+  const distanceAB = squaredDistance(a, b);
+  const distanceBC = squaredDistance(b, c);
+  if (distanceAB !== distanceBC || distanceAB === 0) {
+    return false;
+  }
+
+  const cross = (a.x - b.x) * (c.y - b.y) - (a.y - b.y) * (c.x - b.x);
+  return cross !== 0;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why are squared distances preferable here to raw distances?
+- What geometric meaning does the cross-product check capture?
+- How would you compute the actual rotation angle when the answer is true?
+
+## Common Pitfalls
+
+- Comparing floating distances instead of squared integer distances.
+- Forgetting to reject the degenerate case where `a` and `b` coincide.
+- Accepting collinear triples that do not represent the intended rotation surface.

@@ -1,0 +1,172 @@
+---
+title: Optimum location of point to minimize total distance
+slug: optimum-location-of-point-to-minimize-total-distance
+category: Mathematics
+summary: Use ternary search on a line parameter to find the point minimizing total Euclidean distance to a point set.
+description: "Optimum location of point to minimize total distance is the geometric optimization routine that projects a convex one-dimensional objective onto a line and minimizes it with ternary search."
+dataStructures:
+  - Array
+  - Object
+techniques:
+  - Ternary Search
+  - Convex Optimization
+  - Computational Geometry
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - minimum distance point on line
+  - geometric median constrained to a line
+  - optimize point on ax plus by plus c
+useCases:
+  - Facility placement restricted to a road represented as a line
+  - Finding a line-constrained point with minimum aggregate travel distance
+  - Demonstrating ternary search on continuous convex functions
+complexity:
+  time: O(k * n)
+  space: O(1)
+  notes: k is the fixed number of ternary-search iterations and n is the number of input points.
+interviewSignals:
+  - The objective is a minimum of summed distances over a continuous domain.
+  - The search domain is constrained to a single line.
+  - Binary search does not apply because the objective is convex (U-shaped), not monotonic.
+relatedSlugs:
+  - bisection-method
+  - euclidean-distance
+  - finding-the-vertex-focus-and-directrix-of-a-parabola
+provenance:
+  - title: "GeeksforGeeks - Optimum location of point to minimize total distance"
+    href: https://www.geeksforgeeks.org/dsa/optimum-location-point-minimize-total-distance/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This prompt appears when a geometric optimization is reduced to one degree of freedom. Once you parametrize the line, the sum of distances becomes a convex function of one variable, which is exactly where ternary search is effective.
+
+## Worked Example
+
+For points `(0, 0)` and `(2, 0)` with line `y = 0` (i.e., `0x + 1y + 0 = 0`), any point on the segment between them is optimal and the minimum total distance is `2`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function optimumLocationOfPointToMinimizeTotalDistance(points, line) {
+  if (!Array.isArray(points) || points.length === 0) {
+    throw new RangeError("Expected at least one point");
+  }
+  if (!Number.isFinite(line.a) || !Number.isFinite(line.b) || !Number.isFinite(line.c) || (line.a === 0 && line.b === 0)) {
+    throw new RangeError("Expected a valid line ax + by + c = 0");
+  }
+
+  const basePoint = Math.abs(line.b) > 1e-12 ? { x: 0, y: -line.c / line.b } : { x: -line.c / line.a, y: 0 };
+  const direction = { x: line.b, y: -line.a };
+  const directionNormSquared = direction.x * direction.x + direction.y * direction.y;
+
+  const parameters = points.map((point) =>
+    ((point.x - basePoint.x) * direction.x + (point.y - basePoint.y) * direction.y) / directionNormSquared,
+  );
+  let low = Math.min(...parameters) - 1000;
+  let high = Math.max(...parameters) + 1000;
+
+  function totalDistance(parameter) {
+    const x = basePoint.x + direction.x * parameter;
+    const y = basePoint.y + direction.y * parameter;
+    return points.reduce((sum, point) => sum + Math.hypot(x - point.x, y - point.y), 0);
+  }
+
+  for (let iteration = 0; iteration < 120; iteration += 1) {
+    const first = low + (high - low) / 3;
+    const second = high - (high - low) / 3;
+    if (totalDistance(first) <= totalDistance(second)) {
+      high = second;
+    } else {
+      low = first;
+    }
+  }
+
+  const parameter = (low + high) / 2;
+  const point = {
+    x: basePoint.x + direction.x * parameter,
+    y: basePoint.y + direction.y * parameter,
+  };
+
+  return {
+    point,
+    totalDistance: totalDistance(parameter),
+  };
+}
+```
+
+```ts
+type Point = { x: number; y: number };
+type Line = { a: number; b: number; c: number };
+
+type OptimumResult = {
+  point: Point;
+  totalDistance: number;
+};
+
+export function optimumLocationOfPointToMinimizeTotalDistance(points: Point[], line: Line): OptimumResult {
+  if (points.length === 0) {
+    throw new RangeError('Expected at least one point');
+  }
+  if (!Number.isFinite(line.a) || !Number.isFinite(line.b) || !Number.isFinite(line.c) || (line.a === 0 && line.b === 0)) {
+    throw new RangeError('Expected a valid line ax + by + c = 0');
+  }
+
+  const basePoint: Point = Math.abs(line.b) > 1e-12
+    ? { x: 0, y: -line.c / line.b }
+    : { x: -line.c / line.a, y: 0 };
+  const direction: Point = { x: line.b, y: -line.a };
+  const directionNormSquared = direction.x * direction.x + direction.y * direction.y;
+
+  const parameters = points.map((point) =>
+    ((point.x - basePoint.x) * direction.x + (point.y - basePoint.y) * direction.y) / directionNormSquared,
+  );
+  let low = Math.min(...parameters) - 1000;
+  let high = Math.max(...parameters) + 1000;
+
+  function totalDistance(parameter: number): number {
+    const x = basePoint.x + direction.x * parameter;
+    const y = basePoint.y + direction.y * parameter;
+    return points.reduce((sum, point) => sum + Math.hypot(x - point.x, y - point.y), 0);
+  }
+
+  for (let iteration = 0; iteration < 120; iteration += 1) {
+    const first = low + (high - low) / 3;
+    const second = high - (high - low) / 3;
+    if (totalDistance(first) <= totalDistance(second)) {
+      high = second;
+    } else {
+      low = first;
+    }
+  }
+
+  const parameter = (low + high) / 2;
+  const point: Point = {
+    x: basePoint.x + direction.x * parameter,
+    y: basePoint.y + direction.y * parameter,
+  };
+
+  return {
+    point,
+    totalDistance: totalDistance(parameter),
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why is ternary search valid for this objective on a line?
+- How would you adapt this to Manhattan distance instead of Euclidean distance?
+- What changes if the feasible region is a segment instead of an infinite line?
+
+## Common Pitfalls
+
+- Applying binary search to a non-monotonic objective.
+- Forgetting to validate that the line is not degenerate (`a = b = 0`).
+- Picking a search range that does not cover useful projections of input points.
