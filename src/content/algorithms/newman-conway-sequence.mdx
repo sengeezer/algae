@@ -1,0 +1,114 @@
+---
+title: Newman-Conway Sequence
+slug: newman-conway-sequence
+category: Mathematics
+summary: Compute the nth Newman-Conway number with dynamic programming from the recurrence P(n)=P(P(n-1))+P(n-P(n-1)).
+description: "Newman-Conway Sequence is defined by a self-referential recurrence and is efficiently solved with bottom-up tabulation using O(n) time."
+dataStructures:
+  - Array
+techniques:
+  - Dynamic Programming
+  - Recurrence Relations
+  - Tabulation
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - conway sequence
+  - newman sequence
+  - self-referential recurrence sequence
+useCases:
+  - Practice with nested-index recurrences
+  - DP array dependency reasoning
+  - Mathematical sequence query engines
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: Each state depends on previously computed indexed states, making bottom-up DP straightforward.
+interviewSignals:
+  - Recurrence references earlier computed values as indices.
+  - Prompt asks for nth term.
+  - Memoization or tabulation is preferred over raw recursion.
+relatedSlugs:
+  - stern-brocot-sequence
+  - padovan-sequence
+  - fibonacci-series
+provenance:
+  - title: "GeeksforGeeks - Newman-Conway Sequence"
+    href: https://www.geeksforgeeks.org/dsa/newman-conway-sequence/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+The sequence is defined by:
+
+`P(n) = P(P(n - 1)) + P(n - P(n - 1))`, with `P(1)=1`, `P(2)=1`.
+
+Because terms reuse previous terms as indices, bottom-up DP is the reliable approach.
+
+## Worked Example
+
+- Sequence prefix: `1, 1, 2, 2, 3, 4, 4, 4, 5, 6, 7, 7, ...`
+- `P(10) = 6`
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function newmanConwaySequence(n) {
+  if (!Number.isInteger(n) || n <= 0) {
+    throw new RangeError('Expected a positive integer n');
+  }
+
+  if (n <= 2) {
+    return 1;
+  }
+
+  const dp = new Array(n + 1).fill(0);
+  dp[1] = 1;
+  dp[2] = 1;
+
+  for (let i = 3; i <= n; i += 1) {
+    dp[i] = dp[dp[i - 1]] + dp[i - dp[i - 1]];
+  }
+
+  return dp[n];
+}
+```
+
+```ts
+export function newmanConwaySequence(n: number): number {
+  if (!Number.isInteger(n) || n <= 0) {
+    throw new RangeError('Expected a positive integer n');
+  }
+
+  if (n <= 2) {
+    return 1;
+  }
+
+  const dp: number[] = new Array(n + 1).fill(0);
+  dp[1] = 1;
+  dp[2] = 1;
+
+  for (let i = 3; i <= n; i += 1) {
+    dp[i] = dp[dp[i - 1]] + dp[i - dp[i - 1]];
+  }
+
+  return dp[n];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Can you return the first `k` Newman-Conway terms in one pass?
+- What is the cost tradeoff between memoized recursion and tabulation?
+- How would you guard against invalid index access in custom variants?
+
+## Common Pitfalls
+
+- Forgetting base terms `P(1)` and `P(2)`.
+- Using 0-based indexing without adjusting the recurrence.
+- Recursive implementations that blow up due to repeated work.

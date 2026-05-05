@@ -1,0 +1,106 @@
+---
+title: Sylvester's sequence
+slug: sylvesters-sequence
+category: Mathematics
+summary: Generate Sylvester's sequence where each term equals the product of previous terms plus one.
+description: "Sylvester's sequence grows rapidly and is built iteratively via running-product updates, often modulo 1e9+7 for bounded output requirements."
+dataStructures:
+  - Array
+techniques:
+  - Sequence Generation
+  - Modular Arithmetic
+  - Iterative Computation
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - sylvester sequence
+  - euclid numbers sequence
+  - product plus one sequence
+useCases:
+  - Fast-growing sequence demonstrations
+  - Modular arithmetic interview tasks
+  - Number-theory exploration utilities
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: Maintain a running product and append the current value each step.
+interviewSignals:
+  - Terms are defined as product of all prior terms plus one.
+  - Output may request modulo arithmetic.
+  - A linear iterative approach is sufficient.
+relatedSlugs:
+  - newman-conway-sequence
+  - stern-brocot-sequence
+  - geometric-progression
+provenance:
+  - title: "GeeksforGeeks - Sylvester's sequence"
+    href: https://www.geeksforgeeks.org/dsa/sylvesters-sequence/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+Sylvester's sequence starts at `2` and each next term is one more than the product of all previous terms. The GeeksforGeeks variant also highlights modulo handling for very large values.
+
+## Worked Example
+
+- First 6 terms: `2, 3, 7, 43, 1807, 3263443`
+- For `N = 2`: `2, 3`
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function sylvestersSequence(count, mod = 1_000_000_007) {
+  if (!Number.isInteger(count) || count <= 0) {
+    throw new RangeError('Expected a positive integer count');
+  }
+
+  const result = [];
+  let runningProduct = 1;
+  let current = 2;
+
+  for (let i = 0; i < count; i += 1) {
+    result.push(current);
+    runningProduct = (runningProduct * current) % mod;
+    current = (runningProduct + 1) % mod;
+  }
+
+  return result;
+}
+```
+
+```ts
+export function sylvestersSequence(count: number, mod = 1_000_000_007): number[] {
+  if (!Number.isInteger(count) || count <= 0) {
+    throw new RangeError('Expected a positive integer count');
+  }
+
+  const result: number[] = [];
+  let runningProduct = 1;
+  let current = 2;
+
+  for (let i = 0; i < count; i += 1) {
+    result.push(current);
+    runningProduct = (runningProduct * current) % mod;
+    current = (runningProduct + 1) % mod;
+  }
+
+  return result;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you compute exact terms with BigInt instead of modulo arithmetic?
+- Why does this sequence grow doubly-exponentially fast?
+- What properties connect Sylvester terms to Egyptian fraction decompositions?
+
+## Common Pitfalls
+
+- Forgetting to update running product before computing the next term.
+- Integer overflow when not using modulo or big integers.
+- Mis-initializing the first term as 1 instead of 2.

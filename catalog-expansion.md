@@ -1407,16 +1407,24 @@ This one-hundred-thirty-fifth expansion slice lifts the catalog from 698 to 701 
 
 ## Batch 136 added
 
-This one-hundred-thirty-sixth expansion slice currently lifts the catalog locally from 701 to 704 entries.
+This one-hundred-thirty-sixth expansion slice lifts the catalog from 701 to 704 entries.
 
 - Padovan Sequence
 - Aliquot Sequence
 - Moser-de Bruijn Sequence
 
+## Batch 137 added
+
+This one-hundred-thirty-seventh expansion slice currently lifts the catalog locally from 704 to 707 entries.
+
+- Stern-Brocot Sequence
+- Newman-Conway Sequence
+- Sylvester's sequence
+
 ## Next candidates from the same sources
 
-- The published catalog now reaches 701 entries on `main` after batch 135 landed at `81d09a7`.
-- The local draft now reaches 704 entries after batch 136.
+- The published catalog now reaches 704 entries on `main` after batch 136 landed at `567016d`.
+- The local draft now reaches 707 entries after batch 137.
 - The GeeksforGeeks `Standard Problems on Geometric Algorithm` section is exhausted in source order after `Equable Shapes`.
 - The next vetted source branch after the exhausted Geometric Algorithms page is the GeeksforGeeks Mathematical Algorithms page: https://www.geeksforgeeks.org/dsa/mathematical-algorithms/
 - On the Mathematical Algorithms page, `GCD of Two Numbers` and `LCM of Two Numbers` remain duplicate-level coverage of the published `Find HCF` and `Find LCM` entries.
@@ -1433,7 +1441,8 @@ This one-hundred-thirty-sixth expansion slice currently lifts the catalog locall
 - The Divisibility & Large Numbers subsection is now exhausted in source order through `Divisibility by 29`.
 - `Juggler Sequence` is already covered by the existing catalog entry `juggler-sequence`, so it is treated as a source-order duplicate and skipped for new drafting.
 - Batch 136 keeps `Padovan Sequence`, `Aliquot Sequence`, and `Moser-de Bruijn Sequence` as exact destination titles from the Series subsection.
-- The next clean Mathematical Algorithms queue is `Stern-Brocot Sequence`, `Newman-Conway Sequence`, and `Sylvester's sequence`.
+- Batch 137 keeps `Stern-Brocot Sequence`, `Newman-Conway Sequence`, and `Sylvester's sequence` as exact destination titles from the Series subsection.
+- The next clean Mathematical Algorithms queue is `Recaman's sequence`, `Sum of 2, 22, 222, ………`, and `Sum of 1^2 + 3^2 + 5^2 + . . . + (2*n – 1)^2`.
 
 - The published catalog now reaches 623 entries on `main` after exhausting the GeeksforGeeks Branch and Bound page.
 - The Trie Data Structure common-interview queue is exhausted in source order after the published batch-107 slice.

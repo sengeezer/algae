@@ -1,0 +1,120 @@
+---
+title: Stern-Brocot Sequence
+slug: stern-brocot-sequence
+category: Mathematics
+summary: Generate the Stern-Brocot integer sequence iteratively from seed values 1, 1 by alternating sum and carry-forward steps.
+description: "Stern-Brocot Sequence builds terms from adjacent predecessors in a structured expansion pattern and is commonly generated with simple iterative state updates."
+dataStructures:
+  - Array
+techniques:
+  - Sequence Generation
+  - Iterative Construction
+  - Recurrence Patterns
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - brocot sequence
+  - stern sequence variant
+  - stern brocot integer sequence
+useCases:
+  - Number sequence generation exercises
+  - Introductory recurrence/state-transition interviews
+  - Demonstrating constructive iterative algorithms
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: Sequence construction appends two terms per considered element until n items are generated.
+interviewSignals:
+  - Prompt asks for the first n terms.
+  - Seed values are fixed at 1 and 1.
+  - Generation logic is iterative and stateful.
+relatedSlugs:
+  - newman-conway-sequence
+  - sylvesters-sequence
+  - padovan-sequence
+provenance:
+  - title: "GeeksforGeeks - Stern-Brocot Sequence"
+    href: https://www.geeksforgeeks.org/dsa/stern-brocot-sequence/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This sequence appears as a constructive pattern problem. Starting with `1, 1`, for each considered element you append:
+
+1. the sum of the considered element and its predecessor
+2. the considered element itself
+
+and continue until `n` terms are produced.
+
+## Worked Example
+
+- First 15 terms: `1 1 2 1 3 2 3 1 4 3 5 2 5 3 4`
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function sternBrocotSequence(count) {
+  if (!Number.isInteger(count) || count <= 0) {
+    throw new RangeError('Expected a positive integer count');
+  }
+
+  if (count === 1) {
+    return [1];
+  }
+
+  const sequence = [1, 1];
+  for (let i = 1; sequence.length < count; i += 1) {
+    const considered = sequence[i];
+    const precedent = sequence[i - 1];
+
+    sequence.push(considered + precedent);
+    if (sequence.length < count) {
+      sequence.push(considered);
+    }
+  }
+
+  return sequence;
+}
+```
+
+```ts
+export function sternBrocotSequence(count: number): number[] {
+  if (!Number.isInteger(count) || count <= 0) {
+    throw new RangeError('Expected a positive integer count');
+  }
+
+  if (count === 1) {
+    return [1];
+  }
+
+  const sequence: number[] = [1, 1];
+  for (let i = 1; sequence.length < count; i += 1) {
+    const considered = sequence[i];
+    const precedent = sequence[i - 1];
+
+    sequence.push(considered + precedent);
+    if (sequence.length < count) {
+      sequence.push(considered);
+    }
+  }
+
+  return sequence;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you generate terms lazily as a stream?
+- Can you derive an index-based recurrence for direct nth-term access?
+- What relationship does this sequence have to Stern's diatomic series?
+
+## Common Pitfalls
+
+- Mishandling the initial seed for `count = 1`.
+- Appending past the requested number of terms.
+- Off-by-one errors in predecessor indexing.
