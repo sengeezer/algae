@@ -1375,16 +1375,32 @@ This one-hundred-thirty-first expansion slice lifts the catalog from 686 to 689 
 
 ## Batch 132 added
 
-This one-hundred-thirty-second expansion slice currently lifts the catalog locally from 689 to 692 entries.
+This one-hundred-thirty-second expansion slice lifts the catalog from 689 to 692 entries.
 
 - Largest Subset with GCD 1
 - Summation of GCD of all the pairs up to n
 - Check if a large number is divisible by 3 or not
 
+## Batch 133 added
+
+This one-hundred-thirty-third expansion slice currently lifts the catalog locally from 692 to 695 entries.
+
+- Check if a large number is divisible by 4 or not
+- Check if a large number is divisible by 6 or not
+- Check divisibility by 7
+
+## Batch 134 added
+
+This one-hundred-thirty-fourth expansion slice currently lifts the catalog locally from 695 to 698 entries.
+
+- Check if a large number is divisible by 9 or not
+- Check if a large number is divisible by 11 or not
+- Divisibility by 12 for a large number
+
 ## Next candidates from the same sources
 
-- The published catalog now reaches 689 entries on `main` after batch 131 landed at `b1778fd`.
-- The local draft now reaches 692 entries after batch 132.
+- The published catalog now reaches 692 entries on `main` after batch 132 landed at `ba05632`.
+- The local draft now reaches 698 entries after batch 134.
 - The GeeksforGeeks `Standard Problems on Geometric Algorithm` section is exhausted in source order after `Equable Shapes`.
 - The next vetted source branch after the exhausted Geometric Algorithms page is the GeeksforGeeks Mathematical Algorithms page: https://www.geeksforgeeks.org/dsa/mathematical-algorithms/
 - On the Mathematical Algorithms page, `GCD of Two Numbers` and `LCM of Two Numbers` remain duplicate-level coverage of the published `Find HCF` and `Find LCM` entries.
@@ -1395,7 +1411,9 @@ This one-hundred-thirty-second expansion slice currently lifts the catalog local
 - `Program to find GCD of floating point numbers` is kept distinct from the integer gcd entries because the prompt surface is explicitly about finite decimal inputs and normalization before Euclid-style reduction.
 - Batch 132 uses the verified destination-title cleanup `Divisibility by 3` -> `Check if a large number is divisible by 3 or not`; the other two Mathematical Algorithms titles match exactly.
 - `Largest Subset with GCD 1` remains distinct from generic array-gcd prompts because the requested output surface is a subset-size decision (`n` or `-1`) derived from gcd closure.
-- The next clean Mathematical Algorithms queue is `Divisibility by 4`, `Divisibility by 6`, and `Divisibility by 7`.
+- Batch 133 uses destination-title cleanup `Divisibility by 4` -> `Check if a large number is divisible by 4 or not`, `Divisibility by 6` -> `Check if a large number is divisible by 6 or not`, and `Divisibility by 7` -> `Check divisibility by 7`.
+- Batch 134 uses destination-title cleanup `Divisibility by 9` -> `Check if a large number is divisible by 9 or not`, `Divisibility by 11` -> `Check if a large number is divisible by 11 or not`, and `Divisibility by 12` -> `Divisibility by 12 for a large number`.
+- The next clean Mathematical Algorithms queue is `Divisibility by 13`, `Divisibility by 15`, and `Divisibility by 29`.
 
 - The published catalog now reaches 623 entries on `main` after exhausting the GeeksforGeeks Branch and Bound page.
 - The Trie Data Structure common-interview queue is exhausted in source order after the published batch-107 slice.

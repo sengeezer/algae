@@ -1,0 +1,102 @@
+---
+title: Check if a large number is divisible by 9 or not
+slug: check-if-a-large-number-is-divisible-by-9-or-not
+category: Mathematics
+summary: Test divisibility by 9 for huge integer strings by checking whether the digit sum is divisible by 9.
+description: "Check if a large number is divisible by 9 or not uses the base-10 digit-sum rule so very large values can be handled without fixed-width arithmetic."
+dataStructures:
+  - String
+techniques:
+  - Number Theory
+  - Divisibility Rules
+  - Modular Arithmetic
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - divisibility by 9
+  - large number divisible by 9
+  - digit sum multiple of nine
+useCases:
+  - Overflow-safe divisibility checks on long numeric strings
+  - Quick numeric validation before heavier processing
+  - Teaching decimal modular rules in interview settings
+complexity:
+  time: O(d)
+  space: O(1)
+  notes: A single pass over d digits is enough because 10^k is congruent to 1 modulo 9.
+interviewSignals:
+  - Input may exceed built-in numeric range.
+  - The divisor is 9, suggesting a digit-sum shortcut.
+  - String-based processing is expected over full numeric parsing.
+relatedSlugs:
+  - check-if-a-large-number-is-divisible-by-3-or-not
+  - check-if-a-large-number-is-divisible-by-6-or-not
+  - check-if-a-large-number-is-divisible-by-11-or-not
+provenance:
+  - title: "GeeksforGeeks - Check if a large number is divisible by 9 or not"
+    href: https://www.geeksforgeeks.org/dsa/check-large-number-divisible-9-not/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is the same structural idea as divisibility by 3, with a different modulus. Because each place value contributes `10^k mod 9 = 1`, the whole number modulo 9 equals the sum of its digits modulo 9.
+
+## Worked Example
+
+- `999999999` has digit sum `81`, and `81 % 9 = 0`, so it is divisible by 9.
+- `123456758933312` has digit sum `58`, and `58 % 9 = 4`, so it is not divisible by 9.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function checkIfALargeNumberIsDivisibleBy9OrNot(value) {
+  const text = String(value).trim();
+  const normalized = text.startsWith('+') || text.startsWith('-') ? text.slice(1) : text;
+
+  if (normalized.length === 0 || !/^\d+$/.test(normalized)) {
+    throw new TypeError("Expected a decimal integer string or integer-like value");
+  }
+
+  let digitSum = 0;
+  for (const digit of normalized) {
+    digitSum += digit.charCodeAt(0) - 48;
+  }
+
+  return digitSum % 9 === 0;
+}
+```
+
+```ts
+export function checkIfALargeNumberIsDivisibleBy9OrNot(value: string | number | bigint): boolean {
+  const text = String(value).trim();
+  const normalized = text.startsWith('+') || text.startsWith('-') ? text.slice(1) : text;
+
+  if (normalized.length === 0 || !/^\d+$/.test(normalized)) {
+    throw new TypeError('Expected a decimal integer string or integer-like value');
+  }
+
+  let digitSum = 0;
+  for (const digit of normalized) {
+    digitSum += digit.charCodeAt(0) - 48;
+  }
+
+  return digitSum % 9 === 0;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why do divisibility-by-3 and divisibility-by-9 both reduce to digit sums?
+- How would you stream this check if digits arrive in chunks?
+- How can this rule be combined with parity checks for divisibility by 18?
+
+## Common Pitfalls
+
+- Parsing full large values into fixed-width integer types.
+- Not handling optional sign prefixes.
+- Allowing non-integer formats like decimal points.

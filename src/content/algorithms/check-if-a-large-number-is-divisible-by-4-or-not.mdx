@@ -1,0 +1,104 @@
+---
+title: Check if a large number is divisible by 4 or not
+slug: check-if-a-large-number-is-divisible-by-4-or-not
+category: Mathematics
+summary: Decide divisibility by 4 on huge numeric strings using only the last two digits.
+description: "Check if a large number is divisible by 4 or not uses the base-10 remainder rule that only the final two digits matter for divisibility by 4."
+dataStructures:
+  - String
+techniques:
+  - Number Theory
+  - Divisibility Rules
+  - Modular Arithmetic
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - divisibility by 4
+  - large number divisible by 4
+  - check mod 4 from string
+useCases:
+  - Validating very large integer strings without overflow
+  - Fast divisibility prechecks in parsing pipelines
+  - Demonstrating base-10 remainder shortcuts
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: Only the last two digits are needed, so runtime does not grow with full string length.
+interviewSignals:
+  - Input can exceed built-in integer ranges.
+  - The question is specifically about divisibility by 4.
+  - The expected shortcut avoids scanning all digits.
+relatedSlugs:
+  - check-if-a-large-number-is-divisible-by-3-or-not
+  - check-if-a-large-number-is-divisible-by-6-or-not
+  - check-divisibility-by-7
+provenance:
+  - title: "GeeksforGeeks - Check if a large number is divisible by 4 or not"
+    href: https://www.geeksforgeeks.org/dsa/check-large-number-divisible-4-not/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This prompt checks whether you know the divisibility shortcut for `4`. In base `10`, every higher place beyond the last two contributes a multiple of `100`, so only the two-digit suffix controls divisibility by `4`.
+
+## Worked Example
+
+- `1124` ends with `24`, and `24 % 4 = 0`, so it is divisible by `4`.
+- `1234567589333862` ends with `62`, and `62 % 4 = 2`, so it is not divisible by `4`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function checkIfALargeNumberIsDivisibleBy4OrNot(value) {
+  const text = String(value).trim();
+  const normalized = text.startsWith('+') || text.startsWith('-') ? text.slice(1) : text;
+
+  if (normalized.length === 0 || !/^\d+$/.test(normalized)) {
+    throw new TypeError("Expected a decimal integer string or integer-like value");
+  }
+
+  if (normalized.length === 1) {
+    return (normalized.charCodeAt(0) - 48) % 4 === 0;
+  }
+
+  const tens = normalized.charCodeAt(normalized.length - 2) - 48;
+  const ones = normalized.charCodeAt(normalized.length - 1) - 48;
+  return (tens * 10 + ones) % 4 === 0;
+}
+```
+
+```ts
+export function checkIfALargeNumberIsDivisibleBy4OrNot(value: string | number | bigint): boolean {
+  const text = String(value).trim();
+  const normalized = text.startsWith('+') || text.startsWith('-') ? text.slice(1) : text;
+
+  if (normalized.length === 0 || !/^\d+$/.test(normalized)) {
+    throw new TypeError('Expected a decimal integer string or integer-like value');
+  }
+
+  if (normalized.length === 1) {
+    return (normalized.charCodeAt(0) - 48) % 4 === 0;
+  }
+
+  const tens = normalized.charCodeAt(normalized.length - 2) - 48;
+  const ones = normalized.charCodeAt(normalized.length - 1) - 48;
+  return (tens * 10 + ones) % 4 === 0;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How does this change for divisibility by `8`?
+- Why does the same shortcut not work for divisibility by `3`?
+- How would you accept and validate signed inputs safely?
+
+## Common Pitfalls
+
+- Parsing the full string into fixed-width numeric types.
+- Ignoring one-digit inputs when extracting the last two digits.
+- Accepting non-integer formats like decimal points.

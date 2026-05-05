@@ -1,0 +1,108 @@
+---
+title: Check divisibility by 7
+slug: check-divisibility-by-7
+category: Mathematics
+summary: Repeatedly apply the `a - 2b` transformation to test whether a number is divisible by 7 without modulo.
+description: "Check divisibility by 7 uses the iterative reduction rule for `10a + b`, where divisibility is preserved under the transform `a - 2b`."
+dataStructures:
+  - Number
+techniques:
+  - Number Theory
+  - Divisibility Rules
+  - Iterative Reduction
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - divisibility by 7 rule
+  - a minus 2b test
+  - check multiple of seven without modulo
+useCases:
+  - Verifying divisibility constraints when modulo is restricted
+  - Teaching invariant-preserving numeric transforms
+  - Building interview solutions under operator restrictions
+complexity:
+  time: O(log10(n))
+  space: O(1)
+  notes: Each step removes one decimal digit, so the loop count tracks the number of digits.
+interviewSignals:
+  - The prompt forbids `%` or asks for a rule-based divisibility check.
+  - Input is an integer and the required divisor is `7`.
+  - The intended logic repeatedly transforms the number while preserving divisibility.
+relatedSlugs:
+  - check-if-a-large-number-is-divisible-by-3-or-not
+  - check-if-a-large-number-is-divisible-by-4-or-not
+  - check-if-a-large-number-is-divisible-by-6-or-not
+provenance:
+  - title: "GeeksforGeeks - Check divisibility by 7"
+    href: https://www.geeksforgeeks.org/dsa/divisibility-by-7/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This checks whether you can preserve divisibility through transformations. For `n = 10a + b`, `n` is divisible by `7` iff `a - 2b` is divisible by `7`, so repeated reduction gives a small-value decision test.
+
+## Worked Example
+
+- `371`: `37 - 2*1 = 35`, then `3 - 2*5 = -7`, and `-7` is divisible by `7`, so `371` is divisible by `7`.
+- `7673`: `767 - 2*3 = 761`, `76 - 2*1 = 74`, `7 - 2*4 = -1`, and `-1` is not divisible by `7`, so it is not divisible by `7`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function checkDivisibilityBy7(value) {
+  if (!Number.isInteger(value)) {
+    throw new TypeError("Expected an integer input");
+  }
+
+  let n = Math.abs(value);
+  if (n === 0 || n === 7) {
+    return true;
+  }
+
+  while (n >= 10) {
+    const lastDigit = n % 10;
+    n = Math.floor(n / 10) - 2 * lastDigit;
+    n = Math.abs(n);
+  }
+
+  return n === 0 || n === 7;
+}
+```
+
+```ts
+export function checkDivisibilityBy7(value: number): boolean {
+  if (!Number.isInteger(value)) {
+    throw new TypeError('Expected an integer input');
+  }
+
+  let n = Math.abs(value);
+  if (n === 0 || n === 7) {
+    return true;
+  }
+
+  while (n >= 10) {
+    const lastDigit = n % 10;
+    n = Math.floor(n / 10) - 2 * lastDigit;
+    n = Math.abs(n);
+  }
+
+  return n === 0 || n === 7;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why does the `a - 2b` transform preserve divisibility by `7`?
+- How would you adapt the same approach for very large integers stored as strings?
+- Can you compare this with direct modulo in terms of constraints and readability?
+
+## Common Pitfalls
+
+- Forgetting to normalize negative intermediates.
+- Stopping the loop too early before reaching a small decision value.
+- Accepting non-integer input even though the rule is integer-specific.

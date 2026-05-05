@@ -1,0 +1,112 @@
+---
+title: Check if a large number is divisible by 6 or not
+slug: check-if-a-large-number-is-divisible-by-6-or-not
+category: Mathematics
+summary: Check divisibility by 6 on large numeric strings by combining divisibility tests for 2 and 3.
+description: "Check if a large number is divisible by 6 or not decomposes the rule into two cheap checks: an even last digit and a digit sum divisible by 3."
+dataStructures:
+  - String
+techniques:
+  - Number Theory
+  - Divisibility Rules
+  - Modular Arithmetic
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - divisibility by 6
+  - large number divisible by 6
+  - check mod 6 from string
+useCases:
+  - Validating divisibility for huge integer strings
+  - Combining simpler modular rules into a composite check
+  - Fast screening in data-cleaning or parsing workflows
+complexity:
+  time: O(d)
+  space: O(1)
+  notes: Last-digit parity is O(1), and digit-sum divisibility by 3 needs one pass over d digits.
+interviewSignals:
+  - Input may be too large for standard integer types.
+  - Prompt asks for divisibility by `6`, suggesting factor decomposition into `2 * 3`.
+  - String-based processing is expected for overflow-safe solutions.
+relatedSlugs:
+  - check-if-a-large-number-is-divisible-by-3-or-not
+  - check-if-a-large-number-is-divisible-by-4-or-not
+  - check-divisibility-by-7
+provenance:
+  - title: "GeeksforGeeks - Check if a large number is divisible by 6 or not"
+    href: https://www.geeksforgeeks.org/dsa/check-large-number-divisible-6-not/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is a composite divisibility rule question. Because `6 = 2 * 3` and `2` and `3` are coprime, a number is divisible by `6` iff it is divisible by both `2` and `3`.
+
+## Worked Example
+
+- `2112` ends in `2` (even) and has digit sum `2 + 1 + 1 + 2 = 6` (divisible by `3`), so it is divisible by `6`.
+- `1124` ends in `4` (even) but has digit sum `8` (not divisible by `3`), so it is not divisible by `6`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function checkIfALargeNumberIsDivisibleBy6OrNot(value) {
+  const text = String(value).trim();
+  const normalized = text.startsWith('+') || text.startsWith('-') ? text.slice(1) : text;
+
+  if (normalized.length === 0 || !/^\d+$/.test(normalized)) {
+    throw new TypeError("Expected a decimal integer string or integer-like value");
+  }
+
+  const lastDigit = normalized.charCodeAt(normalized.length - 1) - 48;
+  if (lastDigit % 2 !== 0) {
+    return false;
+  }
+
+  let digitSum = 0;
+  for (const digit of normalized) {
+    digitSum += digit.charCodeAt(0) - 48;
+  }
+
+  return digitSum % 3 === 0;
+}
+```
+
+```ts
+export function checkIfALargeNumberIsDivisibleBy6OrNot(value: string | number | bigint): boolean {
+  const text = String(value).trim();
+  const normalized = text.startsWith('+') || text.startsWith('-') ? text.slice(1) : text;
+
+  if (normalized.length === 0 || !/^\d+$/.test(normalized)) {
+    throw new TypeError('Expected a decimal integer string or integer-like value');
+  }
+
+  const lastDigit = normalized.charCodeAt(normalized.length - 1) - 48;
+  if (lastDigit % 2 !== 0) {
+    return false;
+  }
+
+  let digitSum = 0;
+  for (const digit of normalized) {
+    digitSum += digit.charCodeAt(0) - 48;
+  }
+
+  return digitSum % 3 === 0;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you extend this to divisibility by `12`?
+- Can you short-circuit earlier for obviously odd numbers?
+- Why does coprimality matter when combining divisibility checks?
+
+## Common Pitfalls
+
+- Checking only one factor (`2` or `3`) instead of both.
+- Using full numeric parsing and risking overflow.
+- Forgetting to validate that the input is an integer string.

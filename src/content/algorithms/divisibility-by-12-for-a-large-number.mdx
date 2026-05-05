@@ -1,0 +1,116 @@
+---
+title: Divisibility by 12 for a large number
+slug: divisibility-by-12-for-a-large-number
+category: Mathematics
+summary: Check large-number divisibility by 12 by combining divisibility tests for 3 and 4.
+description: "Divisibility by 12 for a large number composes two small divisibility rules so huge decimal strings can be validated without parsing the full integer."
+dataStructures:
+  - String
+techniques:
+  - Number Theory
+  - Divisibility Rules
+  - Modular Arithmetic
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - divisibility by 12
+  - large number divisible by 12
+  - check mod 12 from string
+useCases:
+  - Overflow-safe divisibility checks for long integers
+  - Input validation in numeric ingestion pipelines
+  - Demonstrating composite-divisor tests from prime factors
+complexity:
+  time: O(d)
+  space: O(1)
+  notes: Divisibility by 4 is O(1) from the last two digits, while divisibility by 3 needs one full pass over digits.
+interviewSignals:
+  - The number may be too large for built-in integer arithmetic.
+  - Divisor 12 hints at combining tests for 3 and 4.
+  - String-based arithmetic checks are preferred over direct modulo.
+relatedSlugs:
+  - check-if-a-large-number-is-divisible-by-3-or-not
+  - check-if-a-large-number-is-divisible-by-4-or-not
+  - check-if-a-large-number-is-divisible-by-6-or-not
+provenance:
+  - title: "GeeksforGeeks - Divisibility by 12 for a large number"
+    href: https://www.geeksforgeeks.org/dsa/divisibility-by-12-for-a-large-number/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+The divisibility by 12 test is composite: `12 = 3 * 4` with coprime factors. So a number is divisible by 12 iff it is divisible by both 3 and 4.
+
+## Worked Example
+
+- `2112` has digit sum `6` (divisible by 3) and last two digits `12` (divisible by 4), so it is divisible by 12.
+- `1234567589333862` has last two digits `62`, not divisible by 4, so it is not divisible by 12.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function divisibilityBy12ForALargeNumber(value) {
+  const text = String(value).trim();
+  const normalized = text.startsWith('+') || text.startsWith('-') ? text.slice(1) : text;
+
+  if (normalized.length === 0 || !/^\d+$/.test(normalized)) {
+    throw new TypeError("Expected a decimal integer string or integer-like value");
+  }
+
+  const lastDigit = normalized.charCodeAt(normalized.length - 1) - 48;
+  const secondLastDigit = normalized.length > 1 ? normalized.charCodeAt(normalized.length - 2) - 48 : 0;
+  const lastTwoDigits = secondLastDigit * 10 + lastDigit;
+  if (lastTwoDigits % 4 !== 0) {
+    return false;
+  }
+
+  let digitSum = 0;
+  for (const digit of normalized) {
+    digitSum += digit.charCodeAt(0) - 48;
+  }
+
+  return digitSum % 3 === 0;
+}
+```
+
+```ts
+export function divisibilityBy12ForALargeNumber(value: string | number | bigint): boolean {
+  const text = String(value).trim();
+  const normalized = text.startsWith('+') || text.startsWith('-') ? text.slice(1) : text;
+
+  if (normalized.length === 0 || !/^\d+$/.test(normalized)) {
+    throw new TypeError('Expected a decimal integer string or integer-like value');
+  }
+
+  const lastDigit = normalized.charCodeAt(normalized.length - 1) - 48;
+  const secondLastDigit = normalized.length > 1 ? normalized.charCodeAt(normalized.length - 2) - 48 : 0;
+  const lastTwoDigits = secondLastDigit * 10 + lastDigit;
+  if (lastTwoDigits % 4 !== 0) {
+    return false;
+  }
+
+  let digitSum = 0;
+  for (const digit of normalized) {
+    digitSum += digit.charCodeAt(0) - 48;
+  }
+
+  return digitSum % 3 === 0;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you adapt this for divisibility by 24?
+- Why does checking 3 and 4 together work but checking 2 and 6 is redundant?
+- Which condition should you check first for quicker short-circuit behavior?
+
+## Common Pitfalls
+
+- Checking only one of the two required factors.
+- Parsing the full number into fixed-width types and risking overflow.
+- Mishandling one-digit inputs while extracting the last two-digit suffix.
