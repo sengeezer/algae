@@ -1,0 +1,128 @@
+---
+title: LCM of given array elements
+slug: lcm-of-given-array-elements
+category: Mathematics
+summary: Fold pairwise LCM updates across an array by reusing a gcd helper at each step.
+description: "LCM of given array elements extends the pairwise lcm identity across a list so you can combine repeating periods or divisibility constraints in one pass."
+dataStructures:
+  - Array
+techniques:
+  - Number Theory
+  - Euclidean Algorithm
+  - Iterative Reduction
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - lcm of array
+  - least common multiple of array
+  - lcm of more than two numbers
+useCases:
+  - Synchronizing repeating intervals across many jobs or timers
+  - Collapsing divisibility constraints over a list of integers
+  - Reusing pairwise gcd and lcm helpers in arithmetic utilities
+complexity:
+  time: O(n log m)
+  space: O(1)
+  notes: Each new array value is folded into the running answer with one gcd computation, where m is the magnitude of the current operands.
+interviewSignals:
+  - The prompt asks for the least common multiple of an entire list, not just two numbers.
+  - A repeated pairwise reduction is the intended extension of the standard lcm identity.
+  - Dividing before multiplying keeps the intermediate product smaller.
+relatedSlugs:
+  - find-lcm
+  - gcd-of-more-than-two-or-array-numbers
+  - gcd-lcm-and-distributive-property
+provenance:
+  - title: "GeeksforGeeks - LCM of given array elements"
+    href: https://www.geeksforgeeks.org/dsa/lcm-of-given-array-elements/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is the natural follow-up once a candidate knows the two-number lcm formula. The trick is to keep a running answer and repeatedly combine it with the next element using `lcm(a, b) = (a / gcd(a, b)) * b`.
+
+## Worked Example
+
+- For `[1, 2, 8, 3]`, the running lcm becomes `1`, then `2`, then `8`, then `24`.
+- For `[2, 7, 3, 9, 4]`, the running lcm progresses to `2`, `14`, `42`, `126`, and finally `252`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function gcd(left, right) {
+  let a = Math.abs(left);
+  let b = Math.abs(right);
+
+  while (b !== 0) {
+    [a, b] = [b, a % b];
+  }
+
+  return a;
+}
+
+function lcmOfGivenArrayElements(values) {
+  if (!Array.isArray(values) || values.length === 0) {
+    throw new RangeError("Expected a non-empty array of positive integers");
+  }
+
+  let runningLcm = 1;
+
+  for (const value of values) {
+    if (!Number.isInteger(value) || value < 1) {
+      throw new RangeError("Array elements must be positive integers");
+    }
+
+    runningLcm = (runningLcm / gcd(runningLcm, value)) * value;
+  }
+
+  return runningLcm;
+}
+```
+
+```ts
+function gcd(left: number, right: number): number {
+  let a = Math.abs(left);
+  let b = Math.abs(right);
+
+  while (b !== 0) {
+    [a, b] = [b, a % b];
+  }
+
+  return a;
+}
+
+export function lcmOfGivenArrayElements(values: number[]): number {
+  if (values.length === 0) {
+    throw new RangeError('Expected a non-empty array of positive integers');
+  }
+
+  let runningLcm = 1;
+
+  for (const value of values) {
+    if (!Number.isInteger(value) || value < 1) {
+      throw new RangeError('Array elements must be positive integers');
+    }
+
+    runningLcm = (runningLcm / gcd(runningLcm, value)) * value;
+  }
+
+  return runningLcm;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why is `(runningLcm / gcd(runningLcm, value)) * value` safer than `runningLcm * value / gcd(...)`?
+- How would you extend the routine to support zero if the prompt defines `lcm(0, x)` explicitly?
+- When does the running answer risk exceeding normal integer precision in JavaScript?
+
+## Common Pitfalls
+
+- Treating array lcm as `product / gcd(all values)`, which does not hold for more than two numbers.
+- Forgetting to validate that the list is non-empty and positive under the standard formulation.
+- Multiplying before dividing and inflating intermediate values unnecessarily.

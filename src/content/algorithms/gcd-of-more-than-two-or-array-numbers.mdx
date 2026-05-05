@@ -1,0 +1,134 @@
+---
+title: GCD of more than two (or array) numbers
+slug: gcd-of-more-than-two-or-array-numbers
+category: Mathematics
+summary: Reduce an array to its shared greatest common divisor by repeatedly applying the two-number gcd routine.
+description: "GCD of more than two (or array) numbers turns the classic Euclidean algorithm into a one-pass array reduction that can stop early when the answer reaches 1."
+dataStructures:
+  - Array
+techniques:
+  - Euclidean Algorithm
+  - Number Theory
+  - Iterative Reduction
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - gcd of array
+  - gcd of more than two numbers
+  - greatest common divisor of array
+useCases:
+  - Normalizing ratios or step sizes across many values
+  - Detecting whether a whole set shares a non-trivial divisor
+  - Feeding a shared divisor into fraction or divisibility follow-ups
+complexity:
+  time: O(n log m)
+  space: O(1)
+  notes: The running gcd can only stay the same or decrease, and once it becomes 1 the search can end immediately.
+interviewSignals:
+  - The prompt asks for one gcd across many values instead of a single pair.
+  - The intended reduction is `gcd(a, b, c) = gcd(gcd(a, b), c)`.
+  - An early exit at `1` is a useful optimization signal.
+relatedSlugs:
+  - find-hcf
+  - lcm-of-given-array-elements
+  - extended-euclidean-gcd
+provenance:
+  - title: "GeeksforGeeks - GCD of more than two (or array) numbers"
+    href: https://www.geeksforgeeks.org/dsa/gcd-two-array-numbers/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This prompt checks whether you can generalize Euclid's algorithm instead of re-deriving gcd from scratch. The clean approach keeps a running gcd and folds each new value into it.
+
+## Worked Example
+
+- For `[2, 4, 6, 8]`, the running gcd is `2` after the first pair and never changes again.
+- For `[1, 2, 3]`, the running gcd becomes `1`, so the algorithm can terminate early because no later value can increase it.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function gcd(left, right) {
+  let a = Math.abs(left);
+  let b = Math.abs(right);
+
+  while (b !== 0) {
+    [a, b] = [b, a % b];
+  }
+
+  return a;
+}
+
+function gcdOfMoreThanTwoOrArrayNumbers(values) {
+  if (!Array.isArray(values) || values.length === 0) {
+    throw new RangeError("Expected a non-empty array of non-negative integers");
+  }
+
+  let runningGcd = 0;
+
+  for (const value of values) {
+    if (!Number.isInteger(value) || value < 0) {
+      throw new RangeError("Array elements must be non-negative integers");
+    }
+
+    runningGcd = gcd(runningGcd, value);
+    if (runningGcd === 1) {
+      return 1;
+    }
+  }
+
+  return runningGcd;
+}
+```
+
+```ts
+function gcd(left: number, right: number): number {
+  let a = Math.abs(left);
+  let b = Math.abs(right);
+
+  while (b !== 0) {
+    [a, b] = [b, a % b];
+  }
+
+  return a;
+}
+
+export function gcdOfMoreThanTwoOrArrayNumbers(values: number[]): number {
+  if (values.length === 0) {
+    throw new RangeError('Expected a non-empty array of non-negative integers');
+  }
+
+  let runningGcd = 0;
+
+  for (const value of values) {
+    if (!Number.isInteger(value) || value < 0) {
+      throw new RangeError('Array elements must be non-negative integers');
+    }
+
+    runningGcd = gcd(runningGcd, value);
+    if (runningGcd === 1) {
+      return 1;
+    }
+  }
+
+  return runningGcd;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why is `0` a useful initializer for a running gcd?
+- How would you adapt the routine if the prompt allowed negative numbers explicitly?
+- Can you stream the answer if values arrive one at a time instead of in one array?
+
+## Common Pitfalls
+
+- Recomputing divisors from scratch for every array prefix instead of folding gcds.
+- Missing the early return once the running gcd becomes `1`.
+- Rejecting `0` even though gcd reduction can still be defined sensibly for non-negative inputs.

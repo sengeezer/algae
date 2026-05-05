@@ -1,0 +1,116 @@
+---
+title: GCD, LCM and Distributive Property
+slug: gcd-lcm-and-distributive-property
+category: Mathematics
+summary: Simplify `gcd(lcm(x, y), lcm(x, z))` to `lcm(x, gcd(y, z))` before computing it.
+description: "GCD, LCM and Distributive Property is the algebraic-number-theory prompt that rewards spotting the distributive identity before doing any arithmetic."
+dataStructures:
+  - Number
+techniques:
+  - Number Theory
+  - Euclidean Algorithm
+  - Algebraic Simplification
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - distributive property of gcd and lcm
+  - gcd lcm identity
+  - gcd of lcm expressions
+useCases:
+  - Simplifying nested gcd and lcm expressions before implementation
+  - Turning a bulky arithmetic prompt into a short identity-based solution
+  - Reusing gcd and lcm helpers in symbolic number-theory questions
+complexity:
+  time: O(log m)
+  space: O(1)
+  notes: The work reduces to one gcd and one lcm once the identity is recognized, where m is the magnitude of the operands.
+interviewSignals:
+  - The expression contains nested gcd and lcm calls over shared variables.
+  - A direct implementation would be longer than the intended algebraic simplification.
+  - The prompt is testing recognition of the identity more than coding volume.
+relatedSlugs:
+  - find-hcf
+  - find-lcm
+  - lcm-of-given-array-elements
+provenance:
+  - title: "GeeksforGeeks - GCD, LCM and Distributive Property"
+    href: https://www.geeksforgeeks.org/dsa/gcd-lcm-distributive-property/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is a recognition problem. The straightforward route builds two lcms and then takes their gcd, but the intended shortcut is the identity `gcd(lcm(x, y), lcm(x, z)) = lcm(x, gcd(y, z))`.
+
+## Worked Example
+
+- For `x = 3`, `y = 4`, and `z = 10`, compute `gcd(4, 10) = 2`, then `lcm(3, 2) = 6`.
+- For `x = 30`, `y = 40`, and `z = 400`, compute `gcd(40, 400) = 40`, then `lcm(30, 40) = 120`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function gcd(left, right) {
+  let a = Math.abs(left);
+  let b = Math.abs(right);
+
+  while (b !== 0) {
+    [a, b] = [b, a % b];
+  }
+
+  return a;
+}
+
+function lcm(left, right) {
+  return (left / gcd(left, right)) * right;
+}
+
+function gcdLcmAndDistributiveProperty(x, y, z) {
+  if (![x, y, z].every((value) => Number.isInteger(value) && value > 0)) {
+    throw new RangeError("Expected positive integers for x, y, and z");
+  }
+
+  return lcm(x, gcd(y, z));
+}
+```
+
+```ts
+function gcd(left: number, right: number): number {
+  let a = Math.abs(left);
+  let b = Math.abs(right);
+
+  while (b !== 0) {
+    [a, b] = [b, a % b];
+  }
+
+  return a;
+}
+
+function lcm(left: number, right: number): number {
+  return (left / gcd(left, right)) * right;
+}
+
+export function gcdLcmAndDistributiveProperty(x: number, y: number, z: number): number {
+  if (![x, y, z].every((value) => Number.isInteger(value) && value > 0)) {
+    throw new RangeError('Expected positive integers for x, y, and z');
+  }
+
+  return lcm(x, gcd(y, z));
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Can you derive the companion identity `gcd(x, lcm(y, z)) = lcm(gcd(x, y), gcd(x, z))`?
+- Why is the simplified route preferable even when the direct computation also fits in integer bounds?
+- How would you test this identity across many random triples?
+
+## Common Pitfalls
+
+- Computing both lcms first and missing the intended simplification.
+- Using the identity without validating the positive-integer assumptions of the standard prompt.
+- Multiplying before dividing inside the lcm helper and creating larger intermediate values than necessary.

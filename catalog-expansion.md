@@ -1353,17 +1353,29 @@ This one-hundred-twenty-eighth expansion slice lifts the catalog from 679 to 682
 
 ## Batch 129 added
 
-This one-hundred-twenty-ninth expansion slice currently lifts the catalog locally from 682 to 683 entries.
+This one-hundred-twenty-ninth expansion slice lifts the catalog from 682 to 683 entries.
 
 - Equable Shapes
 
+## Batch 130 added
+
+This one-hundred-thirtieth expansion slice currently lifts the catalog locally from 683 to 686 entries.
+
+- LCM of given array elements
+- GCD of more than two (or array) numbers
+- GCD, LCM and Distributive Property
+
 ## Next candidates from the same sources
 
-- The published catalog now reaches 682 entries on `main` after batch 128 landed at `36d40a6`.
-- The local draft now reaches 683 entries after batch 129.
-- The GeeksforGeeks `Polygon and Convex Hull` section is exhausted in source order after `Minimum area of a Polygon with three points given`; drafting continues in `Standard Problems on Geometric Algorithm`.
-- `Draw geometric shapes on images using OpenCV` remains a tooling tutorial detour and is skipped.
-- The GeeksforGeeks `Standard Problems on Geometric Algorithm` section is now exhausted in source order after `Equable Shapes`.
+- The published catalog now reaches 683 entries on `main` after batch 129 landed at `328b3ca`.
+- The local draft now reaches 686 entries after batch 130.
+- The GeeksforGeeks `Standard Problems on Geometric Algorithm` section is exhausted in source order after `Equable Shapes`.
+- The next vetted source branch after the exhausted Geometric Algorithms page is the GeeksforGeeks Mathematical Algorithms page: https://www.geeksforgeeks.org/dsa/mathematical-algorithms/
+- On the Mathematical Algorithms page, `GCD of Two Numbers` and `LCM of Two Numbers` remain duplicate-level coverage of the published `Find HCF` and `Find LCM` entries.
+- `Basic and Extended Euclidean` remains duplicate-level coverage of the published `Extended Euclidean GCD` entry, and `Stein's Algorithm for GCD` remains duplicate-level coverage of the published `Euclid's Algorithm when % and / operations are costly` entry.
+- Batch 130 uses the verified destination-title cleanup `GCD of array` -> `GCD of more than two (or array) numbers`.
+- `LCM of given array elements` and `GCD, LCM and Distributive Property` already match their destination titles.
+- The next clean Mathematical Algorithms queue is `Count pairs with gcd (A, B) as B`, `Program to find GCD of floating point numbers`, and `Series with largest GCD and sum equals to n`.
 
 - The published catalog now reaches 623 entries on `main` after exhausting the GeeksforGeeks Branch and Bound page.
 - The Trie Data Structure common-interview queue is exhausted in source order after the published batch-107 slice.
