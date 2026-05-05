@@ -1,0 +1,136 @@
+---
+title: Find Simple Closed Path for a given set of points
+slug: find-simple-closed-path-for-a-given-set-of-points
+category: Mathematics
+summary: Build a non-self-intersecting polygonal cycle by anchoring at the lowest point and sorting remaining points by polar angle.
+description: "Find Simple Closed Path for a given set of points is the geometry ordering routine that produces a simple polygon by radial sorting around a pivot."
+dataStructures:
+  - Array
+  - Object
+techniques:
+  - Sorting
+  - Polar Angle Ordering
+  - Orientation Tests
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - simple polygon from points
+  - connect points without crossing
+  - radial point ordering for closed path
+useCases:
+  - Constructing a simple tour for planar point visualizations
+  - Preprocessing points into a non-crossing boundary order
+  - Demonstrating orientation-based angle comparisons in geometry interviews
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: Sorting dominates the runtime; the output order is one valid simple closed path, not necessarily a convex hull.
+interviewSignals:
+  - The prompt asks to connect all points without crossing edges.
+  - A bottom-most anchor point is explicitly highlighted.
+  - Equal-angle points need a deterministic tie break by distance.
+relatedSlugs:
+  - convex-hull-using-jarvis-algorithm-or-wrapping
+  - how-to-check-if-a-given-point-lies-inside-or-outside-a-polygon
+  - tangents-between-two-convex-polygons
+provenance:
+  - title: "GeeksforGeeks - Find Simple Closed Path for a given set of points"
+    href: https://www.geeksforgeeks.org/dsa/find-simple-closed-path-for-a-given-set-of-points/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This problem tests geometric ordering rather than hull extraction. The standard pattern is to anchor at the bottom-most point, then sort all remaining points by their polar direction around that anchor so traversing in order yields a simple closed path.
+
+## Worked Example
+
+For points `(0, 3)`, `(1, 1)`, `(2, 2)`, `(4, 4)`, `(0, 0)`, `(1, 2)`, `(3, 1)`, `(3, 3)`, one valid non-crossing order is:
+
+`(0, 0) -> (3, 1) -> (1, 1) -> (2, 2) -> (3, 3) -> (4, 4) -> (1, 2) -> (0, 3)`
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function findSimpleClosedPathForAGivenSetOfPoints(points) {
+  if (!Array.isArray(points) || points.length < 3) {
+    throw new RangeError("At least three points are required");
+  }
+
+  const uniquePoints = [...new Map(points.map((point) => [`${point.x},${point.y}`, point])).values()];
+  if (uniquePoints.length < 3) {
+    throw new RangeError("At least three distinct points are required");
+  }
+
+  const anchor = uniquePoints.reduce((best, point) =>
+    point.y < best.y || (point.y === best.y && point.x < best.x) ? point : best,
+  uniquePoints[0]);
+
+  function squaredDistance(first, second) {
+    return (first.x - second.x) ** 2 + (first.y - second.y) ** 2;
+  }
+
+  const remainder = uniquePoints.filter((point) => point !== anchor);
+  remainder.sort((left, right) => {
+    const leftAngle = Math.atan2(left.y - anchor.y, left.x - anchor.x);
+    const rightAngle = Math.atan2(right.y - anchor.y, right.x - anchor.x);
+    if (leftAngle !== rightAngle) {
+      return leftAngle - rightAngle;
+    }
+    return squaredDistance(anchor, left) - squaredDistance(anchor, right);
+  });
+
+  return [anchor, ...remainder];
+}
+```
+
+```ts
+type Point = { x: number; y: number };
+
+export function findSimpleClosedPathForAGivenSetOfPoints(points: Point[]): Point[] {
+  if (points.length < 3) {
+    throw new RangeError('At least three points are required');
+  }
+
+  const uniquePoints = [...new Map(points.map((point) => [`${point.x},${point.y}`, point] as const)).values()];
+  if (uniquePoints.length < 3) {
+    throw new RangeError('At least three distinct points are required');
+  }
+
+  const anchor = uniquePoints.reduce((best, point) =>
+    point.y < best.y || (point.y === best.y && point.x < best.x) ? point : best,
+  uniquePoints[0]);
+
+  function squaredDistance(first: Point, second: Point): number {
+    return (first.x - second.x) ** 2 + (first.y - second.y) ** 2;
+  }
+
+  const remainder = uniquePoints.filter((point) => point !== anchor);
+  remainder.sort((left, right) => {
+    const leftAngle = Math.atan2(left.y - anchor.y, left.x - anchor.x);
+    const rightAngle = Math.atan2(right.y - anchor.y, right.x - anchor.x);
+    if (leftAngle !== rightAngle) {
+      return leftAngle - rightAngle;
+    }
+    return squaredDistance(anchor, left) - squaredDistance(anchor, right);
+  });
+
+  return [anchor, ...remainder];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why does radial sorting around one pivot avoid edge crossings in this construction?
+- How does this differ from returning a convex hull?
+- What changes if two points are identical or many points are collinear from the anchor?
+
+## Common Pitfalls
+
+- Picking the wrong anchor when multiple points share the lowest y-coordinate.
+- Ignoring tie breaks for equal polar angles.
+- Assuming this always returns the convex hull instead of a simple closed path.

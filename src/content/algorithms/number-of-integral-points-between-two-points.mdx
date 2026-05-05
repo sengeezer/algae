@@ -1,0 +1,130 @@
+---
+title: Number of Integral Points between Two Points
+slug: number-of-integral-points-between-two-points
+category: Mathematics
+summary: Count lattice points strictly between two endpoints by applying gcd(|dx|, |dy|) - 1.
+description: "Number of Integral Points between Two Points is the lattice-geometry helper that uses a gcd invariant to count interior integer points on a segment."
+dataStructures:
+  - Number
+  - Object
+techniques:
+  - Number Theory
+  - Euclidean Algorithm
+  - Coordinate Geometry
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - lattice points on line segment
+  - integer points between endpoints
+  - segment lattice count
+useCases:
+  - Counting grid intersections crossed by a segment
+  - Preprocessing boundary-point totals for Pick's theorem style tasks
+  - Building geometry counters in integer-coordinate systems
+complexity:
+  time: O(log(max(|dx|, |dy|)))
+  space: O(1)
+  notes: Runtime comes from Euclid's algorithm for gcd.
+interviewSignals:
+  - Input points have integer coordinates.
+  - The question asks for points strictly between endpoints.
+  - Horizontal and vertical special cases collapse to the same gcd formula.
+relatedSlugs:
+  - count-integral-points-inside-a-triangle
+  - get-euclid-gcd
+  - check-whether-a-given-point-lies-inside-a-triangle-or-not
+provenance:
+  - title: "GeeksforGeeks - Number of Integral Points between Two Points"
+    href: https://www.geeksforgeeks.org/dsa/number-integral-points-two-points/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is a compact bridge between geometry and number theory. The segment step vector `(dx, dy)` can be reduced to primitive direction `(dx / g, dy / g)` where `g = gcd(|dx|, |dy|)`, and exactly `g - 1` interior lattice points lie between endpoints.
+
+## Worked Example
+
+- Between `(2, 2)` and `(5, 5)`: `dx = 3`, `dy = 3`, `gcd = 3`, so interior count is `2`.
+- Between `(1, 9)` and `(8, 16)`: `dx = 7`, `dy = 7`, `gcd = 7`, so interior count is `6`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function gcd(a, b) {
+  let left = Math.abs(a);
+  let right = Math.abs(b);
+  while (right !== 0) {
+    const next = left % right;
+    left = right;
+    right = next;
+  }
+  return left;
+}
+
+function numberOfIntegralPointsBetweenTwoPoints(first, second) {
+  if (
+    !first || !second
+    || !Number.isInteger(first.x) || !Number.isInteger(first.y)
+    || !Number.isInteger(second.x) || !Number.isInteger(second.y)
+  ) {
+    throw new RangeError("Points must use integer coordinates");
+  }
+
+  const dx = Math.abs(second.x - first.x);
+  const dy = Math.abs(second.y - first.y);
+  if (dx === 0 && dy === 0) {
+    return 0;
+  }
+
+  return Math.max(0, gcd(dx, dy) - 1);
+}
+```
+
+```ts
+type Point = { x: number; y: number };
+
+function gcd(a: number, b: number): number {
+  let left = Math.abs(a);
+  let right = Math.abs(b);
+  while (right !== 0) {
+    const next = left % right;
+    left = right;
+    right = next;
+  }
+  return left;
+}
+
+export function numberOfIntegralPointsBetweenTwoPoints(first: Point, second: Point): number {
+  if (
+    !Number.isInteger(first.x) || !Number.isInteger(first.y)
+    || !Number.isInteger(second.x) || !Number.isInteger(second.y)
+  ) {
+    throw new RangeError('Points must use integer coordinates');
+  }
+
+  const dx = Math.abs(second.x - first.x);
+  const dy = Math.abs(second.y - first.y);
+  if (dx === 0 && dy === 0) {
+    return 0;
+  }
+
+  return Math.max(0, gcd(dx, dy) - 1);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why does dividing by gcd give the primitive step along the segment?
+- How does this connect to boundary-point counting in Pick's theorem?
+- What changes if endpoints are rational but not integer coordinates?
+
+## Common Pitfalls
+
+- Counting endpoints even though the question asks for points between them.
+- Using floating-point gcd logic instead of integer arithmetic.
+- Forgetting the degenerate same-point case.

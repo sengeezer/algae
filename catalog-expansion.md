@@ -1329,18 +1329,26 @@ This one-hundred-twenty-fifth expansion slice lifts the catalog from 670 to 673 
 
 ## Batch 126 added
 
-This one-hundred-twenty-sixth expansion slice currently lifts the catalog locally from 673 to 676 entries.
+This one-hundred-twenty-sixth expansion slice lifts the catalog from 673 to 676 entries.
 
 - Convex Hull using Jarvis' Algorithm or Wrapping
 - Deleting points from Convex Hull
 - Minimum area of a Polygon with three points given
 
+## Batch 127 added
+
+This one-hundred-twenty-seventh expansion slice currently lifts the catalog locally from 676 to 679 entries.
+
+- Finding the vertex, focus and directrix of a parabola
+- Find Simple Closed Path for a given set of points
+- Number of Integral Points between Two Points
+
 ## Next candidates from the same sources
 
-- The published catalog now reaches 673 entries on `main` after batch 125 landed at `08ccf80`.
-- The local draft now reaches 676 entries after batch 126.
-- The GeeksforGeeks `Polygon and Convex Hull` section is exhausted in source order after `Minimum area of a Polygon with three points given`; drafting advances into `Standard Problems on Geometric Algorithm`.
-- The next clean source-order titles are `Finding the vertex, focus and directrix of a parabola`, `Find Simple Closed Path for a given set of points`, and `Number of Integral Points between Two Points`.
+- The published catalog now reaches 676 entries on `main` after batch 126 landed at `1591420`.
+- The local draft now reaches 679 entries after batch 127.
+- The GeeksforGeeks `Polygon and Convex Hull` section is exhausted in source order after `Minimum area of a Polygon with three points given`; drafting continues in `Standard Problems on Geometric Algorithm`.
+- The next clean source-order titles are `Optimum location of point to minimize total distance`, `Find perimeter of shapes formed with 1s in binary matrix`, and `Find if it's possible to rotate the page by an angle or not`; `Draw geometric shapes on images using OpenCV` is a tooling tutorial detour and remains skipped.
 
 - The published catalog now reaches 623 entries on `main` after exhausting the GeeksforGeeks Branch and Bound page.
 - The Trie Data Structure common-interview queue is exhausted in source order after the published batch-107 slice.
@@ -1433,7 +1441,12 @@ This one-hundred-twenty-sixth expansion slice currently lifts the catalog locall
 - `Convex Hull using Jarvis' Algorithm or Wrapping`, `Deleting points from Convex Hull`, and `Minimum area of a Polygon with three points given` already match their destination titles.
 - `Deleting points from Convex Hull` remains distinct from the published hull-construction entries because it asks whether deleting one point changes the existing hull and only rebuilds when the removed point was on the boundary.
 - The GeeksforGeeks `Polygon and Convex Hull` section is now exhausted in source order after `Minimum area of a Polygon with three points given`; drafting advances into `Standard Problems on Geometric Algorithm`.
-- Batch 126 is now locally drafted, lifting the catalog from 673 to 676 entries with `Convex Hull using Jarvis' Algorithm or Wrapping`, `Deleting points from Convex Hull`, and `Minimum area of a Polygon with three points given`.
+- Batch 126 is now published on `main` at commit `1591420`, lifting the catalog from 673 to 676 entries with `Convex Hull using Jarvis' Algorithm or Wrapping`, `Deleting points from Convex Hull`, and `Minimum area of a Polygon with three points given`.
+- Focused `gray-matter` plus JavaScript-fence validators passed for all three batch-126 entries, and `npm run build` passed against the published 676-entry state with 681 static pages generated.
+- `Finding the vertex, focus and directrix of a parabola`, `Find Simple Closed Path for a given set of points`, and `Number of Integral Points between Two Points` already match their destination titles.
+- `Find Simple Closed Path for a given set of points` remains distinct from the published convex-hull entries because it asks for any non-self-intersecting traversal order rather than the outer boundary only.
+- Batch 127 is now locally drafted, lifting the catalog from 676 to 679 entries with `Finding the vertex, focus and directrix of a parabola`, `Find Simple Closed Path for a given set of points`, and `Number of Integral Points between Two Points`.
+- Focused `gray-matter` plus JavaScript-fence validators passed for all three batch-127 entries.
 - Batch 92 carries the vetted Dynamic Programming hard stretch through `Longest repeating and non-overlapping substring` and then consumes the clean `Advanced Concepts` absences `Count Ways To Assign Unique Cap To Every Person`, `Digit DP | Introduction`, and `Sum over Subsets | Dynamic Programming`.
 - The Dynamic Programming items skipped between `Program to find amount of water in a given glass` and `Largest Cross Bordered Square` remain already represented locally: `Longest Common Subsequence`, `Longest Increasing Subsequence`, `Edit Distance`, `0-1 Knapsack Problem`, `Partition Problem`, `Longest Palindromic Subsequence`, `Bellman-Ford Algorithm`, and `Floyd Warshall Algorithm`.
 - `The painter's partition problem` remains skipped because the local `Find minimum time to finish all jobs with given constraints` entry already covers that partition-minimax problem and includes the alias `painter partition with multiplier`.

@@ -1,0 +1,122 @@
+---
+title: Finding the vertex, focus and directrix of a parabola
+slug: finding-the-vertex-focus-and-directrix-of-a-parabola
+category: Mathematics
+summary: Compute parabola invariants directly from y = ax^2 + bx + c using closed-form coordinate formulas.
+description: "Finding the vertex, focus and directrix of a parabola is the constant-time coordinate-geometry routine that converts quadratic coefficients into geometric features."
+dataStructures:
+  - Number
+  - Object
+techniques:
+  - Coordinate Geometry
+  - Algebraic Simplification
+  - Direct Formula Evaluation
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - parabola vertex focus directrix
+  - parabola feature extraction from coefficients
+  - quadratic to geometric form
+useCases:
+  - Converting a quadratic equation into geometric descriptors
+  - Checking focus-directrix constraints in plotting and simulation tasks
+  - Building quick geometry helpers for analytic-shape tooling
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: All outputs are closed-form expressions of a, b, and c with no iteration.
+interviewSignals:
+  - The equation is already in the vertical-parabola form y = ax^2 + bx + c.
+  - The prompt asks for both point outputs and the directrix line equation.
+  - Correct handling requires a != 0.
+relatedSlugs:
+  - quadratic-roots
+  - coordinate
+  - check-whether-a-given-point-lies-inside-a-rectangle-or-not
+provenance:
+  - title: "GeeksforGeeks - Finding the vertex, focus and directrix of a parabola"
+    href: https://www.geeksforgeeks.org/dsa/finding-vertex-focus-directrix-parabola/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This problem appears when an interviewer wants algebra-to-geometry translation, not root solving. You extract the parabola's turning point and focal distance from coefficients, then express the directrix as a horizontal line.
+
+## Worked Example
+
+For `a = 5`, `b = 3`, `c = 2`, we get:
+
+- Vertex: `(-0.3, 1.55)`
+- Focus: `(-0.3, 1.6)`
+- Directrix: `y = 1.5`
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function findingTheVertexFocusAndDirectrixOfAParabola(a, b, c) {
+  if (!Number.isFinite(a) || !Number.isFinite(b) || !Number.isFinite(c) || a === 0) {
+    throw new RangeError("Expected finite coefficients with a != 0 for y = ax^2 + bx + c");
+  }
+
+  const xVertex = -b / (2 * a);
+  const yVertex = c - (b * b) / (4 * a);
+  const focalOffset = 1 / (4 * a);
+  const yFocus = yVertex + focalOffset;
+  const directrixY = yVertex - focalOffset;
+
+  return {
+    vertex: { x: xVertex, y: yVertex },
+    focus: { x: xVertex, y: yFocus },
+    directrix: { type: "horizontal", y: directrixY },
+  };
+}
+```
+
+```ts
+type Point = { x: number; y: number };
+
+type ParabolaInvariants = {
+  vertex: Point;
+  focus: Point;
+  directrix: { type: 'horizontal'; y: number };
+};
+
+export function findingTheVertexFocusAndDirectrixOfAParabola(
+  a: number,
+  b: number,
+  c: number,
+): ParabolaInvariants {
+  if (!Number.isFinite(a) || !Number.isFinite(b) || !Number.isFinite(c) || a === 0) {
+    throw new RangeError('Expected finite coefficients with a != 0 for y = ax^2 + bx + c');
+  }
+
+  const xVertex = -b / (2 * a);
+  const yVertex = c - (b * b) / (4 * a);
+  const focalOffset = 1 / (4 * a);
+  const yFocus = yVertex + focalOffset;
+  const directrixY = yVertex - focalOffset;
+
+  return {
+    vertex: { x: xVertex, y: yVertex },
+    focus: { x: xVertex, y: yFocus },
+    directrix: { type: 'horizontal', y: directrixY },
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How do these formulas change for a sideways parabola like `x = ay^2 + by + c`?
+- Why is the focal offset exactly `1 / (4a)` in the vertical form?
+- How do sign changes in `a` affect focus and directrix placement?
+
+## Common Pitfalls
+
+- Forgetting to reject `a = 0`, which is not a parabola.
+- Mixing up `+ 1/(4a)` and `- 1/(4a)` between focus and directrix.
+- Treating the directrix as a point instead of a line.
