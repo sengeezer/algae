@@ -1,0 +1,119 @@
+---
+title: Equable Shapes
+slug: equable-shapes
+category: Mathematics
+summary: Decide whether an ordered polygon is equable by comparing its shoelace area to its edge-length perimeter.
+description: "Equable Shapes is the polygon-measurement check that combines shoelace area with perimeter accumulation to test whether a shape's area equals its perimeter."
+dataStructures:
+  - Array
+  - Object
+techniques:
+  - Computational Geometry
+  - Shoelace Formula
+  - Distance Formula
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - equable polygon
+  - area equals perimeter shape
+  - polygon area perimeter equality
+useCases:
+  - Checking special polygon properties from ordered coordinates
+  - Combining area and perimeter routines in geometry screening questions
+  - Reusing polygon measurement helpers in analytic-geometry tooling
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: One pass is enough to accumulate both shoelace terms and edge lengths.
+interviewSignals:
+  - The polygon vertices are already given in order.
+  - The prompt asks whether a polygon's area equals its perimeter, not for either quantity alone.
+  - The intended route reuses the shoelace formula plus adjacent-edge distances.
+relatedSlugs:
+  - area-of-a-polygon-with-given-n-ordered-vertices
+  - number-of-integral-points-between-two-points
+  - find-perimeter-of-shapes-formed-with-1s-in-binary-matrix
+provenance:
+  - title: "GeeksforGeeks - Equable Shapes"
+    href: https://www.geeksforgeeks.org/dsa/equable-shapes/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is a direct polygon-metrics prompt. The clean solution computes the polygon area with the shoelace formula, computes perimeter by summing adjacent edge lengths, and compares the two with a small tolerance.
+
+## Worked Example
+
+- Triangle `(0, 0)`, `(5, 0)`, `(0, 12)` is equable because area is `30` and perimeter is also `30`.
+- Rectangle `(0, 0)`, `(6, 0)`, `(6, 4)`, `(0, 4)` is not equable because area is `24` while perimeter is `20`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function equableShapes(points) {
+  if (!Array.isArray(points) || points.length < 3) {
+    throw new RangeError("Expected at least three ordered polygon vertices");
+  }
+
+  let twiceArea = 0;
+  let perimeter = 0;
+
+  for (let index = 0; index < points.length; index += 1) {
+    const current = points[index];
+    const next = points[(index + 1) % points.length];
+    if (!current || !next || !Number.isFinite(current.x) || !Number.isFinite(current.y) || !Number.isFinite(next.x) || !Number.isFinite(next.y)) {
+      throw new RangeError("Vertices must contain finite x and y coordinates");
+    }
+
+    twiceArea += current.x * next.y - next.x * current.y;
+    perimeter += Math.hypot(next.x - current.x, next.y - current.y);
+  }
+
+  const area = Math.abs(twiceArea) / 2;
+  return Math.abs(area - perimeter) < 1e-9;
+}
+```
+
+```ts
+type Point = { x: number; y: number };
+
+export function equableShapes(points: Point[]): boolean {
+  if (points.length < 3) {
+    throw new RangeError('Expected at least three ordered polygon vertices');
+  }
+
+  let twiceArea = 0;
+  let perimeter = 0;
+
+  for (let index = 0; index < points.length; index += 1) {
+    const current = points[index];
+    const next = points[(index + 1) % points.length];
+    if (!Number.isFinite(current.x) || !Number.isFinite(current.y) || !Number.isFinite(next.x) || !Number.isFinite(next.y)) {
+      throw new RangeError('Vertices must contain finite x and y coordinates');
+    }
+
+    twiceArea += current.x * next.y - next.x * current.y;
+    perimeter += Math.hypot(next.x - current.x, next.y - current.y);
+  }
+
+  const area = Math.abs(twiceArea) / 2;
+  return Math.abs(area - perimeter) < 1e-9;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why does the shoelace formula require ordered vertices?
+- How should the equality test change when input coordinates are floating-point measurements?
+- Can a self-intersecting polygon be meaningfully treated as equable under this definition?
+
+## Common Pitfalls
+
+- Forgetting the closing edge from the last vertex back to the first.
+- Comparing floating-point area and perimeter with exact equality in noisy inputs.
+- Applying the shoelace formula to unordered points.

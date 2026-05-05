@@ -1345,19 +1345,25 @@ This one-hundred-twenty-seventh expansion slice lifts the catalog from 676 to 67
 
 ## Batch 128 added
 
-This one-hundred-twenty-eighth expansion slice currently lifts the catalog locally from 679 to 682 entries.
+This one-hundred-twenty-eighth expansion slice lifts the catalog from 679 to 682 entries.
 
 - Optimum location of point to minimize total distance
 - Find perimeter of shapes formed with 1s in binary matrix
 - Find if it's possible to rotate the page by an angle or not.
 
+## Batch 129 added
+
+This one-hundred-twenty-ninth expansion slice currently lifts the catalog locally from 682 to 683 entries.
+
+- Equable Shapes
+
 ## Next candidates from the same sources
 
-- The published catalog now reaches 679 entries on `main` after batch 127 landed at `5ce5f61`.
-- The local draft now reaches 682 entries after batch 128.
+- The published catalog now reaches 682 entries on `main` after batch 128 landed at `36d40a6`.
+- The local draft now reaches 683 entries after batch 129.
 - The GeeksforGeeks `Polygon and Convex Hull` section is exhausted in source order after `Minimum area of a Polygon with three points given`; drafting continues in `Standard Problems on Geometric Algorithm`.
 - `Draw geometric shapes on images using OpenCV` remains a tooling tutorial detour and is skipped.
-- The next clean source-order title is `Equable Shapes`.
+- The GeeksforGeeks `Standard Problems on Geometric Algorithm` section is now exhausted in source order after `Equable Shapes`.
 
 - The published catalog now reaches 623 entries on `main` after exhausting the GeeksforGeeks Branch and Bound page.
 - The Trie Data Structure common-interview queue is exhausted in source order after the published batch-107 slice.
@@ -1458,9 +1464,13 @@ This one-hundred-twenty-eighth expansion slice currently lifts the catalog local
 - Focused `gray-matter` plus JavaScript-fence validators passed for all three batch-127 entries, and `npm run build` passed against the published 679-entry state with 684 static pages generated.
 - `Optimum location of point to minimize total distance`, `Find perimeter of shapes formed with 1s in binary matrix`, and `Find if it's possible to rotate the page by an angle or not.` already match their destination titles.
 - `Find perimeter of shapes formed with 1s in binary matrix` remains distinct from the published island-area coverage because this prompt computes exposed boundary length rather than component size.
-- Batch 128 is now locally drafted, lifting the catalog from 679 to 682 entries with `Optimum location of point to minimize total distance`, `Find perimeter of shapes formed with 1s in binary matrix`, and `Find if it's possible to rotate the page by an angle or not.`.
-- Focused `gray-matter` plus JavaScript-fence validators passed for all three batch-128 entries.
-- In `Standard Problems on Geometric Algorithm`, `Draw geometric shapes on images using OpenCV` remains skipped as a tooling tutorial detour, and the next clean source-order title is `Equable Shapes`.
+- Batch 128 is now published on `main` at commit `36d40a6`, lifting the catalog from 679 to 682 entries with `Optimum location of point to minimize total distance`, `Find perimeter of shapes formed with 1s in binary matrix`, and `Find if it's possible to rotate the page by an angle or not.`.
+- Focused `gray-matter` plus JavaScript-fence validators passed for all three batch-128 entries, and `npm run build` passed against the published 682-entry state with 687 static pages generated.
+- `Equable Shapes` already matches its destination title.
+- `Equable Shapes` remains distinct from the published polygon-area and perimeter-only helpers because it asks for the equality predicate between those two aggregate measurements on one ordered polygon.
+- Batch 129 is now locally drafted, lifting the catalog from 682 to 683 entries with `Equable Shapes`.
+- Focused `gray-matter` plus JavaScript-fence validators passed for the batch-129 entry.
+- In `Standard Problems on Geometric Algorithm`, `Draw geometric shapes on images using OpenCV` remains skipped as a tooling tutorial detour, and the section is now exhausted in source order after `Equable Shapes`.
 - Batch 92 carries the vetted Dynamic Programming hard stretch through `Longest repeating and non-overlapping substring` and then consumes the clean `Advanced Concepts` absences `Count Ways To Assign Unique Cap To Every Person`, `Digit DP | Introduction`, and `Sum over Subsets | Dynamic Programming`.
 - The Dynamic Programming items skipped between `Program to find amount of water in a given glass` and `Largest Cross Bordered Square` remain already represented locally: `Longest Common Subsequence`, `Longest Increasing Subsequence`, `Edit Distance`, `0-1 Knapsack Problem`, `Partition Problem`, `Longest Palindromic Subsequence`, `Bellman-Ford Algorithm`, and `Floyd Warshall Algorithm`.
 - `The painter's partition problem` remains skipped because the local `Find minimum time to finish all jobs with given constraints` entry already covers that partition-minimax problem and includes the alias `painter partition with multiplier`.
