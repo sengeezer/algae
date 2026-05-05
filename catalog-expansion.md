@@ -1399,16 +1399,24 @@ This one-hundred-thirty-fourth expansion slice lifts the catalog from 695 to 698
 
 ## Batch 135 added
 
-This one-hundred-thirty-fifth expansion slice currently lifts the catalog locally from 698 to 701 entries.
+This one-hundred-thirty-fifth expansion slice lifts the catalog from 698 to 701 entries.
 
 - Check if a large number is divisible by 13 or not
 - Check if a large number is divisible by 15 or not
 - Number is divisible by 29 or not
 
+## Batch 136 added
+
+This one-hundred-thirty-sixth expansion slice currently lifts the catalog locally from 701 to 704 entries.
+
+- Padovan Sequence
+- Aliquot Sequence
+- Moser-de Bruijn Sequence
+
 ## Next candidates from the same sources
 
-- The published catalog now reaches 698 entries on `main` after batch 134 landed at `30af4b2`.
-- The local draft now reaches 701 entries after batch 135.
+- The published catalog now reaches 701 entries on `main` after batch 135 landed at `81d09a7`.
+- The local draft now reaches 704 entries after batch 136.
 - The GeeksforGeeks `Standard Problems on Geometric Algorithm` section is exhausted in source order after `Equable Shapes`.
 - The next vetted source branch after the exhausted Geometric Algorithms page is the GeeksforGeeks Mathematical Algorithms page: https://www.geeksforgeeks.org/dsa/mathematical-algorithms/
 - On the Mathematical Algorithms page, `GCD of Two Numbers` and `LCM of Two Numbers` remain duplicate-level coverage of the published `Find HCF` and `Find LCM` entries.
@@ -1423,7 +1431,9 @@ This one-hundred-thirty-fifth expansion slice currently lifts the catalog locall
 - Batch 134 uses destination-title cleanup `Divisibility by 9` -> `Check if a large number is divisible by 9 or not`, `Divisibility by 11` -> `Check if a large number is divisible by 11 or not`, and `Divisibility by 12` -> `Divisibility by 12 for a large number`.
 - Batch 135 uses destination-title cleanup `Divisibility by 13` -> `Check if a large number is divisible by 13 or not`, `Divisibility by 15` -> `Check if a large number is divisible by 15 or not`, and keeps `Number is divisible by 29 or not` as an exact destination title.
 - The Divisibility & Large Numbers subsection is now exhausted in source order through `Divisibility by 29`.
-- The next clean Mathematical Algorithms queue shifts to the Series subsection with `Juggler Sequence`, `Padovan Sequence`, and `Aliquot Sequence`.
+- `Juggler Sequence` is already covered by the existing catalog entry `juggler-sequence`, so it is treated as a source-order duplicate and skipped for new drafting.
+- Batch 136 keeps `Padovan Sequence`, `Aliquot Sequence`, and `Moser-de Bruijn Sequence` as exact destination titles from the Series subsection.
+- The next clean Mathematical Algorithms queue is `Stern-Brocot Sequence`, `Newman-Conway Sequence`, and `Sylvester's sequence`.
 
 - The published catalog now reaches 623 entries on `main` after exhausting the GeeksforGeeks Branch and Bound page.
 - The Trie Data Structure common-interview queue is exhausted in source order after the published batch-107 slice.

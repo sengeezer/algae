@@ -1,0 +1,118 @@
+---
+title: Padovan Sequence
+slug: padovan-sequence
+category: Mathematics
+summary: Compute Padovan numbers using the recurrence P(n) = P(n-2) + P(n-3) with base values P(0)=P(1)=P(2)=1.
+description: "Padovan Sequence is a Fibonacci-like recurrence with a three-term dependency, often implemented iteratively in O(n) time and O(1) space for nth-term queries."
+dataStructures:
+  - Array
+techniques:
+  - Dynamic Programming
+  - Recurrence Relations
+  - Sequence Generation
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - padovan numbers
+  - padovan recurrence
+  - p(n)=p(n-2)+p(n-3)
+useCases:
+  - Recurrence-based interview warmups
+  - Teaching DP state transitions with small memory
+  - Number-sequence generation in mathematical tooling
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: Only the last three relevant states are required to compute the next Padovan term.
+interviewSignals:
+  - The prompt gives a linear recurrence and base cases.
+  - The target is nth term rather than recursive enumeration.
+  - Constant-space DP is expected over exponential recursion.
+relatedSlugs:
+  - fibonacci-series
+  - tribonacci-sequence
+  - lucas-number
+provenance:
+  - title: "GeeksforGeeks - Padovan Sequence"
+    href: https://www.geeksforgeeks.org/dsa/padovan-sequence/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+Padovan is a standard recurrence interview prompt because it looks Fibonacci-like but shifts dependencies. The key transition is:
+
+`P(n) = P(n - 2) + P(n - 3)`, with `P(0)=P(1)=P(2)=1`.
+
+## Worked Example
+
+- Sequence prefix: `1, 1, 1, 2, 2, 3, 4, 5, 7, 9, 12, 16, 21, ...`
+- `P(12) = 21`
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function padovanSequence(n) {
+  if (!Number.isInteger(n) || n < 0) {
+    throw new RangeError('Expected a non-negative integer index');
+  }
+
+  if (n <= 2) {
+    return 1;
+  }
+
+  let pNm3 = 1;
+  let pNm2 = 1;
+  let pNm1 = 1;
+
+  for (let i = 3; i <= n; i += 1) {
+    const current = pNm3 + pNm2;
+    pNm3 = pNm2;
+    pNm2 = pNm1;
+    pNm1 = current;
+  }
+
+  return pNm1;
+}
+```
+
+```ts
+export function padovanSequence(n: number): number {
+  if (!Number.isInteger(n) || n < 0) {
+    throw new RangeError('Expected a non-negative integer index');
+  }
+
+  if (n <= 2) {
+    return 1;
+  }
+
+  let pNm3 = 1;
+  let pNm2 = 1;
+  let pNm1 = 1;
+
+  for (let i = 3; i <= n; i += 1) {
+    const current = pNm3 + pNm2;
+    pNm3 = pNm2;
+    pNm2 = pNm1;
+    pNm1 = current;
+  }
+
+  return pNm1;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you generate the first `k` Padovan terms efficiently?
+- When would big integer support become necessary?
+- Can you derive a matrix exponentiation version for faster nth-term lookup?
+
+## Common Pitfalls
+
+- Using Fibonacci recurrence by mistake.
+- Off-by-one errors with base indexing.
+- Exponential recursive implementations without memoization.
