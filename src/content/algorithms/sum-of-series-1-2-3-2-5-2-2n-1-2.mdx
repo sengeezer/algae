@@ -1,0 +1,92 @@
+---
+title: Sum of series 1^2 + 3^2 + 5^2 + . . . + (2*n - 1)^2
+slug: sum-of-series-1-2-3-2-5-2-2n-1-2
+category: Mathematics
+summary: Compute the sum of squares of the first n odd numbers using the O(1) formula n(2n-1)(2n+1)/3.
+description: "Sum of series 1^2 + 3^2 + 5^2 + . . . + (2*n - 1)^2 has a direct closed form that avoids iteration for constant-time computation."
+dataStructures:
+  - Number
+techniques:
+  - Mathematical Formula
+  - Series Summation
+  - Algebraic Simplification
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - sum of odd squares
+  - 1^2+3^2+...+(2n-1)^2
+  - odd square series sum
+useCases:
+  - Constant-time arithmetic query handling
+  - Formula-derivation interview problems
+  - Numeric computation in educational utilities
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: Closed-form formula removes the need for linear summation.
+interviewSignals:
+  - Prompt asks for sum of a recognizable polynomial series.
+  - Formula-based optimization is expected.
+  - Large n may make O(n) loops less desirable.
+relatedSlugs:
+  - sum-of-the-sequence-2-22-222
+  - sum-series-0-6-0-06-0-006-0-0006-n-terms
+  - arithmetic-geometric-mean
+provenance:
+  - title: "GeeksforGeeks - Sum of series 1^2 + 3^2 + 5^2 + . . . + (2*n - 1)^2"
+    href: https://www.geeksforgeeks.org/dsa/sum-series-12-32-52-2n-12/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+The series of odd squares has a standard closed form:
+
+$$
+S_n = 1^2 + 3^2 + 5^2 + \cdots + (2n-1)^2 = \frac{n(2n-1)(2n+1)}{3}
+$$
+
+This yields constant-time evaluation.
+
+## Worked Example
+
+- For `n = 4`: `1 + 9 + 25 + 49 = 84`
+- For `n = 10`: sum is `1330`
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function sumOfOddSquaresSeries(n) {
+  if (!Number.isInteger(n) || n < 0) {
+    throw new RangeError('Expected a non-negative integer n');
+  }
+
+  return (n * (2 * n - 1) * (2 * n + 1)) / 3;
+}
+```
+
+```ts
+export function sumOfOddSquaresSeries(n: number): number {
+  if (!Number.isInteger(n) || n < 0) {
+    throw new RangeError('Expected a non-negative integer n');
+  }
+
+  return (n * (2 * n - 1) * (2 * n + 1)) / 3;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you derive this formula from known square-sum identities?
+- When might an iterative method still be preferable?
+- How do you make this robust for values beyond Number safe range?
+
+## Common Pitfalls
+
+- Using integer division incorrectly in some languages.
+- Overflow with fixed-width integer types.
+- Off-by-one errors in mapping odd terms to n.

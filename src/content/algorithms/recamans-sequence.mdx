@@ -1,0 +1,111 @@
+---
+title: Recaman's sequence
+slug: recamans-sequence
+category: Mathematics
+summary: Generate the first n terms of Recaman's sequence using a visited set for O(n) construction.
+description: "Recaman's sequence starts at zero and chooses previous-minus-index when valid and unseen, otherwise previous-plus-index, making hashing a natural optimization."
+dataStructures:
+  - Array
+  - Hash Set
+techniques:
+  - Sequence Generation
+  - Hashing
+  - Simulation
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - recaman sequence
+  - recamans numbers
+  - a005132
+useCases:
+  - Mathematical sequence generation exercises
+  - Demonstrating visited-state hashing patterns
+  - Rule-based iterative simulation practice
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: A hash set allows O(1) expected checks for whether a value already appeared.
+interviewSignals:
+  - The next state depends on both index and prior seen values.
+  - Prompt requests first n terms rather than direct nth formula.
+  - Efficient duplicate detection is expected.
+relatedSlugs:
+  - stern-brocot-sequence
+  - newman-conway-sequence
+  - sylvesters-sequence
+provenance:
+  - title: "GeeksforGeeks - Recaman's sequence"
+    href: https://www.geeksforgeeks.org/dsa/recamans-sequence/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+Recaman's sequence is a clean simulation problem with a subtle constraint: candidate values must be positive and unseen. This turns a simple recurrence into a stateful process where a visited set is the key optimization.
+
+## Worked Example
+
+- For `n = 6`, terms are: `0, 1, 3, 6, 2, 7`
+- For `n = 17`, terms are: `0, 1, 3, 6, 2, 7, 13, 20, 12, 21, 11, 22, 10, 23, 9, 24, 8`
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function recamansSequence(n) {
+  if (!Number.isInteger(n) || n <= 0) {
+    throw new RangeError('Expected a positive integer n');
+  }
+
+  const sequence = new Array(n).fill(0);
+  const seen = new Set([0]);
+
+  for (let i = 1; i < n; i += 1) {
+    let candidate = sequence[i - 1] - i;
+    if (candidate < 0 || seen.has(candidate)) {
+      candidate = sequence[i - 1] + i;
+    }
+    sequence[i] = candidate;
+    seen.add(candidate);
+  }
+
+  return sequence;
+}
+```
+
+```ts
+export function recamansSequence(n: number): number[] {
+  if (!Number.isInteger(n) || n <= 0) {
+    throw new RangeError('Expected a positive integer n');
+  }
+
+  const sequence: number[] = new Array(n).fill(0);
+  const seen = new Set<number>([0]);
+
+  for (let i = 1; i < n; i += 1) {
+    let candidate = sequence[i - 1] - i;
+    if (candidate < 0 || seen.has(candidate)) {
+      candidate = sequence[i - 1] + i;
+    }
+    sequence[i] = candidate;
+    seen.add(candidate);
+  }
+
+  return sequence;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Can you compute only the nth term without storing all terms?
+- How does sequence behavior change if duplicates are allowed?
+- What is the runtime impact of replacing hashing with linear search?
+
+## Common Pitfalls
+
+- Forgetting the non-negative constraint.
+- Missing duplicate checks against prior terms.
+- Off-by-one errors in index-based updates.
