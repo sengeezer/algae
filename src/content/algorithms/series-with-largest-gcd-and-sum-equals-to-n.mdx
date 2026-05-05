@@ -1,0 +1,147 @@
+---
+title: Series with largest GCD and sum equals to n
+slug: series-with-largest-gcd-and-sum-equals-to-n
+category: Mathematics
+summary: Maximize the sequence gcd by factoring out the largest divisor that still leaves room for a strictly increasing length-`m` sequence summing to `n`.
+description: "Series with largest GCD and sum equals to n is the constructive number-theory problem where you choose the biggest feasible common divisor first, then build the lexicographically smallest increasing sequence around it."
+dataStructures:
+  - Array
+  - Number
+techniques:
+  - Number Theory
+  - Constructive Algorithms
+  - Divisor Search
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - maximum gcd sequence with sum n
+  - construct sequence with largest gcd
+  - lexicographically smallest max gcd series
+useCases:
+  - Building constructive proofs from divisibility constraints
+  - Turning sequence gcd questions into divisor bounds
+  - Practicing lexicographically smallest construction after optimizing a primary metric
+complexity:
+  time: O(sqrt(n) + m)
+  space: O(m)
+  notes: Finding the best feasible divisor takes `O(sqrt(n))`, and constructing the final series takes one pass over `m` elements.
+interviewSignals:
+  - The prompt asks for both an optimal gcd and an explicit increasing sequence.
+  - The smallest possible increasing sequence is `1, 2, ..., m`, which sets the feasibility bound.
+  - Lexicographically smallest among equally optimal answers points to filling the earliest positions minimally.
+relatedSlugs:
+  - find-hcf
+  - find-lcm
+  - pascal-triangle
+provenance:
+  - title: "GeeksforGeeks - Series with largest GCD and sum equals to n"
+    href: https://www.geeksforgeeks.org/dsa/series-largest-gcd-sum-equals-n/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is an optimization-plus-construction problem. The decisive observation is that any valid sequence with gcd `g` can be written as `g * [x1, x2, ..., xm]`, so `g` must divide `n` and still leave enough sum for the smallest strictly increasing base sequence.
+
+## Worked Example
+
+- For `n = 24` and `m = 3`, the minimum base sum is `1 + 2 + 3 = 6`, so the gcd cannot exceed `24 / 6 = 4`. Since `4` divides `24`, the lexicographically smallest optimal sequence is `[4, 8, 12]`.
+- For `n = 6` and `m = 4`, the minimum required sum is `10`, so no valid increasing sequence exists and the answer is `[-1]`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function seriesWithLargestGcdAndSumEqualsToN(n, m) {
+  if (!Number.isInteger(n) || !Number.isInteger(m) || n < 1 || m < 1) {
+    throw new RangeError("Expected positive integers for n and m");
+  }
+
+  const minimumSum = (m * (m + 1)) / 2;
+  if (minimumSum > n) {
+    return [-1];
+  }
+
+  const gcdLimit = Math.floor(n / minimumSum);
+  let bestGcd = 1;
+
+  for (let divisor = 1; divisor * divisor <= n; divisor += 1) {
+    if (n % divisor !== 0) {
+      continue;
+    }
+
+    if (divisor <= gcdLimit) {
+      bestGcd = Math.max(bestGcd, divisor);
+    }
+
+    const pairedDivisor = n / divisor;
+    if (pairedDivisor <= gcdLimit) {
+      bestGcd = Math.max(bestGcd, pairedDivisor);
+    }
+  }
+
+  const sequence = [];
+  for (let value = 1; value < m; value += 1) {
+    sequence.push(bestGcd * value);
+  }
+
+  const usedSum = (bestGcd * m * (m - 1)) / 2;
+  sequence.push(n - usedSum);
+  return sequence;
+}
+```
+
+```ts
+export function seriesWithLargestGcdAndSumEqualsToN(n: number, m: number): number[] {
+  if (!Number.isInteger(n) || !Number.isInteger(m) || n < 1 || m < 1) {
+    throw new RangeError('Expected positive integers for n and m');
+  }
+
+  const minimumSum = (m * (m + 1)) / 2;
+  if (minimumSum > n) {
+    return [-1];
+  }
+
+  const gcdLimit = Math.floor(n / minimumSum);
+  let bestGcd = 1;
+
+  for (let divisor = 1; divisor * divisor <= n; divisor += 1) {
+    if (n % divisor !== 0) {
+      continue;
+    }
+
+    if (divisor <= gcdLimit) {
+      bestGcd = Math.max(bestGcd, divisor);
+    }
+
+    const pairedDivisor = n / divisor;
+    if (pairedDivisor <= gcdLimit) {
+      bestGcd = Math.max(bestGcd, pairedDivisor);
+    }
+  }
+
+  const sequence: number[] = [];
+  for (let value = 1; value < m; value += 1) {
+    sequence.push(bestGcd * value);
+  }
+
+  const usedSum = (bestGcd * m * (m - 1)) / 2;
+  sequence.push(n - usedSum);
+  return sequence;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why does `[g, 2g, ..., (m - 1)g, last]` give the lexicographically smallest sequence for a fixed gcd `g`?
+- How would you prove that the final element is still strictly larger than the previous one?
+- Could you derive the maximum gcd directly without checking divisors one by one?
+
+## Common Pitfalls
+
+- Forgetting the feasibility bound from the minimum increasing sum `1 + 2 + ... + m`.
+- Maximizing the last element instead of maximizing the shared gcd first.
+- Returning any valid sequence instead of the lexicographically smallest one among optimal answers.

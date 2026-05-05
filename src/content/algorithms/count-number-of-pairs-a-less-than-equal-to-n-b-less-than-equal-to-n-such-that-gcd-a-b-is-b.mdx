@@ -1,0 +1,106 @@
+---
+title: Count number of pairs (A <= N, B <= N) such that gcd (A , B) is B
+slug: count-number-of-pairs-a-less-than-equal-to-n-b-less-than-equal-to-n-such-that-gcd-a-b-is-b
+category: Mathematics
+summary: Count ordered pairs by recognizing that `gcd(a, b) = b` means `a` must be a multiple of `b`.
+description: "Count number of pairs (A <= N, B <= N) such that gcd (A , B) is B is the divisor-counting prompt where the gcd condition collapses into summing how many multiples each `b` has up to `n`."
+dataStructures:
+  - Number
+techniques:
+  - Number Theory
+  - Floor Division Grouping
+  - Summation
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - count gcd pairs where gcd equals second value
+  - count pairs with gcd equal to b
+  - sum of floor n over i gcd pairs
+useCases:
+  - Converting gcd constraints into divisibility counting
+  - Practicing floor-division summation patterns
+  - Optimizing arithmetic counting without enumerating pairs
+complexity:
+  time: O(sqrt(n))
+  space: O(1)
+  notes: Grouping equal values of `floor(n / i)` avoids visiting every divisor candidate one by one.
+interviewSignals:
+  - The prompt asks for a count of ordered pairs instead of the pairs themselves.
+  - The key step is proving `gcd(a, b) = b` iff `a` is a multiple of `b`.
+  - The arithmetic turns into summing `floor(n / b)` over `b = 1..n`.
+relatedSlugs:
+  - gcd-of-more-than-two-or-array-numbers
+  - find-hcf
+  - find-all-factors-of-a-natural-number
+provenance:
+  - title: "GeeksforGeeks - Count number of pairs (A <= N, B <= N) such that gcd (A , B) is B"
+    href: https://www.geeksforgeeks.org/dsa/count-number-pairs-n-b-n-gcd-b-b/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This looks like a pairwise gcd problem, but the real reduction is arithmetic. Once you notice that `gcd(a, b) = b` means `b` divides `a`, the answer becomes the number of multiples of each `b` up to `n`.
+
+## Worked Example
+
+- For `n = 2`, valid ordered pairs are `(1, 1)`, `(2, 1)`, and `(2, 2)`, so the answer is `3`.
+- For `n = 3`, the count is `floor(3 / 1) + floor(3 / 2) + floor(3 / 3) = 3 + 1 + 1 = 5`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function countNumberOfPairsALessThanEqualToNBLessThanEqualToNSuchThatGcdABIsB(n) {
+  if (!Number.isInteger(n) || n < 1) {
+    throw new RangeError("Expected a positive integer");
+  }
+
+  let total = 0;
+  let start = 1;
+
+  while (start <= n) {
+    const quotient = Math.floor(n / start);
+    const end = Math.floor(n / quotient);
+    total += quotient * (end - start + 1);
+    start = end + 1;
+  }
+
+  return total;
+}
+```
+
+```ts
+export function countNumberOfPairsALessThanEqualToNBLessThanEqualToNSuchThatGcdABIsB(n: number): number {
+  if (!Number.isInteger(n) || n < 1) {
+    throw new RangeError('Expected a positive integer');
+  }
+
+  let total = 0;
+  let start = 1;
+
+  while (start <= n) {
+    const quotient = Math.floor(n / start);
+    const end = Math.floor(n / quotient);
+    total += quotient * (end - start + 1);
+    start = end + 1;
+  }
+
+  return total;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you derive the simpler but slower `O(n)` version directly from `sum floor(n / b)`?
+- Why does grouping equal floor-division values reduce the loop count to about `2 * sqrt(n)`?
+- How would the count change if the prompt asked for unordered pairs instead?
+
+## Common Pitfalls
+
+- Treating the condition as if both values had to divide each other.
+- Enumerating all `n^2` pairs instead of reducing to divisibility counts.
+- Forgetting that the pairs are ordered, so `(a, b)` and `(b, a)` are different prompts unless stated otherwise.

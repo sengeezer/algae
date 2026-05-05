@@ -1359,23 +1359,33 @@ This one-hundred-twenty-ninth expansion slice lifts the catalog from 682 to 683 
 
 ## Batch 130 added
 
-This one-hundred-thirtieth expansion slice currently lifts the catalog locally from 683 to 686 entries.
+This one-hundred-thirtieth expansion slice lifts the catalog from 683 to 686 entries.
 
 - LCM of given array elements
 - GCD of more than two (or array) numbers
 - GCD, LCM and Distributive Property
 
+## Batch 131 added
+
+This one-hundred-thirty-first expansion slice currently lifts the catalog locally from 686 to 689 entries.
+
+- Count number of pairs (A <= N, B <= N) such that gcd (A , B) is B
+- Program to find GCD of floating point numbers
+- Series with largest GCD and sum equals to n
+
 ## Next candidates from the same sources
 
-- The published catalog now reaches 683 entries on `main` after batch 129 landed at `328b3ca`.
-- The local draft now reaches 686 entries after batch 130.
+- The published catalog now reaches 686 entries on `main` after batch 130 landed at `acfc300`.
+- The local draft now reaches 689 entries after batch 131.
 - The GeeksforGeeks `Standard Problems on Geometric Algorithm` section is exhausted in source order after `Equable Shapes`.
 - The next vetted source branch after the exhausted Geometric Algorithms page is the GeeksforGeeks Mathematical Algorithms page: https://www.geeksforgeeks.org/dsa/mathematical-algorithms/
 - On the Mathematical Algorithms page, `GCD of Two Numbers` and `LCM of Two Numbers` remain duplicate-level coverage of the published `Find HCF` and `Find LCM` entries.
 - `Basic and Extended Euclidean` remains duplicate-level coverage of the published `Extended Euclidean GCD` entry, and `Stein's Algorithm for GCD` remains duplicate-level coverage of the published `Euclid's Algorithm when % and / operations are costly` entry.
 - Batch 130 uses the verified destination-title cleanup `GCD of array` -> `GCD of more than two (or array) numbers`.
 - `LCM of given array elements` and `GCD, LCM and Distributive Property` already match their destination titles.
-- The next clean Mathematical Algorithms queue is `Count pairs with gcd (A, B) as B`, `Program to find GCD of floating point numbers`, and `Series with largest GCD and sum equals to n`.
+- Batch 131 keeps all three destination titles as exact source-order matches.
+- `Program to find GCD of floating point numbers` is kept distinct from the integer gcd entries because the prompt surface is explicitly about finite decimal inputs and normalization before Euclid-style reduction.
+- The next clean Mathematical Algorithms queue is `Largest Subset with GCD 1`, `Summation of GCD of all the pairs up to N`, and `Divisibility by 3`.
 
 - The published catalog now reaches 623 entries on `main` after exhausting the GeeksforGeeks Branch and Bound page.
 - The Trie Data Structure common-interview queue is exhausted in source order after the published batch-107 slice.

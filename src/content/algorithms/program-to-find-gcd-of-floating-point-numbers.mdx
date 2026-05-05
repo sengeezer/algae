@@ -1,0 +1,139 @@
+---
+title: Program to find GCD of floating point numbers
+slug: program-to-find-gcd-of-floating-point-numbers
+category: Mathematics
+summary: Scale decimal inputs to integers, compute an integer gcd, then scale the result back down.
+description: "Program to find GCD of floating point numbers adapts the usual gcd workflow to decimal inputs by aligning decimal places before running integer Euclid logic."
+dataStructures:
+  - Number
+  - String
+techniques:
+  - Number Theory
+  - Euclidean Algorithm
+  - Decimal Normalization
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - gcd of decimal numbers
+  - gcd of floating numbers
+  - highest common factor of decimals
+useCases:
+  - Normalizing decimal ratios with finite precision inputs
+  - Translating decimal arithmetic into exact integer gcd work
+  - Explaining how gcd logic survives after scaling values uniformly
+complexity:
+  time: O(log(m))
+  space: O(1)
+  notes: After both inputs are scaled to a common power of ten, the remaining work is one ordinary integer gcd.
+interviewSignals:
+  - The prompt gives decimal inputs but still asks for a greatest common divisor.
+  - The intended path is to remove decimal places before applying Euclid's algorithm.
+  - The examples use terminating decimals rather than arbitrary irrational values.
+relatedSlugs:
+  - find-hcf
+  - gcd-of-more-than-two-or-array-numbers
+  - extended-euclidean-gcd
+provenance:
+  - title: "GeeksforGeeks - Program to find GCD of floating point numbers"
+    href: https://www.geeksforgeeks.org/dsa/program-find-gcd-floating-point-numbers/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This prompt tests whether you can preserve an arithmetic invariant through representation changes. The clean move is to scale both decimals by the same power of ten, compute an integer gcd, and divide the result back by that scale.
+
+## Worked Example
+
+- `0.3` and `0.9` scale to `3` and `9`, whose gcd is `3`, so the answer is `0.3`.
+- `0.48` and `0.108` scale to `480` and `108`, or more generally `480` and `108` after aligning decimal places, whose gcd is `12`, so the answer is `0.012`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function gcd(left, right) {
+  let a = Math.abs(left);
+  let b = Math.abs(right);
+
+  while (b !== 0) {
+    [a, b] = [b, a % b];
+  }
+
+  return a;
+}
+
+function decimalPlaces(value) {
+  const text = value.toString().toLowerCase();
+  const [coefficient, exponentText] = text.split('e');
+  const fractionLength = (coefficient.split('.')[1] || '').length;
+  const exponent = exponentText ? Number(exponentText) : 0;
+  return Math.max(0, fractionLength - exponent);
+}
+
+function programToFindGcdOfFloatingPointNumbers(left, right) {
+  if (![left, right].every(Number.isFinite)) {
+    throw new TypeError("Expected finite numeric inputs");
+  }
+
+  if (left === 0 && right === 0) {
+    throw new RangeError("At least one input must be non-zero");
+  }
+
+  const scale = 10 ** Math.max(decimalPlaces(left), decimalPlaces(right));
+  const scaledLeft = Math.round(Math.abs(left) * scale);
+  const scaledRight = Math.round(Math.abs(right) * scale);
+  return gcd(scaledLeft, scaledRight) / scale;
+}
+```
+
+```ts
+function gcd(left: number, right: number): number {
+  let a = Math.abs(left);
+  let b = Math.abs(right);
+
+  while (b !== 0) {
+    [a, b] = [b, a % b];
+  }
+
+  return a;
+}
+
+function decimalPlaces(value: number): number {
+  const text = value.toString().toLowerCase();
+  const [coefficient, exponentText] = text.split('e');
+  const fractionLength = (coefficient.split('.')[1] || '').length;
+  const exponent = exponentText ? Number(exponentText) : 0;
+  return Math.max(0, fractionLength - exponent);
+}
+
+export function programToFindGcdOfFloatingPointNumbers(left: number, right: number): number {
+  if (![left, right].every(Number.isFinite)) {
+    throw new TypeError('Expected finite numeric inputs');
+  }
+
+  if (left === 0 && right === 0) {
+    throw new RangeError('At least one input must be non-zero');
+  }
+
+  const scale = 10 ** Math.max(decimalPlaces(left), decimalPlaces(right));
+  const scaledLeft = Math.round(Math.abs(left) * scale);
+  const scaledRight = Math.round(Math.abs(right) * scale);
+  return gcd(scaledLeft, scaledRight) / scale;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- What assumptions about the inputs make decimal scaling safe here?
+- How would you adapt this for decimal strings instead of JavaScript numbers?
+- Why is a tolerance-based remainder loop less predictable than integer normalization for terminating decimals?
+
+## Common Pitfalls
+
+- Using raw floating-point remainder operations and hoping exact decimal answers fall out reliably.
+- Forgetting to align both values to the same power of ten before computing gcd.
+- Ignoring the all-zero edge case, where gcd is not defined in the usual positive-divisor sense.
