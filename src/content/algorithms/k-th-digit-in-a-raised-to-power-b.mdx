@@ -1,0 +1,122 @@
+---
+title: K-th digit in a raised to power b
+slug: k-th-digit-in-a-raised-to-power-b
+category: Mathematics
+summary: Return the k-th digit from the right in a^b without computing the full power exactly.
+description: "K-th digit in a raised to power b can be computed using modular exponentiation with modulus 10^k."
+dataStructures:
+  - Number
+techniques:
+  - Modular Exponentiation
+  - Fast Power
+  - Arithmetic
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - k-th digit in a^b from right
+  - digit extraction from power
+  - modular power digit query
+useCases:
+  - Fast digit queries on large exponents
+  - Competitive programming math tasks
+  - Avoiding overflow in power computations
+complexity:
+  time: O(log b)
+  space: O(1)
+  notes: Compute (a^b mod 10^k), then shift right by k-1 digits.
+interviewSignals:
+  - Direct exponentiation would overflow.
+  - Only one digit from the right is needed.
+  - Modular arithmetic is the intended optimization.
+relatedSlugs:
+  - modular-binary-exponentiation-recursive
+  - modular-exponentiation-power-in-modular-arithmetic
+  - total-numbers-with-no-repeated-digits-in-a-range
+provenance:
+  - title: "GeeksforGeeks - K-th digit in 'a' raised to power 'b'"
+    href: https://www.geeksforgeeks.org/dsa/k-th-digit-raised-power-b/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+We need the k-th digit from right of `a^b`. Use:
+
+- `mod = 10^k`
+- `p = a^b mod mod` via fast exponentiation
+- answer is `floor(p / 10^(k-1)) % 10`
+
+## Worked Example
+
+- `a = 3, b = 3, k = 1` -> `7` (from `27`)
+- `a = 5, b = 2, k = 2` -> `2` (from `25`)
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function kthDigitInARaisedToPowerB(a, b, k) {
+  if (!Number.isInteger(a) || !Number.isInteger(b) || !Number.isInteger(k) || b < 0 || k <= 0) {
+    throw new RangeError('Expected integers with b >= 0 and k >= 1');
+  }
+
+  const bigA = BigInt(a);
+  let exp = BigInt(b);
+  const mod = 10n ** BigInt(k);
+
+  let base = ((bigA % mod) + mod) % mod;
+  let result = 1n;
+
+  while (exp > 0n) {
+    if (exp & 1n) {
+      result = (result * base) % mod;
+    }
+    base = (base * base) % mod;
+    exp >>= 1n;
+  }
+
+  const divisor = 10n ** BigInt(k - 1);
+  return Number((result / divisor) % 10n);
+}
+```
+
+```ts
+export function kthDigitInARaisedToPowerB(a: number, b: number, k: number): number {
+  if (!Number.isInteger(a) || !Number.isInteger(b) || !Number.isInteger(k) || b < 0 || k <= 0) {
+    throw new RangeError('Expected integers with b >= 0 and k >= 1');
+  }
+
+  const bigA = BigInt(a);
+  let exp = BigInt(b);
+  const mod = 10n ** BigInt(k);
+
+  let base = ((bigA % mod) + mod) % mod;
+  let result = 1n;
+
+  while (exp > 0n) {
+    if (exp & 1n) {
+      result = (result * base) % mod;
+    }
+    base = (base * base) % mod;
+    exp >>= 1n;
+  }
+
+  const divisor = 10n ** BigInt(k - 1);
+  return Number((result / divisor) % 10n);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you return multiple trailing digits at once?
+- How do negative bases affect the result?
+- Can this be generalized to base `B` digits?
+
+## Common Pitfalls
+
+- Computing `a^b` directly and overflowing.
+- Forgetting that `k` is counted from the right.
+- Not handling `b = 0` (`a^0 = 1`) correctly.

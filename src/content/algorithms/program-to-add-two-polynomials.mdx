@@ -1,0 +1,108 @@
+---
+title: Program to add two polynomials
+slug: program-to-add-two-polynomials
+category: Mathematics
+summary: Add two polynomials represented as coefficient arrays and return the resulting coefficients.
+description: "Program to add two polynomials aligns coefficient arrays by degree and sums terms in linear time."
+dataStructures:
+  - Array
+techniques:
+  - Simulation
+  - Array Merge
+  - Coefficient Arithmetic
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - polynomial addition
+  - sum of two polynomial arrays
+  - add coefficient vectors
+useCases:
+  - Symbolic math fundamentals
+  - Pre-step for polynomial multiplication/division
+  - Algebraic expression tooling
+complexity:
+  time: O(max(m, n))
+  space: O(max(m, n))
+  notes: m and n are lengths of coefficient arrays.
+interviewSignals:
+  - Inputs are arrays of coefficients by increasing degree.
+  - Need term-wise merge with unequal lengths.
+  - Often paired with polynomial multiplication follow-up.
+relatedSlugs:
+  - multiply-two-polynomials
+  - k-th-digit-in-a-raised-to-power-b
+  - binomial-coefficient
+provenance:
+  - title: "GeeksforGeeks - Program to add two polynomials"
+    href: https://www.geeksforgeeks.org/dsa/program-add-two-polynomials/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+When polynomials are encoded as arrays where index = exponent, addition is direct:
+
+- `sum[i] = A[i] + B[i]` for all valid indices
+- missing terms are treated as `0`
+
+## Worked Example
+
+- `A = [5, 0, 10, 6]`
+- `B = [1, 2, 4]`
+- `sum = [6, 2, 14, 6]`
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function programToAddTwoPolynomials(A, B) {
+  if (!Array.isArray(A) || !Array.isArray(B)) {
+    throw new TypeError('Expected two coefficient arrays');
+  }
+
+  const size = Math.max(A.length, B.length);
+  const sum = new Array(size).fill(0);
+
+  for (let i = 0; i < size; i += 1) {
+    const a = i < A.length ? A[i] : 0;
+    const b = i < B.length ? B[i] : 0;
+    sum[i] = a + b;
+  }
+
+  return sum;
+}
+```
+
+```ts
+export function programToAddTwoPolynomials(A: number[], B: number[]): number[] {
+  if (!Array.isArray(A) || !Array.isArray(B)) {
+    throw new TypeError('Expected two coefficient arrays');
+  }
+
+  const size = Math.max(A.length, B.length);
+  const sum = new Array<number>(size).fill(0);
+
+  for (let i = 0; i < size; i += 1) {
+    const a = i < A.length ? A[i] : 0;
+    const b = i < B.length ? B[i] : 0;
+    sum[i] = a + b;
+  }
+
+  return sum;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you support sparse term representation?
+- How can you trim trailing zero coefficients?
+- What changes for descending-degree storage?
+
+## Common Pitfalls
+
+- Misaligning coefficient index and exponent.
+- Forgetting to handle different array lengths.
+- Mutating input arrays unintentionally.

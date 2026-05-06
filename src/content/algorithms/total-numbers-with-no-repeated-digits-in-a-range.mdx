@@ -1,0 +1,146 @@
+---
+title: Total numbers with no repeated digits in a range
+slug: total-numbers-with-no-repeated-digits-in-a-range
+category: Mathematics
+summary: Count how many integers in [L, R] contain no repeated digits.
+description: "Total numbers with no repeated digits in a range can be found by scanning the range and checking per-number digit uniqueness."
+dataStructures:
+  - Set
+techniques:
+  - Brute Force
+  - Digit Decomposition
+  - Prefix Counting
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - count unique-digit numbers in range
+  - no repeated digits interval count
+  - distinct-digit numbers between L and R
+useCases:
+  - Range-based numeric filtering
+  - Digit uniqueness validations
+  - Building block for digit-DP extensions
+complexity:
+  time: O((R - L + 1) * d)
+  space: O(d)
+  notes: d is the number of digits in the current number.
+interviewSignals:
+  - Input is a closed integer range [L, R].
+  - Need a count, not enumeration output.
+  - Candidate can mention digit-DP for very large constraints.
+relatedSlugs:
+  - check-if-a-number-is-jumbled-or-not
+  - numbers-having-difference-with-digit-sum-more-than-s
+  - k-th-digit-in-a-raised-to-power-b
+provenance:
+  - title: "GeeksforGeeks - Total numbers with no repeated digits in a range"
+    href: https://www.geeksforgeeks.org/dsa/total-numbers-no-repeated-digits-range/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+For each number in `[L, R]`, check whether any digit repeats. If no digit repeats, include it in the count.
+
+## Worked Example
+
+- `L = 10, R = 12` -> `2` (`10`, `12`)
+- `L = 1, R = 100` -> `90`
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function totalNumbersWithNoRepeatedDigitsInARange(L, R) {
+  if (!Number.isInteger(L) || !Number.isInteger(R)) {
+    throw new TypeError('Expected integer bounds');
+  }
+  if (L > R) {
+    return 0;
+  }
+
+  const hasUniqueDigits = (value) => {
+    if (value < 0) {
+      value = -value;
+    }
+    if (value < 10) {
+      return true;
+    }
+
+    const seen = new Set();
+    let n = value;
+    while (n > 0) {
+      const digit = n % 10;
+      if (seen.has(digit)) {
+        return false;
+      }
+      seen.add(digit);
+      n = Math.floor(n / 10);
+    }
+    return true;
+  };
+
+  let count = 0;
+  for (let x = L; x <= R; x += 1) {
+    if (hasUniqueDigits(x)) {
+      count += 1;
+    }
+  }
+  return count;
+}
+```
+
+```ts
+export function totalNumbersWithNoRepeatedDigitsInARange(L: number, R: number): number {
+  if (!Number.isInteger(L) || !Number.isInteger(R)) {
+    throw new TypeError('Expected integer bounds');
+  }
+  if (L > R) {
+    return 0;
+  }
+
+  const hasUniqueDigits = (value: number): boolean => {
+    if (value < 0) {
+      value = -value;
+    }
+    if (value < 10) {
+      return true;
+    }
+
+    const seen = new Set<number>();
+    let n = value;
+    while (n > 0) {
+      const digit = n % 10;
+      if (seen.has(digit)) {
+        return false;
+      }
+      seen.add(digit);
+      n = Math.floor(n / 10);
+    }
+    return true;
+  };
+
+  let count = 0;
+  for (let x = L; x <= R; x += 1) {
+    if (hasUniqueDigits(x)) {
+      count += 1;
+    }
+  }
+  return count;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you support many queries quickly with precomputation?
+- How would digit DP solve this for huge `R`?
+- How do you adapt this to disallow zero digits?
+
+## Common Pitfalls
+
+- Forgetting that single-digit numbers are always valid.
+- Mishandling range ordering when `L > R`.
+- Reusing digit-state across numbers by accident.
