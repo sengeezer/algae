@@ -1,0 +1,160 @@
+---
+title: "Generate Pythagorean Triplets"
+slug: "generate-pythagorean-triplets"
+category: "Algebra"
+description: "Find all Pythagorean triplets (a, b, c) where a² + b² = c² and c ≤ limit using nested loops, two-pointer, or mathematical methods."
+techniques: ["Number Theory", "Two Pointers", "Mathematical Formulas"]
+complexity:
+  time: "O(n²) for two-pointer, O(n³) for naive, O(√n) for mathematical"
+  space: "O(1)"
+  notes: "Different approaches trade efficiency for simplicity"
+---
+
+## Overview
+
+A **Pythagorean triplet** is a set of three positive integers a, b, c such that a² + b² = c². This problem asks to find all such triplets where a, b, c are at most a given limit.
+
+Examples: (3, 4, 5), (5, 12, 13), (8, 15, 17), (6, 8, 10)
+
+Three distinct approaches are commonly used, each with different time complexity trade-offs.
+
+## Approach 1: Naive Nested Loops O(n³)
+
+```js
+function pythagoreanTripletsNaive(limit) {
+  const triplets = [];
+  
+  for (let a = 1; a <= limit; a++) {
+    for (let b = a; b <= limit; b++) {
+      for (let c = b; c <= limit; c++) {
+        if (a * a + b * b === c * c) {
+          triplets.push([a, b, c]);
+        }
+      }
+    }
+  }
+  
+  return triplets;
+}
+
+const result = pythagoreanTripletsNaive(20);
+console.assert(result.length === 5, "Should find 5 triplets <= 20");
+console.assert(result.some(t => t[0] === 3 && t[1] === 4 && t[2] === 5), "Should include (3,4,5)");
+```
+
+**Idea:** Check all possible combinations of a, b, c. Simple but inefficient.
+
+## Approach 2: Two-Pointer O(n²)
+
+For each value of c from 1 to limit, use two pointers on a and b:
+- If a² + b² > c²: decrease b
+- If a² + b² < c²: increase a
+- If a² + b² = c²: we found a triplet
+
+```js
+function pythagoreanTripletsOptimal(limit) {
+  const triplets = [];
+  
+  for (let c = 1; c <= limit; c++) {
+    let a = 1, b = c - 1;
+    
+    while (a <= b) {
+      const sumSquares = a * a + b * b;
+      const cSquared = c * c;
+      
+      if (sumSquares === cSquared) {
+        triplets.push([a, b, c]);
+        a++;
+        b--;
+      } else if (sumSquares < cSquared) {
+        a++;
+      } else {
+        b--;
+      }
+    }
+  }
+  
+  return triplets;
+}
+
+const result = pythagoreanTripletsOptimal(20);
+console.assert(result.length === 5, "Should find 5 triplets <= 20");
+console.assert(result.some(t => t[0] === 5 && t[1] === 12 && t[2] === 13), "Should include (5,12,13)");
+```
+
+**Why it works:** For fixed c, the sum a² + b² is monotonic as we adjust a and b. This allows linear-time search per c value.
+
+## Approach 3: Mathematical Generation O(√n)
+
+Using the formula for generating Pythagorean triplets:
+- a = m² - n²
+- b = 2mn
+- c = m² + n²
+
+where m > n > 0 and gcd(m, n) = 1 and m - n is odd.
+
+```js
+function pythagoreanTripletsMathematical(limit) {
+  const triplets = [];
+  let m = 2;
+  
+  while (m * m < limit) {
+    for (let n = 1; n < m; n++) {
+      const a = m * m - n * n;
+      const b = 2 * m * n;
+      const c = m * m + n * n;
+      
+      if (c > limit) break;
+      
+      // Generate multiples of the primitive triplet
+      let ka = a, kb = b, kc = c;
+      while (kc <= limit) {
+        triplets.push([Math.min(ka, kb), Math.max(ka, kb), kc]);
+        ka += a;
+        kb += b;
+        kc += c;
+      }
+    }
+    m++;
+  }
+  
+  return triplets.sort((t1, t2) => t1[2] - t2[2] || t1[0] - t2[0]);
+}
+
+const result = pythagoreanTripletsMathematical(20);
+console.assert(result.length === 5, "Should find 5 triplets <= 20");
+```
+
+**Note:** This generates primitive triplets (gcd = 1) and their multiples. It's the most efficient mathematically but generates both primitive and composite triplets.
+
+## Comparison of Results (limit = 20)
+
+| Method | Time | Space | Found |
+|--------|------|-------|-------|
+| Naive | O(n³) | O(k) | 5 ✓ |
+| Two-Pointer | O(n²) | O(k) | 5 ✓ |
+| Mathematical | O(√n) | O(k) | 5 ✓ |
+
+**k = number of triplets found**
+
+Example triplets for limit = 20:
+- (3, 4, 5)
+- (5, 12, 13)
+- (6, 8, 10)
+- (8, 15, 17)
+- (9, 12, 15)
+- (12, 16, 20)
+
+## Properties of Pythagorean Triplets
+
+1. **Primitive triplets:** gcd(a, b, c) = 1 (e.g., 3, 4, 5)
+2. **Composite triplets:** k × primitive triplet (e.g., 6, 8, 10 = 2 × (3, 4, 5))
+3. **Pattern:** Always contain one even and two odd numbers, or two even and one odd
+4. **Frequency:** Count of triplets with c ≤ n grows approximately as n log(n)
+
+## Applications
+
+- Geometry and trigonometry calculations
+- Computer graphics and collision detection
+- Cryptography and number theory research
+- Generating test cases for right triangle problems

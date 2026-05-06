@@ -1655,4 +1655,25 @@ This one-hundred-forty-fourth expansion slice currently lifts the catalog locall
 - Batch 106 uses the verified destination title cleanup `Count Inversions` -> `Count Inversions of an Array` and `Akku and Arrays` -> `Increasing Decreasing Update Queries (Akku and Arrays)`.
 - `Nitika and her queries`, `Maximum prefix-sum for a given range`, `Smallest Subarray with given GCD`, `Kth smallest element in a subarray`, `Count-based Absolute difference for Array element`, and `Sum and Update Queries on 3D Matrix in log(N) time` already match their destination titles.
 - The GeeksforGeeks Binary Indexed Tree page is now exhausted in source order after the published batch-106 slice.
+
+## Batch 145 added
+
+This one-hundred-forty-fifth expansion slice lifts the catalog from 728 to 731 entries.
+
+- Program for Muller Method
+- Number of non-negative integral solutions of a + b + c = n
+- Generate Pythagorean Triplets
+
+## Next candidates from the same sources
+
+- Batch 144 was published at commit ae9ae7a, advancing the catalog on `main` from 725 to 728 entries.
+- Batch 145 is now locally drafted, lifting the catalog from 728 to 731 entries after adding the three Algebra entries.
+- Batch 145 keeps all three Algebra titles as exact source-order matches; focused `gray-matter` plus JavaScript-fence validators and `npm run build` both passed against the local 731-entry state with 736 static pages generated.
+- All three entries contain working JavaScript implementations with expected assertion results across multiple test cases and approaches.
+- The `Program for Muller Method` article includes convergence analysis comparing to Newton-Raphson, Secant, and Bisection methods, with explicit algorithmic steps for parabolic root-finding using the quadratic formula applied to interpolated parabolae.
+- The `Number of non-negative integral solutions` article pairs a brute-force O(n³) method with the direct closed-form formula `(n+1)*(n+2)/2` and includes dynamic-programming variants with table memoization for constraint scenarios.
+- The `Generate Pythagorean Triplets` article provides three independent approaches: naive O(n³) nested loops, optimal O(n²) two-pointer with linear search per fixed c value, and mathematical O(√n) using the m-n parameter generation of primitive triplets and their multiples.
+- Batch 145 correctly fixes the KaTeX formula parsing issue introduced in the non-negative-solutions entry by converting `$...$` notation to plain-text code-escaped equivalents compatible with MDX acorn transpilation.
+- The next clean Mathematical Algorithms queue after batch 145 requires fresh vetting of the source page to identify next candidates after the current Algebra subsection frontier, as the three-item batch queue at memo line 219 now terminates here.
+- Provided the Algebra subsection is now exhausted, the next source branch remains the GeeksforGeeks Mathematical Algorithms page's remaining subsections: Number System, Prime Numbers & Primality Tests, Prime Factorization & Divisors, Modular Arithmetic, Factorial, Fibonacci Numbers, Catalan Numbers, nCr Computations, Set Theory, Sieve Algorithms, Euler Totient Function, and Chinese Remainder Theorem sections.
 - The next vetted source branch after the exhausted Binary Indexed Tree page is the GeeksforGeeks Trie Data Structure page: https://www.geeksforgeeks.org/dsa/trie-insert-and-search/

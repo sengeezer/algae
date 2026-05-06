@@ -1,0 +1,108 @@
+---
+title: "Program for Muller Method"
+slug: "program-for-muller-method"
+category: "Algebra"
+description: "Root-finding algorithm that constructs a parabola through three points and finds its x-axis intersection to iteratively approximate function roots."
+techniques: ["Numerical Methods", "Root Finding", "Parabolic Interpolation"]
+complexity:
+  time: "O(iterations)"
+  space: "O(1)"
+  notes: "Convergence rate approximately 1.84 per iteration"
+---
+
+## Overview
+
+The Muller Method is a numerical root-finding algorithm discovered by David E. Muller in 1956 that generalizes the secant method using parabolic interpolation. Unlike Newton-Raphson which requires derivative computation, Muller's method uses three initial points to construct a parabola through them. It then finds where this parabola intersects the x-axis as the next approximation to the root.
+
+The method converges faster than bisection, regula-falsi, and secant methods (rate ~1.84), making it efficient for finding roots of algebraic and transcendental functions.
+
+## Algorithm
+
+1. Choose three distinct initial points: x₀, x₁, x₂
+2. Fit a parabola p(x) = c + b(x - x₂) + a(x - x₂)² through the function values at these points
+3. Calculate coefficients a, b, c using the three function values
+4. Apply quadratic formula to find where parabola crosses x-axis
+5. Select the root closest to x₂ to avoid round-off errors
+6. Repeat with new triplet (x₁, x₂, x₃) until convergence
+
+## Key Advantages
+
+- **No derivatives needed** unlike Newton-Raphson method
+- **Fast convergence** with rate ~1.84
+- **Can find complex roots** not just real-valued ones
+- **Robust** for various function types
+
+```js
+function mullerMethod(f, x0, x1, x2, tolerance = 1e-6, maxIterations = 10000) {
+  for (let i = 0; i < maxIterations; i++) {
+    const f0 = f(x0);
+    const f1 = f(x1);
+    const f2 = f(x2);
+    
+    // Calculate differences
+    const d1 = f0 - f2;
+    const d2 = f1 - f2;
+    const h1 = x0 - x2;
+    const h2 = x1 - x2;
+    
+    // Calculate coefficients of parabola
+    const c = f2;
+    const denom = h1 * h2 * (h1 - h2);
+    const b = (d2 * h1 * h1 - d1 * h2 * h2) / denom;
+    const a = (d1 * h2 - d2 * h1) / denom;
+    
+    // Quadratic formula to find x3
+    const discriminant = b * b - 4 * a * c;
+    if (discriminant < 0) return null; // No real root
+    
+    const sqrtDisc = Math.sqrt(discriminant);
+    const denomPlus = b + (b > 0 ? sqrtDisc : -sqrtDisc);
+    const denomMinus = b - (b > 0 ? sqrtDisc : -sqrtDisc);
+    
+    // Choose denominator with larger absolute value to minimize round-off
+    const denom2 = Math.abs(denomPlus) > Math.abs(denomMinus) ? denomPlus : denomMinus;
+    const x3 = x2 - 2 * c / denom2;
+    
+    // Check convergence
+    if (Math.abs(x3 - x2) < tolerance) {
+      return x3;
+    }
+    
+    // Update triplet for next iteration
+    x0 = x1;
+    x1 = x2;
+    x2 = x3;
+  }
+  
+  return null; // No convergence
+}
+
+// Test: Find root of f(x) = x³ + 2x² + 10x - 20
+const f = (x) => x * x * x + 2 * x * x + 10 * x - 20;
+const root = mullerMethod(f, 0, 1, 2, 1e-8);
+console.assert(Math.abs(root - 1.3688) < 0.01, "Root should be approximately 1.3688");
+```
+
+## Comparison with Other Methods
+
+| Method | Convergence Rate | Derivatives | Complexity |
+|--------|------------------|-------------|-----------|
+| Bisection | 1.0 | No | Simple |
+| Regula-Falsi | 1.0 | No | Simple |
+| Secant | 1.618 | No | Moderate |
+| **Muller** | **1.84** | **No** | **Moderate** |
+| Newton-Raphson | 2.0 | Yes | Moderate |
+
+## Implementation Notes
+
+- Choose initial points x₀, x₁, x₂ far enough apart to avoid numerical instability
+- The method can locate complex roots when discriminant < 0
+- Convergence is guaranteed for most continuous functions near a simple root
+- Round-off errors minimized by choosing the larger denominator in quadratic formula application
+
+## Applications
+
+- Polynomial root finding
+- Solving transcendental equations (e.g., x = cos(x))
+- Frequency response analysis in signal processing
+- Engineering optimization problems requiring root location
