@@ -1,0 +1,106 @@
+---
+title: Iterated Logarithm log*(n)
+slug: iterated-logarithm-log-star-n
+category: Mathematics
+summary: Count how many times logarithm must be applied before a value drops to at most one.
+description: "Iterated Logarithm log*(n) repeatedly applies logarithm until the running value becomes less than or equal to one."
+dataStructures:
+  - Number
+techniques:
+  - Recursion
+  - Iterative Simulation
+  - Logarithms
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - log star n
+  - iterated logarithm
+  - repeated logarithm count
+useCases:
+  - Algorithm analysis intuition
+  - Disjoint-set complexity discussions
+  - Extremely slow-growing function examples
+complexity:
+  time: O(log* n)
+  space: O(1)
+  notes: Each step replaces n with log base b of n until the value is at most one.
+interviewSignals:
+  - Prompt asks for repeated-log count rather than a standard logarithm.
+  - Base may be supplied explicitly.
+  - Typical follow-up is where log-star appears in algorithms.
+relatedSlugs:
+  - program-for-dot-product-and-cross-product-of-two-vectors
+  - program-to-find-correlation-coefficient
+  - calculate-the-discriminant-value
+provenance:
+  - title: "GeeksforGeeks - Iterated Logarithm log*(n)"
+    href: https://www.geeksforgeeks.org/dsa/iterated-logarithm-logn/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+`log*(n)` is the number of times logarithm must be applied until the result is at most 1.
+
+Using base `b`:
+
+- if `n <= 1`, answer is `0`
+- otherwise, answer is `1 + log*(log_b(n))`
+
+## Worked Example
+
+- `n = 100`, `base = 5` -> `2`
+  - `log_5(100) ≈ 2.86`
+  - `log_5(2.86) < 1`
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function iteratedLogarithmLogStarN(n, base) {
+  if (!Number.isFinite(n) || !Number.isFinite(base) || n < 0 || base <= 1) {
+    throw new RangeError('Expected n >= 0 and base > 1');
+  }
+
+  let count = 0;
+  let value = n;
+  while (value > 1) {
+    value = Math.log(value) / Math.log(base);
+    count += 1;
+  }
+
+  return count;
+}
+```
+
+```ts
+export function iteratedLogarithmLogStarN(n: number, base: number): number {
+  if (!Number.isFinite(n) || !Number.isFinite(base) || n < 0 || base <= 1) {
+    throw new RangeError('Expected n >= 0 and base > 1');
+  }
+
+  let count = 0;
+  let value = n;
+  while (value > 1) {
+    value = Math.log(value) / Math.log(base);
+    count += 1;
+  }
+
+  return count;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Where does log-star appear in data-structure analysis?
+- How would you define the function for different bases?
+- Why does it grow so slowly compared with ordinary logs?
+
+## Common Pitfalls
+
+- Allowing base `<= 1`.
+- Confusing `log*(n)` with `log(log(n))`.
+- Using integer truncation on intermediate logarithm values.

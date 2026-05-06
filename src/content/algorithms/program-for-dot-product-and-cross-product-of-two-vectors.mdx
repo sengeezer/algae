@@ -1,0 +1,119 @@
+---
+title: Program for dot product and cross product of two vectors
+slug: program-for-dot-product-and-cross-product-of-two-vectors
+category: Mathematics
+summary: Compute the dot product and 3D cross product of two vectors.
+description: "Program for dot product and cross product of two vectors combines pairwise products for the scalar result and determinant-style formulas for the vector result."
+dataStructures:
+  - Array
+techniques:
+  - Vector Algebra
+  - Formula Evaluation
+  - Simulation
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - vector dot and cross product
+  - scalar and vector product
+  - 3d vector product formulas
+useCases:
+  - Geometry calculations
+  - Graphics and physics fundamentals
+  - Linear algebra interview warmups
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: For the 3D case, vector length is fixed at 3.
+interviewSignals:
+  - Inputs are two 3-component vectors.
+  - Need both scalar and vector products.
+  - Cross-product sign and component order matter.
+relatedSlugs:
+  - calculate-the-discriminant-value
+  - program-to-find-correlation-coefficient
+  - program-to-find-line-passing-through-2-points
+provenance:
+  - title: "GeeksforGeeks - Program for dot product and cross product of two vectors"
+    href: https://www.geeksforgeeks.org/dsa/program-dot-product-cross-product-two-vector/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+For 3D vectors `A = [a1, a2, a3]` and `B = [b1, b2, b3]`:
+
+- Dot product: `a1*b1 + a2*b2 + a3*b3`
+- Cross product:
+  - `x = a2*b3 - a3*b2`
+  - `y = a3*b1 - a1*b3`
+  - `z = a1*b2 - a2*b1`
+
+## Worked Example
+
+- `A = [3, -5, 4]`
+- `B = [2, 6, 5]`
+- Dot product: `-4`
+- Cross product: `[-49, -7, 28]`
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function programForDotProductAndCrossProductOfTwoVectors(vectorA, vectorB) {
+  if (!Array.isArray(vectorA) || !Array.isArray(vectorB) || vectorA.length !== 3 || vectorB.length !== 3) {
+    throw new RangeError('Expected two 3D vectors');
+  }
+
+  const dotProduct =
+    vectorA[0] * vectorB[0] +
+    vectorA[1] * vectorB[1] +
+    vectorA[2] * vectorB[2];
+
+  const crossProduct = [
+    vectorA[1] * vectorB[2] - vectorA[2] * vectorB[1],
+    vectorA[2] * vectorB[0] - vectorA[0] * vectorB[2],
+    vectorA[0] * vectorB[1] - vectorA[1] * vectorB[0],
+  ];
+
+  return { dotProduct, crossProduct };
+}
+```
+
+```ts
+export function programForDotProductAndCrossProductOfTwoVectors(
+  vectorA: number[],
+  vectorB: number[],
+): { dotProduct: number; crossProduct: [number, number, number] } {
+  if (!Array.isArray(vectorA) || !Array.isArray(vectorB) || vectorA.length !== 3 || vectorB.length !== 3) {
+    throw new RangeError('Expected two 3D vectors');
+  }
+
+  const dotProduct =
+    vectorA[0] * vectorB[0] +
+    vectorA[1] * vectorB[1] +
+    vectorA[2] * vectorB[2];
+
+  const crossProduct: [number, number, number] = [
+    vectorA[1] * vectorB[2] - vectorA[2] * vectorB[1],
+    vectorA[2] * vectorB[0] - vectorA[0] * vectorB[2],
+    vectorA[0] * vectorB[1] - vectorA[1] * vectorB[0],
+  ];
+
+  return { dotProduct, crossProduct };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How do you generalize dot product to n dimensions?
+- Why is cross product limited to 3D in this form?
+- How can dot and cross products test orthogonality or area?
+
+## Common Pitfalls
+
+- Swapping the second and third cross-product terms.
+- Using vectors of the wrong dimension.
+- Forgetting that cross product is anti-commutative.

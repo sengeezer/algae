@@ -1,0 +1,137 @@
+---
+title: Program to find correlation coefficient
+slug: program-to-find-correlation-coefficient
+category: Mathematics
+summary: Compute Pearson correlation coefficient for two numeric arrays.
+description: "Program to find correlation coefficient uses aggregate sums of x, y, xy, x^2, and y^2 to evaluate Pearson's r in linear time."
+dataStructures:
+  - Array
+techniques:
+  - Statistics
+  - Formula Evaluation
+  - Aggregation
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - pearson correlation coefficient
+  - correlation coefficient of two arrays
+  - statistical correlation measure
+useCases:
+  - Basic statistical analysis
+  - Dataset relationship measurement
+  - Interview math-and-array exercises
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: One pass is enough to collect all required sums.
+interviewSignals:
+  - Two equal-length numeric arrays are provided.
+  - Need a normalized statistic between -1 and 1.
+  - Formula-based implementation is expected.
+relatedSlugs:
+  - program-for-dot-product-and-cross-product-of-two-vectors
+  - iterated-logarithm-log-star-n
+  - calculate-the-discriminant-value
+provenance:
+  - title: "GeeksforGeeks - Program to Find Correlation Coefficient"
+    href: https://www.geeksforgeeks.org/dsa/program-find-correlation-coefficient/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+For arrays `X` and `Y` of length `n`, Pearson's correlation coefficient uses:
+
+- numerator: `n * sumXY - sumX * sumY`
+- denominator: `sqrt((n * sumX2 - sumX^2) * (n * sumY2 - sumY^2))`
+- result: `numerator / denominator`
+
+This requires only five running sums.
+
+## Worked Example
+
+- `X = [15, 18, 21, 24, 27]`
+- `Y = [25, 25, 27, 31, 32]`
+- `r ≈ 0.953463`
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function programToFindCorrelationCoefficient(X, Y) {
+  if (!Array.isArray(X) || !Array.isArray(Y) || X.length !== Y.length || X.length === 0) {
+    throw new RangeError('Expected two non-empty arrays of equal length');
+  }
+
+  const n = X.length;
+  let sumX = 0;
+  let sumY = 0;
+  let sumXY = 0;
+  let sumX2 = 0;
+  let sumY2 = 0;
+
+  for (let i = 0; i < n; i += 1) {
+    sumX += X[i];
+    sumY += Y[i];
+    sumXY += X[i] * Y[i];
+    sumX2 += X[i] * X[i];
+    sumY2 += Y[i] * Y[i];
+  }
+
+  const numerator = n * sumXY - sumX * sumY;
+  const denominator = Math.sqrt((n * sumX2 - sumX * sumX) * (n * sumY2 - sumY * sumY));
+
+  if (denominator === 0) {
+    throw new RangeError('Correlation is undefined when variance is zero');
+  }
+
+  return numerator / denominator;
+}
+```
+
+```ts
+export function programToFindCorrelationCoefficient(X: number[], Y: number[]): number {
+  if (!Array.isArray(X) || !Array.isArray(Y) || X.length !== Y.length || X.length === 0) {
+    throw new RangeError('Expected two non-empty arrays of equal length');
+  }
+
+  const n = X.length;
+  let sumX = 0;
+  let sumY = 0;
+  let sumXY = 0;
+  let sumX2 = 0;
+  let sumY2 = 0;
+
+  for (let i = 0; i < n; i += 1) {
+    sumX += X[i];
+    sumY += Y[i];
+    sumXY += X[i] * Y[i];
+    sumX2 += X[i] * X[i];
+    sumY2 += Y[i] * Y[i];
+  }
+
+  const numerator = n * sumXY - sumX * sumY;
+  const denominator = Math.sqrt((n * sumX2 - sumX * sumX) * (n * sumY2 - sumY * sumY));
+
+  if (denominator === 0) {
+    throw new RangeError('Correlation is undefined when variance is zero');
+  }
+
+  return numerator / denominator;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you make the computation numerically stable for very large values?
+- What is the difference between covariance and correlation?
+- How would you support streaming updates?
+
+## Common Pitfalls
+
+- Using arrays of different lengths.
+- Forgetting to guard against zero variance.
+- Mixing integer-only arithmetic with division too early.

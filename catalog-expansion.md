@@ -1463,16 +1463,24 @@ This one-hundred-forty-second expansion slice lifts the catalog from 719 to 722 
 
 ## Batch 143 added
 
-This one-hundred-forty-third expansion slice currently lifts the catalog locally from 722 to 725 entries.
+This one-hundred-forty-third expansion slice lifts the catalog from 722 to 725 entries.
 
 - Multiply two polynomials
 - Find number of solutions of a linear equation of n variables
 - Calculate the Discriminant Value
 
+## Batch 144 added
+
+This one-hundred-forty-fourth expansion slice currently lifts the catalog locally from 725 to 728 entries.
+
+- Program for dot product and cross product of two vectors
+- Iterated Logarithm log*(n)
+- Program to find correlation coefficient
+
 ## Next candidates from the same sources
 
-- The published catalog now reaches 722 entries on `main` after batch 142 landed at `4699443`.
-- The local draft now reaches 725 entries after batch 143.
+- The published catalog now reaches 725 entries on `main` after batch 143 landed at `0378d54`.
+- The local draft now reaches 728 entries after batch 144.
 - The GeeksforGeeks `Standard Problems on Geometric Algorithm` section is exhausted in source order after `Equable Shapes`.
 - The next vetted source branch after the exhausted Geometric Algorithms page is the GeeksforGeeks Mathematical Algorithms page: https://www.geeksforgeeks.org/dsa/mathematical-algorithms/
 - On the Mathematical Algorithms page, `GCD of Two Numbers` and `LCM of Two Numbers` remain duplicate-level coverage of the published `Find HCF` and `Find LCM` entries.
@@ -1496,7 +1504,8 @@ This one-hundred-forty-third expansion slice currently lifts the catalog locally
 - Batch 141 keeps all three Number Digits titles as exact destination-title matches.
 - Batch 142 keeps all three destination titles as exact source-order matches spanning the Number Digits tail and the first Algebra entry.
 - Batch 143 keeps all three destination titles as exact source-order matches from the Algebra subsection.
-- The next clean Mathematical Algorithms queue is `Program for dot product and cross product of two vectors`, `Iterated Logarithm log*(n)`, and `Program to find correlation coefficient`.
+- Batch 144 keeps all three destination titles as exact source-order matches from the Algebra subsection.
+- The next clean Mathematical Algorithms queue is `Program for Muller Method`, `Number of non-negative integral solutions of a + b + c = n`, and `Generate Pythagorean Triplets`.
 
 - The published catalog now reaches 623 entries on `main` after exhausting the GeeksforGeeks Branch and Bound page.
 - The Trie Data Structure common-interview queue is exhausted in source order after the published batch-107 slice.
