@@ -1,0 +1,90 @@
+---
+title: n-th term in series 2, 12, 36, 80, 150....
+slug: n-th-term-in-series-2-12-36-80-150
+category: Mathematics
+summary: Find the nth term of 2, 12, 36, 80, 150, ... using n^2 + n^3.
+description: "n-th term in series 2, 12, 36, 80, 150.... is identified as n squared plus n cubed, enabling O(1) evaluation."
+dataStructures:
+  - Number
+techniques:
+  - Pattern Recognition
+  - Mathematical Formula
+  - Sequence Analysis
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - nth term 2 12 36 80 150
+  - n^2 + n^3 series
+  - sequence term formula
+useCases:
+  - Pattern-based interview warmups
+  - Constant-time nth-term computation
+  - Algebraic sequence simplification practice
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: Direct formula eliminates iterative term generation.
+interviewSignals:
+  - Small sample terms suggest polynomial growth.
+  - Prompt asks only for nth term.
+  - Formula extraction is the expected skill.
+relatedSlugs:
+  - sum-of-series-1-2-3-2-5-2-2n-1-2
+  - sum-of-the-sequence-2-22-222
+  - geometric-progression
+provenance:
+  - title: "GeeksforGeeks - n-th term in series 2, 12, 36, 80, 150...."
+    href: https://www.geeksforgeeks.org/dsa/n-th-term-series-2-12-36-80-150/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+Differences reveal the pattern quickly, and GeeksforGeeks identifies the term as:
+
+$$
+T_n = n^2 + n^3 = n^2(n+1)
+$$
+
+## Worked Example
+
+- `n = 2` gives `4 + 8 = 12`
+- `n = 4` gives `16 + 64 = 80`
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function nThTermInSeries2123680150(n) {
+  if (!Number.isInteger(n) || n <= 0) {
+    throw new RangeError('Expected a positive integer n');
+  }
+
+  return n * n + n * n * n;
+}
+```
+
+```ts
+export function nThTermInSeries2123680150(n: number): number {
+  if (!Number.isInteger(n) || n <= 0) {
+    throw new RangeError('Expected a positive integer n');
+  }
+
+  return n * n + n * n * n;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you derive this from finite differences formally?
+- What is the sum of first `k` terms of this sequence?
+- How do you make this safe for very large `n` values?
+
+## Common Pitfalls
+
+- Off-by-one errors in indexing.
+- Assuming linear or quadratic-only growth.
+- Integer overflow in fixed-width types.

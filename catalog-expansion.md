@@ -1423,16 +1423,24 @@ This one-hundred-thirty-seventh expansion slice lifts the catalog from 704 to 70
 
 ## Batch 138 added
 
-This one-hundred-thirty-eighth expansion slice currently lifts the catalog locally from 707 to 710 entries.
+This one-hundred-thirty-eighth expansion slice lifts the catalog from 707 to 710 entries.
 
 - Recaman's sequence
 - Sum of the sequence 2, 22, 222, .........
 - Sum of series 1^2 + 3^2 + 5^2 + . . . + (2*n - 1)^2
 
+## Batch 139 added
+
+This one-hundred-thirty-ninth expansion slice currently lifts the catalog locally from 710 to 713 entries.
+
+- Sum of the series 0.6, 0.06, 0.006, 0.0006, ...to n terms
+- n-th term in series 2, 12, 36, 80, 150....
+- Minimum digits to remove to make a number Perfect Square
+
 ## Next candidates from the same sources
 
-- The published catalog now reaches 707 entries on `main` after batch 137 landed at `71e1c93`.
-- The local draft now reaches 710 entries after batch 138.
+- The published catalog now reaches 710 entries on `main` after batch 138 landed at `020f8c5`.
+- The local draft now reaches 713 entries after batch 139.
 - The GeeksforGeeks `Standard Problems on Geometric Algorithm` section is exhausted in source order after `Equable Shapes`.
 - The next vetted source branch after the exhausted Geometric Algorithms page is the GeeksforGeeks Mathematical Algorithms page: https://www.geeksforgeeks.org/dsa/mathematical-algorithms/
 - On the Mathematical Algorithms page, `GCD of Two Numbers` and `LCM of Two Numbers` remain duplicate-level coverage of the published `Find HCF` and `Find LCM` entries.
@@ -1451,7 +1459,8 @@ This one-hundred-thirty-eighth expansion slice currently lifts the catalog local
 - Batch 136 keeps `Padovan Sequence`, `Aliquot Sequence`, and `Moser-de Bruijn Sequence` as exact destination titles from the Series subsection.
 - Batch 137 keeps `Stern-Brocot Sequence`, `Newman-Conway Sequence`, and `Sylvester's sequence` as exact destination titles from the Series subsection.
 - Batch 138 keeps `Recaman's sequence` as an exact destination title and normalizes `Sum of 2, 22, 222, ………` to `Sum of the sequence 2, 22, 222, .........`; `Sum of series 1^2 + 3^2 + 5^2 + . . . + (2*n – 1)^2` is kept as an exact destination title.
-- The next clean Mathematical Algorithms queue is `Sum of 0.6, 0.06, 0.006, 0.0006, …to n terms`, `n-th term of 2, 12, 36, 80, 150….`, and `Minimum digits to remove to make a number Perfect Square`.
+- Batch 139 keeps `Sum of the series 0.6, 0.06, 0.006, 0.0006, ...to n terms` and `n-th term in series 2, 12, 36, 80, 150....` as exact destination titles, and normalizes `Minimum digits to remove to make a number Perfect Square` directly from the Number Digits subsection.
+- The next clean Mathematical Algorithms queue is `Print first k digits of 1/n where n is a positive integer`, `Check if a given number can be represented in given a no. of digits in any base`, and `Find element using minimum segments in Seven Segment Display`.
 
 - The published catalog now reaches 623 entries on `main` after exhausting the GeeksforGeeks Branch and Bound page.
 - The Trie Data Structure common-interview queue is exhausted in source order after the published batch-107 slice.

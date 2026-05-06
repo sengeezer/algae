@@ -1,0 +1,171 @@
+---
+title: Minimum digits to remove to make a number Perfect Square
+slug: minimum-digits-to-remove-to-make-a-number-perfect-square
+category: Mathematics
+summary: Find a longest subsequence of digits that forms a perfect square, minimizing removed digits.
+description: "Minimum digits to remove to make a number Perfect Square explores digit subsequences and selects the best perfect-square candidate with maximum retained length."
+dataStructures:
+  - String
+  - Array
+techniques:
+  - Bitmask Enumeration
+  - Brute Force Search
+  - Perfect Square Testing
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - remove digits for perfect square
+  - minimum deletions to perfect square
+  - perfect square subsequence
+useCases:
+  - Subsequence search interview problems
+  - Digit-level optimization tasks
+  - Number transformation puzzles
+complexity:
+  time: O(d * 2^d)
+  space: O(1)
+  notes: Iterate all non-empty digit subsequences, validate no leading zero, and test for perfect square.
+interviewSignals:
+  - The result comes from deleting digits without reordering remaining digits.
+  - Feasible constraints imply subset/subsequence enumeration.
+  - Need to optimize deletions, not just find any square.
+relatedSlugs:
+  - perfect-square
+  - minimum-digits-to-remove-to-make-a-number-fibonacci
+  - minimum-perfect-squares-that-sums-to-n
+provenance:
+  - title: "GeeksforGeeks - Minimum digits to remove to make a number Perfect Square"
+    href: https://www.geeksforgeeks.org/dsa/required-minimum-digits-remove-number-make-perfect-square/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+The direct strategy is to enumerate all subsequences (via bitmasks), keep only valid numeric forms (no leading zero), and choose the perfect-square subsequence with the maximum length. The minimum removals are then:
+
+`originalLength - bestSquareLength`
+
+## Worked Example
+
+- Input `8314` can form square subsequence `81`, so removals are `2`.
+- Input `57` has no valid perfect-square subsequence, so answer is `-1`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function minimumDigitsToRemoveToMakeAPerfectSquare(value) {
+  const digits = String(value).trim();
+  if (!/^\d+$/.test(digits)) {
+    throw new TypeError('Expected a non-empty decimal digit string');
+  }
+
+  const n = digits.length;
+  let best = null;
+
+  const isPerfectSquare = (num) => {
+    const root = Math.floor(Math.sqrt(num));
+    return root * root === num;
+  };
+
+  for (let mask = 1; mask < (1 << n); mask += 1) {
+    let candidate = '';
+    for (let i = 0; i < n; i += 1) {
+      if ((mask >> i) & 1) {
+        candidate += digits[i];
+      }
+    }
+
+    if (candidate[0] === '0') {
+      continue;
+    }
+
+    const num = Number(candidate);
+    if (!Number.isSafeInteger(num)) {
+      continue;
+    }
+
+    if (isPerfectSquare(num)) {
+      if (best === null || candidate.length > best.length) {
+        best = candidate;
+      }
+    }
+  }
+
+  if (best === null) {
+    return -1;
+  }
+
+  return {
+    square: best,
+    removedDigits: n - best.length,
+  };
+}
+```
+
+```ts
+export function minimumDigitsToRemoveToMakeAPerfectSquare(
+  value: string | number | bigint,
+): { square: string; removedDigits: number } | -1 {
+  const digits = String(value).trim();
+  if (!/^\d+$/.test(digits)) {
+    throw new TypeError('Expected a non-empty decimal digit string');
+  }
+
+  const n = digits.length;
+  let best: string | null = null;
+
+  const isPerfectSquare = (num: number): boolean => {
+    const root = Math.floor(Math.sqrt(num));
+    return root * root === num;
+  };
+
+  for (let mask = 1; mask < (1 << n); mask += 1) {
+    let candidate = '';
+    for (let i = 0; i < n; i += 1) {
+      if ((mask >> i) & 1) {
+        candidate += digits[i];
+      }
+    }
+
+    if (candidate[0] === '0') {
+      continue;
+    }
+
+    const num = Number(candidate);
+    if (!Number.isSafeInteger(num)) {
+      continue;
+    }
+
+    if (isPerfectSquare(num)) {
+      if (best === null || candidate.length > best.length) {
+        best = candidate;
+      }
+    }
+  }
+
+  if (best === null) {
+    return -1;
+  }
+
+  return {
+    square: best,
+    removedDigits: n - best.length,
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you support larger values without `Number` precision limits?
+- Can you prune the search to avoid checking all subsequences?
+- How would you return all optimal square subsequences instead of one?
+
+## Common Pitfalls
+
+- Allowing leading-zero subsequences.
+- Accepting any square instead of maximizing kept length.
+- Forgetting to handle the no-solution case.

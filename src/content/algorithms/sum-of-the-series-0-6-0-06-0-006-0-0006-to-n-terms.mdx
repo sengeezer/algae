@@ -1,0 +1,90 @@
+---
+title: Sum of the series 0.6, 0.06, 0.006, 0.0006, ...to n terms
+slug: sum-of-the-series-0-6-0-06-0-006-0-0006-to-n-terms
+category: Mathematics
+summary: Compute the first n-term sum of 0.6, 0.06, 0.006, ... using geometric progression.
+description: "Sum of the series 0.6, 0.06, 0.006, 0.0006, ...to n terms is a geometric-series problem with ratio 1/10 and a closed-form O(1) solution."
+dataStructures:
+  - Number
+techniques:
+  - Geometric Progression
+  - Mathematical Formula
+  - Numerical Computation
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - sum of 0.6 series
+  - decimal geometric series sum
+  - 0.6 0.06 0.006 sum
+useCases:
+  - Constant-time numeric series queries
+  - Formula derivation interview practice
+  - Educational decimal progression examples
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: Closed form avoids iterative accumulation and works for any non-negative integer n.
+interviewSignals:
+  - Terms decrease by a fixed ratio.
+  - Prompt asks for n-term sum.
+  - A geometric-series formula is expected.
+relatedSlugs:
+  - sum-of-the-sequence-2-22-222
+  - sum-of-series-1-2-3-2-5-2-2n-1-2
+  - geometric-progression
+provenance:
+  - title: "GeeksforGeeks - Sum of the series 0.6, 0.06, 0.006, 0.0006, ...to n terms"
+    href: https://www.geeksforgeeks.org/dsa/sum-series-0-6-0-06-0-006-0-0006-n-terms/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is a geometric progression with first term $a = 0.6$ and ratio $r = 0.1$.
+
+$$
+S_n = a \cdot \frac{1-r^n}{1-r} = 0.6 \cdot \frac{1-0.1^n}{0.9} = \frac{2}{3}(1-10^{-n})
+$$
+
+## Worked Example
+
+- `n = 2` gives `0.66`
+- `n = 3` gives `0.666`
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function sumOfTheSeries0Point6ToNTerms(n) {
+  if (!Number.isInteger(n) || n < 0) {
+    throw new RangeError('Expected a non-negative integer n');
+  }
+
+  return (2 / 3) * (1 - 1 / Math.pow(10, n));
+}
+```
+
+```ts
+export function sumOfTheSeries0Point6ToNTerms(n: number): number {
+  if (!Number.isInteger(n) || n < 0) {
+    throw new RangeError('Expected a non-negative integer n');
+  }
+
+  return (2 / 3) * (1 - 1 / Math.pow(10, n));
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you avoid floating-point artifacts for very large `n`?
+- Can you derive the same sum via iterative accumulation?
+- How does the formula change for first term `d/10` and same ratio?
+
+## Common Pitfalls
+
+- Treating it as arithmetic progression.
+- Off-by-one mistakes in the exponent.
+- Ignoring floating-point precision behavior.
