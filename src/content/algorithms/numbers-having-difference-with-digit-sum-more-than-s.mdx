@@ -1,0 +1,133 @@
+---
+title: Numbers having difference with digit sum more than s
+slug: numbers-having-difference-with-digit-sum-more-than-s
+category: Mathematics
+summary: Count integers x in [1, n] such that x - digitSum(x) > s.
+description: "Numbers having difference with digit sum more than s can be counted by finding the smallest valid x near s and then taking a suffix length."
+dataStructures:
+  - Number
+techniques:
+  - Math Observation
+  - Digit Sum
+  - Bounded Search
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - count x minus digit sum greater than s
+  - integer minus digit sum threshold count
+  - suffix count after first valid number
+useCases:
+  - Counting constraints on digit-derived functions
+  - Fast filtering for large numeric ranges
+  - Number-theory interview counting prompts
+complexity:
+  time: O(min(n, s + 163) - s + 1)
+  space: O(1)
+  notes: Maximum digit sum for 10^18-scale values is bounded by 162, enabling local search.
+interviewSignals:
+  - Need count, not list, over a large interval.
+  - Condition is monotone after a threshold candidate.
+  - Digit-sum bound enables narrowing search window.
+relatedSlugs:
+  - check-if-a-number-is-jumbled-or-not
+  - sum-of-digits
+  - divisibility-by-9
+provenance:
+  - title: "GeeksforGeeks - Numbers having difference with digit sum more than s"
+    href: https://www.geeksforgeeks.org/dsa/numbers-difference-digit-sum-s/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+We need count of `x` where `x - digitSum(x) > s` for `1 <= x <= n`.
+
+Observations:
+
+- For very large numbers, `digitSum(x)` is at most bounded by number-of-digits times 9.
+- So once condition is true at some `x0`, it stays true for all sufficiently larger `x`.
+
+For typical 64-bit sized inputs, checking from `s` to `min(n, s + 163)` is enough to find first valid `x`.
+
+## Worked Example
+
+- `n = 20, s = 5` -> `11`
+- `n = 20, s = 20` -> `0`
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function numbersHavingDifferenceWithDigitSumMoreThanS(n, s) {
+  if (!Number.isInteger(n) || !Number.isInteger(s) || n < 0 || s < 0) {
+    throw new RangeError('Expected non-negative integers n and s');
+  }
+  if (n <= s) {
+    return 0;
+  }
+
+  const digitSum = (x) => {
+    let sum = 0;
+    let value = x;
+    while (value > 0) {
+      sum += value % 10;
+      value = Math.floor(value / 10);
+    }
+    return sum;
+  };
+
+  const upper = Math.min(n, s + 163);
+  for (let x = Math.max(1, s); x <= upper; x += 1) {
+    if (x - digitSum(x) > s) {
+      return n - x + 1;
+    }
+  }
+
+  return 0;
+}
+```
+
+```ts
+export function numbersHavingDifferenceWithDigitSumMoreThanS(n: number, s: number): number {
+  if (!Number.isInteger(n) || !Number.isInteger(s) || n < 0 || s < 0) {
+    throw new RangeError('Expected non-negative integers n and s');
+  }
+  if (n <= s) {
+    return 0;
+  }
+
+  const digitSum = (x: number): number => {
+    let sum = 0;
+    let value = x;
+    while (value > 0) {
+      sum += value % 10;
+      value = Math.floor(value / 10);
+    }
+    return sum;
+  };
+
+  const upper = Math.min(n, s + 163);
+  for (let x = Math.max(1, s); x <= upper; x += 1) {
+    if (x - digitSum(x) > s) {
+      return n - x + 1;
+    }
+  }
+
+  return 0;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Can you replace bounded linear scan with binary search on the threshold?
+- How do the constants change for larger integer domains?
+- How do you adapt this when `s` can be negative?
+
+## Common Pitfalls
+
+- Scanning from `1` to `n` unnecessarily.
+- Forgetting the fast return when `n <= s`.
+- Off-by-one in suffix count `n - x + 1`.

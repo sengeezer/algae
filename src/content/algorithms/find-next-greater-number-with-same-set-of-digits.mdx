@@ -1,0 +1,151 @@
+---
+title: Find next greater number with same set of digits
+slug: find-next-greater-number-with-same-set-of-digits
+category: Mathematics
+summary: Given a numeric string, compute the lexicographically next permutation or report not possible.
+description: "Find next greater number with same set of digits by applying next-permutation steps on the digit sequence."
+dataStructures:
+  - String
+  - Array
+techniques:
+  - Next Permutation
+  - Two Pointers
+  - Greedy
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - next bigger number with same digits
+  - next permutation digits
+  - next greater rearrangement
+useCases:
+  - Rank stepping in permutation spaces
+  - Numeric arrangement optimization
+  - Interview problems on in-place permutation transitions
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: "Finding pivot/successor and reversing suffix is linear in number of digits."
+interviewSignals:
+  - Input arrives as a string of digits.
+  - Need smallest greater arrangement, not any greater arrangement.
+  - Exact behavior of next permutation is expected.
+relatedSlugs:
+  - permutations
+  - lexicographically-next-permutation
+  - nth-lexicographic-permutation
+provenance:
+  - title: "GeeksforGeeks - Find next greater number with same set of digits"
+    href: https://www.geeksforgeeks.org/dsa/find-next-greater-number-set-digits/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+The requested number is exactly the next lexicographic permutation of the digits.
+
+1. Scan from right to find pivot index `i` where `digits[i] < digits[i + 1]`.
+2. If none exists, answer is `Not Possible`.
+3. Find smallest digit on right side greater than pivot.
+4. Swap them, then reverse suffix from `i + 1` onward.
+
+## Worked Example
+
+- `"218765"` -> `"251678"`
+- `"1234"` -> `"1243"`
+- `"4321"` -> `"Not Possible"`
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function findNextGreaterNumberWithSameSetOfDigits(n) {
+  if (typeof n !== 'string' || n.length === 0 || !/^\d+$/.test(n)) {
+    throw new TypeError('Expected a non-empty string of digits');
+  }
+  if (n.length === 1) {
+    return 'Not Possible';
+  }
+
+  const digits = n.split('');
+  let i = digits.length - 2;
+
+  while (i >= 0 && digits[i] >= digits[i + 1]) {
+    i -= 1;
+  }
+
+  if (i < 0) {
+    return 'Not Possible';
+  }
+
+  let j = digits.length - 1;
+  while (digits[j] <= digits[i]) {
+    j -= 1;
+  }
+
+  [digits[i], digits[j]] = [digits[j], digits[i]];
+
+  let left = i + 1;
+  let right = digits.length - 1;
+  while (left < right) {
+    [digits[left], digits[right]] = [digits[right], digits[left]];
+    left += 1;
+    right -= 1;
+  }
+
+  return digits.join('');
+}
+```
+
+```ts
+export function findNextGreaterNumberWithSameSetOfDigits(n: string): string {
+  if (typeof n !== 'string' || n.length === 0 || !/^\d+$/.test(n)) {
+    throw new TypeError('Expected a non-empty string of digits');
+  }
+  if (n.length === 1) {
+    return 'Not Possible';
+  }
+
+  const digits = n.split('');
+  let i = digits.length - 2;
+
+  while (i >= 0 && digits[i] >= digits[i + 1]) {
+    i -= 1;
+  }
+
+  if (i < 0) {
+    return 'Not Possible';
+  }
+
+  let j = digits.length - 1;
+  while (digits[j] <= digits[i]) {
+    j -= 1;
+  }
+
+  [digits[i], digits[j]] = [digits[j], digits[i]];
+
+  let left = i + 1;
+  let right = digits.length - 1;
+  while (left < right) {
+    [digits[left], digits[right]] = [digits[right], digits[left]];
+    left += 1;
+    right -= 1;
+  }
+
+  return digits.join('');
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How do you compute previous smaller permutation?
+- How would you do this for arrays with arbitrary comparable values?
+- Can this be adapted to skip repeated duplicates by rank?
+
+## Common Pitfalls
+
+- Picking any greater successor instead of the smallest greater successor.
+- Sorting suffix ascending when a reverse is enough.
+- Returning number type and losing leading zeros.

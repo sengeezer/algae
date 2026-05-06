@@ -1,0 +1,114 @@
+---
+title: Check if a number is jumbled or not
+slug: check-if-a-number-is-jumbled-or-not
+category: Mathematics
+summary: Determine whether every adjacent digit pair differs by at most one.
+description: "Check if a number is jumbled or not by scanning adjacent digits and rejecting any absolute difference above one."
+dataStructures:
+  - Number
+techniques:
+  - Digit Decomposition
+  - Simulation
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - jumbled number check
+  - adjacent digits differ by at most one
+  - stepping-style adjacency validation
+useCases:
+  - Numeric pattern validation
+  - Constraint filtering for generated numbers
+  - Pre-check step in stepping-number tasks
+complexity:
+  time: O(log10 n)
+  space: O(1)
+  notes: Number of iterations equals the number of digits.
+interviewSignals:
+  - Definition depends only on neighboring digits.
+  - Single-digit numbers are always valid.
+  - Absolute difference check is the core condition.
+relatedSlugs:
+  - binary-equivalent
+  - sum-of-digits
+  - numbers-having-difference-with-digit-sum-more-than-s
+provenance:
+  - title: "GeeksforGeeks - Check if a number is jumbled or not"
+    href: https://www.geeksforgeeks.org/dsa/check-if-a-number-is-jumbled-or-not/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+A number is jumbled if every adjacent digit differs by at most 1. This is a direct digit-adjacency scan.
+
+## Worked Example
+
+- `6765` -> `true`
+- `1223` -> `true`
+- `1235` -> `false`
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function checkIfANumberIsJumbledOrNot(num) {
+  if (!Number.isInteger(num) || num < 0) {
+    throw new RangeError('Expected a non-negative integer');
+  }
+
+  if (num < 10) {
+    return true;
+  }
+
+  let n = num;
+  while (n >= 10) {
+    const d1 = n % 10;
+    const d2 = Math.floor(n / 10) % 10;
+    if (Math.abs(d1 - d2) > 1) {
+      return false;
+    }
+    n = Math.floor(n / 10);
+  }
+
+  return true;
+}
+```
+
+```ts
+export function checkIfANumberIsJumbledOrNot(num: number): boolean {
+  if (!Number.isInteger(num) || num < 0) {
+    throw new RangeError('Expected a non-negative integer');
+  }
+
+  if (num < 10) {
+    return true;
+  }
+
+  let n = num;
+  while (n >= 10) {
+    const d1 = n % 10;
+    const d2 = Math.floor(n / 10) % 10;
+    if (Math.abs(d1 - d2) > 1) {
+      return false;
+    }
+    n = Math.floor(n / 10);
+  }
+
+  return true;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you validate the same property for signed integers?
+- Can you generate all jumbled numbers in a range efficiently?
+- What is the relation to stepping numbers?
+
+## Common Pitfalls
+
+- Forgetting to handle single-digit numbers as valid.
+- Missing absolute value around digit difference.
+- Using string conversion but not handling negative signs.

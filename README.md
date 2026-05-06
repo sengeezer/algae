@@ -9,7 +9,7 @@ Algae is a quick algorithm reference tool built on Next.js App Router for Vercel
 - Read JavaScript and TypeScript examples directly inside each algorithm entry.
 - Review source lineage on expanded entries through per-entry implementation and study-reference metadata.
 - Save or complete algorithms with local-first study state stored in the browser.
-- The catalog currently includes 716 MDX-backed interview-core algorithms.
+- The catalog currently includes 719 MDX-backed interview-core algorithms.
 
 ## Tech Stack
 
