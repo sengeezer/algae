@@ -1,0 +1,120 @@
+---
+title: Find number of solutions of a linear equation of n variables
+slug: find-number-of-solutions-of-a-linear-equation-of-n-variables
+category: Mathematics
+summary: Count non-negative integer solutions to a linear equation with positive coefficients.
+description: "Find number of solutions of a linear equation of n variables using unbounded-knapsack style dynamic programming over the target rhs."
+dataStructures:
+  - Array
+techniques:
+  - Dynamic Programming
+  - Unbounded Knapsack
+  - Combinatorics
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - count non-negative solutions linear equation
+  - coefficient sum ways
+  - number of integer solutions for rhs
+useCases:
+  - Counting partitions under weighted terms
+  - Combinatorial DP exercises
+  - Coin-change equivalent transformations
+complexity:
+  time: O(n * rhs)
+  space: O(rhs)
+  notes: The 1D DP table counts order-independent combinations.
+interviewSignals:
+  - Coefficients are positive integers.
+  - Variables are non-negative integers.
+  - Counting combinations mirrors coin-change counting.
+relatedSlugs:
+  - coin-change-problem
+  - multiply-two-polynomials
+  - calculate-the-discriminant-value
+provenance:
+  - title: "GeeksforGeeks - Find number of solutions of a linear equation of n variables"
+    href: https://www.geeksforgeeks.org/dsa/find-number-of-solutions-of-a-linear-equation-of-n-variables/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+For equation
+
+`coeff[0] * x0 + coeff[1] * x1 + ... + coeff[n-1] * x(n-1) = rhs`
+
+with `xi >= 0`, this is equivalent to counting ways to make sum `rhs` using unlimited copies of each coefficient.
+
+DP recurrence:
+
+- `dp[0] = 1`
+- for each coefficient `c`:
+  - for `s` from `c` to `rhs`: `dp[s] += dp[s - c]`
+
+## Worked Example
+
+- `coeff = [1, 2], rhs = 5` -> `3`
+- `coeff = [2, 2, 3], rhs = 4` -> `3`
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function findNumberOfSolutionsOfALinearEquationOfNVariables(coeff, rhs) {
+  if (!Array.isArray(coeff) || coeff.length === 0 || !Number.isInteger(rhs) || rhs < 0) {
+    throw new RangeError('Expected non-empty coefficient array and non-negative rhs');
+  }
+  if (coeff.some((c) => !Number.isInteger(c) || c <= 0)) {
+    throw new RangeError('All coefficients must be positive integers');
+  }
+
+  const dp = new Array(rhs + 1).fill(0);
+  dp[0] = 1;
+
+  for (const c of coeff) {
+    for (let s = c; s <= rhs; s += 1) {
+      dp[s] += dp[s - c];
+    }
+  }
+
+  return dp[rhs];
+}
+```
+
+```ts
+export function findNumberOfSolutionsOfALinearEquationOfNVariables(coeff: number[], rhs: number): number {
+  if (!Array.isArray(coeff) || coeff.length === 0 || !Number.isInteger(rhs) || rhs < 0) {
+    throw new RangeError('Expected non-empty coefficient array and non-negative rhs');
+  }
+  if (coeff.some((c) => !Number.isInteger(c) || c <= 0)) {
+    throw new RangeError('All coefficients must be positive integers');
+  }
+
+  const dp = new Array<number>(rhs + 1).fill(0);
+  dp[0] = 1;
+
+  for (const c of coeff) {
+    for (let s = c; s <= rhs; s += 1) {
+      dp[s] += dp[s - c];
+    }
+  }
+
+  return dp[rhs];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How do you count ordered solutions instead of unordered ones?
+- How would negative coefficients change feasibility?
+- Can you reconstruct one valid assignment from DP?
+
+## Common Pitfalls
+
+- Looping rhs before coefficients and accidentally counting permutations.
+- Allowing zero or negative coefficients.
+- Missing base case `dp[0] = 1`.

@@ -1,0 +1,112 @@
+---
+title: Calculate the Discriminant Value
+slug: calculate-the-discriminant-value
+category: Mathematics
+summary: Compute quadratic discriminant and classify root nature.
+description: "Calculate the Discriminant Value for ax^2 + bx + c using b^2 - 4ac and infer root cases from its sign."
+dataStructures:
+  - Number
+techniques:
+  - Formula Evaluation
+  - Case Analysis
+  - Algebra
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - quadratic discriminant
+  - b square minus 4ac
+  - classify quadratic roots
+useCases:
+  - Root nature checks before solving equations
+  - Basic algebra tooling
+  - Input validation for numeric methods
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: Single arithmetic expression and sign comparison.
+interviewSignals:
+  - Input is coefficients a, b, c of a quadratic.
+  - Need root nature, not necessarily exact roots.
+  - Branches are based on discriminant sign.
+relatedSlugs:
+  - find-number-of-solutions-of-a-linear-equation-of-n-variables
+  - program-to-add-two-polynomials
+  - calculate-the-discriminant-value
+provenance:
+  - title: "GeeksforGeeks - Calculate the Discriminant Value"
+    href: https://www.geeksforgeeks.org/dsa/calculate-discriminant-value/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+For quadratic `ax^2 + bx + c`, compute
+
+`D = b^2 - 4ac`
+
+Then classify:
+
+- `D > 0`: two distinct real roots
+- `D = 0`: one repeated real root
+- `D < 0`: no real roots
+
+## Worked Example
+
+- `a=20, b=30, c=10` -> `D=100`, two real roots
+- `a=9, b=7, c=12` -> `D=-383`, no real roots
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function calculateTheDiscriminantValue(a, b, c) {
+  if (![a, b, c].every(Number.isFinite)) {
+    throw new TypeError('Expected finite numeric coefficients');
+  }
+
+  const discriminant = b * b - 4 * a * c;
+  const nature = discriminant > 0
+    ? 'Two Solutions'
+    : discriminant === 0
+      ? 'One Solution'
+      : 'No Real Solutions';
+
+  return { discriminant, nature };
+}
+```
+
+```ts
+export function calculateTheDiscriminantValue(
+  a: number,
+  b: number,
+  c: number,
+): { discriminant: number; nature: 'Two Solutions' | 'One Solution' | 'No Real Solutions' } {
+  if (![a, b, c].every(Number.isFinite)) {
+    throw new TypeError('Expected finite numeric coefficients');
+  }
+
+  const discriminant = b * b - 4 * a * c;
+  const nature = discriminant > 0
+    ? 'Two Solutions'
+    : discriminant === 0
+      ? 'One Solution'
+      : 'No Real Solutions';
+
+  return { discriminant, nature };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How do you compute roots safely when discriminant is near zero?
+- What if coefficients are very large and may overflow number range?
+- How would you classify complex roots explicitly?
+
+## Common Pitfalls
+
+- Using integer types and overflowing `b*b`.
+- Forgetting the special case `D = 0`.
+- Assuming equation is quadratic when `a = 0`.

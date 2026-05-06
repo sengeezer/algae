@@ -1455,16 +1455,24 @@ This one-hundred-forty-first expansion slice lifts the catalog from 716 to 719 e
 
 ## Batch 142 added
 
-This one-hundred-forty-second expansion slice currently lifts the catalog locally from 719 to 722 entries.
+This one-hundred-forty-second expansion slice lifts the catalog from 719 to 722 entries.
 
 - Total numbers with no repeated digits in a range
 - K-th digit in 'a' raised to power 'b'
 - Program to add two polynomials
 
+## Batch 143 added
+
+This one-hundred-forty-third expansion slice currently lifts the catalog locally from 722 to 725 entries.
+
+- Multiply two polynomials
+- Find number of solutions of a linear equation of n variables
+- Calculate the Discriminant Value
+
 ## Next candidates from the same sources
 
-- The published catalog now reaches 719 entries on `main` after batch 141 landed at `8213e08`.
-- The local draft now reaches 722 entries after batch 142.
+- The published catalog now reaches 722 entries on `main` after batch 142 landed at `4699443`.
+- The local draft now reaches 725 entries after batch 143.
 - The GeeksforGeeks `Standard Problems on Geometric Algorithm` section is exhausted in source order after `Equable Shapes`.
 - The next vetted source branch after the exhausted Geometric Algorithms page is the GeeksforGeeks Mathematical Algorithms page: https://www.geeksforgeeks.org/dsa/mathematical-algorithms/
 - On the Mathematical Algorithms page, `GCD of Two Numbers` and `LCM of Two Numbers` remain duplicate-level coverage of the published `Find HCF` and `Find LCM` entries.
@@ -1487,7 +1495,8 @@ This one-hundred-forty-second expansion slice currently lifts the catalog locall
 - Batch 140 keeps all three Number Digits titles as exact destination-title matches.
 - Batch 141 keeps all three Number Digits titles as exact destination-title matches.
 - Batch 142 keeps all three destination titles as exact source-order matches spanning the Number Digits tail and the first Algebra entry.
-- The next clean Mathematical Algorithms queue is `Multiply two polynomials`, `Find number of solutions of a linear equation of n variables`, and `Calculate the Discriminant Value`.
+- Batch 143 keeps all three destination titles as exact source-order matches from the Algebra subsection.
+- The next clean Mathematical Algorithms queue is `Program for dot product and cross product of two vectors`, `Iterated Logarithm log*(n)`, and `Program to find correlation coefficient`.
 
 - The published catalog now reaches 623 entries on `main` after exhausting the GeeksforGeeks Branch and Bound page.
 - The Trie Data Structure common-interview queue is exhausted in source order after the published batch-107 slice.

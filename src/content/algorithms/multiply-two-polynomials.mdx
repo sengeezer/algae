@@ -1,0 +1,112 @@
+---
+title: Multiply two polynomials
+slug: multiply-two-polynomials
+category: Mathematics
+summary: Multiply two polynomials represented by coefficient arrays.
+description: "Multiply two polynomials by accumulating pairwise coefficient products into the appropriate degree index."
+dataStructures:
+  - Array
+techniques:
+  - Convolution
+  - Nested Loops
+  - Algebraic Simulation
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - polynomial multiplication arrays
+  - coefficient convolution
+  - multiply coefficient vectors
+useCases:
+  - Symbolic algebra operations
+  - Signal processing style convolution
+  - Basis for faster FFT and Karatsuba variants
+complexity:
+  time: O(m * n)
+  space: O(m + n)
+  notes: m and n are the numbers of coefficients in the two inputs.
+interviewSignals:
+  - Inputs are coefficient arrays in ascending degree order.
+  - Expected output length is m + n - 1.
+  - Product index rule is i + j.
+relatedSlugs:
+  - program-to-add-two-polynomials
+  - find-number-of-solutions-of-a-linear-equation-of-n-variables
+  - karatsuba-algorithm-for-fast-multiplication-using-divide-and-conquer-algorithm
+provenance:
+  - title: "GeeksforGeeks - Multiply two polynomials"
+    href: https://www.geeksforgeeks.org/dsa/multiply-two-polynomials-2/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+For polynomials A and B, each coefficient pair contributes to degree `i + j`.
+
+- If `A[i]` multiplies `B[j]`, add product to `prod[i + j]`.
+- Output size is always `A.length + B.length - 1`.
+
+## Worked Example
+
+- `A = [5, 0, 10, 6]`
+- `B = [1, 2, 4]`
+- `prod = [5, 10, 30, 26, 52, 24]`
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function multiplyTwoPolynomials(A, B) {
+  if (!Array.isArray(A) || !Array.isArray(B)) {
+    throw new TypeError('Expected two coefficient arrays');
+  }
+  if (A.length === 0 || B.length === 0) {
+    return [];
+  }
+
+  const prod = new Array(A.length + B.length - 1).fill(0);
+
+  for (let i = 0; i < A.length; i += 1) {
+    for (let j = 0; j < B.length; j += 1) {
+      prod[i + j] += A[i] * B[j];
+    }
+  }
+
+  return prod;
+}
+```
+
+```ts
+export function multiplyTwoPolynomials(A: number[], B: number[]): number[] {
+  if (!Array.isArray(A) || !Array.isArray(B)) {
+    throw new TypeError('Expected two coefficient arrays');
+  }
+  if (A.length === 0 || B.length === 0) {
+    return [];
+  }
+
+  const prod = new Array<number>(A.length + B.length - 1).fill(0);
+
+  for (let i = 0; i < A.length; i += 1) {
+    for (let j = 0; j < B.length; j += 1) {
+      prod[i + j] += A[i] * B[j];
+    }
+  }
+
+  return prod;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- When would Karatsuba or FFT be preferred?
+- How would you represent sparse polynomials efficiently?
+- How can you trim trailing zero coefficients safely?
+
+## Common Pitfalls
+
+- Wrong output length.
+- Using descending degree indexing by mistake.
+- Forgetting to initialize the product array with zeros.
