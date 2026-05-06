@@ -1,0 +1,74 @@
+---
+title: "Check if a number is power of k using base changing method"
+slug: "check-if-a-number-is-power-of-k-using-base-changing-method"
+category: "Number System"
+description: "Determine whether n is an exact power of k by repeated division (or equivalent base-k digit property)."
+techniques: ["Number Theory", "Base Conversion", "Division Loop"]
+complexity:
+  time: "O(log_k n)"
+  space: "O(1)"
+  notes: "Each step divides n by k until no longer divisible"
+---
+
+## Overview
+
+Given positive integers `n` and `k`, determine whether there exists an integer `x >= 0` such that:
+
+`n = k^x`
+
+Examples:
+
+- `n = 16, k = 2` -> Yes (`x = 4`)
+- `n = 27, k = 3` -> Yes (`x = 3`)
+- `n = 20, k = 5` -> No
+
+The base-changing interpretation says: in base `k`, powers of `k` look like `1000...0` (one `1` followed by zeros).
+
+## Efficient Approach
+
+Use repeated division:
+
+1. Reject invalid bases (`k <= 1`) and non-positive `n`.
+2. While `n % k === 0`, divide `n` by `k`.
+3. If final `n === 1`, then original `n` was a power of `k`.
+
+```js
+function isPowerOfK(n, k) {
+  if (!Number.isInteger(n) || !Number.isInteger(k)) return false;
+  if (n <= 0 || k <= 1) return false;
+
+  while (n % k === 0) {
+    n = Math.floor(n / k);
+  }
+
+  return n === 1;
+}
+
+function powerExponentIfAny(n, k) {
+  if (!isPowerOfK(n, k)) return -1;
+  let exponent = 0;
+  while (n > 1) {
+    n = Math.floor(n / k);
+    exponent++;
+  }
+  return exponent;
+}
+
+console.assert(isPowerOfK(16, 2) === true, "16 is power of 2");
+console.assert(powerExponentIfAny(16, 2) === 4, "16 = 2^4");
+console.assert(isPowerOfK(27, 3) === true, "27 is power of 3");
+console.assert(powerExponentIfAny(27, 3) === 3, "27 = 3^3");
+console.assert(isPowerOfK(20, 5) === false, "20 is not power of 5");
+console.assert(isPowerOfK(1, 2) === true, "1 = 2^0");
+console.assert(isPowerOfK(64, 4) === true, "64 = 4^3");
+```
+
+## Why This Works
+
+If `n = k^x`, dividing by `k` exactly `x` times reaches `1` with no remainder at any step. If any step has remainder, `n` contains factors other than `k`, so it cannot be a pure power of `k`.
+
+## Interview Notes
+
+- Clarify whether `1` should be considered a power (`k^0`). Most definitions say yes.
+- For very large integers, use `BigInt` to avoid precision issues.
+- A logarithm-based check (`log(n)/log(k)`) is concise but can fail due to floating-point error.

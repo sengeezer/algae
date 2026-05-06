@@ -1,0 +1,92 @@
+---
+title: "Exponential notation of a decimal number"
+slug: "exponential-notation-of-a-decimal-number"
+category: "Number System"
+description: "Convert a decimal value into normalized scientific notation of the form aEb where 1 <= |a| < 10."
+techniques: ["String Processing", "Normalization", "Number Formatting"]
+complexity:
+  time: "O(n)"
+  space: "O(n)"
+  notes: "n is the number of digits processed from the input representation"
+---
+
+## Overview
+
+Given a decimal number, this problem asks us to write it in exponential (scientific) notation, typically represented as `aEb`, where `a` is the normalized mantissa and `b` is an integer exponent of 10.
+
+Examples:
+
+- `100.0` -> `1E2`
+- `19` -> `1.9E1`
+- `0.00123` -> `1.23E-3`
+
+A robust implementation should handle integers, decimal fractions, leading zeros, trailing zeros, and the special zero case.
+
+## Algorithm
+
+1. Trim whitespace and optional sign.
+2. Split into integer and fractional parts.
+3. Remove redundant leading/trailing zeros while preserving numeric value.
+4. If all digits are zero, return `0E0`.
+5. Find the first non-zero digit and compute exponent:
+   - If number is at least 1: exponent is based on integer-part length.
+   - If number is less than 1: exponent is negative and based on leading zeros in fraction.
+6. Build mantissa so exactly one non-zero digit is before the decimal point.
+7. Return `mantissa + "E" + exponent` (preserving sign when negative).
+
+```js
+function toExponentialNotation(input) {
+  const s = String(input).trim();
+  if (!s) throw new Error("Input cannot be empty");
+
+  let sign = "";
+  let body = s;
+  if (body[0] === "+" || body[0] === "-") {
+    sign = body[0] === "-" ? "-" : "";
+    body = body.slice(1);
+  }
+
+  if (!/^\d+(\.\d+)?$/.test(body)) {
+    throw new Error("Input must be a non-exponential decimal string");
+  }
+
+  let [intPart, fracPart = ""] = body.split(".");
+  intPart = intPart.replace(/^0+/, "") || "0";
+  fracPart = fracPart.replace(/0+$/, "");
+
+  // Zero case
+  if (intPart === "0" && fracPart.length === 0) {
+    return "0E0";
+  }
+
+  let exponent;
+  let digits;
+
+  if (intPart !== "0") {
+    digits = intPart + fracPart;
+    exponent = intPart.length - 1;
+  } else {
+    const firstNonZero = fracPart.search(/[1-9]/);
+    digits = fracPart.slice(firstNonZero);
+    exponent = -(firstNonZero + 1);
+  }
+
+  let mantissa = digits.length === 1 ? digits : `${digits[0]}.${digits.slice(1)}`;
+  if (mantissa.includes(".")) {
+    mantissa = mantissa.replace(/0+$/, "").replace(/\.$/, "");
+  }
+  return `${sign}${mantissa}E${exponent}`;
+}
+
+console.assert(toExponentialNotation("100.0") === "1E2", "100.0 -> 1E2");
+console.assert(toExponentialNotation("19") === "1.9E1", "19 -> 1.9E1");
+console.assert(toExponentialNotation("0.00123") === "1.23E-3", "0.00123 -> 1.23E-3");
+console.assert(toExponentialNotation("-4500") === "-4.5E3", "-4500 -> -4.5E3");
+console.assert(toExponentialNotation("0") === "0E0", "0 -> 0E0");
+```
+
+## Notes
+
+- Input validation here intentionally accepts plain decimal strings only (not existing scientific notation like `1e6`).
+- You can adapt output precision by rounding the mantissa to a fixed number of digits when needed.
+- In interviews, discuss edge cases explicitly: `0`, `-0.000`, and large strings beyond `Number.MAX_SAFE_INTEGER`.

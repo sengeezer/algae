@@ -1667,7 +1667,7 @@ This one-hundred-forty-fifth expansion slice lifts the catalog from 728 to 731 e
 ## Next candidates from the same sources
 
 - Batch 144 was published at commit ae9ae7a, advancing the catalog on `main` from 725 to 728 entries.
-- Batch 145 is now locally drafted, lifting the catalog from 728 to 731 entries after adding the three Algebra entries.
+- Batch 145 is now published on `main` at commit `ec72046`, lifting the catalog from 728 to 731 entries after adding the three Algebra entries.
 - Batch 145 keeps all three Algebra titles as exact source-order matches; focused `gray-matter` plus JavaScript-fence validators and `npm run build` both passed against the local 731-entry state with 736 static pages generated.
 - All three entries contain working JavaScript implementations with expected assertion results across multiple test cases and approaches.
 - The `Program for Muller Method` article includes convergence analysis comparing to Newton-Raphson, Secant, and Bisection methods, with explicit algorithmic steps for parabolic root-finding using the quadratic formula applied to interpolated parabolae.
@@ -1676,4 +1676,20 @@ This one-hundred-forty-fifth expansion slice lifts the catalog from 728 to 731 e
 - Batch 145 correctly fixes the KaTeX formula parsing issue introduced in the non-negative-solutions entry by converting `$...$` notation to plain-text code-escaped equivalents compatible with MDX acorn transpilation.
 - The next clean Mathematical Algorithms queue after batch 145 requires fresh vetting of the source page to identify next candidates after the current Algebra subsection frontier, as the three-item batch queue at memo line 219 now terminates here.
 - Provided the Algebra subsection is now exhausted, the next source branch remains the GeeksforGeeks Mathematical Algorithms page's remaining subsections: Number System, Prime Numbers & Primality Tests, Prime Factorization & Divisors, Modular Arithmetic, Factorial, Fibonacci Numbers, Catalan Numbers, nCr Computations, Set Theory, Sieve Algorithms, Euler Totient Function, and Chinese Remainder Theorem sections.
+
+## Batch 146 added
+
+This one-hundred-forty-sixth expansion slice lifts the catalog from 731 to 734 entries.
+
+- Exponential notation of a decimal number
+- Check if a number is power of k using base changing method
+- Program for decimal to hexadecimal conversion
+
+## Next candidates from the same sources
+
+- Batch 146 is now locally drafted, lifting the catalog from 731 to 734 entries after adding three Number System entries in source order.
+- Batch 146 keeps destination-title alignment for all three entries and validates cleanly with focused `gray-matter` plus JavaScript-fence checks and `npm run build`.
+- Build validation passed against the local 734-entry catalog state with 739 static pages generated.
+- In source order on the Mathematical Algorithms page, `Convert a binary number to hexadecimal number` is treated as duplicate-level coverage of the published `Binary to Hex` entry and is skipped.
+- The next clean Mathematical Algorithms queue after the local Batch 146 frontier is `Converting a Real Number (between 0 and 1) to Binary String`, `Convert from any base to decimal and vice versa`, and `Decimal to binary conversion without using arithmetic operators`.
 - The next vetted source branch after the exhausted Binary Indexed Tree page is the GeeksforGeeks Trie Data Structure page: https://www.geeksforgeeks.org/dsa/trie-insert-and-search/

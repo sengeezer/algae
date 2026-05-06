@@ -1,0 +1,74 @@
+---
+title: "Program for decimal to hexadecimal conversion"
+slug: "program-for-decimal-to-hexadecimal-conversion"
+category: "Number System"
+description: "Convert a base-10 integer to base-16 representation using repeated division by 16."
+techniques: ["Base Conversion", "Repeated Division", "Digit Mapping"]
+complexity:
+  time: "O(log_16 n)"
+  space: "O(log_16 n)"
+  notes: "Output length is proportional to the number of hexadecimal digits"
+---
+
+## Overview
+
+Hexadecimal is base 16 and uses symbols:
+
+- `0` through `9` for values 0..9
+- `A` through `F` for values 10..15
+
+To convert a decimal integer to hexadecimal, repeatedly divide by 16, store remainders, and reverse the collected symbols.
+
+Examples:
+
+- `116` -> `74`
+- `10` -> `A`
+- `33` -> `21`
+- `2545` -> `9F1`
+
+## Algorithm
+
+1. Handle `0` as a special case.
+2. Repeatedly compute `remainder = n % 16` and map it to a hex digit.
+3. Set `n = floor(n / 16)` and continue until `n = 0`.
+4. Reverse the collected digits.
+
+```js
+function decimalToHex(n) {
+  if (!Number.isInteger(n)) throw new Error("Input must be an integer");
+  if (n === 0) return "0";
+
+  const digits = "0123456789ABCDEF";
+  const negative = n < 0;
+  let value = Math.abs(n);
+  let out = "";
+
+  while (value > 0) {
+    const rem = value % 16;
+    out += digits[rem];
+    value = Math.floor(value / 16);
+  }
+
+  const hex = out.split("").reverse().join("");
+  return negative ? `-${hex}` : hex;
+}
+
+// Optional built-in shortcut for non-negative safe integers
+function decimalToHexBuiltIn(n) {
+  if (!Number.isInteger(n) || n < 0) throw new Error("Use non-negative integer");
+  return n.toString(16).toUpperCase();
+}
+
+console.assert(decimalToHex(116) === "74", "116 -> 74");
+console.assert(decimalToHex(10) === "A", "10 -> A");
+console.assert(decimalToHex(33) === "21", "33 -> 21");
+console.assert(decimalToHex(2545) === "9F1", "2545 -> 9F1");
+console.assert(decimalToHex(0) === "0", "0 -> 0");
+console.assert(decimalToHexBuiltIn(2545) === "9F1", "Built-in conversion matches");
+```
+
+## Notes
+
+- The manual method is useful when interviewers disallow direct built-in conversions.
+- For negative numbers, this implementation prepends `-` to the positive conversion.
+- For unsigned bit-level representations (two's complement), handling differs by fixed bit width.
