@@ -1,0 +1,148 @@
+---
+title: Find element using minimum segments in Seven Segment Display
+slug: find-element-using-minimum-segments-in-seven-segment-display
+category: Mathematics
+summary: From an array of numbers, return the element that needs the fewest seven-segment LEDs, breaking ties by earliest index.
+description: "Find element using minimum segments in Seven Segment Display computes per-digit segment costs and selects the first minimum-cost element."
+dataStructures:
+  - Array
+techniques:
+  - Greedy Selection
+  - Digit Decomposition
+  - Precomputed Lookup
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - minimum segments seven segment display
+  - least LED digits number
+  - seven segment cost selection
+useCases:
+  - Hardware display optimization tasks
+  - Digit-cost scoring in interview prompts
+  - Rule-based array selection problems
+complexity:
+  time: O(n * d)
+  space: O(1)
+  notes: d is number of digits per number; precomputed 0-9 segment costs keep lookup constant-time.
+interviewSignals:
+  - Predefined per-digit costs are provided.
+  - Need stable tie-break by earliest index.
+  - Straight scan with running minimum is expected.
+relatedSlugs:
+  - check-if-a-given-number-can-be-represented-in-given-a-no-of-digits-in-any-base
+  - find-next-greater-number-with-same-set-of-digits
+  - sum-of-digits
+provenance:
+  - title: "GeeksforGeeks - Minimum Segments in Seven Segment Display"
+    href: https://www.geeksforgeeks.org/dsa/find-element-using-minimum-segments-seven-segment-display/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+Given digit segment costs (`0->6, 1->2, 2->5, 3->5, 4->4, 5->5, 6->6, 7->3, 8->7, 9->6`), compute each number's total display cost and pick the earliest index with the minimum total.
+
+## Worked Example
+
+- `[1, 2, 3, 4, 5]` -> `1` (uses 2 segments)
+- `[489, 206, 745, 123, 756]` -> `745` (minimum segment sum among entries)
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function findElementUsingMinimumSegmentsInSevenSegmentDisplay(arr) {
+  if (!Array.isArray(arr) || arr.length === 0) {
+    throw new RangeError('Expected a non-empty array of natural numbers');
+  }
+
+  const seg = [6, 2, 5, 5, 4, 5, 6, 3, 7, 6];
+
+  const segmentCost = (value) => {
+    if (!Number.isInteger(value) || value < 0) {
+      throw new RangeError('Array must contain non-negative integers only');
+    }
+
+    if (value === 0) {
+      return seg[0];
+    }
+
+    let x = value;
+    let total = 0;
+    while (x > 0) {
+      total += seg[x % 10];
+      x = Math.floor(x / 10);
+    }
+    return total;
+  };
+
+  let bestIndex = 0;
+  let bestCost = segmentCost(arr[0]);
+
+  for (let i = 1; i < arr.length; i += 1) {
+    const cost = segmentCost(arr[i]);
+    if (cost < bestCost) {
+      bestCost = cost;
+      bestIndex = i;
+    }
+  }
+
+  return arr[bestIndex];
+}
+```
+
+```ts
+export function findElementUsingMinimumSegmentsInSevenSegmentDisplay(arr: number[]): number {
+  if (!Array.isArray(arr) || arr.length === 0) {
+    throw new RangeError('Expected a non-empty array of natural numbers');
+  }
+
+  const seg = [6, 2, 5, 5, 4, 5, 6, 3, 7, 6];
+
+  const segmentCost = (value: number): number => {
+    if (!Number.isInteger(value) || value < 0) {
+      throw new RangeError('Array must contain non-negative integers only');
+    }
+
+    if (value === 0) {
+      return seg[0];
+    }
+
+    let x = value;
+    let total = 0;
+    while (x > 0) {
+      total += seg[x % 10];
+      x = Math.floor(x / 10);
+    }
+    return total;
+  };
+
+  let bestIndex = 0;
+  let bestCost = segmentCost(arr[0]);
+
+  for (let i = 1; i < arr.length; i += 1) {
+    const cost = segmentCost(arr[i]);
+    if (cost < bestCost) {
+      bestCost = cost;
+      bestIndex = i;
+    }
+  }
+
+  return arr[bestIndex];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you return all elements with minimum segment usage?
+- What if the display has a custom segment-cost mapping?
+- Can this be vectorized for very large arrays?
+
+## Common Pitfalls
+
+- Not handling `0` correctly as a special single-digit case.
+- Ignoring tie-break rule (smallest index).
+- Using string conversion without validating numeric inputs.

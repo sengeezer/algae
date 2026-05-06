@@ -1,0 +1,115 @@
+---
+title: Print first k digits of 1/n where n is a positive integer
+slug: print-first-k-digits-of-1-n-where-n-is-a-positive-integer
+category: Mathematics
+summary: Print the first k digits after the decimal point of 1/n using integer long division.
+description: "Print first k digits of 1/n where n is a positive integer can be solved in O(k) time using remainder updates, avoiding floating-point precision and overflow issues."
+dataStructures:
+  - String
+techniques:
+  - Simulation
+  - Division Algorithm
+  - Number Theory
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - decimal expansion of reciprocal
+  - first k fractional digits of 1/n
+  - long division digits
+useCases:
+  - Precision-safe reciprocal digit generation
+  - Teaching long-division remainder mechanics
+  - Formatting fractional outputs without floating point
+complexity:
+  time: O(k)
+  space: O(k)
+  notes: "Each digit requires one remainder transition: digit=(10*rem)/n and rem=(10*rem)%n."
+interviewSignals:
+  - Prompt explicitly forbids floating-point arithmetic.
+  - Only first k digits are needed, not full expansion.
+  - Integer remainder simulation is expected.
+relatedSlugs:
+  - check-if-a-large-number-is-divisible-by-3-or-not
+  - binary-to-decimal
+  - arbitrary-base
+provenance:
+  - title: "GeeksforGeeks - Print first k digits of 1/n where n is a positive integer"
+    href: https://www.geeksforgeeks.org/dsa/print-first-k-digits-1n-n-positive-integer/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is a classic long-division simulation. If `rem` is current remainder, then each next digit after decimal is:
+
+- `digit = floor((10 * rem) / n)`
+- `rem = (10 * rem) % n`
+
+Start with `rem = 1` for `1/n`.
+
+## Worked Example
+
+- `n = 3`, `k = 3` gives `333`
+- `n = 50`, `k = 4` gives `0200`
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function printFirstKDigitsOf1ByN(n, k) {
+  if (!Number.isInteger(n) || n <= 0) {
+    throw new RangeError('Expected positive integer n');
+  }
+  if (!Number.isInteger(k) || k < 0) {
+    throw new RangeError('Expected non-negative integer k');
+  }
+
+  let rem = 1 % n;
+  let digits = '';
+
+  for (let i = 0; i < k; i += 1) {
+    const value = rem * 10;
+    digits += Math.floor(value / n).toString();
+    rem = value % n;
+  }
+
+  return digits;
+}
+```
+
+```ts
+export function printFirstKDigitsOf1ByN(n: number, k: number): string {
+  if (!Number.isInteger(n) || n <= 0) {
+    throw new RangeError('Expected positive integer n');
+  }
+  if (!Number.isInteger(k) || k < 0) {
+    throw new RangeError('Expected non-negative integer k');
+  }
+
+  let rem = 1 % n;
+  let digits = '';
+
+  for (let i = 0; i < k; i += 1) {
+    const value = rem * 10;
+    digits += Math.floor(value / n).toString();
+    rem = value % n;
+  }
+
+  return digits;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you detect repeating cycles in decimal expansion?
+- How can you produce digits lazily for streaming output?
+- How would this adapt for base `b` instead of base 10?
+
+## Common Pitfalls
+
+- Using floating-point division and losing precision.
+- Forgetting leading zeros in generated digits.
+- Not validating `n > 0`.

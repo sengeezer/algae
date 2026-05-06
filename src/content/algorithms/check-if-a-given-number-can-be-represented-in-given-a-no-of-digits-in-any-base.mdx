@@ -1,0 +1,135 @@
+---
+title: Check if a given number can be represented in given a no. of digits in any base
+slug: check-if-a-given-number-can-be-represented-in-given-a-no-of-digits-in-any-base
+category: Mathematics
+summary: Determine whether a number can be written using exactly d digits in any base from 2 to 32.
+description: "Check if a given number can be represented in given a no. of digits in any base iterates candidate bases and validates digit length through repeated division."
+dataStructures:
+  - Number
+techniques:
+  - Base Conversion
+  - Iterative Simulation
+  - Number Theory
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - representable in d digits any base
+  - base digit-length feasibility
+  - check number length in bases 2 to 32
+useCases:
+  - Digit-budget validation across numeral systems
+  - Base-conversion interview exercises
+  - Numeric representation constraints in embedded tooling
+complexity:
+  time: O(31 * d)
+  space: O(1)
+  notes: Try bases 2..32; each check repeatedly divides by base to count required digits.
+interviewSignals:
+  - A base range is provided explicitly.
+  - Need existence in any base, not a specific conversion output.
+  - Simple repeated division outperforms constructing full strings.
+relatedSlugs:
+  - arbitrary-base
+  - convert-base-decimal-vice-versa
+  - print-first-k-digits-of-1-n-where-n-is-a-positive-integer
+provenance:
+  - title: "GeeksforGeeks - Check if a given number can be represented in given a no. of digits in any base"
+    href: https://www.geeksforgeeks.org/dsa/check-if-a-given-number-can-be-represented-in-given-a-no-of-digits-in-any-base/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+The problem asks if there exists a base `b` in `[2, 32]` such that `num` uses exactly `dig` digits in base `b`. For each base, repeatedly divide by `b` and count digits.
+
+## Worked Example
+
+- `num = 8, dig = 4` -> `Yes` (`1000` in base 2)
+- `num = 8, dig = 2` -> `Yes` (`22` in base 3)
+- `num = 8, dig = 3` -> `No`
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function canBeRepresentedInGivenDigitsAnyBase(num, dig) {
+  if (!Number.isInteger(num) || num < 0) {
+    throw new RangeError('Expected non-negative integer num');
+  }
+  if (!Number.isInteger(dig) || dig <= 0) {
+    throw new RangeError('Expected positive integer dig');
+  }
+
+  const fitsBase = (n, digits, base) => {
+    let value = n;
+    let count = 1;
+
+    while (value >= base && count < digits) {
+      value = Math.floor(value / base);
+      count += 1;
+    }
+
+    return count === digits && value < base;
+  };
+
+  for (let base = 2; base <= 32; base += 1) {
+    if (fitsBase(num, dig, base)) {
+      return true;
+    }
+    if (base > num && dig > 1) {
+      break;
+    }
+  }
+
+  return dig === 1 && num < 32;
+}
+```
+
+```ts
+export function canBeRepresentedInGivenDigitsAnyBase(num: number, dig: number): boolean {
+  if (!Number.isInteger(num) || num < 0) {
+    throw new RangeError('Expected non-negative integer num');
+  }
+  if (!Number.isInteger(dig) || dig <= 0) {
+    throw new RangeError('Expected positive integer dig');
+  }
+
+  const fitsBase = (n: number, digits: number, base: number): boolean => {
+    let value = n;
+    let count = 1;
+
+    while (value >= base && count < digits) {
+      value = Math.floor(value / base);
+      count += 1;
+    }
+
+    return count === digits && value < base;
+  };
+
+  for (let base = 2; base <= 32; base += 1) {
+    if (fitsBase(num, dig, base)) {
+      return true;
+    }
+    if (base > num && dig > 1) {
+      break;
+    }
+  }
+
+  return dig === 1 && num < 32;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Can you derive bounds to skip many bases quickly?
+- How would you return one valid base when it exists?
+- What changes if base range becomes very large?
+
+## Common Pitfalls
+
+- Treating leading zeros as allowed extra digits.
+- Off-by-one mistakes in digit counting.
+- Forgetting the base range limit 2..32.
