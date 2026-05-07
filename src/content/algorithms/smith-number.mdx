@@ -1,0 +1,84 @@
+---
+title: "Smith Number"
+slug: "smith-number"
+category: "Prime Factorization & Divisors"
+description: "Check whether a composite number has digit sum equal to the digit sum of its prime factors (with multiplicity)."
+techniques: ["Prime Factorization", "Digit Sum", "Number Theory"]
+complexity:
+  time: "O(sqrt(n))"
+  space: "O(1)"
+  notes: "Trial division factorization with multiplicity-aware digit accumulation"
+---
+
+## Overview
+
+A **Smith Number** is a composite number whose sum of digits equals the sum of digits of its prime factorization (counting repeated factors).
+
+Examples:
+
+- `4` -> factors `2, 2`; digit sums: `4 == 2 + 2` => Yes
+- `6` -> factors `2, 3`; digit sums: `6 != 5` => No
+- `666` -> factors `2, 3, 3, 37`; digit sums: `6+6+6 == 2+3+3+(3+7)` => Yes
+
+Prime numbers are not Smith numbers.
+
+## Algorithm
+
+1. Compute digit sum of `n`.
+2. Factorize `n` into prime factors with multiplicity.
+3. Sum digits of all prime factors.
+4. Return true iff number is composite and both sums match.
+
+```js
+function digitSum(x) {
+  let n = Math.abs(x);
+  let sum = 0;
+  while (n > 0) {
+    sum += n % 10;
+    n = Math.floor(n / 10);
+  }
+  return sum;
+}
+
+function isSmithNumber(n) {
+  if (!Number.isInteger(n) || n < 4) return false; // Smallest composite is 4
+
+  let x = n;
+  let primeFactorDigitSum = 0;
+  let factorCount = 0;
+
+  while (x % 2 === 0) {
+    primeFactorDigitSum += digitSum(2);
+    x /= 2;
+    factorCount++;
+  }
+
+  for (let p = 3; p * p <= x; p += 2) {
+    while (x % p === 0) {
+      primeFactorDigitSum += digitSum(p);
+      x /= p;
+      factorCount++;
+    }
+  }
+
+  if (x > 1) {
+    primeFactorDigitSum += digitSum(x);
+    factorCount++;
+  }
+
+  // Prime numbers have exactly one prime factor equal to themselves.
+  if (factorCount <= 1) return false;
+
+  return digitSum(n) === primeFactorDigitSum;
+}
+
+console.assert(isSmithNumber(4) === true, "4 is a Smith number");
+console.assert(isSmithNumber(6) === false, "6 is not a Smith number");
+console.assert(isSmithNumber(666) === true, "666 is a Smith number");
+console.assert(isSmithNumber(13) === false, "prime numbers are not Smith numbers");
+```
+
+## Notes
+
+- Multiplicity matters: factor `2^3 * 5` contributes digits `2 + 2 + 2 + 5`.
+- For bulk checks, a precomputed smallest-prime-factor table can speed up factorizations.

@@ -1749,7 +1749,22 @@ This one-hundred-fiftieth expansion slice lifts the catalog from 743 to 746 entr
 
 ## Next candidates from the same sources
 
-- Batch 150 is now locally drafted, lifting the catalog from 743 to 746 entries after adding three Prime Numbers & Primality Tests entries in source order.
+- Batch 150 is now published on `main` at commit `9026768`, lifting the catalog from 743 to 746 entries after adding three Prime Numbers & Primality Tests entries in source order.
 - Batch 150 keeps destination-title alignment; source link `Introduction to Primality Test and School Method` resolves to destination title `Check for Prime Number`.
 - Focused JavaScript-fence validation and `npm run build` both passed against the local 746-entry state with 751 static pages generated.
-- The next clean Mathematical Algorithms queue after the local batch 150 frontier is `Lucas Primality Test`, `Smith Numbers`, and `Sphenic Number`.
+- The next clean Mathematical Algorithms queue after batch 150 was `Lucas Primality Test`, `Smith Numbers`, and `Sphenic Number`.
+
+## Batch 151 added
+
+This one-hundred-fifty-first expansion slice lifts the catalog from 746 to 749 entries.
+
+- Lucas Primality Test
+- Smith Number
+- Sphenic Number
+
+## Next candidates from the same sources
+
+- Batch 151 is now locally drafted, lifting the catalog from 746 to 749 entries after adding one Prime Numbers & Primality Tests entry and two Prime Factorization & Divisors entries in source order.
+- Batch 151 keeps destination-title alignment; source queue label `Smith Numbers` resolves to destination title `Smith Number`.
+- Focused JavaScript-fence validation and `npm run build` both passed against the local 749-entry state with 754 static pages generated.
+- The next clean Mathematical Algorithms queue after the local batch 151 frontier is `Hoax Number`, `k-th prime factor of a given number`, and `Pollard's Rho Algorithm for Prime Factorization`.

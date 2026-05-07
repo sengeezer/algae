@@ -1,0 +1,99 @@
+---
+title: "Lucas Primality Test"
+slug: "lucas-primality-test"
+category: "Prime Numbers & Primality Tests"
+description: "Deterministic primality criterion based on finding a witness a such that a^(n-1) == 1 mod n and additional factor checks over n-1 hold."
+techniques: ["Modular Exponentiation", "Prime Factorization", "Primality Testing"]
+complexity:
+  time: "O(n log n)"
+  space: "O(sqrt(n))"
+  notes: "Complexity depends on factoring n-1 and repeated modular exponentiation"
+---
+
+## Overview
+
+Lucas primality test says that an odd integer `n > 1` is prime if there exists an integer `a` with `1 < a < n` such that:
+
+1. `a^(n-1) % n == 1`
+2. For every prime factor `q` of `n-1`, `a^((n-1)/q) % n != 1`
+
+If such an `a` exists, `n` is prime.
+
+## Algorithm
+
+1. Handle small/base cases.
+2. Factorize `n - 1` into distinct prime factors.
+3. Try candidate witnesses `a = 2..n-1`.
+4. If condition (1) fails, continue to next `a`.
+5. If condition (1) holds and condition (2) holds for all factors, return prime.
+6. Otherwise return composite.
+
+```js
+function modPow(base, exp, mod) {
+  let b = base % mod;
+  let e = exp;
+  let result = 1;
+
+  while (e > 0) {
+    if (e & 1) result = (result * b) % mod;
+    b = (b * b) % mod;
+    e >>= 1;
+  }
+  return result;
+}
+
+function primeFactorsDistinct(n) {
+  const factors = [];
+  let x = n;
+
+  if (x % 2 === 0) {
+    factors.push(2);
+    while (x % 2 === 0) x /= 2;
+  }
+
+  for (let p = 3; p * p <= x; p += 2) {
+    if (x % p === 0) {
+      factors.push(p);
+      while (x % p === 0) x /= p;
+    }
+  }
+
+  if (x > 1) factors.push(x);
+  return factors;
+}
+
+function lucasPrimalityTest(n) {
+  if (!Number.isInteger(n) || n <= 1) return false;
+  if (n === 2) return true;
+  if (n % 2 === 0) return false;
+
+  const factors = primeFactorsDistinct(n - 1);
+
+  for (let a = 2; a < n; a++) {
+    if (modPow(a, n - 1, n) !== 1) continue;
+
+    let witnessValid = true;
+    for (const q of factors) {
+      if (modPow(a, (n - 1) / q, n) === 1) {
+        witnessValid = false;
+        break;
+      }
+    }
+
+    if (witnessValid) return true;
+  }
+
+  return false;
+}
+
+console.assert(lucasPrimalityTest(7) === true, "7 should be prime");
+console.assert(lucasPrimalityTest(9) === false, "9 should be composite");
+console.assert(lucasPrimalityTest(37) === true, "37 should be prime");
+console.assert(lucasPrimalityTest(1) === false, "1 is not prime");
+```
+
+## Notes
+
+- The test requires factorization of `n-1`, which can be costly for large numbers.
+- Choosing a valid witness `a` can also be non-trivial in practice.
+- For very large integers, probabilistic tests are often preferred first.

@@ -1,0 +1,76 @@
+---
+title: "Sphenic Number"
+slug: "sphenic-number"
+category: "Prime Factorization & Divisors"
+description: "Determine whether n is the product of exactly three distinct prime factors."
+techniques: ["Prime Factorization", "Divisor Structure", "Number Theory"]
+complexity:
+  time: "O(sqrt(n))"
+  space: "O(1)"
+  notes: "Direct factorization tracks distinct prime factors and their multiplicity"
+---
+
+## Overview
+
+A **Sphenic Number** is a positive integer that is the product of exactly three **distinct** primes.
+
+Examples:
+
+- `30 = 2 * 3 * 5` => Yes
+- `60 = 2^2 * 3 * 5` => No (a prime repeats)
+- `66 = 2 * 3 * 11` => Yes
+
+A useful property is that every sphenic number has exactly 8 divisors.
+
+## Algorithm
+
+1. Factorize `n`.
+2. Count distinct prime factors.
+3. Ensure each prime appears exactly once.
+4. Return true iff there are exactly 3 such distinct primes.
+
+```js
+function isSphenicNumber(n) {
+  if (!Number.isInteger(n) || n <= 1) return false;
+
+  let x = n;
+  let distinct = 0;
+
+  const takeFactor = (p) => {
+    let exponent = 0;
+    while (x % p === 0) {
+      x /= p;
+      exponent++;
+    }
+    if (exponent > 0) {
+      distinct++;
+      if (exponent > 1) return false; // repeated prime factor not allowed
+    }
+    return true;
+  };
+
+  if (!takeFactor(2)) return false;
+
+  for (let p = 3; p * p <= x; p += 2) {
+    if (!takeFactor(p)) return false;
+    if (distinct > 3) return false;
+  }
+
+  if (x > 1) {
+    distinct++;
+  }
+
+  return distinct === 3;
+}
+
+console.assert(isSphenicNumber(30) === true, "30 is sphenic");
+console.assert(isSphenicNumber(60) === false, "60 is not sphenic");
+console.assert(isSphenicNumber(66) === true, "66 is sphenic");
+console.assert(isSphenicNumber(70) === true, "70 is sphenic");
+console.assert(isSphenicNumber(8) === false, "8 is not sphenic");
+```
+
+## Notes
+
+- The strict requirement is `n = p * q * r` where `p, q, r` are distinct primes.
+- Divisor-count shortcut can help, but direct factor checks are usually simpler and safer for interviews.
