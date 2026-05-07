@@ -1,0 +1,51 @@
+---
+title: "Cassini's Identity"
+slug: "cassinis-identity"
+category: "Fibonacci Numbers"
+description: "Evaluate f(n-1)*f(n+1) - f(n)² for Fibonacci numbers in O(1) time using the mathematical identity (-1)^n."
+techniques: ["Fibonacci", "Mathematical Identity", "Number Theory"]
+complexity:
+  time: "O(1)"
+  space: "O(1)"
+  notes: "No Fibonacci computation needed; only a parity check"
+---
+
+## Overview
+
+**Cassini's Identity**: For any n ≥ 1,
+
+```
+f(n-1) × f(n+1) - f(n)² = (-1)^n
+```
+
+Where `f(n)` is the nth Fibonacci number. The elegant insight: we don't need to compute Fibonacci numbers at all—just check if n is even or odd!
+
+## Example
+
+- n = 5 (odd): f(4) = 3, f(6) = 8, f(5) = 5
+  - 3 × 8 - 5² = 24 - 25 = -1 = (-1)⁵ ✓
+
+## Approach
+
+```js
+function cassiniIdentity(n) {
+  if (!Number.isInteger(n) || n < 1) return null;
+
+  // f(n-1)*f(n+1) - f(n)^2 = (-1)^n
+  // Even n → result is 1
+  // Odd n → result is -1
+  return (n & 1) === 0 ? 1 : -1;
+}
+
+console.assert(cassiniIdentity(1) === -1, "n=1 (odd) → -1");
+console.assert(cassiniIdentity(2) === 1, "n=2 (even) → 1");
+console.assert(cassiniIdentity(5) === -1, "n=5 (odd) → -1");
+console.assert(cassiniIdentity(6) === 1, "n=6 (even) → 1");
+console.assert(cassiniIdentity(100) === 1, "n=100 (even) → 1");
+```
+
+## Interview Notes
+
+- The formula is a classic interview "gotcha"—candidates compute Fibonacci, you compute parity.
+- Demonstrates deep understanding of mathematical identities over brute-force algorithms.
+- Rooted in matrix representations of Fibonacci (see Matrix Exponentiation).

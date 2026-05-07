@@ -1,0 +1,50 @@
+---
+title: "Finding nth Fibonacci Number using Golden Ratio"
+slug: "finding-nth-fibonacci-number-using-golden-ratio"
+category: "Fibonacci Numbers"
+description: "Compute the nth Fibonacci number using the golden ratio and rounding, accurate for n ≤ 34."
+techniques: ["Fibonacci", "Golden Ratio", "Mathematical Approximation"]
+complexity:
+  time: "O(n)"
+  space: "O(1)"
+  notes: "Scales linearly from the 5th term; accurate only up to ~34th Fibonacci"
+---
+
+## Overview
+
+The **Golden Ratio** φ = (1 + √5) / 2 ≈ 1.618 relates to Fibonacci via:
+
+`F(n) ≈ φ^n / √5`
+
+For practical purposes: `F(n) = round(F(n-1) * φ)` starting from the 5th term.
+
+## Approach
+
+Use precomputed base cases and multiply by φ with rounding.
+
+```js
+const PHI = (1 + Math.sqrt(5)) / 2;
+const BASE = [0, 1, 1, 2, 3, 5];
+
+function fibonacciUsingGoldenRatio(n) {
+  if (!Number.isInteger(n) || n < 0) return -1;
+  if (n < BASE.length) return BASE[n];
+
+  let current = BASE[5];
+  for (let i = 5; i < n; i++) {
+    current = Math.round(current * PHI);
+  }
+  return current;
+}
+
+console.assert(fibonacciUsingGoldenRatio(0) === 0, "F(0) = 0");
+console.assert(fibonacciUsingGoldenRatio(9) === 34, "F(9) = 34");
+console.assert(fibonacciUsingGoldenRatio(7) === 13, "F(7) = 13");
+console.assert(fibonacciUsingGoldenRatio(5) === 5, "F(5) = 5");
+```
+
+## Notes
+
+- **Limitation**: Accurate only for n ≤ 34; floating-point errors accumulate beyond.
+- **Use case**: Interviews love this for demonstrating mathematical insight over raw computation.
+- Can be optimized to O(log n) with matrix exponentiation, but loses the golden-ratio elegance.

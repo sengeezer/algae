@@ -1,0 +1,57 @@
+---
+title: "Zeckendorf's Theorem (Non-Neighbouring Fibonacci Representation)"
+slug: "zeckendorfs-theorem-non-neighbouring-fibonacci-representation"
+category: "Fibonacci Numbers"
+description: "Represent any positive integer uniquely as a sum of non-consecutive Fibonacci numbers using a greedy algorithm."
+techniques: ["Fibonacci", "Greedy Algorithm", "Number Theory"]
+complexity:
+  time: "O(n log n)"
+  space: "O(1)"
+  notes: "Finding each greedy Fibonacci contributes O(log n) and we do it O(log n) times max"
+---
+
+## Overview
+
+**Zeckendorf's Theorem**: Every positive integer can be uniquely written as a sum of distinct, non-consecutive Fibonacci numbers.
+
+Example: `10 = 8 + 2` (both are Fibonacci, not consecutive), `30 = 21 + 8 + 1`.
+
+## Approach
+
+Greedy algorithm: repeatedly subtract the largest Fibonacci number ≤ remaining value.
+
+```js
+function generateFibonacci(maxVal) {
+  const fibs = [1, 2];
+  while (fibs[fibs.length - 1] < maxVal) {
+    fibs.push(fibs[fibs.length - 1] + fibs[fibs.length - 2]);
+  }
+  return fibs;
+}
+
+function zeckendorfRepresentation(n) {
+  if (!Number.isInteger(n) || n <= 0) return -1;
+
+  const fibs = generateFibonacci(n);
+  const result = [];
+  let remaining = n;
+
+  for (let i = fibs.length - 1; i >= 0 && remaining > 0; i--) {
+    if (fibs[i] <= remaining) {
+      result.push(fibs[i]);
+      remaining -= fibs[i];
+    }
+  }
+
+  return remaining === 0 ? result : -1;
+}
+
+console.assert(JSON.stringify(zeckendorfRepresentation(10)) === JSON.stringify([8, 2]), "10 = 8 + 2");
+console.assert(JSON.stringify(zeckendorfRepresentation(30)) === JSON.stringify([21, 8, 1]), "30 = 21 + 8 + 1");
+console.assert(JSON.stringify(zeckendorfRepresentation(1)) === JSON.stringify([1]), "1 = 1");
+```
+
+## Notes
+
+- The greedy choice ensures no two consecutive Fibonacci numbers appear (by mathematical induction).
+- Representation is unique and sparse (fewer 1-bits than binary).

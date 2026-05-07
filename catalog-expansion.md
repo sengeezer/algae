@@ -1871,3 +1871,18 @@ This one-hundred-fifty-eighth expansion slice lifts the catalog from 767 to 770 
 - Duplicate-level skip note: `Check if a number is a Krishnamurthy Number or not` maps to existing `check-kishnamurthy-number`, so the next clean source-ordered candidate was `Interesting Programming facts about Fibonacci numbers` after also passing already-covered `Fibonacci Numbers`.
 - Focused JavaScript-fence validation and `npm run build` both passed against the local 770-entry state with 775 static pages generated.
 - The next clean Mathematical Algorithms queue after the local batch 158 frontier is `Zeckendorf's Theorem (Non-Neighbouring Fibonacci Representation)`, `Finding nth Fibonacci Number using Golden Ratio`, and `Matrix Exponentiation`.
+
+## Batch 159 added
+
+This one-hundred-fifty-ninth expansion slice lifts the catalog from 770 to 773 entries.
+
+- Zeckendorf's Theorem (Non-Neighbouring Fibonacci Representation)
+- Finding nth Fibonacci Number using Golden Ratio
+- Cassini's Identity
+
+## Next candidates from the same sources
+
+- Batch 159 is now locally drafted, lifting the catalog from 770 to 773 entries after adding three Fibonacci-related entries in source order.
+- Collision note: `Matrix Exponentiation` (the third source item) maps to existing `matrix-exponentiation.mdx` with comprehensive coverage, so the next clean source-ordered candidate was `Cassini's Identity` from the same Mathematical Algorithms section.
+- Focused JavaScript-fence validation and `npm run build` both passed against the local 773-entry state with 778 static pages generated.
+- The next clean Mathematical Algorithms queue after the local batch 159 frontier is `Fibonacci Coding`, `Tail Recursion for Fibonacci`, and `Catalan Numbers`.
