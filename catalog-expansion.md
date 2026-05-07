@@ -1687,9 +1687,24 @@ This one-hundred-forty-sixth expansion slice lifts the catalog from 731 to 734 e
 
 ## Next candidates from the same sources
 
-- Batch 146 is now locally drafted, lifting the catalog from 731 to 734 entries after adding three Number System entries in source order.
+- Batch 146 is now published on `main` at commit `4204e07`, lifting the catalog from 731 to 734 entries after adding three Number System entries in source order.
 - Batch 146 keeps destination-title alignment for all three entries and validates cleanly with focused `gray-matter` plus JavaScript-fence checks and `npm run build`.
 - Build validation passed against the local 734-entry catalog state with 739 static pages generated.
 - In source order on the Mathematical Algorithms page, `Convert a binary number to hexadecimal number` is treated as duplicate-level coverage of the published `Binary to Hex` entry and is skipped.
-- The next clean Mathematical Algorithms queue after the local Batch 146 frontier is `Converting a Real Number (between 0 and 1) to Binary String`, `Convert from any base to decimal and vice versa`, and `Decimal to binary conversion without using arithmetic operators`.
-- The next vetted source branch after the exhausted Binary Indexed Tree page is the GeeksforGeeks Trie Data Structure page: https://www.geeksforgeeks.org/dsa/trie-insert-and-search/
+- The next clean Mathematical Algorithms queue after batch 146 was `Converting a Real Number (between 0 and 1) to Binary String`, `Convert from any base to decimal and vice versa`, and `Decimal to binary conversion without using arithmetic operators`.
+
+## Batch 147 added
+
+This one-hundred-forty-seventh expansion slice lifts the catalog from 734 to 737 entries.
+
+- Converting a Real Number (between 0 and 1) to Binary String
+- Convert from any base to decimal and vice versa
+- Decimal to binary conversion without using arithmetic operators
+
+## Next candidates from the same sources
+
+- Batch 147 is now locally drafted, lifting the catalog from 734 to 737 entries after adding three Number System entries in source order.
+- Batch 147 keeps destination-title alignment for all three entries and validates cleanly with focused JavaScript-fence checks and `npm run build`.
+- Build validation passed against the local 737-entry catalog state with 742 static pages generated.
+- On the Mathematical Algorithms page, `Prime Numbers` is treated as overview-level duplicate coverage relative to existing local prime-check and prime-sequence entries, so drafting advances to the next clean Primality items.
+- The next clean Mathematical Algorithms queue after the local batch 147 frontier is `Left-Truncatable Prime`, `Mersenne Prime`, and `Super Prime`.

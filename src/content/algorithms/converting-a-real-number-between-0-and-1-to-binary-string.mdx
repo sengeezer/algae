@@ -1,0 +1,72 @@
+---
+title: "Converting a Real Number (between 0 and 1) to Binary String"
+slug: "converting-a-real-number-between-0-and-1-to-binary-string"
+category: "Number System"
+description: "Convert a fractional decimal number in the interval (0, 1) to binary, returning ERROR when a finite representation within a fixed bit limit is impossible."
+techniques: ["Binary Representation", "Fractional Conversion", "Precision Control"]
+complexity:
+  time: "O(limit)"
+  space: "O(limit)"
+  notes: "limit is the maximum number of binary fractional digits allowed"
+---
+
+## Overview
+
+Given a real number `n` where `0 < n < 1`, produce its binary fractional form.
+
+Examples:
+
+- `0.625` -> `.101`
+- `0.72` -> `ERROR` (cannot be represented exactly within a small finite limit)
+
+A standard interview version imposes a maximum output length (often 32 characters after the decimal point). If exact conversion does not terminate by then, return `ERROR`.
+
+## Algorithm (Multiply-by-2 Method)
+
+1. Validate that `n` is strictly between `0` and `1`.
+2. Repeatedly multiply `n` by 2.
+3. If the result is at least 1, append `1` and subtract 1 from `n`.
+4. Otherwise append `0`.
+5. Stop when `n` becomes 0 (exact representation) or when bit limit is exceeded.
+
+```js
+function fractionalToBinaryString(n, maxBits = 32) {
+  if (typeof n !== "number" || !Number.isFinite(n) || n <= 0 || n >= 1) {
+    return "ERROR";
+  }
+
+  let value = n;
+  let bits = ".";
+
+  while (value > 0) {
+    if (bits.length - 1 >= maxBits) {
+      return "ERROR";
+    }
+
+    value *= 2;
+    if (value >= 1) {
+      bits += "1";
+      value -= 1;
+    } else {
+      bits += "0";
+    }
+  }
+
+  return bits;
+}
+
+console.assert(fractionalToBinaryString(0.625) === ".101", "0.625 -> .101");
+console.assert(fractionalToBinaryString(0.5) === ".1", "0.5 -> .1");
+console.assert(fractionalToBinaryString(0.25) === ".01", "0.25 -> .01");
+console.assert(fractionalToBinaryString(0.72, 32) === "ERROR", "0.72 should overflow limit");
+console.assert(fractionalToBinaryString(1.0) === "ERROR", "n must be in (0,1)");
+```
+
+## Why ERROR Happens
+
+Only fractions whose reduced denominator is a power of 2 have finite binary expansions. Values like `0.72 = 18/25` require infinite repeating binary digits, so bounded output eventually returns `ERROR`.
+
+## Notes
+
+- Floating-point rounding can affect edge behavior near the bit limit.
+- For exact rational handling, represent input as numerator/denominator integers and reduce first.

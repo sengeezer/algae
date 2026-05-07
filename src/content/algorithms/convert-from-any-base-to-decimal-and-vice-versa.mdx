@@ -1,0 +1,93 @@
+---
+title: "Convert from any base to decimal and vice versa"
+slug: "convert-from-any-base-to-decimal-and-vice-versa"
+category: "Number System"
+description: "Bidirectional conversion between base-10 and bases 2..36 using positional notation and repeated division."
+techniques: ["Base Conversion", "Positional Number System", "Digit Mapping"]
+complexity:
+  time: "O(n)"
+  space: "O(n)"
+  notes: "n is the number of digits in the input or output representation"
+---
+
+## Overview
+
+This problem combines two classic conversions:
+
+1. Convert a number string in base `b` to decimal.
+2. Convert a decimal integer to target base `b`.
+
+Support bases up to 36 with digits `0-9` and letters `A-Z`.
+
+Examples:
+
+- `"1100"` (base 2) -> `12` (decimal)
+- `"11A"` (base 16) -> `282` (decimal)
+- `12` (decimal) -> `"1100"` (base 2)
+
+## Core Ideas
+
+- Base to decimal uses positional value accumulation:
+  `value = value * base + digit`.
+- Decimal to base uses repeated division by `base`, collecting remainders in reverse.
+
+```js
+const ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+function charToValue(ch) {
+  const idx = ALPHABET.indexOf(ch.toUpperCase());
+  if (idx === -1) throw new Error(`Invalid digit: ${ch}`);
+  return idx;
+}
+
+function toDecimal(str, base) {
+  if (!Number.isInteger(base) || base < 2 || base > 36) {
+    throw new Error("Base must be in [2, 36]");
+  }
+
+  let value = 0;
+  for (const ch of str) {
+    const digit = charToValue(ch);
+    if (digit >= base) {
+      throw new Error(`Digit '${ch}' not valid for base ${base}`);
+    }
+    value = value * base + digit;
+  }
+  return value;
+}
+
+function fromDecimal(num, base) {
+  if (!Number.isInteger(base) || base < 2 || base > 36) {
+    throw new Error("Base must be in [2, 36]");
+  }
+  if (!Number.isInteger(num) || num < 0) {
+    throw new Error("Number must be a non-negative integer");
+  }
+  if (num === 0) return "0";
+
+  let n = num;
+  let out = "";
+  while (n > 0) {
+    const rem = n % base;
+    out = ALPHABET[rem] + out;
+    n = Math.floor(n / base);
+  }
+  return out;
+}
+
+function convertBase(str, fromBase, toBase) {
+  return fromDecimal(toDecimal(str, fromBase), toBase);
+}
+
+console.assert(toDecimal("1100", 2) === 12, "1100(base2)=12");
+console.assert(toDecimal("11A", 16) === 282, "11A(base16)=282");
+console.assert(fromDecimal(12, 2) === "1100", "12->1100(base2)");
+console.assert(fromDecimal(282, 16) === "11A", "282->11A(base16)");
+console.assert(convertBase("101101", 2, 16) === "2D", "binary to hex");
+```
+
+## Notes
+
+- For very large values beyond safe integer range, use `BigInt`.
+- Input normalization (uppercase/lowercase) simplifies digit parsing.
+- Built-ins (`parseInt`, `toString`) are fine in practice, but manual methods are often expected in interviews.
