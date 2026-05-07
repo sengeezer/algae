@@ -1764,7 +1764,22 @@ This one-hundred-fifty-first expansion slice lifts the catalog from 746 to 749 e
 
 ## Next candidates from the same sources
 
-- Batch 151 is now locally drafted, lifting the catalog from 746 to 749 entries after adding one Prime Numbers & Primality Tests entry and two Prime Factorization & Divisors entries in source order.
+- Batch 151 is now published on `main` at commit `5097e04`, lifting the catalog from 746 to 749 entries after adding one Prime Numbers & Primality Tests entry and two Prime Factorization & Divisors entries in source order.
 - Batch 151 keeps destination-title alignment; source queue label `Smith Numbers` resolves to destination title `Smith Number`.
 - Focused JavaScript-fence validation and `npm run build` both passed against the local 749-entry state with 754 static pages generated.
-- The next clean Mathematical Algorithms queue after the local batch 151 frontier is `Hoax Number`, `k-th prime factor of a given number`, and `Pollard's Rho Algorithm for Prime Factorization`.
+- The next clean Mathematical Algorithms queue after batch 151 was `Hoax Number`, `k-th prime factor of a given number`, and `Pollard's Rho Algorithm for Prime Factorization`.
+
+## Batch 152 added
+
+This one-hundred-fifty-second expansion slice lifts the catalog from 749 to 752 entries.
+
+- Hoax Number
+- k-th prime factor of a given number
+- Pollard's Rho Algorithm for Prime Factorization
+
+## Next candidates from the same sources
+
+- Batch 152 is now locally drafted, lifting the catalog from 749 to 752 entries after adding three Prime Factorization & Divisors entries in source order.
+- Batch 152 keeps destination-title alignment for all three entries and validates cleanly with focused JavaScript-fence checks and `npm run build`.
+- Build validation passed against the local 752-entry catalog state with 757 static pages generated.
+- The next clean Mathematical Algorithms queue after the local batch 152 frontier is `Finding power of prime number p in n!`, `Find all divisors of a natural number`, and `Find numbers with n-divisors in a given range`.

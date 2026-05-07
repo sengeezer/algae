@@ -1,0 +1,86 @@
+---
+title: "Pollard's Rho Algorithm for Prime Factorization"
+slug: "pollards-rho-algorithm-for-prime-factorization"
+category: "Prime Factorization & Divisors"
+description: "Find a non-trivial divisor of a composite number using random polynomial iteration, Floyd cycle detection, and gcd checks."
+techniques: ["Randomized Algorithms", "GCD", "Cycle Detection", "Modular Arithmetic"]
+complexity:
+  time: "Heuristic; often sublinear for favorable inputs"
+  space: "O(1)"
+  notes: "Performance is input-dependent; retries with different parameters may be required"
+---
+
+## Overview
+
+Pollard's Rho is a randomized integer-factorization method that is often effective when a composite number has relatively small factors.
+
+It repeatedly applies:
+
+`f(x) = (x^2 + c) mod n`
+
+and uses a tortoise-hare sequence with `gcd(|x-y|, n)` to discover a non-trivial divisor.
+
+## Core Steps
+
+1. Handle easy cases (`n` even, small values).
+2. Choose random `x`, `y = x`, and constant `c`.
+3. Iterate tortoise (`x = f(x)`) and hare (`y = f(f(y))`).
+4. Compute `d = gcd(|x-y|, n)`.
+5. If `1 < d < n`, return `d`; if `d == n`, retry with new random seed.
+
+```js
+function gcd(a, b) {
+  let x = Math.abs(a);
+  let y = Math.abs(b);
+  while (y !== 0) {
+    const t = x % y;
+    x = y;
+    y = t;
+  }
+  return x;
+}
+
+function modMul(a, b, mod) {
+  return (a * b) % mod;
+}
+
+function pollardsRho(n, maxRetries = 10) {
+  if (!Number.isInteger(n) || n < 2) return -1;
+  if (n % 2 === 0) return 2;
+
+  const randInt = (lo, hi) => Math.floor(Math.random() * (hi - lo + 1)) + lo;
+
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    const c = randInt(1, n - 1);
+    let x = randInt(2, n - 2);
+    let y = x;
+    let d = 1;
+
+    const f = (v) => (modMul(v, v, n) + c) % n;
+
+    let guard = 0;
+    while (d === 1 && guard < 100000) {
+      x = f(x);
+      y = f(f(y));
+      d = gcd(Math.abs(x - y), n);
+      guard++;
+    }
+
+    if (d > 1 && d < n) return d;
+  }
+
+  return -1; // Failure; try again externally
+}
+
+const d12 = pollardsRho(12);
+console.assert([2, 3, 4, 6].includes(d12), "A non-trivial divisor of 12 is expected");
+
+const d187 = pollardsRho(187);
+console.assert([11, 17].includes(d187), "A divisor of 187 should be 11 or 17");
+```
+
+## Notes
+
+- Pollard's Rho can fail on a run; retries with different random parameters are normal.
+- To fully factor `n`, recursively factor returned divisor `d` and cofactor `n/d`.
+- For very large integers, `BigInt` implementations are preferred over Number arithmetic.

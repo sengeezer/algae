@@ -1,0 +1,63 @@
+---
+title: "k-th prime factor of a given number"
+slug: "k-th-prime-factor-of-a-given-number"
+category: "Prime Factorization & Divisors"
+description: "Return the k-th prime factor of n in factorization order with multiplicity, or -1 if fewer than k factors exist."
+techniques: ["Prime Factorization", "Trial Division", "Sieve Optimization"]
+complexity:
+  time: "O(sqrt(n))"
+  space: "O(1)"
+  notes: "Single-query trial division; sieve variant is better for many queries"
+---
+
+## Overview
+
+Given `n` and `k`, return the `k`-th prime factor of `n` (counting repeated factors). If it does not exist, return `-1`.
+
+Examples:
+
+- `n = 225, k = 2` -> factors are `3, 3, 5, 5` -> answer `3`
+- `n = 81, k = 5` -> factors are `3, 3, 3, 3` -> answer `-1`
+
+## Approach
+
+1. Repeatedly divide by `2` while possible and decrement `k`.
+2. Test odd factors up to `sqrt(n)` similarly.
+3. If remaining `n > 2`, it is a prime factor.
+4. Return factor when `k` reaches `1`; else `-1`.
+
+```js
+function kthPrimeFactor(n, k) {
+  if (!Number.isInteger(n) || !Number.isInteger(k) || n <= 1 || k <= 0) return -1;
+
+  let x = n;
+  let need = k;
+
+  while (x % 2 === 0) {
+    if (need === 1) return 2;
+    need--;
+    x = Math.floor(x / 2);
+  }
+
+  for (let p = 3; p * p <= x; p += 2) {
+    while (x % p === 0) {
+      if (need === 1) return p;
+      need--;
+      x = Math.floor(x / p);
+    }
+  }
+
+  if (x > 2 && need === 1) return x;
+  return -1;
+}
+
+console.assert(kthPrimeFactor(225, 2) === 3, "225, k=2 -> 3");
+console.assert(kthPrimeFactor(81, 5) === -1, "81 has only four prime factors");
+console.assert(kthPrimeFactor(12, 3) === 3, "12 factors: 2,2,3");
+console.assert(kthPrimeFactor(13, 1) === 13, "prime itself is first factor");
+```
+
+## Notes
+
+- This definition counts multiplicity.
+- For high-volume queries, precomputing least prime factors with a sieve is faster overall.

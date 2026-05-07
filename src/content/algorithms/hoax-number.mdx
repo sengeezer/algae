@@ -1,0 +1,89 @@
+---
+title: "Hoax Number"
+slug: "hoax-number"
+category: "Prime Factorization & Divisors"
+description: "Check whether a composite number has digit sum equal to the digit sum of its distinct prime factors."
+techniques: ["Prime Factorization", "Digit Sum", "Number Theory"]
+complexity:
+  time: "O(sqrt(n))"
+  space: "O(1)"
+  notes: "Uses distinct prime factors only, unlike Smith number which uses multiplicity"
+---
+
+## Overview
+
+A **Hoax Number** is a **composite** number whose digit sum equals the sum of digits of its **distinct** prime factors.
+
+Examples:
+
+- `22` -> factors `{2, 11}` -> `2 + (1+1) = 4`, digit sum of `22` is `4` => Hoax.
+- `84` -> factors `{2, 3, 7}` -> `2+3+7 = 12`, digit sum of `84` is `12` => Hoax.
+- `19` is prime => not a hoax number by definition.
+
+## Approach
+
+1. Reject non-composite inputs.
+2. Extract distinct prime factors via trial division.
+3. Sum digits of the number.
+4. Sum digits of distinct prime factors.
+5. Compare sums.
+
+```js
+function digitSum(n) {
+  let x = Math.abs(n);
+  let sum = 0;
+  while (x > 0) {
+    sum += x % 10;
+    x = Math.floor(x / 10);
+  }
+  return sum;
+}
+
+function distinctPrimeFactors(n) {
+  const factors = [];
+  let x = n;
+
+  if (x % 2 === 0) {
+    factors.push(2);
+    while (x % 2 === 0) x /= 2;
+  }
+
+  for (let p = 3; p * p <= x; p += 2) {
+    if (x % p === 0) {
+      factors.push(p);
+      while (x % p === 0) x /= p;
+    }
+  }
+
+  if (x > 1) factors.push(x);
+  return factors;
+}
+
+function isComposite(n) {
+  if (!Number.isInteger(n) || n <= 3) return false;
+  if (n % 2 === 0) return true;
+  for (let i = 3; i * i <= n; i += 2) {
+    if (n % i === 0) return true;
+  }
+  return false;
+}
+
+function isHoaxNumber(n) {
+  if (!isComposite(n)) return false;
+
+  const factorDigitSum = distinctPrimeFactors(n)
+    .reduce((acc, p) => acc + digitSum(p), 0);
+
+  return digitSum(n) === factorDigitSum;
+}
+
+console.assert(isHoaxNumber(22) === true, "22 is a hoax number");
+console.assert(isHoaxNumber(84) === true, "84 is a hoax number");
+console.assert(isHoaxNumber(19) === false, "prime numbers are not hoax numbers");
+console.assert(isHoaxNumber(27) === false, "27 is not a hoax number");
+```
+
+## Notes
+
+- Hoax and Smith numbers are related but not identical.
+- Smith numbers use all prime factors with multiplicity; Hoax uses only distinct prime factors.
