@@ -1703,8 +1703,23 @@ This one-hundred-forty-seventh expansion slice lifts the catalog from 734 to 737
 
 ## Next candidates from the same sources
 
-- Batch 147 is now locally drafted, lifting the catalog from 734 to 737 entries after adding three Number System entries in source order.
+- Batch 147 is now published on `main` at commit `641ab6d`, lifting the catalog from 734 to 737 entries after adding three Number System entries in source order.
 - Batch 147 keeps destination-title alignment for all three entries and validates cleanly with focused JavaScript-fence checks and `npm run build`.
 - Build validation passed against the local 737-entry catalog state with 742 static pages generated.
 - On the Mathematical Algorithms page, `Prime Numbers` is treated as overview-level duplicate coverage relative to existing local prime-check and prime-sequence entries, so drafting advances to the next clean Primality items.
-- The next clean Mathematical Algorithms queue after the local batch 147 frontier is `Left-Truncatable Prime`, `Mersenne Prime`, and `Super Prime`.
+- The next clean Mathematical Algorithms queue after batch 147 was `Left-Truncatable Prime`, `Mersenne Prime`, and `Super Prime`.
+
+## Batch 148 added
+
+This one-hundred-forty-eighth expansion slice lifts the catalog from 737 to 740 entries.
+
+- Left-Truncatable Prime
+- Program to Find All Mersenne Primes till N
+- Super Prime
+
+## Next candidates from the same sources
+
+- Batch 148 is now locally drafted, lifting the catalog from 737 to 740 entries after adding three Prime Numbers & Primality Tests entries in source order.
+- Batch 148 keeps destination-title alignment for all three entries; source label `Mersenne Prime` is normalized to destination title `Program to Find All Mersenne Primes till N`.
+- Build validation passed against the local 740-entry catalog state with 745 static pages generated.
+- The next clean Mathematical Algorithms queue after the local batch 148 frontier is `Hardy-Ramanujan Theorem`, `Rosser’s Theorem`, and `Fermat’s little theorem`.

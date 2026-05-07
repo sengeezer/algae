@@ -1,0 +1,69 @@
+---
+title: "Left-Truncatable Prime"
+slug: "left-truncatable-prime"
+category: "Prime Numbers & Primality Tests"
+description: "Check whether a positive integer remains prime after repeatedly removing its leftmost digit, with no zero digits allowed."
+techniques: ["Prime Testing", "Digit Manipulation", "Truncation"]
+complexity:
+  time: "O(d * sqrt(n))"
+  space: "O(1)"
+  notes: "d is the number of digits; each truncation performs one primality test"
+---
+
+## Overview
+
+A number is **left-truncatable prime** (base 10) if:
+
+1. It is prime.
+2. It contains no digit `0`.
+3. Repeatedly removing the leftmost digit always produces another prime.
+
+Example:
+
+- `317` -> `317`, `17`, `7` (all prime) => Yes
+- `293` -> `293`, `93`, `3` (`93` is not prime) => No
+
+## Approach
+
+1. Reject non-positive integers.
+2. Reject if any digit is `0`.
+3. Generate each left-truncated value (original, then without first digit, etc.).
+4. Check primality for each truncated value.
+5. Return true only if all are prime.
+
+```js
+function isPrime(n) {
+  if (n < 2) return false;
+  if (n % 2 === 0) return n === 2;
+  for (let i = 3; i * i <= n; i += 2) {
+    if (n % i === 0) return false;
+  }
+  return true;
+}
+
+function isLeftTruncatablePrime(n) {
+  if (!Number.isInteger(n) || n <= 0) return false;
+
+  const s = String(n);
+  if (s.includes("0")) return false;
+
+  for (let i = 0; i < s.length; i++) {
+    const truncated = Number(s.slice(i));
+    if (!isPrime(truncated)) return false;
+  }
+
+  return true;
+}
+
+console.assert(isLeftTruncatablePrime(317) === true, "317 should be left-truncatable prime");
+console.assert(isLeftTruncatablePrime(293) === false, "293 should not be left-truncatable prime");
+console.assert(isLeftTruncatablePrime(23) === true, "23 -> 23, 3");
+console.assert(isLeftTruncatablePrime(103) === false, "contains zero digit");
+console.assert(isLeftTruncatablePrime(2) === true, "single-digit prime qualifies");
+```
+
+## Notes
+
+- This implementation uses direct trial-division primality checks.
+- For bulk queries over many values, a sieve can precompute primes up to an upper bound.
+- The problem statement commonly excludes numbers containing `0` as they create invalid truncation paths in base 10 definitions.

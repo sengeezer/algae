@@ -1,0 +1,82 @@
+---
+title: "Super Prime"
+slug: "super-prime"
+category: "Prime Numbers & Primality Tests"
+description: "Generate super primes up to N, where a prime is super if its position in the ordered prime list is also prime."
+techniques: ["Sieve of Eratosthenes", "Prime Indexing", "Sequence Filtering"]
+complexity:
+  time: "O(n log log n)"
+  space: "O(n)"
+  notes: "Prime sieve and prime-position checks both use O(n) boolean arrays"
+---
+
+## Overview
+
+A **super prime** is a prime number that appears at a prime index within the ordered sequence of prime numbers.
+
+Prime sequence (1-indexed):
+
+- Position 1 -> 2
+- Position 2 -> 3
+- Position 3 -> 5
+- Position 4 -> 7
+- Position 5 -> 11
+
+Prime positions are `2, 3, 5, 7, ...`, so super primes begin:
+
+`3, 5, 11, 17, ...`
+
+## Approach
+
+1. Compute all primes up to `N` using sieve.
+2. Build the ordered prime list.
+3. For each prime at position `idx` (1-indexed), keep it if `idx` is prime.
+
+```js
+function sieve(limit) {
+  const isPrime = Array(limit + 1).fill(true);
+  if (limit >= 0) isPrime[0] = false;
+  if (limit >= 1) isPrime[1] = false;
+
+  for (let p = 2; p * p <= limit; p++) {
+    if (isPrime[p]) {
+      for (let x = p * p; x <= limit; x += p) {
+        isPrime[x] = false;
+      }
+    }
+  }
+
+  return isPrime;
+}
+
+function superPrimesTillN(n) {
+  if (!Number.isInteger(n) || n < 2) return [];
+
+  const isPrime = sieve(n);
+  const primes = [];
+  for (let i = 2; i <= n; i++) {
+    if (isPrime[i]) primes.push(i);
+  }
+
+  const isPrimeIndex = sieve(primes.length + 1);
+  const result = [];
+
+  for (let i = 0; i < primes.length; i++) {
+    const oneBasedIndex = i + 1;
+    if (isPrimeIndex[oneBasedIndex]) {
+      result.push(primes[i]);
+    }
+  }
+
+  return result;
+}
+
+console.assert(JSON.stringify(superPrimesTillN(7)) === JSON.stringify([3, 5]), "N=7");
+console.assert(JSON.stringify(superPrimesTillN(17)) === JSON.stringify([3, 5, 11, 17]), "N=17");
+console.assert(JSON.stringify(superPrimesTillN(2)) === JSON.stringify([]), "N=2");
+```
+
+## Notes
+
+- This definition uses 1-based indexing for prime positions.
+- Re-using sieve for both values and indices keeps implementation simple and efficient.

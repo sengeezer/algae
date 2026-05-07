@@ -1,0 +1,72 @@
+---
+title: "Program to Find All Mersenne Primes till N"
+slug: "program-to-find-all-mersenne-primes-till-n"
+category: "Prime Numbers & Primality Tests"
+description: "List all Mersenne primes not exceeding N, where each candidate has the form 2^k - 1 and is prime."
+techniques: ["Sieve of Eratosthenes", "Prime Enumeration", "Bit Patterns"]
+complexity:
+  time: "O(n log log n)"
+  space: "O(n)"
+  notes: "Sieve dominates runtime; candidate checks are comparatively small"
+---
+
+## Overview
+
+A **Mersenne prime** is a prime number of the form:
+
+`M = 2^k - 1`, for integer `k >= 2`.
+
+Examples:
+
+- Up to `10`: `3, 7`
+- Up to `100`: `3, 7, 31`
+
+## Approach
+
+1. Build a prime lookup up to `N` using Sieve of Eratosthenes.
+2. Generate candidates of the form `2^k - 1` while candidate `<= N`.
+3. Keep only those candidates marked prime in the sieve.
+
+```js
+function sievePrimes(limit) {
+  const isPrime = Array(limit + 1).fill(true);
+  if (limit >= 0) isPrime[0] = false;
+  if (limit >= 1) isPrime[1] = false;
+
+  for (let p = 2; p * p <= limit; p++) {
+    if (isPrime[p]) {
+      for (let x = p * p; x <= limit; x += p) {
+        isPrime[x] = false;
+      }
+    }
+  }
+
+  return isPrime;
+}
+
+function mersennePrimesTillN(n) {
+  if (!Number.isInteger(n) || n < 2) return [];
+
+  const isPrime = sievePrimes(n);
+  const result = [];
+
+  // Generate Mersenne candidates: (2^k - 1) using bit shift for k < 31
+  for (let k = 2; ; k++) {
+    const candidate = (1 << k) - 1;
+    if (k >= 31 || candidate > n) break;
+    if (isPrime[candidate]) result.push(candidate);
+  }
+
+  return result;
+}
+
+console.assert(JSON.stringify(mersennePrimesTillN(10)) === JSON.stringify([3, 7]), "N=10");
+console.assert(JSON.stringify(mersennePrimesTillN(100)) === JSON.stringify([3, 7, 31]), "N=100");
+console.assert(JSON.stringify(mersennePrimesTillN(2)) === JSON.stringify([]), "N=2");
+```
+
+## Notes
+
+- This implementation uses 32-bit shifts, so it intentionally caps `k < 31`.
+- For larger ranges, replace shift generation with `BigInt` exponentiation.
+- Not every `2^k - 1` is prime, even when `k` is prime.
