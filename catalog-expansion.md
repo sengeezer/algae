@@ -1719,7 +1719,22 @@ This one-hundred-forty-eighth expansion slice lifts the catalog from 737 to 740 
 
 ## Next candidates from the same sources
 
-- Batch 148 is now locally drafted, lifting the catalog from 737 to 740 entries after adding three Prime Numbers & Primality Tests entries in source order.
+- Batch 148 is now published on `main` at commit `02b4f61`, lifting the catalog from 737 to 740 entries after adding three Prime Numbers & Primality Tests entries in source order.
 - Batch 148 keeps destination-title alignment for all three entries; source label `Mersenne Prime` is normalized to destination title `Program to Find All Mersenne Primes till N`.
 - Build validation passed against the local 740-entry catalog state with 745 static pages generated.
-- The next clean Mathematical Algorithms queue after the local batch 148 frontier is `Hardy-Ramanujan Theorem`, `Rosser’s Theorem`, and `Fermat’s little theorem`.
+- The next clean Mathematical Algorithms queue after batch 148 was `Hardy-Ramanujan Theorem`, `Rosser's Theorem`, and `Fermat's little theorem`.
+
+## Batch 149 added
+
+This one-hundred-forty-ninth expansion slice lifts the catalog from 740 to 743 entries.
+
+- Hardy-Ramanujan Theorem
+- Rosser's Theorem
+- Fermat's little theorem
+
+## Next candidates from the same sources
+
+- Batch 149 is now locally drafted, lifting the catalog from 740 to 743 entries after adding three Prime Numbers & Primality Tests entries in source order.
+- Batch 149 keeps destination-title alignment for all three entries and validates cleanly with focused JavaScript-fence checks and `npm run build`.
+- Build validation passed against the local 743-entry catalog state with 748 static pages generated.
+- The next clean Mathematical Algorithms queue after the local batch 149 frontier is `Introduction to Primality Test and School Method`, `Vantieghems Theorem for Primality Test`, and `AKS Primality Test`.

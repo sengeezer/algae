@@ -1,0 +1,81 @@
+---
+title: "Hardy-Ramanujan Theorem"
+slug: "hardy-ramanujan-theorem"
+category: "Prime Numbers & Primality Tests"
+description: "Explore the approximation that most integers n have about log(log n) distinct prime factors, and compute exact counts for comparison."
+techniques: ["Prime Factorization", "Number Theory", "Asymptotic Approximation"]
+complexity:
+  time: "O(sqrt(n))"
+  space: "O(1)"
+  notes: "Using trial division to count distinct prime factors"
+---
+
+## Overview
+
+The Hardy-Ramanujan theorem states that for most natural numbers `n`, the number of distinct prime factors is close to `log(log(n))`.
+
+This is an asymptotic statistical statement, not an exact rule for every single number.
+
+Examples from intuition:
+
+- `5192` has 3 distinct prime factors, while `log(log(5192))` is close to 2.14.
+- `510510` has many distinct factors, so individual numbers may deviate from the average trend.
+
+## Approach
+
+1. Compute the exact number of distinct prime factors of `n`.
+2. Compute `log(log(n))` (natural logarithm).
+3. Compare both values for a practical demonstration.
+
+```js
+function distinctPrimeFactorCount(n) {
+  if (!Number.isInteger(n) || n <= 1) return 0;
+
+  let value = n;
+  let count = 0;
+
+  if (value % 2 === 0) {
+    count++;
+    while (value % 2 === 0) value /= 2;
+  }
+
+  for (let p = 3; p * p <= value; p += 2) {
+    if (value % p === 0) {
+      count++;
+      while (value % p === 0) value /= p;
+    }
+  }
+
+  if (value > 1) count++;
+  return count;
+}
+
+function hardyRamanujanEstimate(n) {
+  if (n <= 1) return 0;
+  return Math.log(Math.log(n));
+}
+
+function compareHardyRamanujan(n) {
+  return {
+    n,
+    exactDistinctPrimeFactors: distinctPrimeFactorCount(n),
+    logLogEstimate: hardyRamanujanEstimate(n),
+  };
+}
+
+const a = compareHardyRamanujan(5192);
+console.assert(a.exactDistinctPrimeFactors === 3, "5192 should have 3 distinct prime factors");
+console.assert(a.logLogEstimate > 2 && a.logLogEstimate < 2.3, "log(log(5192)) near 2.16");
+
+const b = compareHardyRamanujan(51242183);
+console.assert(b.exactDistinctPrimeFactors === 3, "51242183 should have 3 distinct prime factors");
+
+const c = compareHardyRamanujan(1048576); // 2^20
+console.assert(c.exactDistinctPrimeFactors === 1, "2^20 has exactly one distinct prime factor");
+```
+
+## Notes
+
+- The theorem describes normal order behavior over large sets of integers.
+- Counterexamples are expected and do not invalidate the asymptotic claim.
+- For many queries, a smallest-prime-factor sieve can speed up repeated factor counting.

@@ -1,0 +1,76 @@
+---
+title: "Rosser's Theorem"
+slug: "rossers-theorem"
+category: "Prime Numbers & Primality Tests"
+description: "Verify the bound p_n > n * ln(n) for the nth prime p_n, illustrating Rosser's theorem over finite ranges."
+techniques: ["Prime Generation", "Sieve of Eratosthenes", "Analytic Number Theory"]
+complexity:
+  time: "O(m log log m)"
+  space: "O(m)"
+  notes: "m is sieve limit used to obtain enough primes"
+---
+
+## Overview
+
+Rosser's theorem gives a lower bound for the nth prime number `p_n`:
+
+`p_n > n * ln(n)` for `n > 1`.
+
+This result is useful for reasoning about prime growth and for deriving bounds used by prime-generation algorithms.
+
+## Approach
+
+1. Generate primes up to a limit using sieve.
+2. Read `p_n` from the generated prime list.
+3. Check whether `p_n > n * ln(n)` for chosen values of `n`.
+
+```js
+function sievePrimes(limit) {
+  const isPrime = Array(limit + 1).fill(true);
+  if (limit >= 0) isPrime[0] = false;
+  if (limit >= 1) isPrime[1] = false;
+
+  for (let p = 2; p * p <= limit; p++) {
+    if (isPrime[p]) {
+      for (let x = p * p; x <= limit; x += p) {
+        isPrime[x] = false;
+      }
+    }
+  }
+
+  const primes = [];
+  for (let i = 2; i <= limit; i++) {
+    if (isPrime[i]) primes.push(i);
+  }
+  return primes;
+}
+
+function verifyRosserUpTo(maxN) {
+  if (!Number.isInteger(maxN) || maxN < 2) return [];
+
+  const estimate = Math.max(50, Math.ceil(2 * maxN * Math.log(maxN + 2)));
+  const primes = sievePrimes(estimate);
+
+  if (primes.length < maxN) {
+    throw new Error("Sieve limit too small; increase estimate");
+  }
+
+  const report = [];
+  for (let n = 2; n <= maxN; n++) {
+    const pn = primes[n - 1];
+    const bound = n * Math.log(n);
+    report.push({ n, pn, bound, holds: pn > bound });
+  }
+  return report;
+}
+
+const checks = verifyRosserUpTo(20);
+console.assert(checks.every((x) => x.holds), "Rosser bound should hold for n=2..20");
+console.assert(checks[0].pn === 3, "p_2 should be 3");
+console.assert(verifyRosserUpTo(10)[8].pn === 29, "p_10 should be 29");
+```
+
+## Notes
+
+- This implementation demonstrates finite verification, not a proof.
+- Bounds help estimate how far to sieve when searching for the nth prime.

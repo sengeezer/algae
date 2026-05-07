@@ -1,0 +1,69 @@
+---
+title: "Fermat's little theorem"
+slug: "fermats-little-theorem"
+category: "Prime Numbers & Primality Tests"
+description: "Use Fermat's little theorem for modular arithmetic, fast remainder computation, and modular inverse when modulus is prime."
+techniques: ["Modular Arithmetic", "Fast Exponentiation", "Number Theory"]
+complexity:
+  time: "O(log p)"
+  space: "O(1)"
+  notes: "Using iterative binary exponentiation for modular powers"
+---
+
+## Overview
+
+If `p` is prime and `a` is an integer, then:
+
+`a^p ≡ a (mod p)`
+
+If `a` is not divisible by `p`, the equivalent form is:
+
+`a^(p-1) ≡ 1 (mod p)`
+
+This theorem is heavily used in modular exponentiation and modular inverse computations.
+
+## Typical Uses
+
+1. Fast remainder checks for large powers.
+2. Computing modular multiplicative inverse when modulus is prime:
+   `a^(-1) ≡ a^(p-2) (mod p)`.
+
+```js
+function modPow(base, exp, mod) {
+  let b = ((base % mod) + mod) % mod;
+  let e = exp;
+  let result = 1;
+
+  while (e > 0) {
+    if (e & 1) result = (result * b) % mod;
+    b = (b * b) % mod;
+    e >>= 1;
+  }
+
+  return result;
+}
+
+function fermatHolds(a, p) {
+  if (p <= 1) return false;
+  return modPow(a, p, p) === ((a % p) + p) % p;
+}
+
+function modInversePrime(a, p) {
+  if (a % p === 0) throw new Error("Inverse does not exist when a is divisible by p");
+  return modPow(a, p - 2, p);
+}
+
+// a^p ≡ a (mod p)
+console.assert(fermatHolds(2, 17) === true, "Fermat should hold for a=2, p=17");
+console.assert(modPow(3, 100000, 53) === 28, "3^100000 mod 53 should be 28");
+
+// modular inverse under prime modulus
+const inv = modInversePrime(3, 11);
+console.assert(inv === 4, "Inverse of 3 mod 11 should be 4");
+console.assert((3 * inv) % 11 === 1, "Inverse verification");
+```
+
+## Notes
+
+- Fermat's theorem is necessary but not sufficient as a primality test because Carmichael numbers can pass it.
+- For non-prime moduli, modular inverse should be computed with Extended Euclidean Algorithm when gcd(a, m) = 1.
