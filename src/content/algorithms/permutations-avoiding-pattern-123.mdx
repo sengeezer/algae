@@ -1,0 +1,58 @@
+---
+title: "Permutations avoiding pattern 123"
+slug: "permutations-avoiding-pattern-123"
+category: "Combinatorics"
+description: "Count permutations of 1..n with no increasing subsequence of length 3 (pattern 123), equal to the nth Catalan number."
+techniques: ["Catalan Numbers", "Permutation Patterns", "Combinatorics"]
+complexity:
+  time: "O(n)"
+  space: "O(1)"
+  notes: "Counting is Catalan(n); brute-force checks are practical only for very small n"
+---
+
+## Overview
+
+A permutation avoids pattern `123` if it has no indices `i < j < k` with `p[i] < p[j] < p[k]`.
+
+The number of such permutations on `1..n` is the nth Catalan number.
+
+## Approach
+
+```js
+function catalan(n) {
+  if (!Number.isInteger(n) || n < 0) return -1n;
+  let result = 1n;
+  for (let i = 1n; i <= BigInt(n); i++) {
+    result = (result * (4n * i - 2n)) / (i + 1n);
+  }
+  return result;
+}
+
+function countPermutationsAvoiding123(n) {
+  return catalan(n);
+}
+
+function avoids123(perm) {
+  for (let i = 0; i < perm.length; i++) {
+    for (let j = i + 1; j < perm.length; j++) {
+      if (perm[i] >= perm[j]) continue;
+      for (let k = j + 1; k < perm.length; k++) {
+        if (perm[j] < perm[k]) return false;
+      }
+    }
+  }
+  return true;
+}
+
+console.assert(countPermutationsAvoiding123(0) === 1n, "n=0 => 1");
+console.assert(countPermutationsAvoiding123(1) === 1n, "n=1 => 1");
+console.assert(countPermutationsAvoiding123(3) === 5n, "n=3 => 5");
+console.assert(countPermutationsAvoiding123(4) === 14n, "n=4 => 14");
+console.assert(avoids123([3, 1, 2]) === true, "[3,1,2] avoids 123");
+console.assert(avoids123([1, 2, 3]) === false, "[1,2,3] contains 123");
+```
+
+## Notes
+
+- This is one of the canonical permutation-pattern Catalan interpretations.
+- It is equivalent in count to stack-sortable permutations.

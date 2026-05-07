@@ -1945,3 +1945,16 @@ This one-hundred-sixty-third expansion slice lifts the catalog from 782 to 785 e
 - Batch 163 is now locally drafted, lifting the catalog from 782 to 785 entries after adding three Catalan interpretation entries in source order.
 - Focused JavaScript-fence validation and `npm run build` both passed against the local 785-entry state with 790 static pages generated.
 - The Catalan applications frontier is now narrowed to two clean remaining items in source order: `Stack-sortable permutations` and `Permutations avoiding pattern 123`.
+
+## Batch 164 added
+
+This one-hundred-sixty-fourth expansion slice lifts the catalog from 785 to 787 entries.
+
+- Stack-sortable permutations
+- Permutations avoiding pattern 123
+
+## Next candidates from the same sources
+
+- Batch 164 is now locally drafted as a two-entry frontier-close slice because only two clean Catalan-application items remained in source order.
+- Focused JavaScript-fence validation and `npm run build` both passed against the local 787-entry state with 792 static pages generated.
+- The Catalan applications source branch is now exhausted; the next queue will resume from the next clean Mathematical Algorithms source-order branch.
