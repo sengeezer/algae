@@ -1,0 +1,44 @@
+---
+title: "Noncrossing Partitions"
+slug: "noncrossing-partitions"
+category: "Combinatorics"
+description: "Count noncrossing pair partitions on 2n ordered points; the result follows Catalan numbers."
+techniques: ["Catalan Numbers", "Combinatorics", "Planar Pairings"]
+complexity:
+  time: "O(n)"
+  space: "O(1)"
+  notes: "For pair blocks on 2n points, the count is the nth Catalan number"
+---
+
+## Overview
+
+For points `1..2n` on a line or circle, count pairings where edges do not cross.
+The number of noncrossing pair partitions is `C(n)`.
+
+## Approach
+
+```js
+function catalan(n) {
+  if (!Number.isInteger(n) || n < 0) return -1n;
+  let result = 1n;
+  for (let i = 1n; i <= BigInt(n); i++) {
+    result = (result * (4n * i - 2n)) / (i + 1n);
+  }
+  return result;
+}
+
+function countNoncrossingPairPartitions(n) {
+  return catalan(n);
+}
+
+console.assert(countNoncrossingPairPartitions(0) === 1n, "empty partition");
+console.assert(countNoncrossingPairPartitions(1) === 1n, "one pair only");
+console.assert(countNoncrossingPairPartitions(2) === 2n, "two noncrossing pairings on 4 points");
+console.assert(countNoncrossingPairPartitions(3) === 5n, "five noncrossing pairings on 6 points");
+console.assert(countNoncrossingPairPartitions(5) === 42n, "42 pairings on 10 points");
+```
+
+## Notes
+
+- This is closely related to non-crossing chord matchings; they are equivalent models.
+- A crossing check framing is common in geometry-heavy interviews.

@@ -1931,3 +1931,17 @@ This one-hundred-sixty-second expansion slice lifts the catalog from 779 to 782 
 - Source note: `Full Binary Trees with n+1 Leaves` was drafted from the Catalan applications frontier because the linked `Types of Binary Tree` page is a definition overview rather than a dedicated counting article.
 - Focused JavaScript-fence validation and `npm run build` both passed against the local 782-entry state with 787 static pages generated.
 - The next clean Mathematical Algorithms queue after the local batch 162 frontier is `Parenthesization Count in a Word`, `Noncrossing Partitions`, and `Stairstep Tilings`.
+
+## Batch 163 added
+
+This one-hundred-sixty-third expansion slice lifts the catalog from 782 to 785 entries.
+
+- Parenthesization Count in a Word
+- Noncrossing Partitions
+- Stairstep Tilings
+
+## Next candidates from the same sources
+
+- Batch 163 is now locally drafted, lifting the catalog from 782 to 785 entries after adding three Catalan interpretation entries in source order.
+- Focused JavaScript-fence validation and `npm run build` both passed against the local 785-entry state with 790 static pages generated.
+- The Catalan applications frontier is now narrowed to two clean remaining items in source order: `Stack-sortable permutations` and `Permutations avoiding pattern 123`.

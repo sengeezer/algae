@@ -1,0 +1,48 @@
+---
+title: "Parenthesization Count in a Word"
+slug: "parenthesization-count-in-a-word"
+category: "Combinatorics"
+description: "Count ways to insert n pairs of parentheses in a word of n+1 symbols, a direct Catalan interpretation."
+techniques: ["Catalan Numbers", "Combinatorics", "Expression Structuring"]
+complexity:
+  time: "O(n)"
+  space: "O(1)"
+  notes: "The count of valid full parenthesizations equals the nth Catalan number"
+---
+
+## Overview
+
+Given a word of `n + 1` symbols, the number of ways to fully parenthesize it with `n` pairs of parentheses is `C(n)`.
+
+Examples:
+
+- For `n = 2` (`abc`), there are 2 ways: `((ab)c)` and `(a(bc))`.
+- For `n = 3` (`abcd`), there are 5 ways.
+
+## Approach
+
+```js
+function catalan(n) {
+  if (!Number.isInteger(n) || n < 0) return -1n;
+  let result = 1n;
+  for (let i = 1n; i <= BigInt(n); i++) {
+    result = (result * (4n * i - 2n)) / (i + 1n);
+  }
+  return result;
+}
+
+function countParenthesizations(pairCount) {
+  return catalan(pairCount);
+}
+
+console.assert(countParenthesizations(0) === 1n, "one trivial expression");
+console.assert(countParenthesizations(1) === 1n, "(ab)");
+console.assert(countParenthesizations(2) === 2n, "((ab)c), (a(bc))");
+console.assert(countParenthesizations(3) === 5n, "five ways for four symbols");
+console.assert(countParenthesizations(4) === 14n, "four pairs => 14 ways");
+```
+
+## Notes
+
+- This interpretation is equivalent to counting binary expression tree shapes.
+- The same sequence appears in matrix-chain split counting.

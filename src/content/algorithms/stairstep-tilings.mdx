@@ -1,0 +1,44 @@
+---
+title: "Stairstep Tilings"
+slug: "stairstep-tilings"
+category: "Combinatorics"
+description: "Count tilings of a stairstep shape of height n with n rectangles; this count is Catalan(n)."
+techniques: ["Catalan Numbers", "Combinatorics", "Tiling"]
+complexity:
+  time: "O(n)"
+  space: "O(1)"
+  notes: "The number of stairstep tilings of height n equals the nth Catalan number"
+---
+
+## Overview
+
+A classic Catalan interpretation counts tilings of a stairstep shape of height `n` using `n` rectangles under the non-overlap structural constraint.
+The answer is `C(n)`.
+
+## Approach
+
+```js
+function catalan(n) {
+  if (!Number.isInteger(n) || n < 0) return -1n;
+  let result = 1n;
+  for (let i = 1n; i <= BigInt(n); i++) {
+    result = (result * (4n * i - 2n)) / (i + 1n);
+  }
+  return result;
+}
+
+function countStairstepTilings(height) {
+  return catalan(height);
+}
+
+console.assert(countStairstepTilings(0) === 1n, "empty shape has one tiling");
+console.assert(countStairstepTilings(1) === 1n, "height 1 => one tiling");
+console.assert(countStairstepTilings(2) === 2n, "height 2 => two tilings");
+console.assert(countStairstepTilings(3) === 5n, "height 3 => five tilings");
+console.assert(countStairstepTilings(4) === 14n, "height 4 => fourteen tilings");
+```
+
+## Notes
+
+- The geometry differs, but the recurrence maps directly to Catalan decomposition.
+- Useful for showing transfer between structural counting domains.
