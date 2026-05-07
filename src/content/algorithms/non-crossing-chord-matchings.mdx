@@ -1,0 +1,43 @@
+---
+title: "Non-crossing Chord Matchings"
+slug: "non-crossing-chord-matchings"
+category: "Combinatorics"
+description: "Count ways to connect 2n points on a circle with n pairwise non-crossing chords."
+techniques: ["Catalan Numbers", "Combinatorics", "Dynamic Programming"]
+complexity:
+  time: "O(n)"
+  space: "O(1)"
+  notes: "The answer is the nth Catalan number"
+---
+
+## Overview
+
+Given `2n` points on a circle, the number of ways to draw `n` disjoint non-crossing chords is `C(n)`, the nth Catalan number.
+
+## Approach
+
+```js
+function catalan(n) {
+  if (!Number.isInteger(n) || n < 0) return -1n;
+  let result = 1n;
+  for (let i = 1n; i <= BigInt(n); i++) {
+    result = (result * (4n * i - 2n)) / (i + 1n);
+  }
+  return result;
+}
+
+function countNonCrossingChordMatchings(n) {
+  return catalan(n);
+}
+
+console.assert(countNonCrossingChordMatchings(0) === 1n, "no points => one empty matching");
+console.assert(countNonCrossingChordMatchings(1) === 1n, "2 points => one chord");
+console.assert(countNonCrossingChordMatchings(2) === 2n, "4 points => two non-crossing matchings");
+console.assert(countNonCrossingChordMatchings(3) === 5n, "6 points => five matchings");
+console.assert(countNonCrossingChordMatchings(5) === 42n, "10 points => 42 matchings");
+```
+
+## Notes
+
+- This is one of the canonical Catalan counting interpretations.
+- Same count appears in balanced parentheses, BST shapes, and Dyck paths.

@@ -1,0 +1,57 @@
+---
+title: "Mountain Ranges"
+slug: "mountain-ranges"
+category: "Combinatorics"
+description: "Count valid mountain-range sketches with n upstrokes and n downstrokes that never fall below the baseline."
+techniques: ["Catalan Numbers", "Combinatorics", "Prefix Constraints"]
+complexity:
+  time: "O(n)"
+  space: "O(1)"
+  notes: "Equivalent to counting Dyck words and balanced-parentheses strings"
+---
+
+## Overview
+
+A mountain range with `n` upstrokes and `n` downstrokes is valid if every prefix has at least as many upstrokes as downstrokes.
+
+The count is the nth Catalan number.
+
+## Approach
+
+```js
+function catalan(n) {
+  if (!Number.isInteger(n) || n < 0) return -1n;
+  let result = 1n;
+  for (let i = 1n; i <= BigInt(n); i++) {
+    result = (result * (4n * i - 2n)) / (i + 1n);
+  }
+  return result;
+}
+
+function countMountainRanges(n) {
+  return catalan(n);
+}
+
+function isValidMountainPath(path) {
+  let height = 0;
+  for (const step of path) {
+    if (step === "U") height += 1;
+    else if (step === "D") height -= 1;
+    else return false;
+    if (height < 0) return false;
+  }
+  return height === 0;
+}
+
+console.assert(countMountainRanges(1) === 1n, "n=1 => 1 range");
+console.assert(countMountainRanges(3) === 5n, "n=3 => 5 ranges");
+console.assert(countMountainRanges(4) === 14n, "n=4 => 14 ranges");
+console.assert(isValidMountainPath("UUDD") === true, "UUDD is valid");
+console.assert(isValidMountainPath("UDUD") === true, "UDUD is valid");
+console.assert(isValidMountainPath("UDDU") === false, "UDDU dips below baseline");
+```
+
+## Notes
+
+- Replace `U` with `(` and `D` with `)` to recover the balanced-parentheses interpretation.
+- This is a direct Catalan-identity interview pattern.

@@ -1901,3 +1901,18 @@ This one-hundred-sixtieth expansion slice lifts the catalog from 773 to 776 entr
 - Duplicate-level skip note: `Catalan Numbers` maps to existing `catalan-numbers.mdx`, so the next clean source-ordered candidate used in this slice was `Applications of Catalan Numbers`.
 - Focused JavaScript-fence validation and `npm run build` both passed against the local 776-entry state with 781 static pages generated.
 - The next clean Mathematical Algorithms queue after the local batch 160 frontier is `Dyck Words`, `Non-crossing Chord Matchings`, and `Mountain Ranges`.
+
+## Batch 161 added
+
+This one-hundred-sixty-first expansion slice lifts the catalog from 776 to 779 entries.
+
+- Dyck Words
+- Non-crossing Chord Matchings
+- Mountain Ranges
+
+## Next candidates from the same sources
+
+- Batch 161 is now locally drafted, lifting the catalog from 776 to 779 entries after adding three Catalan-interpretation entries in source order.
+- Source URL drift note: the direct `Non-crossing Chord Matchings` page is no longer live and `Mountain Ranges` does not have a standalone page; both were sourced from the Catalan applications frontier while preserving queue order.
+- Focused JavaScript-fence validation and `npm run build` both passed against the local 779-entry state with 784 static pages generated.
+- The next clean Mathematical Algorithms queue after the local batch 161 frontier is `Count valid parentheses expressions`, `Unique BST count by keys`, and `Polygon triangulations`.

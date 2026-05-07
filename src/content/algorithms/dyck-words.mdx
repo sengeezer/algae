@@ -1,0 +1,57 @@
+---
+title: "Dyck Words"
+slug: "dyck-words"
+category: "Combinatorics"
+description: "Count valid Dyck words of length 2n, where every prefix has at least as many X as Y."
+techniques: ["Catalan Numbers", "Combinatorics", "Prefix Constraints"]
+complexity:
+  time: "O(n)"
+  space: "O(1)"
+  notes: "The count equals the nth Catalan number and can be computed with a multiplicative recurrence"
+---
+
+## Overview
+
+A Dyck word of size `n` is a string with `n` `X` characters and `n` `Y` characters such that every prefix has `count(X) >= count(Y)`.
+
+The number of Dyck words of length `2n` is the nth Catalan number.
+
+## Approach
+
+```js
+function catalan(n) {
+  if (!Number.isInteger(n) || n < 0) return -1n;
+  let result = 1n;
+  for (let i = 1n; i <= BigInt(n); i++) {
+    result = (result * (4n * i - 2n)) / (i + 1n);
+  }
+  return result;
+}
+
+function countDyckWords(n) {
+  return catalan(n);
+}
+
+function isDyckWord(word) {
+  let balance = 0;
+  for (const ch of word) {
+    if (ch === "X") balance += 1;
+    else if (ch === "Y") balance -= 1;
+    else return false;
+    if (balance < 0) return false;
+  }
+  return balance === 0;
+}
+
+console.assert(countDyckWords(0) === 1n, "n=0 has one empty Dyck word");
+console.assert(countDyckWords(2) === 2n, "n=2 has 2 Dyck words");
+console.assert(countDyckWords(5) === 42n, "n=5 has 42 Dyck words");
+console.assert(isDyckWord("XXYY") === true, "XXYY is valid");
+console.assert(isDyckWord("XYXY") === true, "XYXY is valid");
+console.assert(isDyckWord("XYYX") === false, "XYYX violates prefix condition");
+```
+
+## Notes
+
+- Dyck words are equivalent to balanced-parentheses strings under `X -> (` and `Y -> )`.
+- The geometric interpretation is a path that never crosses below the diagonal.
