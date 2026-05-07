@@ -1,0 +1,61 @@
+---
+title: "Modular Division"
+slug: "modular-division"
+category: "Modular Arithmetic"
+description: "Compute (a / b) mod m by multiplying a with the modular inverse of b when gcd(b, m)=1."
+techniques: ["Modular Arithmetic", "Extended Euclidean Algorithm", "Fermat's Little Theorem"]
+complexity:
+  time: "O(log m)"
+  space: "O(1)"
+  notes: "Division exists only when modular inverse exists; i.e., gcd(b, m)=1"
+---
+
+## Overview
+
+In modular arithmetic, direct division is not defined in general.
+
+To compute `(a / b) mod m`, use:
+
+`(a * b^{-1}) mod m`
+
+where `b^{-1}` is modular inverse of `b` under modulus `m`.
+
+A modular inverse exists iff `gcd(b, m) = 1`.
+
+## Approach
+
+Use the Extended Euclidean Algorithm to find the inverse for any modulus `m` where inverse exists.
+
+```js
+function gcdExtended(a, b) {
+  if (a === 0) return { g: b, x: 0, y: 1 };
+  const { g, x, y } = gcdExtended(b % a, a);
+  return { g, x: y - Math.floor(b / a) * x, y: x };
+}
+
+function modInverse(b, m) {
+  const bb = ((b % m) + m) % m;
+  const { g, x } = gcdExtended(bb, m);
+  if (g !== 1) return -1;
+  return ((x % m) + m) % m;
+}
+
+function modDivide(a, b, m) {
+  if (!Number.isInteger(a) || !Number.isInteger(b) || !Number.isInteger(m) || m <= 1) {
+    return -1;
+  }
+  const inv = modInverse(b, m);
+  if (inv === -1) return -1;
+  const aa = ((a % m) + m) % m;
+  return (aa * inv) % m;
+}
+
+console.assert(modDivide(10, 2, 13) === 5, "10 / 2 mod 13 = 5");
+console.assert(modDivide(7, 4, 9) === 4, "7 / 4 mod 9 = 4");
+console.assert(modDivide(8, 4, 6) === -1, "inverse does not exist when gcd(4,6)!=1");
+```
+
+## Notes
+
+- For prime modulus `m`, inverse can also be computed as `b^(m-2) mod m` (Fermat).
+- `(a / b) mod m` is not equal to `((a mod m) / (b mod m)) mod m` in general.

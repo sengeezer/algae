@@ -1793,7 +1793,22 @@ This one-hundred-fifty-third expansion slice lifts the catalog from 752 to 755 e
 
 ## Next candidates from the same sources
 
-- Batch 153 is now locally drafted, lifting the catalog from 752 to 755 entries after adding three Prime Factorization & Divisors entries in source order.
+- Batch 153 is now published on `main` at commit `a393995`, lifting the catalog from 752 to 755 entries after adding three Prime Factorization & Divisors entries in source order.
 - Batch 153 destination-title cleanup: source queue label `Find all divisors of a natural number` resolves to destination title `All Factors in Sorted Order`; the other two entries match their destination titles exactly.
-- Focused JavaScript-fence validation and `npm run build` both passed against the local 755-entry state with 760 static pages generated.
-- The next clean Mathematical Algorithms queue after the local batch 153 frontier is `Euler's criterion (Check if square root under modulo p exists)`, `Modular Division`, and `Modulo 10^9+7 (1000000007)`.
+- Focused JavaScript-fence validation and `npm run build` both passed against the 755-entry state with 760 static pages generated.
+- The next clean Mathematical Algorithms queue after batch 153 was `Euler's criterion (Check if square root under modulo p exists)`, `Modular Division`, and `Modulo 10^9+7 (1000000007)`.
+
+## Batch 154 added
+
+This one-hundred-fifty-fourth expansion slice lifts the catalog from 755 to 758 entries.
+
+- Euler's criterion (Check if square root under modulo p exists)
+- Modular Division
+- Modulo 10^9+7 (1000000007)
+
+## Next candidates from the same sources
+
+- Batch 154 is now locally drafted, lifting the catalog from 755 to 758 entries after adding three Modular Arithmetic entries in source order.
+- Batch 154 keeps destination-title alignment for all three entries and validates cleanly with focused JavaScript-fence checks and `npm run build`.
+- Build validation passed against the local 758-entry state with 763 static pages generated.
+- The next clean Mathematical Algorithms queue after the local batch 154 frontier is `Find sum of modulo K of first N natural number`, `How to compute mod of a big number?`, and `Exponential Squaring (Fast Modulo Multiplication)`.

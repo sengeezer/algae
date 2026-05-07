@@ -1,0 +1,64 @@
+---
+title: "Euler's criterion (Check if square root under modulo p exists)"
+slug: "eulers-criterion-check-if-square-root-under-modulo-p-exists"
+category: "Modular Arithmetic"
+description: "Use Euler's criterion to test whether n is a quadratic residue modulo an odd prime p."
+techniques: ["Number Theory", "Modular Exponentiation", "Fermat's Little Theorem"]
+complexity:
+  time: "O(log p)"
+  space: "O(1)"
+  notes: "A solution exists iff n^((p-1)/2) mod p equals 1, or n mod p is 0"
+---
+
+## Overview
+
+Given integer `n` and odd prime `p`, determine whether there exists `x` such that:
+
+`x^2 mod p = n mod p`
+
+Euler's criterion states:
+
+- If `n mod p = 0`, a square root exists (`x = 0`).
+- Otherwise, a square root exists iff:
+
+`n^((p-1)/2) mod p = 1`
+
+If the value is `p - 1`, then `n` is a non-residue and no square root exists.
+
+## Approach
+
+1. Reduce `n` modulo `p`.
+2. Compute `n^((p-1)/2) mod p` via binary exponentiation.
+3. Return true for result 1 (or when reduced `n` is 0).
+
+```js
+function modPow(base, exp, mod) {
+  let b = ((base % mod) + mod) % mod;
+  let e = exp;
+  let ans = 1;
+  while (e > 0) {
+    if (e & 1) ans = (ans * b) % mod;
+    b = (b * b) % mod;
+    e >>= 1;
+  }
+  return ans;
+}
+
+function squareRootExistsModuloPrime(n, p) {
+  if (!Number.isInteger(n) || !Number.isInteger(p) || p <= 2) return false;
+  const r = ((n % p) + p) % p;
+  if (r === 0) return true;
+  return modPow(r, (p - 1) >> 1, p) === 1;
+}
+
+console.assert(squareRootExistsModuloPrime(2, 5) === false, "2 is non-residue mod 5");
+console.assert(squareRootExistsModuloPrime(2, 7) === true, "2 is residue mod 7");
+console.assert(squareRootExistsModuloPrime(9, 11) === true, "9 has roots ±3 mod 11");
+console.assert(squareRootExistsModuloPrime(0, 13) === true, "0 always has root 0");
+```
+
+## Notes
+
+- This test only checks existence, not the root value.
+- For actually finding roots modulo prime, see algorithms like Tonelli-Shanks.
+- The criterion is defined for odd primes.

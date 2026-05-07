@@ -1,0 +1,67 @@
+---
+title: "Modulo 10^9+7 (1000000007)"
+slug: "modulo-1097-1000000007"
+category: "Modular Arithmetic"
+description: "Why 1,000,000,007 is common in competitive programming and how to apply modular arithmetic safely in intermediate computations."
+techniques: ["Modular Arithmetic", "Overflow Prevention", "Fast Exponentiation"]
+complexity:
+  time: "O(n) or O(log n), depending on operation"
+  space: "O(1)"
+  notes: "Apply modulo at each step to avoid overflow; division requires modular inverse"
+---
+
+## Overview
+
+`10^9 + 7` (`1000000007`) is widely used because it is:
+
+- Large enough for robust hashing/counting modulo operations.
+- Prime, which makes modular inverses easier to work with.
+
+Core identities:
+
+- `(a + b) mod m = ((a mod m) + (b mod m)) mod m`
+- `(a - b) mod m = ((a mod m) - (b mod m) + m) mod m`
+- `(a * b) mod m = ((a mod m) * (b mod m)) mod m`
+
+Division is special and needs inverse when defined.
+
+## Approach
+
+For products/sums over large ranges, reduce modulo at every step.
+In JavaScript, use `BigInt` for exact modular multiplication on very large integers.
+
+```js
+const MOD = 1000000007n;
+
+function modNormalize(a, mod = MOD) {
+  const x = a % mod;
+  return x >= 0n ? x : x + mod;
+}
+
+function modAdd(a, b, mod = MOD) {
+  return modNormalize(modNormalize(a, mod) + modNormalize(b, mod), mod);
+}
+
+function modMul(a, b, mod = MOD) {
+  return modNormalize(modNormalize(a, mod) * modNormalize(b, mod), mod);
+}
+
+function factorialMod(n, mod = MOD) {
+  let ans = 1n;
+  for (let i = 1n; i <= BigInt(n); i++) {
+    ans = modMul(ans, i, mod);
+  }
+  return ans;
+}
+
+console.assert(Number(modAdd(1000000006n, 5n)) === 4, "(MOD-1 + 5) % MOD = 4");
+console.assert(Number(modMul(123456789n, 987654321n)) === 259106859, "known product mod");
+console.assert(Number(factorialMod(5)) === 120, "5! % MOD = 120");
+console.assert(Number(modNormalize(-5n, 3n)) === 1, "positive representative of -5 mod 3");
+```
+
+## Notes
+
+- Applying modulo only at the end can overflow fixed-width integer types.
+- For language-specific signed modulo behavior, normalize with `(x % m + m) % m`.
+- For modular division, use multiplicative inverse.
