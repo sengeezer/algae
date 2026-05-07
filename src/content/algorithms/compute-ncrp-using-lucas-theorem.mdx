@@ -1,0 +1,67 @@
+---
+title: "Compute nCr%p using Lucas Theorem"
+slug: "compute-ncrp-using-lucas-theorem"
+category: "Modular Arithmetic"
+description: "Compute nCr mod prime p efficiently for huge n by decomposing n and r in base p and multiplying small-digit combinations."
+techniques: ["Lucas Theorem", "Modular Arithmetic", "Dynamic Programming"]
+complexity:
+  time: "O(p^2 * log_p n)"
+  space: "O(p)"
+  notes: "Each base-p digit pair uses a small nCr mod p subproblem"
+---
+
+## Overview
+
+For prime `p`, Lucas theorem states:
+
+`C(n, r) mod p = product C(n_i, r_i) mod p`
+
+where `n_i` and `r_i` are digits of `n` and `r` in base `p`.
+
+## Approach
+
+```js
+function smallNCrModp(n, r, p) {
+  if (r > n) return 0;
+  r = Math.min(r, n - r);
+  const row = new Array(r + 1).fill(0);
+  row[0] = 1;
+
+  for (let i = 1; i <= n; i++) {
+    for (let j = Math.min(i, r); j > 0; j--) {
+      row[j] = (row[j] + row[j - 1]) % p;
+    }
+  }
+  return row[r];
+}
+
+function nCrModpLucas(n, r, p) {
+  if (!Number.isInteger(n) || !Number.isInteger(r) || !Number.isInteger(p)) return -1;
+  if (n < 0 || r < 0 || r > n || p <= 1) return -1;
+
+  let result = 1;
+  let nn = n;
+  let rr = r;
+
+  while (nn > 0 || rr > 0) {
+    const ni = nn % p;
+    const ri = rr % p;
+    if (ri > ni) return 0;
+
+    result = (result * smallNCrModp(ni, ri, p)) % p;
+    nn = Math.floor(nn / p);
+    rr = Math.floor(rr / p);
+  }
+
+  return result;
+}
+
+console.assert(nCrModpLucas(10, 2, 13) === 6, "10C2 % 13 = 6");
+console.assert(nCrModpLucas(1000, 900, 13) === 8, "1000C900 % 13 = 8");
+console.assert(nCrModpLucas(7, 0, 5) === 1, "nC0 = 1");
+```
+
+## Notes
+
+- Works when modulus `p` is prime.
+- Strong option for huge `n` where plain DP over `n` is too expensive.

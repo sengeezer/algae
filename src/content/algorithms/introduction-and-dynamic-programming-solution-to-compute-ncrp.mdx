@@ -1,0 +1,50 @@
+---
+title: "Introduction and Dynamic Programming solution to compute nCr%p"
+slug: "introduction-and-dynamic-programming-solution-to-compute-ncrp"
+category: "Modular Arithmetic"
+description: "Compute nCr modulo p with Pascal-recurrence dynamic programming to avoid overflow from direct nCr evaluation."
+techniques: ["Dynamic Programming", "Pascal Triangle", "Modular Arithmetic"]
+complexity:
+  time: "O(n * r)"
+  space: "O(r)"
+  notes: "Space-optimized Pascal row update computes nCr mod p without constructing huge intermediate values"
+---
+
+## Overview
+
+Directly computing `nCr` can overflow for moderate `n` and `r`.
+A stable alternative is to use Pascal recurrence under modulo:
+
+`C(n, r) % p = (C(n-1, r-1) + C(n-1, r)) % p`
+
+## Approach
+
+```js
+function nCrModp(n, r, p) {
+  if (!Number.isInteger(n) || !Number.isInteger(r) || !Number.isInteger(p)) return -1;
+  if (n < 0 || r < 0 || r > n || p <= 0) return -1;
+
+  r = Math.min(r, n - r);
+  const row = new Array(r + 1).fill(0);
+  row[0] = 1;
+
+  for (let i = 1; i <= n; i++) {
+    const upper = Math.min(i, r);
+    for (let j = upper; j > 0; j--) {
+      row[j] = (row[j] + row[j - 1]) % p;
+    }
+  }
+
+  return row[r];
+}
+
+console.assert(nCrModp(10, 2, 13) === 6, "10C2 % 13 = 6");
+console.assert(nCrModp(5, 2, 1000000007) === 10, "5C2 % MOD = 10");
+console.assert(nCrModp(6, 0, 7) === 1, "nC0 = 1");
+console.assert(nCrModp(6, 6, 7) === 1, "nCn = 1");
+```
+
+## Notes
+
+- This is a robust baseline when modulus arithmetic is required.
+- For very large `n`, Lucas theorem can be significantly faster when `p` is prime.

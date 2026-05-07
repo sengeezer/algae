@@ -1958,3 +1958,18 @@ This one-hundred-sixty-fourth expansion slice lifts the catalog from 785 to 787 
 - Batch 164 is now locally drafted as a two-entry frontier-close slice because only two clean Catalan-application items remained in source order.
 - Focused JavaScript-fence validation and `npm run build` both passed against the local 787-entry state with 792 static pages generated.
 - The Catalan applications source branch is now exhausted; the next queue will resume from the next clean Mathematical Algorithms source-order branch.
+
+## Batch 165 added
+
+This one-hundred-sixty-fifth expansion slice lifts the catalog from 787 to 790 entries.
+
+- Introduction and Dynamic Programming solution to compute nCr%p
+- Compute nCr%p using Lucas Theorem
+- Rencontres Number (Counting partial derangements)
+
+## Next candidates from the same sources
+
+- Batch 165 is now locally drafted, lifting the catalog from 787 to 790 entries after adding three nCr-computation entries in source order.
+- Duplicate skip note: `Program to calculate value of nCr` was skipped as semantic duplicate-level overlap with the existing `Binomial Coefficient` entry.
+- Focused JavaScript-fence validation and `npm run build` both passed against the local 790-entry state with 795 static pages generated.
+- The next clean Mathematical Algorithms queue after this nCr slice is `Program to calculate value of nPr`, `Compute nPr under modulo p`, and `Combinations with repetitions`.
