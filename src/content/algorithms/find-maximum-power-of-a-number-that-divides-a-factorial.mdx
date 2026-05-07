@@ -1,0 +1,86 @@
+---
+title: "Find maximum power of a number that divides a factorial"
+slug: "find-maximum-power-of-a-number-that-divides-a-factorial"
+category: "Factorial"
+description: "Find the largest exponent x such that n^x divides fact! using prime factorization and Legendre counts."
+techniques: ["Number Theory", "Prime Factorization", "Legendre Formula"]
+complexity:
+  time: "O(sqrt(n) + m log(fact))"
+  space: "O(m)"
+  notes: "m is the number of distinct prime factors of n"
+---
+
+## Overview
+
+Given `fact` and `n`, compute the largest `x` such that:
+
+`n^x | fact!`
+
+If `n = p1^a1 * p2^a2 * ...`, then for each prime `pi` we compute its exponent in `fact!` using Legendre's sum and divide by `ai`. The minimum over all factors is the answer.
+
+## Approach
+
+1. Prime-factorize `n`.
+2. For each `(prime, exponentInN)`:
+   - Compute `countInFactorial = floor(fact/prime) + floor(fact/prime^2) + ...`
+   - Candidate power is `floor(countInFactorial / exponentInN)`.
+3. Return minimum candidate.
+
+```js
+function factorize(num) {
+  const factors = [];
+  let x = num;
+
+  let count = 0;
+  while (x % 2 === 0) {
+    x = Math.floor(x / 2);
+    count++;
+  }
+  if (count > 0) factors.push([2, count]);
+
+  for (let p = 3; p * p <= x; p += 2) {
+    count = 0;
+    while (x % p === 0) {
+      x = Math.floor(x / p);
+      count++;
+    }
+    if (count > 0) factors.push([p, count]);
+  }
+
+  if (x > 1) factors.push([x, 1]);
+  return factors;
+}
+
+function primeExponentInFactorial(fact, p) {
+  let total = 0;
+  let cur = fact;
+  while (cur > 0) {
+    cur = Math.floor(cur / p);
+    total += cur;
+  }
+  return total;
+}
+
+function maxPowerDividingFactorial(fact, n) {
+  if (!Number.isInteger(fact) || !Number.isInteger(n) || fact < 0 || n <= 1) return -1;
+
+  const factors = factorize(n);
+  let answer = Number.POSITIVE_INFINITY;
+
+  for (const [p, expInN] of factors) {
+    const expInFact = primeExponentInFactorial(fact, p);
+    answer = Math.min(answer, Math.floor(expInFact / expInN));
+  }
+
+  return Number.isFinite(answer) ? answer : 0;
+}
+
+console.assert(maxPowerDividingFactorial(5, 2) === 3, "2^3 divides 5!");
+console.assert(maxPowerDividingFactorial(146, 15) === 35, "15^35 divides 146!");
+console.assert(maxPowerDividingFactorial(10, 9) === 2, "9^2 divides 10!");
+```
+
+## Notes
+
+- This avoids constructing `fact!` explicitly.
+- For very large inputs, this method is far more stable than naive multiplication.

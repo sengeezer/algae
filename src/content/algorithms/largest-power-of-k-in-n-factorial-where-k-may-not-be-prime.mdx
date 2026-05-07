@@ -1,0 +1,85 @@
+---
+title: "Largest power of k in n! (factorial) where k may not be prime"
+slug: "largest-power-of-k-in-n-factorial-where-k-may-not-be-prime"
+category: "Factorial"
+description: "Compute the greatest x such that k^x divides n! even when k is composite."
+techniques: ["Number Theory", "Prime Factorization", "Legendre Formula"]
+complexity:
+  time: "O(sqrt(k) + m log n)"
+  space: "O(m)"
+  notes: "m is the number of distinct prime factors of k"
+---
+
+## Overview
+
+For integers `n` and `k > 1`, find maximum `x` such that:
+
+`k^x | n!`
+
+When `k` is composite, we factorize `k` first and apply Legendre counts prime-by-prime.
+
+## Approach
+
+If `k = p1^a1 * p2^a2 * ... * pt^at`, then:
+
+- exponent of `pi` in `n!` is `sum floor(n / pi^j)`
+- contribution for this factor is `floor(exponent(pi in n!) / ai)`
+- answer is minimum contribution over all prime factors
+
+```js
+function primeFactorization(k) {
+  const out = [];
+  let x = k;
+
+  let e = 0;
+  while (x % 2 === 0) {
+    x = Math.floor(x / 2);
+    e++;
+  }
+  if (e > 0) out.push([2, e]);
+
+  for (let p = 3; p * p <= x; p += 2) {
+    e = 0;
+    while (x % p === 0) {
+      x = Math.floor(x / p);
+      e++;
+    }
+    if (e > 0) out.push([p, e]);
+  }
+
+  if (x > 1) out.push([x, 1]);
+  return out;
+}
+
+function legendreExponentInFactorial(n, p) {
+  let count = 0;
+  for (let cur = n; cur > 0; ) {
+    cur = Math.floor(cur / p);
+    count += cur;
+  }
+  return count;
+}
+
+function largestPowerOfKInFactorial(n, k) {
+  if (!Number.isInteger(n) || !Number.isInteger(k) || n < 0 || k <= 1) return -1;
+
+  const factors = primeFactorization(k);
+  let best = Number.POSITIVE_INFINITY;
+
+  for (const [p, expInK] of factors) {
+    const expInFactorial = legendreExponentInFactorial(n, p);
+    best = Math.min(best, Math.floor(expInFactorial / expInK));
+  }
+
+  return Number.isFinite(best) ? best : 0;
+}
+
+console.assert(largestPowerOfKInFactorial(7, 2) === 4, "7! has 2^4 as highest power from source example");
+console.assert(largestPowerOfKInFactorial(10, 9) === 2, "10! is divisible by 9^2");
+console.assert(largestPowerOfKInFactorial(10, 12) === 4, "12^4 divides 10!, but 12^5 does not");
+```
+
+## Notes
+
+- This is the composite-number extension of Legendre's prime-power formula.
+- Works well for large `n` as long as `k` factorization is feasible.

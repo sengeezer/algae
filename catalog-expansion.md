@@ -1837,7 +1837,22 @@ This one-hundred-fifty-sixth expansion slice lifts the catalog from 761 to 764 e
 
 ## Next candidates from the same sources
 
-- Batch 156 is now locally drafted, lifting the catalog from 761 to 764 entries after adding one Modular Arithmetic entry and two Factorial entries in source order.
+- Batch 156 is now published on `main` at commit `d3c8b4f`, lifting the catalog from 761 to 764 entries after adding one Modular Arithmetic entry and two Factorial entries in source order.
 - Batch 156 destination-title normalization: source queue label `Factorial of a large number` resolves to destination title `Find the Factorial of a large number`; the other two entries match their destination titles.
 - Focused JavaScript-fence validation and `npm run build` both passed against the local 764-entry state with 769 static pages generated.
 - The next clean Mathematical Algorithms queue after the local batch 156 frontier is `Primorial of a number`, `Find maximum power of a number that divides a factorial`, and `Largest power of k in n! (factorial) where k may not be prime`.
+
+## Batch 157 added
+
+This one-hundred-fifty-seventh expansion slice lifts the catalog from 764 to 767 entries.
+
+- Primorial of a number
+- Find maximum power of a number that divides a factorial
+- Largest power of k in n! (factorial) where k may not be prime
+
+## Next candidates from the same sources
+
+- Batch 157 is now locally drafted, lifting the catalog from 764 to 767 entries after adding three Factorial-adjacent entries in source order.
+- Source URL drift note: the third source queue item resolves to the live destination URL `https://www.geeksforgeeks.org/dsa/largest-power-k-n-factorial-k-may-not-prime/`.
+- Focused JavaScript-fence validation and `npm run build` both passed against the local 767-entry state with 772 static pages generated.
+- The next clean Mathematical Algorithms queue after the local batch 157 frontier is `Check if a number is a Krishnamurthy Number or not`, `Last non-zero digit of a factorial`, and `Count digits in a factorial using Logarithm`.
