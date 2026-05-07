@@ -1,0 +1,68 @@
+---
+title: "AKS Primality Test"
+slug: "aks-primality-test"
+category: "Prime Numbers & Primality Tests"
+description: "Show the core polynomial-congruence idea behind AKS with a small-n demonstrator based on binomial coefficient divisibility."
+techniques: ["Deterministic Primality", "Binomial Coefficients", "Modular Arithmetic"]
+complexity:
+  time: "O(n^2) for demonstrator"
+  space: "O(n)"
+  notes: "This implementation demonstrates AKS intuition, not the full practical AKS algorithm"
+---
+
+## Overview
+
+AKS (Agrawal-Kayal-Saxena) is a deterministic polynomial-time primality test.
+
+A key characterization is tied to polynomial congruences; a common educational form checks divisibility properties of binomial coefficients for prime `n`.
+
+For prime `n`, every middle binomial coefficient in row `n` of Pascal's triangle is divisible by `n`:
+
+`n divides C(n, k)` for `1 <= k <= n-1`.
+
+## Educational Demonstrator
+
+This is not a full AKS implementation. It verifies the coefficient-divisibility condition with exact `BigInt` arithmetic.
+
+```js
+function binomialRow(n) {
+  const row = Array(n + 1).fill(0n);
+  row[0] = 1n;
+
+  for (let i = 1; i <= n; i++) {
+    row[i] = 1n;
+    for (let j = i - 1; j > 0; j--) {
+      row[j] = row[j] + row[j - 1];
+    }
+  }
+
+  return row;
+}
+
+function aksIdeaIsPrime(n) {
+  if (!Number.isInteger(n) || n < 2) return false;
+  if (n === 2 || n === 3) return true;
+
+  const N = BigInt(n);
+  const row = binomialRow(n);
+
+  for (let k = 1; k < n; k++) {
+    if (row[k] % N !== 0n) {
+      return false;
+    }
+  }
+  return true;
+}
+
+console.assert(aksIdeaIsPrime(2) === true, "2 is prime");
+console.assert(aksIdeaIsPrime(3) === true, "3 is prime");
+console.assert(aksIdeaIsPrime(5) === true, "5 is prime");
+console.assert(aksIdeaIsPrime(7) === true, "7 is prime");
+console.assert(aksIdeaIsPrime(9) === false, "9 is composite");
+console.assert(aksIdeaIsPrime(15) === false, "15 is composite");
+```
+
+## Notes
+
+- Full AKS uses additional steps and polynomial modular reductions to stay efficient.
+- This demonstrator captures the theorem-level intuition often used to introduce AKS.

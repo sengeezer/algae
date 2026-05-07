@@ -1,0 +1,60 @@
+---
+title: "Vantieghems Theorem for Primality Test"
+slug: "vantieghems-theorem-for-primality-test"
+category: "Prime Numbers & Primality Tests"
+description: "Demonstrate Vantieghems primality congruence using modular products with BigInt arithmetic for small values."
+techniques: ["Modular Arithmetic", "Number Theory", "BigInt"]
+complexity:
+  time: "O(n) modular multiplications"
+  space: "O(1)"
+  notes: "Direct theorem verification is practical only for small n"
+---
+
+## Overview
+
+Vantieghems theorem states that a natural number `n` is prime iff:
+
+`prod(2^i - 1) for i = 1..n-1` is congruent to `n (mod (2^n - 1))`.
+
+This gives a necessary-and-sufficient primality criterion, though direct computation becomes expensive for large `n`.
+
+## Practical Verification Approach
+
+1. Compute modulus `M = 2^n - 1`.
+2. Maintain running product modulo `M`.
+3. Check whether final product modulo `M` equals `n mod M`.
+
+Using `BigInt` avoids overflow in JavaScript.
+
+```js
+function modPow2(exp) {
+  return 1n << BigInt(exp);
+}
+
+function vantieghemIsPrime(n) {
+  if (!Number.isInteger(n) || n < 2) return false;
+  if (n === 2) return true;
+
+  const N = BigInt(n);
+  const mod = modPow2(n) - 1n;
+  let product = 1n;
+
+  for (let i = 1; i < n; i++) {
+    const term = modPow2(i) - 1n;
+    product = (product * term) % mod;
+  }
+
+  return product === (N % mod);
+}
+
+console.assert(vantieghemIsPrime(2) === true, "2 is prime (handled as base case)");
+console.assert(vantieghemIsPrime(3) === true, "3 should satisfy theorem");
+console.assert(vantieghemIsPrime(5) === true, "5 should satisfy theorem");
+console.assert(vantieghemIsPrime(7) === true, "7 should satisfy theorem");
+console.assert(vantieghemIsPrime(4) === false, "4 should fail theorem");
+```
+
+## Notes
+
+- The theorem is exact, but naive direct verification is not efficient for large `n`.
+- The implementation above is intended for educational demonstrations and small inputs.

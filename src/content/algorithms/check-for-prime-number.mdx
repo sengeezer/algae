@@ -1,0 +1,57 @@
+---
+title: "Check for Prime Number"
+slug: "check-for-prime-number"
+category: "Prime Numbers & Primality Tests"
+description: "Determine whether a number is prime using trial-division methods, including the optimized 6k +/- 1 check."
+techniques: ["Trial Division", "Number Theory", "6k+/-1 Optimization"]
+complexity:
+  time: "O(sqrt(n))"
+  space: "O(1)"
+  notes: "Optimized trial division skips multiples of 2 and 3"
+---
+
+## Overview
+
+Given an integer `n`, return whether it is prime.
+
+A prime number is greater than 1 and has no positive divisors other than 1 and itself.
+
+Examples:
+
+- `n = 7` -> `true`
+- `n = 25` -> `false`
+- `n = 1` -> `false`
+
+## Optimized Approach
+
+After handling small cases:
+
+1. Reject `n <= 1`.
+2. Accept `2` and `3`.
+3. Reject multiples of `2` or `3`.
+4. Check divisors of form `6k - 1` and `6k + 1` up to `sqrt(n)`.
+
+```js
+function isPrime(n) {
+  if (!Number.isInteger(n) || n <= 1) return false;
+  if (n <= 3) return true;
+  if (n % 2 === 0 || n % 3 === 0) return false;
+
+  for (let i = 5; i * i <= n; i += 6) {
+    if (n % i === 0 || n % (i + 2) === 0) return false;
+  }
+
+  return true;
+}
+
+console.assert(isPrime(7) === true, "7 is prime");
+console.assert(isPrime(25) === false, "25 is composite");
+console.assert(isPrime(1) === false, "1 is not prime");
+console.assert(isPrime(2) === true, "2 is prime");
+console.assert(isPrime(97) === true, "97 is prime");
+```
+
+## Notes
+
+- The `6k +/- 1` pattern is a filter, not a proof: candidates still need divisibility checks.
+- For many queries over a range, sieve-based approaches are typically faster overall.

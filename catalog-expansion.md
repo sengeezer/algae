@@ -1734,7 +1734,22 @@ This one-hundred-forty-ninth expansion slice lifts the catalog from 740 to 743 e
 
 ## Next candidates from the same sources
 
-- Batch 149 is now locally drafted, lifting the catalog from 740 to 743 entries after adding three Prime Numbers & Primality Tests entries in source order.
+- Batch 149 is now published on `main` at commit `88b2eda`, lifting the catalog from 740 to 743 entries after adding three Prime Numbers & Primality Tests entries in source order.
 - Batch 149 keeps destination-title alignment for all three entries and validates cleanly with focused JavaScript-fence checks and `npm run build`.
 - Build validation passed against the local 743-entry catalog state with 748 static pages generated.
-- The next clean Mathematical Algorithms queue after the local batch 149 frontier is `Introduction to Primality Test and School Method`, `Vantieghems Theorem for Primality Test`, and `AKS Primality Test`.
+- The next clean Mathematical Algorithms queue after batch 149 was `Introduction to Primality Test and School Method`, `Vantieghems Theorem for Primality Test`, and `AKS Primality Test`.
+
+## Batch 150 added
+
+This one-hundred-fiftieth expansion slice lifts the catalog from 743 to 746 entries.
+
+- Check for Prime Number
+- Vantieghems Theorem for Primality Test
+- AKS Primality Test
+
+## Next candidates from the same sources
+
+- Batch 150 is now locally drafted, lifting the catalog from 743 to 746 entries after adding three Prime Numbers & Primality Tests entries in source order.
+- Batch 150 keeps destination-title alignment; source link `Introduction to Primality Test and School Method` resolves to destination title `Check for Prime Number`.
+- Focused JavaScript-fence validation and `npm run build` both passed against the local 746-entry state with 751 static pages generated.
+- The next clean Mathematical Algorithms queue after the local batch 150 frontier is `Lucas Primality Test`, `Smith Numbers`, and `Sphenic Number`.
