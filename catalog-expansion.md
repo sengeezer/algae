@@ -1886,3 +1886,18 @@ This one-hundred-fifty-ninth expansion slice lifts the catalog from 770 to 773 e
 - Collision note: `Matrix Exponentiation` (the third source item) maps to existing `matrix-exponentiation.mdx` with comprehensive coverage, so the next clean source-ordered candidate was `Cassini's Identity` from the same Mathematical Algorithms section.
 - Focused JavaScript-fence validation and `npm run build` both passed against the local 773-entry state with 778 static pages generated.
 - The next clean Mathematical Algorithms queue after the local batch 159 frontier is `Fibonacci Coding`, `Tail Recursion for Fibonacci`, and `Catalan Numbers`.
+
+## Batch 160 added
+
+This one-hundred-sixtieth expansion slice lifts the catalog from 773 to 776 entries.
+
+- Fibonacci Coding
+- Tail Recursion for Fibonacci
+- Applications of Catalan Numbers
+
+## Next candidates from the same sources
+
+- Batch 160 is now locally drafted, lifting the catalog from 773 to 776 entries after adding two Fibonacci entries and one Catalan follow-up entry in source order.
+- Duplicate-level skip note: `Catalan Numbers` maps to existing `catalan-numbers.mdx`, so the next clean source-ordered candidate used in this slice was `Applications of Catalan Numbers`.
+- Focused JavaScript-fence validation and `npm run build` both passed against the local 776-entry state with 781 static pages generated.
+- The next clean Mathematical Algorithms queue after the local batch 160 frontier is `Dyck Words`, `Non-crossing Chord Matchings`, and `Mountain Ranges`.

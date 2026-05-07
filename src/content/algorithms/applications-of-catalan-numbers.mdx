@@ -1,0 +1,61 @@
+---
+title: "Applications of Catalan Numbers"
+slug: "applications-of-catalan-numbers"
+category: "Mathematics"
+description: "Recognize and solve classic counting problems that map to Catalan numbers, such as balanced parentheses and unique BST shapes."
+techniques: ["Combinatorics", "Dynamic Programming", "Mathematical Formula"]
+complexity:
+  time: "O(n)"
+  space: "O(1)"
+  notes: "Computes C(n) with multiplicative recurrence and uses it to answer multiple application counts"
+---
+
+## Overview
+
+Catalan numbers appear whenever a structure splits into valid left and right parts.
+Common examples include:
+
+- count of balanced-parentheses strings with `n` pairs
+- count of unique BST shapes with `n` keys
+- count of non-crossing chord matchings on `2n` points
+
+All three counts equal `C(n)`.
+
+## Approach
+
+Compute `C(n)` and reuse it for each application query.
+
+```js
+function catalan(n) {
+  if (!Number.isInteger(n) || n < 0) return -1n;
+  let result = 1n;
+  for (let i = 1n; i <= BigInt(n); i++) {
+    result = (result * (4n * i - 2n)) / (i + 1n);
+  }
+  return result;
+}
+
+function countBalancedParentheses(n) {
+  return catalan(n);
+}
+
+function countUniqueBST(n) {
+  return catalan(n);
+}
+
+function countNonCrossingChords(n) {
+  return catalan(n);
+}
+
+console.assert(catalan(0) === 1n, "C(0) = 1");
+console.assert(catalan(3) === 5n, "C(3) = 5");
+console.assert(catalan(4) === 14n, "C(4) = 14");
+console.assert(countBalancedParentheses(4) === 14n, "14 valid parentheses strings for n=4");
+console.assert(countUniqueBST(3) === 5n, "5 unique BSTs for n=3");
+console.assert(countNonCrossingChords(5) === 42n, "42 non-crossing chord matchings for n=5");
+```
+
+## Notes
+
+- This is a pattern-recognition entry: many different prompts reduce to the same Catalan count.
+- In interviews, identifying the Catalan mapping is usually the hardest part.

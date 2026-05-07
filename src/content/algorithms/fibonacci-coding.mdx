@@ -1,0 +1,63 @@
+---
+title: "Fibonacci Coding"
+slug: "fibonacci-coding"
+category: "Fibonacci Numbers"
+description: "Encode positive integers into prefix-free Fibonacci code words using Zeckendorf representation plus a terminating 1."
+techniques: ["Fibonacci", "Greedy Algorithm", "Data Encoding"]
+complexity:
+  time: "O(k)"
+  space: "O(k)"
+  notes: "k is the index of the largest Fibonacci number used in representation"
+---
+
+## Overview
+
+Fibonacci coding represents a positive integer using its Zeckendorf decomposition.
+To build the code word:
+
+1. Mark used Fibonacci terms with bits.
+2. Reverse the Zeckendorf bit sequence.
+3. Append an extra `1` terminator.
+
+This creates a self-delimiting code where each number ends with `11`.
+
+## Approach
+
+```js
+function fibonacciNumbersUpTo(n) {
+  const fibs = [1, 2];
+  while (fibs[fibs.length - 1] <= n) {
+    fibs.push(fibs[fibs.length - 1] + fibs[fibs.length - 2]);
+  }
+  fibs.pop();
+  return fibs;
+}
+
+function fibonacciEncode(n) {
+  if (!Number.isInteger(n) || n <= 0) return "";
+
+  const fibs = fibonacciNumbersUpTo(n);
+  const bits = new Array(fibs.length).fill("0");
+  let rem = n;
+
+  for (let i = fibs.length - 1; i >= 0; i--) {
+    if (fibs[i] <= rem) {
+      bits[i] = "1";
+      rem -= fibs[i];
+    }
+  }
+
+  // Emit from smallest to largest Fibonacci index, then append terminator 1.
+  return bits.join("") + "1";
+}
+
+console.assert(fibonacciEncode(1) === "11", "1 -> 11");
+console.assert(fibonacciEncode(2) === "011", "2 -> 011");
+console.assert(fibonacciEncode(3) === "0011", "3 -> 0011");
+console.assert(fibonacciEncode(11) === "001011", "11 -> 001011");
+```
+
+## Notes
+
+- The encoding is prefix-free because each token ends with the unique terminal pattern `11`.
+- This encoding is robust in stream parsing because boundaries are self-marked.

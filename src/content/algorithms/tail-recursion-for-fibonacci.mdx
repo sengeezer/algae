@@ -1,0 +1,43 @@
+---
+title: "Tail Recursion for Fibonacci"
+slug: "tail-recursion-for-fibonacci"
+category: "Fibonacci Numbers"
+description: "Compute the nth Fibonacci number with tail recursion by carrying the running pair (a, b) through recursive calls."
+techniques: ["Recursion", "Tail Recursion", "Fibonacci"]
+complexity:
+  time: "O(n)"
+  space: "O(n)"
+  notes: "JavaScript engines generally do not guarantee tail-call optimization"
+---
+
+## Overview
+
+Classic recursive Fibonacci repeats work exponentially. Tail recursion avoids this by
+threading accumulator state through each call:
+
+- `a` holds F(i)
+- `b` holds F(i + 1)
+
+Each recursive step updates `(a, b) -> (b, a + b)`.
+
+## Approach
+
+```js
+function tailFib(n, a = 0, b = 1) {
+  if (!Number.isInteger(n) || n < 0) return -1;
+  if (n === 0) return a;
+  if (n === 1) return b;
+  return tailFib(n - 1, b, a + b);
+}
+
+console.assert(tailFib(0) === 0, "F(0) = 0");
+console.assert(tailFib(1) === 1, "F(1) = 1");
+console.assert(tailFib(4) === 3, "F(4) = 3");
+console.assert(tailFib(9) === 34, "F(9) = 34");
+console.assert(tailFib(15) === 610, "F(15) = 610");
+```
+
+## Notes
+
+- Conceptually equivalent to iterative DP with two variables.
+- In interview settings, this shows understanding of call-shape optimization.
