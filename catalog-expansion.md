@@ -1915,4 +1915,19 @@ This one-hundred-sixty-first expansion slice lifts the catalog from 776 to 779 e
 - Batch 161 is now locally drafted, lifting the catalog from 776 to 779 entries after adding three Catalan-interpretation entries in source order.
 - Source URL drift note: the direct `Non-crossing Chord Matchings` page is no longer live and `Mountain Ranges` does not have a standalone page; both were sourced from the Catalan applications frontier while preserving queue order.
 - Focused JavaScript-fence validation and `npm run build` both passed against the local 779-entry state with 784 static pages generated.
-- The next clean Mathematical Algorithms queue after the local batch 161 frontier is `Count valid parentheses expressions`, `Unique BST count by keys`, and `Polygon triangulations`.
+- Queue correction note: `Count valid parentheses expressions`, `Unique BST count by keys`, and `Polygon triangulations` are already covered semantically by existing Catalan and parentheses entries, so they do not form the next clean drafting slice.
+
+## Batch 162 added
+
+This one-hundred-sixty-second expansion slice lifts the catalog from 779 to 782 entries.
+
+- Full Binary Trees with n+1 Leaves
+- Enumeration of Binary Trees
+- Dyck Path
+
+## Next candidates from the same sources
+
+- Batch 162 is now locally drafted, lifting the catalog from 779 to 782 entries after adding three more Catalan interpretations from the same applications frontier.
+- Source note: `Full Binary Trees with n+1 Leaves` was drafted from the Catalan applications frontier because the linked `Types of Binary Tree` page is a definition overview rather than a dedicated counting article.
+- Focused JavaScript-fence validation and `npm run build` both passed against the local 782-entry state with 787 static pages generated.
+- The next clean Mathematical Algorithms queue after the local batch 162 frontier is `Parenthesization Count in a Word`, `Noncrossing Partitions`, and `Stairstep Tilings`.

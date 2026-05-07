@@ -1,0 +1,44 @@
+---
+title: "Full Binary Trees with n+1 Leaves"
+slug: "full-binary-trees-with-n-plus-1-leaves"
+category: "Combinatorics"
+description: "Count the number of full binary trees with n+1 leaves using the nth Catalan number."
+techniques: ["Catalan Numbers", "Tree Counting", "Combinatorics"]
+complexity:
+  time: "O(n)"
+  space: "O(1)"
+  notes: "A full binary tree with n+1 leaves corresponds to the nth Catalan number"
+---
+
+## Overview
+
+A full binary tree is a binary tree where every internal node has exactly two children.
+The number of full binary trees with `n + 1` leaves is `C(n)`, the nth Catalan number.
+
+## Approach
+
+```js
+function catalan(n) {
+  if (!Number.isInteger(n) || n < 0) return -1n;
+  let result = 1n;
+  for (let i = 1n; i <= BigInt(n); i++) {
+    result = (result * (4n * i - 2n)) / (i + 1n);
+  }
+  return result;
+}
+
+function countFullBinaryTreesWithLeaves(leafCount) {
+  if (!Number.isInteger(leafCount) || leafCount <= 0) return -1n;
+  return catalan(leafCount - 1);
+}
+
+console.assert(countFullBinaryTreesWithLeaves(1) === 1n, "1 leaf => one trivial tree");
+console.assert(countFullBinaryTreesWithLeaves(2) === 1n, "2 leaves => one full tree");
+console.assert(countFullBinaryTreesWithLeaves(3) === 2n, "3 leaves => two full trees");
+console.assert(countFullBinaryTreesWithLeaves(5) === 14n, "5 leaves => 14 full trees");
+```
+
+## Notes
+
+- If a full binary tree has `n` internal nodes, it has `n + 1` leaves.
+- This is the same Catalan count that appears in Dyck paths and non-crossing chords.

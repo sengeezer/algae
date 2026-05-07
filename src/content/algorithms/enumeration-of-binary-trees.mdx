@@ -1,0 +1,52 @@
+---
+title: "Enumeration of Binary Trees"
+slug: "enumeration-of-binary-trees"
+category: "Combinatorics"
+description: "Count the number of unlabeled binary trees with n nodes using the Catalan recurrence."
+techniques: ["Catalan Numbers", "Tree Counting", "Dynamic Programming"]
+complexity:
+  time: "O(n)"
+  space: "O(1)"
+  notes: "The number of unlabeled binary trees with n nodes equals the nth Catalan number"
+---
+
+## Overview
+
+The number of different unlabeled binary trees with `n` nodes is the nth Catalan number.
+The recurrence comes from choosing how many nodes go into the left and right subtrees.
+
+## Approach
+
+```js
+function catalan(n) {
+  if (!Number.isInteger(n) || n < 0) return -1n;
+  let result = 1n;
+  for (let i = 1n; i <= BigInt(n); i++) {
+    result = (result * (4n * i - 2n)) / (i + 1n);
+  }
+  return result;
+}
+
+function countUnlabeledBinaryTrees(nodeCount) {
+  return catalan(nodeCount);
+}
+
+function countLabeledBinaryTrees(nodeCount) {
+  if (!Number.isInteger(nodeCount) || nodeCount < 0) return -1n;
+  let fact = 1n;
+  for (let i = 2n; i <= BigInt(nodeCount); i++) {
+    fact *= i;
+  }
+  return catalan(nodeCount) * fact;
+}
+
+console.assert(countUnlabeledBinaryTrees(0) === 1n, "empty tree count is 1");
+console.assert(countUnlabeledBinaryTrees(1) === 1n, "1 node => 1 tree");
+console.assert(countUnlabeledBinaryTrees(3) === 5n, "3 nodes => 5 unlabeled trees");
+console.assert(countLabeledBinaryTrees(3) === 30n, "3 nodes => 5 * 3! = 30 labeled trees");
+```
+
+## Notes
+
+- The same count also gives the number of BST shapes with `n` ordered keys.
+- Labeling multiplies the unlabeled count by `n!`.

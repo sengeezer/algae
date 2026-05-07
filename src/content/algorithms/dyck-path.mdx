@@ -1,0 +1,56 @@
+---
+title: "Dyck Path"
+slug: "dyck-path"
+category: "Combinatorics"
+description: "Count staircase paths in an n x n grid that stay above the diagonal, a geometric Catalan-number interpretation."
+techniques: ["Catalan Numbers", "Grid Paths", "Combinatorics"]
+complexity:
+  time: "O(n)"
+  space: "O(1)"
+  notes: "The number of Dyck paths in an n x n grid is the nth Catalan number"
+---
+
+## Overview
+
+A Dyck path is a staircase walk in an `n x n` grid that moves from bottom-left to top-right while never crossing below the diagonal.
+The number of such paths is `C(n)`.
+
+## Approach
+
+```js
+function catalan(n) {
+  if (!Number.isInteger(n) || n < 0) return -1n;
+  let result = 1n;
+  for (let i = 1n; i <= BigInt(n); i++) {
+    result = (result * (4n * i - 2n)) / (i + 1n);
+  }
+  return result;
+}
+
+function countDyckPaths(n) {
+  return catalan(n);
+}
+
+function isDyckStepPath(path) {
+  let depth = 0;
+  for (const step of path) {
+    if (step === "U") depth += 1;
+    else if (step === "R") depth -= 1;
+    else return false;
+    if (depth < 0) return false;
+  }
+  return depth === 0;
+}
+
+console.assert(countDyckPaths(1) === 1n, "n=1 => 1 path");
+console.assert(countDyckPaths(2) === 2n, "n=2 => 2 paths");
+console.assert(countDyckPaths(4) === 14n, "n=4 => 14 paths");
+console.assert(isDyckStepPath("UURR") === true, "UURR stays above diagonal");
+console.assert(isDyckStepPath("URUR") === true, "URUR stays above diagonal");
+console.assert(isDyckStepPath("URRU") === false, "URRU drops below diagonal");
+```
+
+## Notes
+
+- Dyck paths, Dyck words, and mountain ranges are the same Catalan object under different encodings.
+- This version frames the constraint as a geometric path problem instead of a string problem.
