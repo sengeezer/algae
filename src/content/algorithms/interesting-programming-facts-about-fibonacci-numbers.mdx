@@ -1,0 +1,69 @@
+---
+title: "Interesting Programming facts about Fibonacci numbers"
+slug: "interesting-programming-facts-about-fibonacci-numbers"
+category: "Fibonacci Numbers"
+description: "Collect practical Fibonacci properties, including the period-60 last-digit cycle and divisibility patterns."
+techniques: ["Fibonacci", "Modular Arithmetic", "Number Theory"]
+complexity:
+  time: "O(m^2) for Pisano-period scan when modulus is m"
+  space: "O(1)"
+  notes: "For last digits, m=10 so the cycle computation is tiny and deterministic"
+---
+
+## Overview
+
+The source article highlights useful Fibonacci identities and patterns. Two that are immediately practical in interviews:
+
+- Last digits of Fibonacci numbers repeat with period 60 (Pisano period for modulo 10).
+- Sum of any 10 consecutive Fibonacci numbers is divisible by 11.
+
+## Approach
+
+Implement small validators for these two facts.
+
+```js
+function pisanoPeriod(mod) {
+  if (!Number.isInteger(mod) || mod <= 1) return -1;
+
+  let prev = 0;
+  let curr = 1;
+  for (let i = 1; i <= mod * mod; i++) {
+    const next = (prev + curr) % mod;
+    prev = curr;
+    curr = next;
+    if (prev === 0 && curr === 1) return i;
+  }
+  return -1;
+}
+
+function fibonacciModAt(index, mod) {
+  if (!Number.isInteger(index) || index < 0 || !Number.isInteger(mod) || mod <= 0) return -1;
+  let a = 0;
+  let b = 1;
+  for (let i = 0; i < index; i++) {
+    const c = (a + b) % mod;
+    a = b;
+    b = c;
+  }
+  return a;
+}
+
+function sumOfTenConsecutiveFibDivisibleBy11(startIndex) {
+  if (!Number.isInteger(startIndex) || startIndex < 0) return false;
+
+  let sum = 0;
+  for (let i = 0; i < 10; i++) {
+    sum = (sum + fibonacciModAt(startIndex + i, 11)) % 11;
+  }
+  return sum === 0;
+}
+
+console.assert(pisanoPeriod(10) === 60, "last-digit cycle length is 60");
+console.assert(sumOfTenConsecutiveFibDivisibleBy11(0) === true, "first 10 terms sum divisible by 11");
+console.assert(sumOfTenConsecutiveFibDivisibleBy11(13) === true, "property holds for any start index");
+```
+
+## Notes
+
+- For last-digit queries on huge `n`, reduce `n` modulo `60` first.
+- The divisibility fact is useful for quick modular checks in puzzle-style questions.

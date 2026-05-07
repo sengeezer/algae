@@ -1852,7 +1852,22 @@ This one-hundred-fifty-seventh expansion slice lifts the catalog from 764 to 767
 
 ## Next candidates from the same sources
 
-- Batch 157 is now locally drafted, lifting the catalog from 764 to 767 entries after adding three Factorial-adjacent entries in source order.
+- Batch 157 is now published on `main` at commit `60b71e4`, lifting the catalog from 764 to 767 entries after adding three Factorial-adjacent entries in source order.
 - Source URL drift note: the third source queue item resolves to the live destination URL `https://www.geeksforgeeks.org/dsa/largest-power-k-n-factorial-k-may-not-prime/`.
 - Focused JavaScript-fence validation and `npm run build` both passed against the local 767-entry state with 772 static pages generated.
 - The next clean Mathematical Algorithms queue after the local batch 157 frontier is `Check if a number is a Krishnamurthy Number or not`, `Last non-zero digit of a factorial`, and `Count digits in a factorial using Logarithm`.
+
+## Batch 158 added
+
+This one-hundred-fifty-eighth expansion slice lifts the catalog from 767 to 770 entries.
+
+- Last non-zero digit of a factorial
+- Count digits in a factorial using Logarithm
+- Interesting Programming facts about Fibonacci numbers
+
+## Next candidates from the same sources
+
+- Batch 158 is now locally drafted, lifting the catalog from 767 to 770 entries after adding two Factorial entries and one Fibonacci entry in source order.
+- Duplicate-level skip note: `Check if a number is a Krishnamurthy Number or not` maps to existing `check-kishnamurthy-number`, so the next clean source-ordered candidate was `Interesting Programming facts about Fibonacci numbers` after also passing already-covered `Fibonacci Numbers`.
+- Focused JavaScript-fence validation and `npm run build` both passed against the local 770-entry state with 775 static pages generated.
+- The next clean Mathematical Algorithms queue after the local batch 158 frontier is `Zeckendorf's Theorem (Non-Neighbouring Fibonacci Representation)`, `Finding nth Fibonacci Number using Golden Ratio`, and `Matrix Exponentiation`.

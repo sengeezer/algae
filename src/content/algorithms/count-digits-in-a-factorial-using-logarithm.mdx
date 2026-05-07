@@ -1,0 +1,51 @@
+---
+title: "Count digits in a factorial using Logarithm"
+slug: "count-digits-in-a-factorial-using-logarithm"
+category: "Factorial"
+description: "Count digits of n! via log10 summation without constructing the factorial value."
+techniques: ["Logarithms", "Number Theory", "Factorial"]
+complexity:
+  time: "O(n)"
+  space: "O(1)"
+  notes: "Uses floor(log10(n!)) + 1 where log10(n!) = sum(log10(i))"
+---
+
+## Overview
+
+Number of decimal digits in a positive integer `x` is:
+
+`floor(log10(x)) + 1`
+
+So for factorial:
+
+`digits(n!) = floor(sum(log10(i), i=1..n)) + 1`
+
+This avoids huge integer arithmetic.
+
+## Approach
+
+Accumulate `log10` from `2` to `n` and apply the digit formula.
+
+```js
+function countDigitsInFactorialUsingLogarithm(n) {
+  if (!Number.isInteger(n) || n < 0) return -1;
+  if (n <= 1) return 1;
+
+  let sumLog10 = 0;
+  for (let i = 2; i <= n; i++) {
+    sumLog10 += Math.log10(i);
+  }
+
+  return Math.floor(sumLog10) + 1;
+}
+
+console.assert(countDigitsInFactorialUsingLogarithm(5) === 3, "5! = 120 has 3 digits");
+console.assert(countDigitsInFactorialUsingLogarithm(10) === 7, "10! has 7 digits");
+console.assert(countDigitsInFactorialUsingLogarithm(120) === 199, "source example: digits(120!) = 199");
+console.assert(countDigitsInFactorialUsingLogarithm(0) === 1, "0! = 1 has 1 digit");
+```
+
+## Notes
+
+- Stirling gives an `O(1)` approximation, but this logarithmic sum is exact for practical interview ranges.
+- Floating-point precision is stable for typical constraints used in coding interviews.

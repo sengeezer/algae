@@ -1,0 +1,46 @@
+---
+title: "Last non-zero digit of a factorial"
+slug: "last-non-zero-digit-of-a-factorial"
+category: "Factorial"
+description: "Find the last non-zero digit of n! using a logarithmic recursive reduction by factors of 5."
+techniques: ["Number Theory", "Recursion", "Factorial"]
+complexity:
+  time: "O(log n)"
+  space: "O(log n)"
+  notes: "Uses the classic recurrence with precomputed base digits for 0..9"
+---
+
+## Overview
+
+Computing `n!` directly overflows quickly. A standard recurrence gives the last non-zero digit efficiently:
+
+- Let `D(n)` be last non-zero digit of `n!`.
+- For `n < 10`, values are precomputed.
+- For larger `n`, reduce by `n/5` and adjust by parity of the tens digit.
+
+## Approach
+
+Use the recurrence from the source article with digit table for `0..9`.
+
+```js
+const BASE_DIGITS = [1, 1, 2, 6, 4, 2, 2, 4, 2, 8];
+
+function lastNonZeroDigitOfFactorial(n) {
+  if (!Number.isInteger(n) || n < 0) return -1;
+  if (n < 10) return BASE_DIGITS[n];
+
+  const factor = (((Math.floor(n / 10)) % 10) % 2 === 0) ? 6 : 4;
+  return (factor * lastNonZeroDigitOfFactorial(Math.floor(n / 5)) * BASE_DIGITS[n % 10]) % 10;
+}
+
+console.assert(lastNonZeroDigitOfFactorial(5) === 2, "5! -> 120, answer 2");
+console.assert(lastNonZeroDigitOfFactorial(10) === 8, "10! -> ...800, answer 8");
+console.assert(lastNonZeroDigitOfFactorial(27) === 8, "source example 27 -> 8");
+console.assert(lastNonZeroDigitOfFactorial(33) === 8, "source example 33 -> 8");
+console.assert(lastNonZeroDigitOfFactorial(0) === 1, "0! = 1");
+```
+
+## Notes
+
+- Trailing zeroes come from `2 * 5` pairs; factorials have excess 2s, so handling 5s is key.
+- This recurrence avoids big-integer factorial construction.
