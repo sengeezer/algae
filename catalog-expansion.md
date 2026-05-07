@@ -1808,7 +1808,21 @@ This one-hundred-fifty-fourth expansion slice lifts the catalog from 755 to 758 
 
 ## Next candidates from the same sources
 
-- Batch 154 is now locally drafted, lifting the catalog from 755 to 758 entries after adding three Modular Arithmetic entries in source order.
-- Batch 154 keeps destination-title alignment for all three entries and validates cleanly with focused JavaScript-fence checks and `npm run build`.
-- Build validation passed against the local 758-entry state with 763 static pages generated.
-- The next clean Mathematical Algorithms queue after the local batch 154 frontier is `Find sum of modulo K of first N natural number`, `How to compute mod of a big number?`, and `Exponential Squaring (Fast Modulo Multiplication)`.
+- Batch 154 is now published on `main` at commit `4329109`, lifting the catalog from 755 to 758 entries after adding three Modular Arithmetic entries in source order.
+- Batch 154 keeps destination-title alignment for all three entries; focused JavaScript-fence checks and `npm run build` both passed against the 758-entry state with 763 static pages generated.
+- The next clean Mathematical Algorithms queue after batch 154 was `Find sum of modulo K of first N natural number`, `How to compute mod of a big number?`, and `Exponential Squaring (Fast Modulo Multiplication)`.
+
+## Batch 155 added
+
+This one-hundred-fifty-fifth expansion slice lifts the catalog from 758 to 761 entries.
+
+- Find sum of modulo K of first N natural number
+- How to compute mod of a big number?
+- Exponential Squaring (Fast Modulo Multiplication)
+
+## Next candidates from the same sources
+
+- Batch 155 is now locally drafted, lifting the catalog from 758 to 761 entries after adding three Modular Arithmetic entries in source order.
+- Batch 155 keeps destination-title alignment for all three entries and validates cleanly with focused JavaScript-fence checks and `npm run build`.
+- Build validation passed against the local 761-entry state with 766 static pages generated.
+- The next clean Mathematical Algorithms queue after the local batch 155 frontier is `Trick for modular division ( (x1 * x2 …. xn) / b ) mod (m)`, `Count trailing zeroes in factorial of a number`, and `Factorial of a large number` after skipping duplicate-level `Program for factorial of a number` and `Legendre's formula`.

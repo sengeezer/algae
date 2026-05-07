@@ -1,0 +1,49 @@
+---
+title: "How to compute mod of a big number?"
+slug: "how-to-compute-mod-of-a-big-number"
+category: "Modular Arithmetic"
+description: "Compute num % a when num is too large to fit in numeric types by processing digits incrementally."
+techniques: ["Modular Arithmetic", "Streaming Computation", "Large Numbers"]
+complexity:
+  time: "O(|num|)"
+  space: "O(1)"
+  notes: "Scans decimal digits once and keeps only rolling remainder"
+---
+
+## Overview
+
+Given a very large non-negative integer as string `num` and integer `a`, compute `num % a` without converting `num` into a numeric type.
+
+Key recurrence while reading digits left to right:
+
+`newRemainder = (oldRemainder * 10 + currentDigit) % a`
+
+## Approach
+
+1. Initialize `remainder = 0`.
+2. For each digit `d` in `num`, update remainder using the recurrence.
+3. Return the final remainder.
+
+```js
+function modOfBigNumber(num, a) {
+  if (typeof num !== "string" || !/^\d+$/.test(num) || !Number.isInteger(a) || a <= 0) {
+    return -1;
+  }
+
+  let remainder = 0;
+  for (let i = 0; i < num.length; i++) {
+    const d = num.charCodeAt(i) - 48;
+    remainder = (remainder * 10 + d) % a;
+  }
+  return remainder;
+}
+
+console.assert(modOfBigNumber("12316767678678", 10) === 8, "sample from source");
+console.assert(modOfBigNumber("625", 5) === 0, "625 is divisible by 5");
+console.assert(modOfBigNumber("999999999999999999999", 97) === 50, "large string input");
+```
+
+## Notes
+
+- Works in constant extra space even for thousands of digits.
+- Easily adapted to other bases by changing the multiplication factor (10 here).

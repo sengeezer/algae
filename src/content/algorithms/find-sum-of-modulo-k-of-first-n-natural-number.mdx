@@ -1,0 +1,60 @@
+---
+title: "Find sum of modulo K of first N natural number"
+slug: "find-sum-of-modulo-k-of-first-n-natural-number"
+category: "Modular Arithmetic"
+description: "Compute 1%K + 2%K + ... + N%K in O(1) using periodic modulo patterns."
+techniques: ["Modular Arithmetic", "Pattern Observation", "Arithmetic Series"]
+complexity:
+  time: "O(1)"
+  space: "O(1)"
+  notes: "Uses repeating block 1,2,...,K-1,0 across each chunk of size K"
+---
+
+## Overview
+
+Compute:
+
+`1 % K + 2 % K + ... + N % K`
+
+The sequence of remainders repeats every `K` terms as:
+
+`1, 2, ..., K-1, 0`
+
+So we can sum full blocks and a leftover prefix.
+
+## Approach
+
+Let:
+
+- `y = floor(N / K)` = number of full blocks
+- `x = N % K` = leftover terms
+
+Then:
+
+- sum of one full block = `1 + 2 + ... + (K-1) + 0 = K*(K-1)/2`
+- sum of leftover = `1 + 2 + ... + x = x*(x+1)/2`
+
+Final answer:
+
+`ans = y * K*(K-1)/2 + x*(x+1)/2`
+
+```js
+function sumModuloKFirstN(n, k) {
+  if (!Number.isInteger(n) || !Number.isInteger(k) || n < 0 || k <= 0) return -1;
+
+  const y = Math.floor(n / k);
+  const x = n % k;
+
+  return y * (k * (k - 1)) / 2 + (x * (x + 1)) / 2;
+}
+
+console.assert(sumModuloKFirstN(10, 2) === 5, "1..10 modulo 2 sums to 5");
+console.assert(sumModuloKFirstN(7, 5) === 13, "1,2,3,4,0,1,2 => 13");
+console.assert(sumModuloKFirstN(5, 10) === 15, "K>N behaves like plain 1..N sum");
+console.assert(sumModuloKFirstN(0, 3) === 0, "empty range sum is 0");
+```
+
+## Notes
+
+- This avoids O(N) iteration.
+- For very large values, use BigInt variants to avoid precision loss in JavaScript Number.

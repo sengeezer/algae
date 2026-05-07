@@ -1,0 +1,54 @@
+---
+title: "Exponential Squaring (Fast Modulo Multiplication)"
+slug: "exponential-squaring-fast-modulo-multiplication"
+category: "Modular Arithmetic"
+description: "Compute base^exp mod M efficiently with exponentiation by squaring (binary exponentiation)."
+techniques: ["Modular Arithmetic", "Binary Exponentiation", "Bit Manipulation"]
+complexity:
+  time: "O(log exp)"
+  space: "O(1)"
+  notes: "Repeated squaring reduces exponent each step by half"
+---
+
+## Overview
+
+To compute `base^exp mod M` efficiently, use exponentiation by squaring instead of multiplying `base` `exp` times.
+
+At each step:
+
+- If current exponent bit is 1, multiply answer by current base.
+- Square base modulo `M`.
+- Shift exponent right by 1.
+
+## Approach
+
+This iterative binary method is fast, memory-efficient, and standard for large exponents in competitive programming.
+
+```js
+function modPow(base, exp, mod = 1000000007n) {
+  if (typeof base !== "bigint" || typeof exp !== "bigint" || typeof mod !== "bigint" || exp < 0n || mod <= 1n) {
+    return -1n;
+  }
+
+  let b = ((base % mod) + mod) % mod;
+  let e = exp;
+  let ans = 1n;
+
+  while (e > 0n) {
+    if (e & 1n) ans = (ans * b) % mod;
+    b = (b * b) % mod;
+    e >>= 1n;
+  }
+
+  return ans;
+}
+
+console.assert(modPow(2n, 2n, 1000000007n) === 4n, "2^2 mod M = 4");
+console.assert(modPow(5n, 100000n, 1000000007n) === 754573817n, "known benchmark value");
+console.assert(modPow(7n, 0n, 1000000007n) === 1n, "x^0 mod M = 1");
+```
+
+## Notes
+
+- Recursive and iterative variants both have O(log exp) time.
+- This pattern is a building block for modular inverse (Fermat) and many cryptographic computations.
