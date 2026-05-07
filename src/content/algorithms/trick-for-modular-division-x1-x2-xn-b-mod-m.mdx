@@ -1,0 +1,69 @@
+---
+title: "Trick for modular division ( (x1 * x2 .... xn) / b ) mod (m)"
+slug: "trick-for-modular-division-x1-x2-xn-b-mod-m"
+category: "Modular Arithmetic"
+description: "Compute ((x1*x2*...*xn)/b) mod m safely using modular inverse, with a special shortcut when b divides the product exactly."
+techniques: ["Modular Arithmetic", "Modular Inverse", "Extended Euclidean Algorithm", "Fermat's Little Theorem"]
+complexity:
+  time: "O(n + log m)"
+  space: "O(1)"
+  notes: "General method needs inverse of b modulo m; shortcut works only when b divides numerator exactly"
+---
+
+## Overview
+
+We want:
+
+`((x1 * x2 * ... * xn) / b) mod m`
+
+Direct division in modular arithmetic is invalid in general. The robust method is:
+
+1. Compute product modulo `m`.
+2. Compute modular inverse `invB` of `b` modulo `m`.
+3. Return `(product * invB) mod m`.
+
+This requires `gcd(b, m) = 1`.
+
+## Approach
+
+Use Extended Euclid to get modular inverse when it exists.
+
+```js
+function gcdExtended(a, b) {
+  if (a === 0n) return { g: b, x: 0n, y: 1n };
+  const t = gcdExtended(b % a, a);
+  return { g: t.g, x: t.y - (b / a) * t.x, y: t.x };
+}
+
+function modInverse(b, m) {
+  const bb = ((b % m) + m) % m;
+  const { g, x } = gcdExtended(bb, m);
+  if (g !== 1n) return -1n;
+  return ((x % m) + m) % m;
+}
+
+function productDivisionMod(arr, b, m) {
+  if (!Array.isArray(arr) || typeof b !== "bigint" || typeof m !== "bigint" || m <= 1n || b === 0n) {
+    return -1n;
+  }
+
+  let prod = 1n;
+  for (const x of arr) {
+    if (typeof x !== "bigint") return -1n;
+    prod = (prod * (((x % m) + m) % m)) % m;
+  }
+
+  const inv = modInverse(b, m);
+  if (inv === -1n) return -1n;
+  return (prod * inv) % m;
+}
+
+console.assert(productDivisionMod([55n, 54n, 53n, 52n, 51n], 120n, 1000000007n) === 3478761n, "55C5 mod M");
+console.assert(productDivisionMod([10n, 2n], 2n, 13n) === 10n, "(10*2/2)%13 = 10");
+console.assert(productDivisionMod([8n, 6n], 4n, 6n) === -1n, "inverse doesn't exist when gcd(b,m)!=1");
+```
+
+## Notes
+
+- Special shortcut exists if `b` exactly divides numerator `A`: `(A / b) % p = (A % (p*b)) / b`.
+- That shortcut is limited and less general than modular inverse.

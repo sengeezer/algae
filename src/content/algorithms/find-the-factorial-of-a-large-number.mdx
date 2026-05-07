@@ -1,0 +1,57 @@
+---
+title: "Find the Factorial of a large number"
+slug: "find-the-factorial-of-a-large-number"
+category: "Factorial"
+description: "Compute very large factorials by storing digits and simulating grade-school multiplication."
+techniques: ["Big Integer Simulation", "Digit Array", "Factorial"]
+complexity:
+  time: "O(n * digits(n!))"
+  space: "O(digits(n!))"
+  notes: "Maintains factorial digits in reverse order and multiplies by 2..n"
+---
+
+## Overview
+
+For large `n`, `n!` quickly exceeds fixed-width integer ranges. The standard approach stores digits (least significant first) and multiplies by each integer from 2 to `n`.
+
+## Approach
+
+1. Start with digits array representing 1.
+2. For each `x` in `[2..n]`, multiply each digit by `x`, carrying overflow.
+3. Append leftover carry digits.
+4. Reverse digits for final decimal string.
+
+```js
+function factorialLarge(n) {
+  if (!Number.isInteger(n) || n < 0) return "";
+
+  const digits = [1]; // reversed digits
+
+  for (let x = 2; x <= n; x++) {
+    let carry = 0;
+
+    for (let i = 0; i < digits.length; i++) {
+      const prod = digits[i] * x + carry;
+      digits[i] = prod % 10;
+      carry = Math.floor(prod / 10);
+    }
+
+    while (carry > 0) {
+      digits.push(carry % 10);
+      carry = Math.floor(carry / 10);
+    }
+  }
+
+  return digits.reverse().join("");
+}
+
+console.assert(factorialLarge(0) === "1", "0! = 1");
+console.assert(factorialLarge(5) === "120", "5! = 120");
+console.assert(factorialLarge(10) === "3628800", "10! exact value");
+console.assert(factorialLarge(20) === "2432902008176640000", "20! exact value");
+```
+
+## Notes
+
+- In JavaScript, `BigInt` can also compute large factorials directly, but digit-array simulation is language-agnostic.
+- This method is useful where only primitive integer types are available.

@@ -1822,7 +1822,22 @@ This one-hundred-fifty-fifth expansion slice lifts the catalog from 758 to 761 e
 
 ## Next candidates from the same sources
 
-- Batch 155 is now locally drafted, lifting the catalog from 758 to 761 entries after adding three Modular Arithmetic entries in source order.
+- Batch 155 is now published on `main` at commit `efdd8c3`, lifting the catalog from 758 to 761 entries after adding three Modular Arithmetic entries in source order.
 - Batch 155 keeps destination-title alignment for all three entries and validates cleanly with focused JavaScript-fence checks and `npm run build`.
-- Build validation passed against the local 761-entry state with 766 static pages generated.
-- The next clean Mathematical Algorithms queue after the local batch 155 frontier is `Trick for modular division ( (x1 * x2 …. xn) / b ) mod (m)`, `Count trailing zeroes in factorial of a number`, and `Factorial of a large number` after skipping duplicate-level `Program for factorial of a number` and `Legendre's formula`.
+- Build validation passed against the 761-entry state with 766 static pages generated.
+- The next clean Mathematical Algorithms queue after batch 155 was `Trick for modular division ( (x1 * x2 …. xn) / b ) mod (m)`, `Count trailing zeroes in factorial of a number`, and `Factorial of a large number` after skipping duplicate-level `Program for factorial of a number` and `Legendre's formula`.
+
+## Batch 156 added
+
+This one-hundred-fifty-sixth expansion slice lifts the catalog from 761 to 764 entries.
+
+- Trick for modular division ( (x1 * x2 .... xn) / b ) mod (m)
+- Count trailing zeroes in factorial
+- Find the Factorial of a large number
+
+## Next candidates from the same sources
+
+- Batch 156 is now locally drafted, lifting the catalog from 761 to 764 entries after adding one Modular Arithmetic entry and two Factorial entries in source order.
+- Batch 156 destination-title normalization: source queue label `Factorial of a large number` resolves to destination title `Find the Factorial of a large number`; the other two entries match their destination titles.
+- Focused JavaScript-fence validation and `npm run build` both passed against the local 764-entry state with 769 static pages generated.
+- The next clean Mathematical Algorithms queue after the local batch 156 frontier is `Primorial of a number`, `Find maximum power of a number that divides a factorial`, and `Largest power of k in n! (factorial) where k may not be prime`.

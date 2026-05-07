@@ -1,0 +1,45 @@
+---
+title: "Count trailing zeroes in factorial"
+slug: "count-trailing-zeroes-in-factorial"
+category: "Factorial"
+description: "Count trailing zeros in n! by summing powers of five in its prime factorization."
+techniques: ["Number Theory", "Factorial", "Prime Factorization"]
+complexity:
+  time: "O(log_5 n)"
+  space: "O(1)"
+  notes: "Trailing zeros are determined by count of factor 5, since factor 2 is abundant"
+---
+
+## Overview
+
+Trailing zeroes in `n!` come from factors of `10 = 2 * 5`.
+
+In factorials, there are always more factors of 2 than 5, so answer is the count of 5s in prime factors of `n!`:
+
+`floor(n/5) + floor(n/25) + floor(n/125) + ...`
+
+## Approach
+
+Repeatedly divide by powers of 5.
+
+```js
+function countTrailingZeroesInFactorial(n) {
+  if (!Number.isInteger(n) || n < 0) return -1;
+
+  let count = 0;
+  for (let p = 5; p <= n; p *= 5) {
+    count += Math.floor(n / p);
+  }
+  return count;
+}
+
+console.assert(countTrailingZeroesInFactorial(5) === 1, "5! has 1 trailing zero");
+console.assert(countTrailingZeroesInFactorial(10) === 2, "10! has 2 trailing zeroes");
+console.assert(countTrailingZeroesInFactorial(25) === 6, "25 contributes an extra factor of 5");
+console.assert(countTrailingZeroesInFactorial(100) === 24, "100! has 24 trailing zeroes");
+```
+
+## Notes
+
+- Avoid computing full factorial for large `n`.
+- This same count is the exponent of 10 dividing `n!`.
