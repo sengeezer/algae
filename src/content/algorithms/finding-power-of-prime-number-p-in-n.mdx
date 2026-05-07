@@ -1,0 +1,59 @@
+---
+title: "Finding power of prime number p in n!"
+slug: "finding-power-of-prime-number-p-in-n"
+category: "Prime Factorization & Divisors"
+description: "Compute the exponent of a prime p in the prime factorization of n! using Legendre's formula."
+techniques: ["Number Theory", "Legendre's Formula", "Factorial"]
+complexity:
+  time: "O(log_p(n))"
+  space: "O(1)"
+  notes: "Number of terms in the sum is floor(log_p(n))"
+---
+
+## Overview
+
+**Legendre's formula** gives the exact exponent of a prime `p` in `n!`:
+
+```
+e_p(n!) = floor(n/p) + floor(n/p^2) + floor(n/p^3) + ...
+```
+
+The series terminates when `p^k > n`.
+
+Examples:
+
+- `n=5, p=2`: `floor(5/2) + floor(5/4) = 2 + 1 = 3`. Indeed `5! = 120 = 2^3 * 3 * 5`.
+- `n=10, p=3`: `floor(10/3) + floor(10/9) = 3 + 1 = 4`. Indeed `3^4 = 81` divides `10! = 3628800`.
+
+## Approach
+
+Repeatedly divide `n` by `p`, accumulating quotients until the quotient is zero.
+
+```js
+function primeExponentInFactorial(n, p) {
+  if (!Number.isInteger(n) || !Number.isInteger(p) || n < 0 || p < 2) return -1;
+  let exp = 0;
+  let power = p;
+  while (power <= n) {
+    exp += Math.floor(n / power);
+    power *= p;
+  }
+  return exp;
+}
+
+// 5! = 120 = 2^3 * 3 * 5
+console.assert(primeExponentInFactorial(5, 2) === 3, "e_2(5!)=3");
+console.assert(primeExponentInFactorial(5, 3) === 1, "e_3(5!)=1");
+console.assert(primeExponentInFactorial(5, 5) === 1, "e_5(5!)=1");
+
+// 10! = 3628800
+console.assert(primeExponentInFactorial(10, 2) === 8, "e_2(10!)=8");
+console.assert(primeExponentInFactorial(10, 3) === 4, "e_3(10!)=4");
+console.assert(primeExponentInFactorial(10, 5) === 2, "e_5(10!)=2");
+```
+
+## Notes
+
+- The formula counts multiples of `p`, multiples of `p^2` (double-counted), and so on.
+- Useful for determining how many trailing zeros `n!` has in base `p`.
+- For trailing zeros in base 10: `min(e_2(n!), e_5(n!))` = `e_5(n!)` since 2 is more abundant.

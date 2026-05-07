@@ -1,0 +1,75 @@
+---
+title: "All Factors in Sorted Order"
+slug: "all-factors-in-sorted-order"
+category: "Prime Factorization & Divisors"
+description: "Find all distinct divisors of a natural number in sorted order using paired factor traversal up to the square root."
+techniques: ["Number Theory", "Divisors", "Square Root Trick"]
+complexity:
+  time: "O(sqrt(n))"
+  space: "O(sqrt(n))"
+  notes: "Each divisor pair (i, n/i) is found in a single linear pass to sqrt(n)"
+---
+
+## Overview
+
+Every divisor of `n` comes in a pair `(i, n/i)` where `i <= sqrt(n)`. Iterating `i` from 1 to `floor(sqrt(n))` finds all such pairs; outputting small divisors first and then large ones in reverse gives the full sorted list without sorting.
+
+Examples:
+
+- `n=10` → `1, 2, 5, 10`
+- `n=100` → `1, 2, 4, 5, 10, 20, 25, 50, 100`
+- `n=125` → `1, 5, 25, 125`
+
+## Approach
+
+1. Collect small divisors `i` (and their pairs `n/i`) up to `sqrt(n)`.
+2. Handle perfect squares (both divisors in the pair are equal) to avoid duplicates.
+3. Append the large divisors in reverse order.
+
+```js
+function allFactorsInSortedOrder(n) {
+  if (!Number.isInteger(n) || n < 1) return [];
+
+  const small = [];
+  const large = [];
+
+  for (let i = 1; i * i <= n; i++) {
+    if (n % i === 0) {
+      small.push(i);
+      if (i !== n / i) {
+        large.push(n / i);
+      }
+    }
+  }
+
+  // append large divisors in reverse so the final array is sorted ascending
+  for (let j = large.length - 1; j >= 0; j--) {
+    small.push(large[j]);
+  }
+
+  return small;
+}
+
+console.assert(
+  JSON.stringify(allFactorsInSortedOrder(10)) === JSON.stringify([1, 2, 5, 10]),
+  "divisors of 10"
+);
+console.assert(
+  JSON.stringify(allFactorsInSortedOrder(100)) ===
+    JSON.stringify([1, 2, 4, 5, 10, 20, 25, 50, 100]),
+  "divisors of 100"
+);
+console.assert(
+  JSON.stringify(allFactorsInSortedOrder(125)) === JSON.stringify([1, 5, 25, 125]),
+  "divisors of 125"
+);
+console.assert(
+  JSON.stringify(allFactorsInSortedOrder(1)) === JSON.stringify([1]),
+  "divisors of 1"
+);
+```
+
+## Notes
+
+- For a perfect square `n`, `sqrt(n)` itself is added only once.
+- The two-array approach uses O(sqrt(n)) extra space; a single-pass variant can output in-place with O(1) extra space.

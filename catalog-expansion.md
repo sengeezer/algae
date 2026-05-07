@@ -1779,7 +1779,21 @@ This one-hundred-fifty-second expansion slice lifts the catalog from 749 to 752 
 
 ## Next candidates from the same sources
 
-- Batch 152 is now locally drafted, lifting the catalog from 749 to 752 entries after adding three Prime Factorization & Divisors entries in source order.
-- Batch 152 keeps destination-title alignment for all three entries and validates cleanly with focused JavaScript-fence checks and `npm run build`.
-- Build validation passed against the local 752-entry catalog state with 757 static pages generated.
-- The next clean Mathematical Algorithms queue after the local batch 152 frontier is `Finding power of prime number p in n!`, `Find all divisors of a natural number`, and `Find numbers with n-divisors in a given range`.
+- Batch 152 is now published on `main` at commit `65c6aee`, lifting the catalog from 749 to 752 entries after adding three Prime Factorization & Divisors entries in source order.
+- Batch 152 keeps destination-title alignment for all three entries; focused JavaScript-fence checks and `npm run build` both passed against the 752-entry state with 757 static pages generated.
+- The queued Mathematical Algorithms candidates after batch 152 were `Finding power of prime number p in n!`, `Find all divisors of a natural number`, and `Find numbers with n-divisors in a given range`; the second resolves to destination title `All Factors in Sorted Order`.
+
+## Batch 153 added
+
+This one-hundred-fifty-third expansion slice lifts the catalog from 752 to 755 entries.
+
+- Finding power of prime number p in n!
+- All Factors in Sorted Order
+- Find numbers with n-divisors in a given range
+
+## Next candidates from the same sources
+
+- Batch 153 is now locally drafted, lifting the catalog from 752 to 755 entries after adding three Prime Factorization & Divisors entries in source order.
+- Batch 153 destination-title cleanup: source queue label `Find all divisors of a natural number` resolves to destination title `All Factors in Sorted Order`; the other two entries match their destination titles exactly.
+- Focused JavaScript-fence validation and `npm run build` both passed against the local 755-entry state with 760 static pages generated.
+- The next clean Mathematical Algorithms queue after the local batch 153 frontier is `Euler's criterion (Check if square root under modulo p exists)`, `Modular Division`, and `Modulo 10^9+7 (1000000007)`.

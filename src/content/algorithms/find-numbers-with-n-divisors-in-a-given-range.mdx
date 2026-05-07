@@ -1,0 +1,82 @@
+---
+title: "Find numbers with n-divisors in a given range"
+slug: "find-numbers-with-n-divisors-in-a-given-range"
+category: "Prime Factorization & Divisors"
+description: "Count integers in [a, b] that have exactly n divisors, using a sieve-based prime factorization approach."
+techniques: ["Number Theory", "Sieve of Eratosthenes", "Divisor Count", "Prime Factorization"]
+complexity:
+  time: "O((b-a+1) * sqrt(b))"
+  space: "O(sqrt(b))"
+  notes: "A sieve finds primes up to sqrt(b); each number in [a,b] is factorized using those primes"
+---
+
+## Overview
+
+A number has exactly `n` divisors if its prime factorization `p1^e1 * p2^e2 * ... * pm^em` satisfies `(e1+1)*(e2+1)*...*(em+1) = n`.
+
+Given a range `[a, b]` and target divisor count `n`, count how many integers in that range have exactly `n` divisors.
+
+Example: `a=1, b=7, n=2` → numbers with exactly 2 divisors (primes): `2, 3, 5, 7` → answer `4`.
+
+## Approach
+
+1. Sieve primes up to `floor(sqrt(b))`.
+2. For each `x` in `[a, b]`, compute the divisor count by trial-dividing by each sieve prime.
+3. If a remainder `> 1` exists after trial division, it is a prime factor with exponent 1.
+4. Accumulate count where divisor count equals `n`.
+
+```js
+function countWithNDivisors(a, b, n) {
+  if (
+    !Number.isInteger(a) || !Number.isInteger(b) || !Number.isInteger(n) ||
+    a < 1 || b < a || n < 1
+  ) return 0;
+
+  // sieve primes up to sqrt(b)
+  const limit = Math.floor(Math.sqrt(b));
+  const isPrime = new Array(limit + 1).fill(true);
+  isPrime[0] = isPrime[1] = false;
+  for (let i = 2; i * i <= limit; i++) {
+    if (isPrime[i]) {
+      for (let j = i * i; j <= limit; j += i) isPrime[j] = false;
+    }
+  }
+  const primes = [];
+  for (let i = 2; i <= limit; i++) {
+    if (isPrime[i]) primes.push(i);
+  }
+
+  function divisorCount(x) {
+    let count = 1;
+    let rem = x;
+    for (const p of primes) {
+      if (p * p > rem) break;
+      if (rem % p === 0) {
+        let exp = 0;
+        while (rem % p === 0) { exp++; rem = Math.floor(rem / p); }
+        count *= (exp + 1);
+      }
+    }
+    if (rem > 1) count *= 2; // one prime factor with exponent 1
+    return count;
+  }
+
+  let result = 0;
+  for (let x = a; x <= b; x++) {
+    if (divisorCount(x) === n) result++;
+  }
+  return result;
+}
+
+// n=2 means primes: 2,3,5,7 in [1,7]
+console.assert(countWithNDivisors(1, 7, 2) === 4, "primes in [1,7]");
+// n=1 means only 1 itself in [1,7]
+console.assert(countWithNDivisors(1, 7, 1) === 1, "only 1 has exactly 1 divisor");
+// n=4 in [1,10]: 6(1,2,3,6), 8(1,2,4,8), 10(1,2,5,10) => 3
+console.assert(countWithNDivisors(1, 10, 4) === 3, "numbers with 4 divisors in [1,10]");
+```
+
+## Notes
+
+- Numbers greater than `sqrt(b)` cannot have two distinct prime factors both exceeding `sqrt(b)`, so a single prime residual has exponent 1.
+- For very wide ranges, a more space-efficient segmented sieve approach is preferred.
