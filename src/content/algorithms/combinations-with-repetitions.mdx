@@ -1,0 +1,184 @@
+---
+title: Combinations with Repetitions
+slug: combinations-with-repetitions
+category: Mathematics
+summary: "Generate size-`r` selections where values may repeat and order does not matter, while the count follows `C(n + r - 1, r)`."
+description: "Combinations with Repetitions is the multiset-selection pattern that links a stars-and-bars count to a backtracking generator that reuses the current index."
+dataStructures:
+  - Array
+  - Recursion Stack
+techniques:
+  - Backtracking
+  - Combinatorics
+  - Stars and Bars
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - multiset combinations
+  - combinations with replacement
+  - stars and bars combinations
+useCases:
+  - Listing all size-`r` selections when picks can repeat
+  - Counting flavor, coin, or bundle selections where order is irrelevant
+  - Contrasting repeated combinations with ordinary combinations and permutations
+complexity:
+  time: O(C(n + r - 1, r) * r)
+  space: O(r)
+  notes: "Counting alone can be done in `O(r)`, but materializing every repeated combination is output-sensitive."
+interviewSignals:
+  - Order does not matter, but the same value can be chosen more than once.
+  - The recursive branch should stay at the same index after taking a value.
+relatedSlugs:
+  - all-combinations-of-size-k
+  - permutation-and-combination
+  - binomial-coefficient
+provenance:
+  - title: "GeeksforGeeks - Combinations with repetitions"
+    href: https://www.geeksforgeeks.org/dsa/combinations-with-repetitions/
+    kind: Reference
+  - title: "Wikipedia - Combination"
+    href: https://en.wikipedia.org/wiki/Combination#Number_of_combinations_with_repetition
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the clean multiset-selection pattern. The difference from ordinary combinations is small but decisive: after choosing a value, the next recursive call stays on the same index so that value can be used again.
+
+## Worked Example
+
+Choosing 2 scoops from `['vanilla', 'chocolate', 'strawberry']` allows repeats, so `['vanilla', 'vanilla']` is valid and order still does not matter. The count is `C(3 + 2 - 1, 2) = C(4, 2) = 6`, matching the six generated results.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function binomialCoefficient(n, k) {
+  if (k < 0 || k > n) {
+    return 0;
+  }
+
+  const choose = Math.min(k, n - k);
+  let result = 1;
+
+  for (let step = 1; step <= choose; step += 1) {
+    result = (result * (n - choose + step)) / step;
+  }
+
+  return result;
+}
+
+function countCombinationsWithRepetition(n, r) {
+  if (!Number.isInteger(n) || !Number.isInteger(r) || n < 0 || r < 0) {
+    return 0;
+  }
+
+  if (n === 0) {
+    return r === 0 ? 1 : 0;
+  }
+
+  return binomialCoefficient(n + r - 1, r);
+}
+
+function combinationsWithRepetition(values, choose) {
+  if (!Array.isArray(values) || !Number.isInteger(choose) || choose < 0) {
+    return [];
+  }
+
+  if (choose === 0) {
+    return [[]];
+  }
+
+  const combinations = [];
+  const path = [];
+
+  function backtrack(start) {
+    if (path.length === choose) {
+      combinations.push([...path]);
+      return;
+    }
+
+    for (let index = start; index < values.length; index += 1) {
+      path.push(values[index]);
+      backtrack(index);
+      path.pop();
+    }
+  }
+
+  backtrack(0);
+  return combinations;
+}
+```
+
+```ts
+function binomialCoefficient(n: number, k: number): number {
+  if (k < 0 || k > n) {
+    return 0;
+  }
+
+  const choose = Math.min(k, n - k);
+  let result = 1;
+
+  for (let step = 1; step <= choose; step += 1) {
+    result = (result * (n - choose + step)) / step;
+  }
+
+  return result;
+}
+
+export function countCombinationsWithRepetition(n: number, r: number): number {
+  if (!Number.isInteger(n) || !Number.isInteger(r) || n < 0 || r < 0) {
+    return 0;
+  }
+
+  if (n === 0) {
+    return r === 0 ? 1 : 0;
+  }
+
+  return binomialCoefficient(n + r - 1, r);
+}
+
+export function combinationsWithRepetition<T>(values: readonly T[], choose: number): T[][] {
+  if (!Number.isInteger(choose) || choose < 0) {
+    return [];
+  }
+
+  if (choose === 0) {
+    return [[]];
+  }
+
+  const combinations: T[][] = [];
+  const path: T[] = [];
+
+  function backtrack(start: number): void {
+    if (path.length === choose) {
+      combinations.push([...path]);
+      return;
+    }
+
+    for (let index = start; index < values.length; index += 1) {
+      path.push(values[index]);
+      backtrack(index);
+      path.pop();
+    }
+  }
+
+  backtrack(0);
+  return combinations;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Prove the count formula with a stars-and-bars argument.
+- Compare this generator with the no-repetition version that recurses into `index + 1`.
+- Stream the combinations lazily instead of storing them all at once.
+
+## Common Pitfalls
+
+- Advancing to `index + 1` after taking a value and accidentally forbidding repeats.
+- Treating different orders of the same multiset as separate answers.
+- Forgetting the `n + r - 1` shift in the counting formula.

@@ -1,0 +1,110 @@
+---
+title: Compute nPr under modulo p
+slug: compute-npr-under-modulo-p
+category: Modular Arithmetic
+summary: "Compute permutation counts under a modulus by reducing each descending factor immediately."
+description: "Compute nPr under modulo p is the modular permutation pattern that keeps ordered-selection counts bounded without needing a modular inverse."
+dataStructures:
+  - Number
+techniques:
+  - Modular Arithmetic
+  - Combinatorics
+  - Multiplicative Formula
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - nPr modulo p
+  - permutation count modulo p
+  - ordered selections modulo 1000000007
+useCases:
+  - Counting arrangements when the answer must be reported modulo a large constant
+  - Avoiding overflow in competitive-programming style permutation counts
+  - Contrasting permutation modulo with combination modulo, where division often matters
+complexity:
+  time: O(r)
+  space: O(1)
+  notes: "Unlike `nCr mod p`, this descending product does not require modular division because the `r!` denominator never appears."
+interviewSignals:
+  - The prompt asks for `nPr` with the result modulo `p` or `1_000_000_007`.
+  - The statement still says order matters, so the combination formulas are the wrong tool.
+relatedSlugs:
+  - program-to-calculate-value-of-npr
+  - introduction-and-dynamic-programming-solution-to-compute-ncrp
+  - compute-ncrp-using-lucas-theorem
+  - modular-division
+provenance:
+  - title: "TheAlgorithms/JavaScript - Maths/PermutationAndCombination.js"
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/PermutationAndCombination.js
+    kind: Implementation
+  - title: "free-programming-books - Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Modulo counting prompts still begin with the same order question as plain `nPr`. Once the problem is confirmed to be a permutation count, the implementation is just a descending product with a modulo reduction after every multiplication.
+
+## Worked Example
+
+`P(5, 3) mod 7 = (5 * 4 * 3) mod 7 = 60 mod 7 = 4`. Reducing inside the loop reaches the same answer while keeping every intermediate value bounded.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function nPrModulo(n, r, modulus) {
+  if (!Number.isInteger(n) || !Number.isInteger(r) || !Number.isInteger(modulus)) {
+    return 0n;
+  }
+
+  if (n < 0 || r < 0 || r > n || modulus <= 0) {
+    return 0n;
+  }
+
+  const mod = BigInt(modulus);
+  let result = 1n;
+
+  for (let used = 0; used < r; used += 1) {
+    result = (result * BigInt(n - used)) % mod;
+  }
+
+  return result;
+}
+```
+
+```ts
+export function nPrModulo(n: number, r: number, modulus: number): bigint {
+  if (!Number.isInteger(n) || !Number.isInteger(r) || !Number.isInteger(modulus)) {
+    return 0n;
+  }
+
+  if (n < 0 || r < 0 || r > n || modulus <= 0) {
+    return 0n;
+  }
+
+  const mod = BigInt(modulus);
+  let result = 1n;
+
+  for (let used = 0; used < r; used += 1) {
+    result = (result * BigInt(n - used)) % mod;
+  }
+
+  return result;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why prime modulus is optional here but critical in many `nCr mod p` solutions.
+- Precompute falling-factorial prefixes if many queries reuse the same `n` and modulus.
+- Compare this direct product with Lucas-theorem style solutions for combinations.
+
+## Common Pitfalls
+
+- Reaching for modular inverse even though this formula never divides.
+- Multiplying many factors first and taking the modulus only at the end.
+- Forgetting that `r = 0` should still return `1`.

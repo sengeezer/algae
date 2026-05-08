@@ -50,6 +50,7 @@ const primaryTopicByCategory: Record<string, CatalogPrimaryTopic> = {
   Heap: "Trees & Heaps",
   "Linked Lists": "Linked Structures",
   Mathematics: "Mathematics",
+  "Modular Arithmetic": "Mathematics",
   Matrices: "Arrays & Matrices",
   Matrix: "Arrays & Matrices",
   Navigation: "Graphs",

@@ -1,0 +1,107 @@
+---
+title: Program to Calculate Value of nPr
+slug: program-to-calculate-value-of-npr
+category: Mathematics
+summary: "Compute ordered selections with the descending product `n * (n - 1) * ... * (n - r + 1)` instead of expanding full factorials."
+description: "Program to Calculate Value of nPr is the focused ordered-selection reference that turns the permutation formula into a small multiplicative loop."
+dataStructures:
+  - Number
+techniques:
+  - Combinatorics
+  - Multiplicative Formula
+  - Permutation Counting
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - nPr
+  - permutation count
+  - count ordered selections
+useCases:
+  - Counting ordered role assignments such as president and vice president
+  - Solving arrangement problems without generating every permutation
+  - Reusing a smaller multiplicative loop when `r` is much smaller than `n`
+complexity:
+  time: O(r)
+  space: O(1)
+  notes: "The descending product is algebraically equivalent to `n! / (n - r)!` but avoids computing two full factorials."
+interviewSignals:
+  - The prompt says order matters or roles are distinct.
+  - You need a count of arrangements rather than the arrangements themselves.
+relatedSlugs:
+  - permutation-and-combination
+  - binomial-coefficient
+  - compute-npr-under-modulo-p
+provenance:
+  - title: "TheAlgorithms/JavaScript - Maths/PermutationAndCombination.js"
+    href: https://github.com/TheAlgorithms/JavaScript/blob/master/Maths/PermutationAndCombination.js
+    kind: Implementation
+  - title: "Wikipedia - Permutation"
+    href: https://en.wikipedia.org/wiki/Permutation
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the direct counting version of "choose `r` out of `n` when the positions stay distinct." The interview hinge is simple: answer the order question first, then apply the matching formula.
+
+## Worked Example
+
+If 5 candidates are competing for gold, silver, and bronze, order matters because each podium spot is different. The count is `P(5, 3) = 5 * 4 * 3 = 60`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function nPr(n, r) {
+  if (!Number.isInteger(n) || !Number.isInteger(r)) {
+    return 0n;
+  }
+
+  if (n < 0 || r < 0 || r > n) {
+    return 0n;
+  }
+
+  let result = 1n;
+
+  for (let used = 0; used < r; used += 1) {
+    result *= BigInt(n - used);
+  }
+
+  return result;
+}
+```
+
+```ts
+export function nPr(n: number, r: number): bigint {
+  if (!Number.isInteger(n) || !Number.isInteger(r)) {
+    return 0n;
+  }
+
+  if (n < 0 || r < 0 || r > n) {
+    return 0n;
+  }
+
+  let result = 1n;
+
+  for (let used = 0; used < r; used += 1) {
+    result *= BigInt(n - used);
+  }
+
+  return result;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why `C(n, r)` divides this same count by `r!`.
+- Return the answer modulo `1_000_000_007` instead of as an exact integer.
+- Switch from counting arrangements to generating the actual permutations.
+
+## Common Pitfalls
+
+- Using `nCr` even though the positions are distinct.
+- Forgetting that `r > n` is invalid and should return zero arrangements.
+- Computing full factorials and overflowing earlier than necessary.
