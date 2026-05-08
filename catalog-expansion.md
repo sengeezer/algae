@@ -6,6 +6,10 @@
 - https://www.geeksforgeeks.org/dsa/
 - https://github.com/EbookFoundation/free-programming-books/blob/main/books/free-programming-books-subjects.md#algorithms--data-structures
 
+## Operational note
+
+Use `npm run db:queue:import-current` to sync the latest actionable "next clean" queue into `editorial_source_queue`, use `npm run db:queue:list` to inspect the database-backed queue, and use `npm run db:queue:mark-drafted`, `npm run db:queue:mark-published`, or `npm run db:queue:mark-duplicate` to move active items through the editorial workflow. Keep this file as the long-form research log and publication history while the active queue moves into Postgres.
+
 ## Existing overlap to skip
 
 Use `src/content/algorithms/` as the source of truth before adding any candidate from the research sources below. The catalog already covers these source-aligned topics, so they should not be re-added during expansion passes:

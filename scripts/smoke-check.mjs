@@ -4,6 +4,12 @@ const baseUrl = process.env.ALGAE_BASE_URL ?? "http://localhost:3001";
 const ignoredHmrPath = "/_next/webpack-hmr";
 const catalogCardSelector = "article";
 
+function getCatalogCards(page) {
+  return page
+    .locator(catalogCardSelector)
+    .filter({ has: page.getByRole("link", { name: "Open reference" }) });
+}
+
 function isIgnorableRuntimeNoise(value) {
   return value.includes(ignoredHmrPath) || value.includes("hot-update") || value.includes("WebSocket");
 }
@@ -87,7 +93,7 @@ try {
   await page.getByRole("heading", { name: "Backtracking Search" }).waitFor();
 
   await expectCount(
-    page.locator(catalogCardSelector),
+    getCatalogCards(page),
     1,
     failures,
     "search narrows the catalog to one result",
@@ -97,14 +103,14 @@ try {
   await clearFiltersButton.click();
   await page.waitForURL(baseUrl);
 
-  const fullCatalogCount = await page.locator(catalogCardSelector).count();
+  const fullCatalogCount = await getCatalogCards(page).count();
 
   const techniqueFilter = page.getByLabel("Technique");
   await techniqueFilter.selectOption("Memoization");
   await page.waitForURL(/\?technique=Memoization/);
   await page.getByRole("heading", { name: "Memoization DP" }).waitFor();
 
-  const filteredCatalogCards = page.locator(catalogCardSelector);
+  const filteredCatalogCards = getCatalogCards(page);
   const filteredCount = await filteredCatalogCards.count();
   if (filteredCount > 0 && filteredCount < fullCatalogCount) {
     console.log("PASS technique filter narrows the catalog");

@@ -1,15 +1,22 @@
 import { getStudyMarker, type StudyState } from "@/lib/study-state";
-import type { AlgorithmEntry, CatalogFilters, Difficulty } from "@/types/algorithm";
+import { catalogTopicOrder } from "@/lib/catalog-taxonomy";
+import type {
+  AlgorithmCatalogEntry,
+  CatalogFilters,
+  CatalogPrimaryTopic,
+  Difficulty,
+} from "@/types/algorithm";
 
 const allowedDifficulties = new Set<Difficulty>(["Easy", "Medium", "Hard"]);
+const allowedTopics = new Set<CatalogPrimaryTopic>(catalogTopicOrder);
 const allowedStatuses = new Set<CatalogFilters["status"]>([
   "all",
   "bookmarked",
   "completed",
 ]);
 
-function normalizeText(value: string): string {
-  return value.trim().toLowerCase();
+function normalizeText(value: string | null | undefined): string {
+  return typeof value === "string" ? value.trim().toLowerCase() : "";
 }
 
 function scoreCandidate(query: string, text: string, multiplier: number): number {
@@ -38,7 +45,7 @@ function weightedField(text: string, multiplier: number): [text: string, multipl
   return [text, multiplier];
 }
 
-function scoreAlgorithm(algorithm: AlgorithmEntry, query: string): number {
+function scoreAlgorithm(algorithm: AlgorithmCatalogEntry, query: string): number {
   if (!query) {
     return 1;
   }
@@ -48,8 +55,10 @@ function scoreAlgorithm(algorithm: AlgorithmEntry, query: string): number {
     weightedField(algorithm.summary, 4),
     weightedField(algorithm.description, 3),
     weightedField(algorithm.category, 2),
+    weightedField(algorithm.grouping.primaryTopic, 4),
     ...algorithm.dataStructures.map((value) => weightedField(value, 3)),
     ...algorithm.techniques.map((value) => weightedField(value, 3)),
+    ...algorithm.grouping.techniqueFamilies.map((value) => weightedField(value, 2)),
     ...algorithm.aliases.map((value) => weightedField(value, 4)),
     ...algorithm.useCases.map((value) => weightedField(value, 4)),
     ...algorithm.interviewSignals.map((value) => weightedField(value, 2)),
@@ -84,9 +93,13 @@ export function normalizeCatalogFilters(input: {
   status?: string;
   structure?: string;
   technique?: string;
+  topic?: string;
 }): CatalogFilters {
   return {
     query: input.q?.trim() ?? "",
+    topic: allowedTopics.has(input.topic as CatalogPrimaryTopic)
+      ? (input.topic as CatalogPrimaryTopic)
+      : "",
     structure: input.structure?.trim() ?? "",
     technique: input.technique?.trim() ?? "",
     difficulty: allowedDifficulties.has(input.difficulty as Difficulty)
@@ -103,6 +116,10 @@ export function buildCatalogQueryString(filters: CatalogFilters): string {
 
   if (filters.query) {
     params.set("q", filters.query);
+  }
+
+  if (filters.topic) {
+    params.set("topic", filters.topic);
   }
 
   if (filters.structure) {
@@ -125,14 +142,18 @@ export function buildCatalogQueryString(filters: CatalogFilters): string {
 }
 
 export function filterAlgorithms(
-  algorithms: AlgorithmEntry[],
+  algorithms: AlgorithmCatalogEntry[],
   filters: CatalogFilters,
   studyState: StudyState,
-): AlgorithmEntry[] {
+): AlgorithmCatalogEntry[] {
   const query = normalizeText(filters.query);
 
   return algorithms
     .filter((algorithm) => {
+      if (filters.topic && algorithm.grouping.primaryTopic !== filters.topic) {
+        return false;
+      }
+
       if (filters.structure && !algorithm.dataStructures.includes(filters.structure)) {
         return false;
       }

@@ -4,6 +4,16 @@
   "private": true,
   "scripts": {
     "cleanup:dev": "bash ./scripts/cleanup-dev-processes.sh",
+    "db:catalog:inspect": "tsx ./scripts/inspect-catalog-index.ts",
+    "db:catalog:migrate": "tsx ./scripts/run-sql-file.ts ./db/migrations/001_catalog_index.sql",
+    "db:catalog:reset": "npm run db:catalog:migrate && npm run db:catalog:seed",
+    "db:catalog:seed": "tsx ./scripts/sync-catalog-index.ts",
+    "db:queue:import-current": "tsx ./scripts/import-editorial-queue.ts",
+    "db:queue:list": "tsx ./scripts/list-editorial-queue.ts",
+    "db:queue:update": "tsx ./scripts/update-editorial-queue.ts",
+    "db:queue:mark-drafted": "tsx ./scripts/update-editorial-queue.ts drafted",
+    "db:queue:mark-published": "tsx ./scripts/update-editorial-queue.ts published",
+    "db:queue:mark-duplicate": "tsx ./scripts/update-editorial-queue.ts duplicate",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -12,6 +22,8 @@
     "session:reset": "npm run cleanup:dev"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^1.1.0",
+    "@next/env": "^16.2.6",
     "gray-matter": "^4.0.3",
     "next": "16.2.4",
     "next-mdx-remote": "^6.0.0",
@@ -27,6 +39,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }
