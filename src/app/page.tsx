@@ -9,6 +9,7 @@ import { catalogTopicOrder } from "@/lib/catalog-taxonomy";
 
 type HomePageProps = {
   searchParams: Promise<{
+    category?: string;
     difficulty?: string;
     q?: string;
     status?: string;
@@ -28,6 +29,9 @@ export default async function Home({ searchParams }: HomePageProps) {
   const dataStructures = Array.from(
     new Set(algorithms.flatMap((algorithm) => algorithm.dataStructures)),
   ).sort((left, right) => left.localeCompare(right));
+  const categories = Array.from(new Set(algorithms.map((algorithm) => algorithm.category))).sort(
+    (left, right) => left.localeCompare(right),
+  );
   const techniques = Array.from(
     new Set(algorithms.flatMap((algorithm) => algorithm.techniques)),
   ).sort((left, right) => left.localeCompare(right));
@@ -39,6 +43,7 @@ export default async function Home({ searchParams }: HomePageProps) {
     <main className="shell-grid min-h-screen px-4 py-6 sm:px-6 lg:px-10">
       <CatalogExperience
         algorithms={algorithms}
+        categories={categories}
         collections={collections}
         dataStructures={dataStructures}
         initialFilters={filters}

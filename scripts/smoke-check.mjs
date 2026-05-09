@@ -71,7 +71,7 @@ try {
   console.log(`Smoke checking ${baseUrl}`);
 
   await page.goto(baseUrl, { waitUntil: "domcontentloaded" });
-  await page.getByRole("heading", { name: /search interview algorithms/i }).waitFor();
+  await page.getByRole("heading", { name: /interview algorithms/i }).waitFor();
 
   const homeTitle = await page.title();
   if (homeTitle !== "Algae") {

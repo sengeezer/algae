@@ -88,6 +88,7 @@ function matchesStatus(
 }
 
 export function normalizeCatalogFilters(input: {
+  category?: string;
   difficulty?: string;
   q?: string;
   status?: string;
@@ -97,6 +98,7 @@ export function normalizeCatalogFilters(input: {
 }): CatalogFilters {
   return {
     query: input.q?.trim() ?? "",
+    category: input.category?.trim() ?? "",
     topic: allowedTopics.has(input.topic as CatalogPrimaryTopic)
       ? (input.topic as CatalogPrimaryTopic)
       : "",
@@ -120,6 +122,10 @@ export function buildCatalogQueryString(filters: CatalogFilters): string {
 
   if (filters.topic) {
     params.set("topic", filters.topic);
+  }
+
+  if (filters.category) {
+    params.set("category", filters.category);
   }
 
   if (filters.structure) {
@@ -150,6 +156,10 @@ export function filterAlgorithms(
 
   return algorithms
     .filter((algorithm) => {
+      if (filters.category && algorithm.category !== filters.category) {
+        return false;
+      }
+
       if (filters.topic && algorithm.grouping.primaryTopic !== filters.topic) {
         return false;
       }

@@ -10,6 +10,13 @@
 
 Use `npm run db:queue:import-current` to sync the latest actionable "next clean" queue into `editorial_source_queue`, use `npm run db:queue:list` to inspect the database-backed queue, and use `npm run db:queue:mark-drafted`, `npm run db:queue:mark-published`, or `npm run db:queue:mark-duplicate` to move active items through the editorial workflow. Keep this file as the long-form research log and publication history while the active queue moves into Postgres.
 
+## Current product / UX plan
+
+- The catalog is now large enough that browse UX is a product constraint, not just presentation polish.
+- Near-term rearchitecture priority: keep the home page browse-first, make category a first-class shelf, and keep primary-topic browsing available as a broader parallel lane.
+- Expansion should resume only after the browse surface is easier to navigate at catalog scale; otherwise every new batch increases scroll depth faster than discovery quality.
+- Follow-up product work after the home-page revamp: consider dedicated category routes, dedicated topic routes, and richer DB-backed browse summaries if the catalog still feels too dense.
+
 ## Existing overlap to skip
 
 Use `src/content/algorithms/` as the source of truth before adding any candidate from the research sources below. The catalog already covers these source-aligned topics, so they should not be re-added during expansion passes:
@@ -1971,9 +1978,20 @@ This one-hundred-sixty-fifth expansion slice lifts the catalog from 787 to 790 e
 - Compute nCr%p using Lucas Theorem
 - Rencontres Number (Counting partial derangements)
 
-## Next candidates from the same sources
+## Batch 166 added
 
-- Batch 165 is now locally drafted, lifting the catalog from 787 to 790 entries after adding three nCr-computation entries in source order.
-- Duplicate skip note: `Program to calculate value of nCr` was skipped as semantic duplicate-level overlap with the existing `Binomial Coefficient` entry.
-- Focused JavaScript-fence validation and `npm run build` both passed against the local 790-entry state with 795 static pages generated.
-- The next clean Mathematical Algorithms queue after this nCr slice is `Program to calculate value of nPr`, `Compute nPr under modulo p`, and `Combinations with repetitions`.
+This one-hundred-sixty-sixth expansion slice lifts the catalog from 790 to 793 entries.
+
+- Program to calculate value of nPr
+- Compute nPr under modulo p
+- Combinations with repetitions
+
+## Current source-order note
+
+- Batch 166 is now published on `main` at commit `acf2546`, lifting the catalog from 790 to 793 entries after adding the three nPr/combinations entries from the Mathematical Algorithms counting frontier.
+- `Program to calculate value of nPr` is intentionally kept distinct from the broader existing `Permutation and Combination` entry because it is a focused ordered-selection counting surface rather than a comparison reference.
+- `Compute nPr under modulo p` remains distinct from both `Modular Division` and the nCr-modulo entries because it stays in the direct descending-product lane and does not require modular inverse logic.
+- `Combinations with repetitions` closes the immediate nCr/nPr stretch by pairing the stars-and-bars count `C(n + r - 1, r)` with a reusable backtracking generator.
+- Focused JavaScript-fence validation, `npm run db:catalog:seed`, `npm run smoke:ui`, targeted Playwright route checks, `npm run lint`, and `npx tsc --noEmit` all passed for batch 166 before publish.
+- The next Mathematical Algorithms queue after batch 166 needs fresh vetting from the remaining source-order frontier rather than another carried-over three-item queue.
+- Product priority now shifts back to app rearchitecture: stabilize category-first browsing, keep primary-topic shelves as a parallel browse lane, and only then resume queue-driven expansion.

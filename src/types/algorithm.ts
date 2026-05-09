@@ -65,6 +65,7 @@ export type AlgorithmFrontmatter = Omit<AlgorithmEntry, "body" | "grouping">;
 
 export interface CatalogFilters {
   query: string;
+  category: string;
   topic: CatalogPrimaryTopic | "";
   structure: string;
   technique: string;
