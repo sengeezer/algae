@@ -1,0 +1,107 @@
+---
+title: "Sum of average of all subsets"
+slug: sum-of-average-of-all-subsets
+category: Mathematics
+summary: "Use symmetry across subset sizes to turn the total of all non-empty subset averages into `(sum(values) * (2^n - 1)) / n`."
+description: "Sum of average of all subsets is the contribution-counting identity that each value participates equally in the average total of every non-empty subset, collapsing the full scan into one closed form after summing the array."
+dataStructures:
+  - Array
+techniques:
+  - Combinatorics
+  - Contribution Counting
+  - Binomial Coefficient
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - sum of subset averages
+  - total average across all subsets
+  - average contribution of all non-empty subsets
+useCases:
+  - Collapsing an exponential subset-aggregation prompt into a closed form
+  - Practicing how binomial coefficients track equal contribution frequency
+  - Comparing direct contribution counting with explicit subset generation
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: "After computing the array sum once, the identity `sum_{k=1..n} C(n - 1, k - 1) / k = (2^n - 1) / n` removes the need to iterate subset sizes explicitly."
+interviewSignals:
+  - The prompt asks for the total of all subset averages, not the subsets themselves.
+  - The empty subset is excluded because its average is undefined.
+relatedSlugs:
+  - average-mean
+  - sum-of-all-subsets-of-a-set-formed-by-first-n-natural-numbers
+  - binomial-coefficient
+provenance:
+  - title: "GeeksforGeeks - Sum of average of all subsets"
+    href: https://www.geeksforgeeks.org/dsa/sum-average-subsets/
+    kind: Implementation
+  - title: "Wikipedia - Binomial coefficient"
+    href: https://en.wikipedia.org/wiki/Binomial_coefficient
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the subset-average version of contribution counting. For any fixed subset size `k`, each element appears in exactly `C(n - 1, k - 1)` subsets of that size, so the total contribution from all size-`k` averages is `sum(values) * C(n - 1, k - 1) / k`. Summing across all `k` gives the compact identity `sum(values) * (2^n - 1) / n`.
+
+## Worked Example
+
+For `[2, 3, 5]`, the non-empty subsets have averages `2`, `3`, `5`, `2.5`, `3.5`, `4`, and `10 / 3`, whose total is `70 / 3`. The shortcut produces the same value with `(10 * (2^3 - 1)) / 3 = 70 / 3`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function sumOfAverageOfAllSubsets(values) {
+  if (!Array.isArray(values)) {
+    throw new TypeError('values must be an array');
+  }
+
+  if (values.length === 0) {
+    return 0;
+  }
+
+  const total = values.reduce((sum, value) => {
+    if (!Number.isFinite(value)) {
+      throw new TypeError('values must contain only finite numbers');
+    }
+
+    return sum + value;
+  }, 0);
+
+  return (total * (2 ** values.length - 1)) / values.length;
+}
+```
+
+```ts
+export function sumOfAverageOfAllSubsets(values: number[]): number {
+  if (values.length === 0) {
+    return 0;
+  }
+
+  const total = values.reduce((sum, value) => {
+    if (!Number.isFinite(value)) {
+      throw new TypeError('values must contain only finite numbers');
+    }
+
+    return sum + value;
+  }, 0);
+
+  return (total * (2 ** values.length - 1)) / values.length;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Derive the identity by grouping subsets by size `k`.
+- Return the answer as a reduced fraction instead of a floating-point number.
+- Compare this with the simpler subset-sum aggregation that uses `2^(n - 1)` directly.
+
+## Common Pitfalls
+
+- Including the empty subset even though its average is undefined.
+- Enumerating all subsets when the prompt only asks for the final aggregate.
+- Forgetting that the final multiplier is `(2^n - 1) / n`, not just `2^(n - 1)`.

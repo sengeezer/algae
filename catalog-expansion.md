@@ -1986,12 +1986,20 @@ This one-hundred-sixty-sixth expansion slice lifts the catalog from 790 to 793 e
 - Compute nPr under modulo p
 - Combinations with repetitions
 
+## Batch 167 added
+
+This one-hundred-sixty-seventh expansion slice lifts the catalog from 793 to 796 entries.
+
+- Sum of all subsets of a set formed by first n natural numbers
+- Sum of average of all subsets
+- Segmented Sieve
+
 ## Current source-order note
 
-- Batch 166 is now published on `main` at commit `acf2546`, lifting the catalog from 790 to 793 entries after adding the three nPr/combinations entries from the Mathematical Algorithms counting frontier.
-- `Program to calculate value of nPr` is intentionally kept distinct from the broader existing `Permutation and Combination` entry because it is a focused ordered-selection counting surface rather than a comparison reference.
-- `Compute nPr under modulo p` remains distinct from both `Modular Division` and the nCr-modulo entries because it stays in the direct descending-product lane and does not require modular inverse logic.
-- `Combinations with repetitions` closes the immediate nCr/nPr stretch by pairing the stars-and-bars count `C(n + r - 1, r)` with a reusable backtracking generator.
-- Focused JavaScript-fence validation, `npm run db:catalog:seed`, `npm run smoke:ui`, targeted Playwright route checks, `npm run lint`, and `npx tsc --noEmit` all passed for batch 166 before publish.
-- The next Mathematical Algorithms queue after batch 166 needs fresh vetting from the remaining source-order frontier rather than another carried-over three-item queue.
-- Product priority now shifts back to app rearchitecture: stabilize category-first browsing, keep primary-topic shelves as a parallel browse lane, and only then resume queue-driven expansion.
+- Dedicated category/topic browse routes are now published on `main` at commit `bf1f4aa`, so queue-driven expansion resumed from the Mathematical Algorithms Set Theory to Sieve frontier.
+- `Sum of all subsets of a set formed by first n natural numbers` turns the subset-enumeration prompt into the closed-form contribution identity `((n * (n + 1)) / 2) * 2^(n - 1)`.
+- `Sum of average of all subsets` remains distinct from generic subset-sum coverage because it aggregates non-empty subset averages through the per-element contribution argument.
+- `Segmented Sieve` remains distinct from both `Sieve of Eratosthenes` and `Linear Sieve` because it is the block-wise prime-generation pattern for larger ranges or tighter memory windows.
+- Focused JavaScript-fence validation, `npm run db:catalog:seed`, `npm run smoke:ui`, targeted Playwright route checks, `npm run lint`, and `npx tsc --noEmit` all passed for batch 167 before publish.
+- Duplicate-level source skip immediately after batch 167: `Sieve of Eratosthenes in 0(n) time complexity` is already covered by the existing `Linear Sieve` entry.
+- The next clean Mathematical Algorithms queue after batch 167 is `Sieve of Atkin`, `Sieve of Sundaram to print all primes smaller than n`, and `Prime Factorization using Sieve O(log n) for multiple queries`.

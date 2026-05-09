@@ -1,0 +1,193 @@
+---
+title: Segmented Sieve
+slug: segmented-sieve
+category: Mathematics
+summary: "Generate primes up to a large limit by sieving one cache-friendly block at a time with the base primes up to `sqrt(limit)`."
+description: "Segmented Sieve is the block-wise prime-generation pattern that keeps sieve memory near `O(sqrt(n))` by marking one interval at a time with precomputed base primes."
+dataStructures:
+  - Array
+techniques:
+  - Prime Sieve
+  - Number Theory
+  - Block Processing
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - block sieve
+  - range-wise prime sieve
+  - cache-friendly sieve
+useCases:
+  - Listing primes up to a large limit without holding the whole sieve array in memory
+  - Reusing base primes across multiple numeric ranges
+  - Comparing memory-friendly prime generation with the classical sieve
+complexity:
+  time: O(n log log n)
+  space: O(sqrt(n))
+  notes: "The total marking work matches the classical sieve asymptotically, but the block-wise layout improves locality and avoids an `O(n)` boolean array."
+interviewSignals:
+  - The limit is large enough that a full `O(n)` sieve array is uncomfortable.
+  - The prompt asks for prime generation over one large interval or multiple nearby ranges.
+relatedSlugs:
+  - sieve-of-eratosthenes
+  - linear-sieve
+  - check-for-prime-number
+provenance:
+  - title: "GeeksforGeeks - Segmented Sieve"
+    href: https://www.geeksforgeeks.org/dsa/segmented-sieve/
+    kind: Implementation
+  - title: "Wikipedia - Sieve of Eratosthenes"
+    href: https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes#Segmented_sieve
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Segmented sieve is the practical follow-up to the classical sieve when the upper bound is large. The idea is to keep only the base primes up to `sqrt(limit)` and then mark composites inside one block `[low, high]` at a time instead of holding the full range in memory.
+
+## Worked Example
+
+To list primes up to `30`, first run a simple sieve up to `sqrt(30)`, which gives the base primes `2`, `3`, and `5`. Then process blocks like `[6, 10]`, `[11, 15]`, and so on, marking multiples of those base primes inside each block and keeping the unmarked values.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function simpleSieve(limit) {
+  const isPrime = new Array(limit + 1).fill(true);
+  const primes = [];
+
+  isPrime[0] = false;
+  isPrime[1] = false;
+
+  for (let value = 2; value * value <= limit; value += 1) {
+    if (!isPrime[value]) {
+      continue;
+    }
+
+    for (let multiple = value * value; multiple <= limit; multiple += value) {
+      isPrime[multiple] = false;
+    }
+  }
+
+  for (let value = 2; value <= limit; value += 1) {
+    if (isPrime[value]) {
+      primes.push(value);
+    }
+  }
+
+  return primes;
+}
+
+function segmentedSieve(limit) {
+  if (!Number.isInteger(limit) || limit < 2) {
+    return [];
+  }
+
+  const root = Math.floor(Math.sqrt(limit));
+  const basePrimes = simpleSieve(root);
+  const primes = [...basePrimes];
+  const blockSize = Math.max(root, 1);
+  let low = root + 1;
+
+  while (low <= limit) {
+    const high = Math.min(low + blockSize - 1, limit);
+    const isPrime = new Array(high - low + 1).fill(true);
+
+    for (const prime of basePrimes) {
+      const start = Math.max(prime * prime, Math.ceil(low / prime) * prime);
+
+      for (let multiple = start; multiple <= high; multiple += prime) {
+        isPrime[multiple - low] = false;
+      }
+    }
+
+    for (let value = low; value <= high; value += 1) {
+      if (isPrime[value - low]) {
+        primes.push(value);
+      }
+    }
+
+    low = high + 1;
+  }
+
+  return primes;
+}
+```
+
+```ts
+function simpleSieve(limit: number): number[] {
+  const isPrime = new Array<boolean>(limit + 1).fill(true);
+  const primes: number[] = [];
+
+  isPrime[0] = false;
+  isPrime[1] = false;
+
+  for (let value = 2; value * value <= limit; value += 1) {
+    if (!isPrime[value]) {
+      continue;
+    }
+
+    for (let multiple = value * value; multiple <= limit; multiple += value) {
+      isPrime[multiple] = false;
+    }
+  }
+
+  for (let value = 2; value <= limit; value += 1) {
+    if (isPrime[value]) {
+      primes.push(value);
+    }
+  }
+
+  return primes;
+}
+
+export function segmentedSieve(limit: number): number[] {
+  if (!Number.isInteger(limit) || limit < 2) {
+    return [];
+  }
+
+  const root = Math.floor(Math.sqrt(limit));
+  const basePrimes = simpleSieve(root);
+  const primes = [...basePrimes];
+  const blockSize = Math.max(root, 1);
+  let low = root + 1;
+
+  while (low <= limit) {
+    const high = Math.min(low + blockSize - 1, limit);
+    const isPrime = new Array<boolean>(high - low + 1).fill(true);
+
+    for (const prime of basePrimes) {
+      const start = Math.max(prime * prime, Math.ceil(low / prime) * prime);
+
+      for (let multiple = start; multiple <= high; multiple += prime) {
+        isPrime[multiple - low] = false;
+      }
+    }
+
+    for (let value = low; value <= high; value += 1) {
+      if (isPrime[value - low]) {
+        primes.push(value);
+      }
+    }
+
+    low = high + 1;
+  }
+
+  return primes;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Adapt the same marking logic to return primes only inside an arbitrary interval `[left, right]`.
+- Compare when segmented sieve is preferable to the classical or linear sieve.
+- Store smallest prime factors for each block instead of only primality flags.
+
+## Common Pitfalls
+
+- Starting block marking at `low` instead of the first multiple of the base prime inside the block.
+- Forgetting to clamp the first multiple with `prime * prime`, which can incorrectly mark the prime itself in later blocks.
+- Treating segmented sieve as a faster asymptotic algorithm when the real gain is memory locality and smaller working space.

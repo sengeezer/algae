@@ -1,0 +1,97 @@
+---
+title: "Sum of all subsets of a set formed by first n natural numbers"
+slug: sum-of-all-subsets-of-a-set-formed-by-first-n-natural-numbers
+category: Mathematics
+summary: "Count each value in `1..n` exactly `2^(n - 1)` times across the non-empty subsets and collapse the total into one closed form."
+description: "Sum of all subsets of a set formed by first n natural numbers is the contribution-counting shortcut `(n * (n + 1) / 2) * 2^(n - 1)` for the total element sum across every non-empty subset of `{1, 2, ..., n}`."
+dataStructures:
+  - Number
+techniques:
+  - Combinatorics
+  - Contribution Counting
+  - Closed Form
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - total sum across all subsets of 1 to n
+  - sum of subset elements for first n natural numbers
+  - subset contribution formula for 1 to n
+useCases:
+  - Replacing explicit subset generation with a contribution argument
+  - Practicing how often each item appears across the power set
+  - Reducing a subset-aggregation prompt to one arithmetic-series identity
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: "The arithmetic-series total is computed once and multiplied by `2^(n - 1)` because every value appears in exactly half of the subsets."
+interviewSignals:
+  - The prompt asks for the total sum contributed by all non-empty subsets, not the subsets themselves.
+  - The set is specifically `{1, 2, ..., n}`, so arithmetic-series structure is available immediately.
+relatedSlugs:
+  - generate-subsets
+  - sum-of-average-of-all-subsets
+  - permutation-and-combination
+provenance:
+  - title: "GeeksforGeeks - Sum of all subsets of a set formed by first n natural numbers"
+    href: https://www.geeksforgeeks.org/dsa/sum-subsets-set-formed-first-n-natural-numbers/
+    kind: Implementation
+  - title: "Wikipedia - Power set"
+    href: https://en.wikipedia.org/wiki/Power_set
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the cleanest contribution-counting version of subset enumeration. Instead of generating every subset, count how many times each number from `1` to `n` appears: once you decide whether a value is in or out, the remaining `n - 1` values can vary freely, so each value appears in exactly `2^(n - 1)` non-empty subsets.
+
+## Worked Example
+
+For `n = 3`, the non-empty subsets are `{1}`, `{2}`, `{3}`, `{1, 2}`, `{1, 3}`, `{2, 3}`, and `{1, 2, 3}`. Summing their elements gives `24`. The shortcut reaches the same answer with `((3 * 4) / 2) * 2^(3 - 1) = 6 * 4 = 24`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function sumOfAllSubsetsOfASetFormedByFirstNNaturalNumbers(n) {
+  if (!Number.isInteger(n) || n < 0) {
+    throw new RangeError('n must be a non-negative integer');
+  }
+
+  if (n === 0) {
+    return 0;
+  }
+
+  const arithmeticSeriesTotal = (n * (n + 1)) / 2;
+  return arithmeticSeriesTotal * 2 ** (n - 1);
+}
+```
+
+```ts
+export function sumOfAllSubsetsOfASetFormedByFirstNNaturalNumbers(n: number): number {
+  if (!Number.isInteger(n) || n < 0) {
+    throw new RangeError('n must be a non-negative integer');
+  }
+
+  if (n === 0) {
+    return 0;
+  }
+
+  const arithmeticSeriesTotal = (n * (n + 1)) / 2;
+  return arithmeticSeriesTotal * 2 ** (n - 1);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Generalize the same contribution argument to an arbitrary array instead of `1..n`.
+- Return the answer modulo a large prime when `n` is large.
+- Explain why every value appears in exactly half of the subsets.
+
+## Common Pitfalls
+
+- Generating the entire power set even though the prompt only asks for the aggregate total.
+- Forgetting that the empty subset contributes `0`, so it does not change the result.
+- Mixing up the arithmetic-series total `n * (n + 1) / 2` with the subset multiplier `2^(n - 1)`.
