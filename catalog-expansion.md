@@ -1994,12 +1994,19 @@ This one-hundred-sixty-seventh expansion slice lifts the catalog from 793 to 796
 - Sum of average of all subsets
 - Segmented Sieve
 
+## Batch 168 added
+
+This one-hundred-sixty-eighth expansion slice lifts the catalog from 796 to 799 entries.
+
+- Sieve of Atkin
+- Sieve of Sundaram to print all primes smaller than n
+- Prime Factorization using Sieve O(log n) for multiple queries
+
 ## Current source-order note
 
-- Dedicated category/topic browse routes are now published on `main` at commit `bf1f4aa`, so queue-driven expansion resumed from the Mathematical Algorithms Set Theory to Sieve frontier.
-- `Sum of all subsets of a set formed by first n natural numbers` turns the subset-enumeration prompt into the closed-form contribution identity `((n * (n + 1)) / 2) * 2^(n - 1)`.
-- `Sum of average of all subsets` remains distinct from generic subset-sum coverage because it aggregates non-empty subset averages through the per-element contribution argument.
-- `Segmented Sieve` remains distinct from both `Sieve of Eratosthenes` and `Linear Sieve` because it is the block-wise prime-generation pattern for larger ranges or tighter memory windows.
-- Focused JavaScript-fence validation, `npm run db:catalog:seed`, `npm run smoke:ui`, targeted Playwright route checks, `npm run lint`, and `npx tsc --noEmit` all passed for batch 167 before publish.
-- Duplicate-level source skip immediately after batch 167: `Sieve of Eratosthenes in 0(n) time complexity` is already covered by the existing `Linear Sieve` entry.
-- The next clean Mathematical Algorithms queue after batch 167 is `Sieve of Atkin`, `Sieve of Sundaram to print all primes smaller than n`, and `Prime Factorization using Sieve O(log n) for multiple queries`.
+- `Sieve of Atkin` adds the quadratic-form and square-free filtering variant of prime sieving, which stays distinct from both the classical and segmented sieve entries.
+- `Sieve of Sundaram to print all primes smaller than n` keeps the odd-only index-removal formulation instead of another multiples-marking sieve.
+- `Prime Factorization using Sieve O(log n) for multiple queries` adds the reusable smallest-prime-factor preprocessing pattern for repeated factorization queries.
+- Focused JavaScript-fence validation, `npm run db:catalog:seed`, `npm run smoke:ui`, targeted Playwright route checks, `npm run lint`, and `npx tsc --noEmit` all passed for batch 168 before publish.
+- Duplicate-level source skip immediately after batch 168: the Euler Totient overview article is already represented locally by the existing `Euler's Totient` and `Euler's Totient Function` entries.
+- The next clean Mathematical Algorithms queue after batch 168 is `Optimized Euler Totient Function for Multiple Evaluations`, `Euler's Totient function for all numbers smaller than or equal to n`, and `Primitive root of a prime number n modulo n`.

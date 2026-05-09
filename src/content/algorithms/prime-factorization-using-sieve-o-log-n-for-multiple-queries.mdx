@@ -1,0 +1,191 @@
+---
+title: "Prime Factorization using Sieve O(log n) for multiple queries"
+slug: prime-factorization-using-sieve-o-log-n-for-multiple-queries
+category: Mathematics
+summary: "Precompute the smallest prime factor once, then factor each query in logarithmic time by repeatedly dividing by the stored SPF."
+description: "Prime Factorization using Sieve O(log n) for multiple queries is the smallest-prime-factor preprocessing pattern for answering many prime decomposition queries efficiently."
+dataStructures:
+  - Array
+techniques:
+  - Prime Factorization
+  - Prime Sieve
+  - Preprocessing
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - SPF factorization
+  - multiple-query prime factorization
+  - smallest prime factor sieve
+useCases:
+  - Factoring many values against the same upper bound
+  - Reusing sieve preprocessing across divisor-count or totient queries
+  - Avoiding repeated `O(sqrt(n))` trial division per query
+complexity:
+  time: O(maxValue log log maxValue + q log maxValue)
+  space: O(maxValue)
+  notes: "The sieve fills the smallest-prime-factor table once, then each query only follows repeated divisions by already known factors."
+interviewSignals:
+  - The prompt asks for prime factors of many numbers, not just one isolated input.
+  - Constraints suggest a one-time preprocessing step before repeated factorizations.
+relatedSlugs:
+  - prime-factors
+  - linear-sieve
+  - eulers-totient
+provenance:
+  - title: "GeeksforGeeks - Prime Factorization for multiple queries using Sieve"
+    href: https://www.geeksforgeeks.org/dsa/prime-factorization-using-sieve-olog-n-multiple-queries/
+    kind: Implementation
+  - title: "Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Trial division is fine for one number, but it scales poorly when the input contains many values from the same numeric range. The smallest-prime-factor sieve turns the repeated work into one preprocessing pass and lets each later query strip factors in a short division chain.
+
+## Worked Example
+
+For queries `[15, 17, 21]`, first build an SPF table up to `21`. Then factor each value by repeatedly reading and dividing by its smallest known prime: `15 -> 3, 5`, `17 -> 17`, and `21 -> 3, 7`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function buildSmallestPrimeFactor(limit) {
+  const smallestPrimeFactor = new Array(limit + 1).fill(0);
+
+  if (limit >= 1) {
+    smallestPrimeFactor[1] = 1;
+  }
+
+  for (let value = 2; value <= limit; value += 1) {
+    if (smallestPrimeFactor[value] !== 0) {
+      continue;
+    }
+
+    smallestPrimeFactor[value] = value;
+
+    if (value > Math.floor(limit / value)) {
+      continue;
+    }
+
+    for (let multiple = value * value; multiple <= limit; multiple += value) {
+      if (smallestPrimeFactor[multiple] === 0) {
+        smallestPrimeFactor[multiple] = value;
+      }
+    }
+  }
+
+  return smallestPrimeFactor;
+}
+
+function factorizeWithSmallestPrimeFactor(value, smallestPrimeFactor) {
+  if (!Number.isInteger(value) || value < 1) {
+    throw new RangeError('Values must be positive integers');
+  }
+
+  const factors = [];
+  let remaining = value;
+
+  while (remaining > 1) {
+    const prime = smallestPrimeFactor[remaining];
+    factors.push(prime);
+    remaining = Math.floor(remaining / prime);
+  }
+
+  return factors;
+}
+
+function primeFactorizationUsingSieve(values) {
+  if (!Array.isArray(values) || values.length === 0) {
+    return [];
+  }
+
+  if (!values.every((value) => Number.isInteger(value) && value >= 1)) {
+    throw new RangeError('Values must be positive integers');
+  }
+
+  const limit = Math.max(...values);
+  const smallestPrimeFactor = buildSmallestPrimeFactor(limit);
+
+  return values.map((value) => factorizeWithSmallestPrimeFactor(value, smallestPrimeFactor));
+}
+```
+
+```ts
+function buildSmallestPrimeFactor(limit: number): number[] {
+  const smallestPrimeFactor = new Array<number>(limit + 1).fill(0);
+
+  if (limit >= 1) {
+    smallestPrimeFactor[1] = 1;
+  }
+
+  for (let value = 2; value <= limit; value += 1) {
+    if (smallestPrimeFactor[value] !== 0) {
+      continue;
+    }
+
+    smallestPrimeFactor[value] = value;
+
+    if (value > Math.floor(limit / value)) {
+      continue;
+    }
+
+    for (let multiple = value * value; multiple <= limit; multiple += value) {
+      if (smallestPrimeFactor[multiple] === 0) {
+        smallestPrimeFactor[multiple] = value;
+      }
+    }
+  }
+
+  return smallestPrimeFactor;
+}
+
+function factorizeWithSmallestPrimeFactor(value: number, smallestPrimeFactor: number[]): number[] {
+  if (!Number.isInteger(value) || value < 1) {
+    throw new RangeError('Values must be positive integers');
+  }
+
+  const factors: number[] = [];
+  let remaining = value;
+
+  while (remaining > 1) {
+    const prime = smallestPrimeFactor[remaining];
+    factors.push(prime);
+    remaining = Math.floor(remaining / prime);
+  }
+
+  return factors;
+}
+
+export function primeFactorizationUsingSieve(values: number[]): number[][] {
+  if (!Array.isArray(values) || values.length === 0) {
+    return [];
+  }
+
+  if (!values.every((value) => Number.isInteger(value) && value >= 1)) {
+    throw new RangeError('Values must be positive integers');
+  }
+
+  const limit = Math.max(...values);
+  const smallestPrimeFactor = buildSmallestPrimeFactor(limit);
+
+  return values.map((value) => factorizeWithSmallestPrimeFactor(value, smallestPrimeFactor));
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compress the factorization into `(prime, exponent)` pairs instead of a flat list.
+- Reuse the same SPF table for divisor-count, totient, or mobius-style follow-ups.
+- Compare the preprocessing tradeoff against plain trial division for very small query counts.
+
+## Common Pitfalls
+
+- Rebuilding the SPF table for every query and losing the whole benefit of preprocessing.
+- Overwriting a composite's first prime factor with a larger one later in the sieve.
+- Forgetting that the query-time path length depends on repeated division, so multiplicity must be preserved in the output.

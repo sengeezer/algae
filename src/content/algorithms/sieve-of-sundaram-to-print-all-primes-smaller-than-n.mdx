@@ -1,0 +1,126 @@
+---
+title: Sieve of Sundaram to print all primes smaller than n
+slug: sieve-of-sundaram-to-print-all-primes-smaller-than-n
+category: Mathematics
+summary: "Generate primes up to `n` by striking odd-index values of the form `i + j + 2ij` and mapping survivors back to `2x + 1`."
+description: "Sieve of Sundaram is the odd-only prime sieve that removes composite-generating indices before converting the remaining positions into odd prime values."
+dataStructures:
+  - Array
+techniques:
+  - Prime Sieve
+  - Number Theory
+  - Odd-Only Representation
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - sundaram sieve
+  - odd-only sieve
+useCases:
+  - Comparing alternate prime sieves that work only over odd candidates
+  - Explaining how odd composites can be encoded as `i + j + 2ij`
+  - Generating primes with a smaller candidate space than a full boolean sieve
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: "The sieve stores only odd candidates and removes indices whose mapped odd value has a non-trivial odd factorization."
+interviewSignals:
+  - The prompt asks for an alternative to Eratosthenes that works over odd numbers only.
+  - The explanation hinges on why `2x + 1` is composite exactly when `x = i + j + 2ij`.
+relatedSlugs:
+  - sieve-of-eratosthenes
+  - sieve-of-atkin
+  - segmented-sieve
+provenance:
+  - title: "GeeksforGeeks - Sieve of Sundaram to print all primes smaller than n"
+    href: https://www.geeksforgeeks.org/dsa/sieve-sundaram-print-primes-smaller-n/
+    kind: Implementation
+  - title: "Wikipedia - Sieve of Sundaram"
+    href: https://en.wikipedia.org/wiki/Sieve_of_Sundaram
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Sieve of Sundaram is the classic odd-only sieve. The key observation is that every odd composite can be written as `(2i + 1)(2j + 1)`, which corresponds to an index `i + j + 2ij` that should be removed before converting the remaining indices back into primes.
+
+## Worked Example
+
+For `n = 20`, reduce the search to indices up to `(20 - 1) / 2 = 9`. Mark every value that can be written as `i + j + 2ij`. The unmarked indices `1`, `2`, `3`, `5`, `6`, `8`, and `9` map back to odd primes `3`, `5`, `7`, `11`, `13`, `17`, and `19`; adding `2` gives the full prime list.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function sieveOfSundaram(limit) {
+  if (!Number.isInteger(limit) || limit < 2) {
+    return [];
+  }
+
+  const reducedLimit = Math.floor((limit - 1) / 2);
+  const marked = new Array(reducedLimit + 1).fill(false);
+
+  for (let i = 1; i <= reducedLimit; i += 1) {
+    for (let j = i; i + j + 2 * i * j <= reducedLimit; j += 1) {
+      marked[i + j + 2 * i * j] = true;
+    }
+  }
+
+  const primes = [2];
+
+  for (let value = 1; value <= reducedLimit; value += 1) {
+    if (!marked[value]) {
+      const prime = 2 * value + 1;
+      if (prime <= limit) {
+        primes.push(prime);
+      }
+    }
+  }
+
+  return primes;
+}
+```
+
+```ts
+export function sieveOfSundaram(limit: number): number[] {
+  if (!Number.isInteger(limit) || limit < 2) {
+    return [];
+  }
+
+  const reducedLimit = Math.floor((limit - 1) / 2);
+  const marked = new Array<boolean>(reducedLimit + 1).fill(false);
+
+  for (let i = 1; i <= reducedLimit; i += 1) {
+    for (let j = i; i + j + 2 * i * j <= reducedLimit; j += 1) {
+      marked[i + j + 2 * i * j] = true;
+    }
+  }
+
+  const primes = [2];
+
+  for (let value = 1; value <= reducedLimit; value += 1) {
+    if (!marked[value]) {
+      const prime = 2 * value + 1;
+      if (prime <= limit) {
+        primes.push(prime);
+      }
+    }
+  }
+
+  return primes;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Derive why `2x + 1 = (2i + 1)(2j + 1)` implies `x = i + j + 2ij`.
+- Compare Sundaram's odd-only storage with the classical full-range sieve.
+- Extend the implementation to count primes up to `n` instead of listing them.
+
+## Common Pitfalls
+
+- Forgetting that the algorithm works over reduced odd indices, not directly over the numbers themselves.
+- Starting the inner loop from `1` instead of `i`, which repeats symmetric work.
+- Emitting odd survivors without adding the special prime `2` separately.

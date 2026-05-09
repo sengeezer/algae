@@ -1,0 +1,188 @@
+---
+title: Sieve of Atkin
+slug: sieve-of-atkin
+category: Mathematics
+summary: "Generate primes up to `n` by toggling quadratic-form candidates and then clearing multiples of prime squares."
+description: "Sieve of Atkin is the modular-arithmetic prime sieve that flips candidate parity through quadratic forms before removing numbers divisible by prime squares."
+dataStructures:
+  - Array
+techniques:
+  - Prime Sieve
+  - Number Theory
+  - Modular Arithmetic
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - atkin sieve
+  - quadratic prime sieve
+useCases:
+  - Comparing advanced prime sieves beyond Eratosthenes
+  - Studying square-free filtering with modular arithmetic
+  - Generating primes when the discussion focuses on sieve theory rather than only implementation simplicity
+complexity:
+  time: O(n / log log n)
+  space: O(n)
+  notes: "The sieve toggles only residue classes that can still be prime, then removes multiples of prime squares to keep only square-free survivors."
+interviewSignals:
+  - The interviewer asks for a more theoretical or modern alternative to the classical sieve.
+  - The problem discussion centers on modular residue classes and square-free filtering.
+relatedSlugs:
+  - sieve-of-eratosthenes
+  - segmented-sieve
+  - linear-sieve
+provenance:
+  - title: "GeeksforGeeks - Sieve of Atkin"
+    href: https://www.geeksforgeeks.org/dsa/sieve-of-atkin/
+    kind: Implementation
+  - title: "Wikipedia - Sieve of Atkin"
+    href: https://en.wikipedia.org/wiki/Sieve_of_Atkin
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Sieve of Atkin is the theory-heavy alternative to Sieve of Eratosthenes. Instead of crossing off every multiple of each prime directly, it toggles candidate numbers produced by a few quadratic forms and then removes anything divisible by a prime square.
+
+## Worked Example
+
+For `limit = 20`, the sieve starts with every number marked non-prime. The quadratic filters toggle candidates such as `5`, `7`, `11`, `13`, `17`, and `19`. After clearing multiples of prime squares, the remaining true entries together with `2` and `3` are exactly the primes up to `20`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function sieveOfAtkin(limit) {
+  if (!Number.isInteger(limit) || limit < 2) {
+    return [];
+  }
+
+  const isPrime = new Array(limit + 1).fill(false);
+  const root = Math.floor(Math.sqrt(limit));
+
+  for (let x = 1; x <= root; x += 1) {
+    for (let y = 1; y <= root; y += 1) {
+      let value = 4 * x * x + y * y;
+      if (value <= limit && (value % 12 === 1 || value % 12 === 5)) {
+        isPrime[value] = !isPrime[value];
+      }
+
+      value = 3 * x * x + y * y;
+      if (value <= limit && value % 12 === 7) {
+        isPrime[value] = !isPrime[value];
+      }
+
+      if (x > y) {
+        value = 3 * x * x - y * y;
+        if (value <= limit && value % 12 === 11) {
+          isPrime[value] = !isPrime[value];
+        }
+      }
+    }
+  }
+
+  for (let value = 5; value <= root; value += 1) {
+    if (!isPrime[value]) {
+      continue;
+    }
+
+    const square = value * value;
+    for (let multiple = square; multiple <= limit; multiple += square) {
+      isPrime[multiple] = false;
+    }
+  }
+
+  const primes = [];
+
+  if (limit >= 2) {
+    primes.push(2);
+  }
+
+  if (limit >= 3) {
+    primes.push(3);
+  }
+
+  for (let value = 5; value <= limit; value += 1) {
+    if (isPrime[value]) {
+      primes.push(value);
+    }
+  }
+
+  return primes;
+}
+```
+
+```ts
+export function sieveOfAtkin(limit: number): number[] {
+  if (!Number.isInteger(limit) || limit < 2) {
+    return [];
+  }
+
+  const isPrime = new Array<boolean>(limit + 1).fill(false);
+  const root = Math.floor(Math.sqrt(limit));
+
+  for (let x = 1; x <= root; x += 1) {
+    for (let y = 1; y <= root; y += 1) {
+      let value = 4 * x * x + y * y;
+      if (value <= limit && (value % 12 === 1 || value % 12 === 5)) {
+        isPrime[value] = !isPrime[value];
+      }
+
+      value = 3 * x * x + y * y;
+      if (value <= limit && value % 12 === 7) {
+        isPrime[value] = !isPrime[value];
+      }
+
+      if (x > y) {
+        value = 3 * x * x - y * y;
+        if (value <= limit && value % 12 === 11) {
+          isPrime[value] = !isPrime[value];
+        }
+      }
+    }
+  }
+
+  for (let value = 5; value <= root; value += 1) {
+    if (!isPrime[value]) {
+      continue;
+    }
+
+    const square = value * value;
+    for (let multiple = square; multiple <= limit; multiple += square) {
+      isPrime[multiple] = false;
+    }
+  }
+
+  const primes: number[] = [];
+
+  if (limit >= 2) {
+    primes.push(2);
+  }
+
+  if (limit >= 3) {
+    primes.push(3);
+  }
+
+  for (let value = 5; value <= limit; value += 1) {
+    if (isPrime[value]) {
+      primes.push(value);
+    }
+  }
+
+  return primes;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why each quadratic form only matters for certain residue classes.
+- Compare the theoretical win against the simpler constant factors of Eratosthenes.
+- Adapt the sieve to emit primes inside a large interval rather than only `1..n`.
+
+## Common Pitfalls
+
+- Forgetting that the quadratic passes toggle candidates instead of only setting them once.
+- Skipping the square-free cleanup step and leaving multiples of prime squares marked prime.
+- Treating Atkin as automatically faster in practice even when its constants are larger than simpler sieves.
