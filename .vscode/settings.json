@@ -30,6 +30,17 @@
     "/^node - <<'NODE'\nconst fs = require\\('fs'\\);\nconst vm = require\\('vm'\\);\nconst path = require\\('path'\\);\n\nconst files = \\[\n  'src/content/algorithms/converting-a-real-number-between-0-and-1-to-binary-string\\.mdx',\n  'src/content/algorithms/convert-from-any-base-to-decimal-and-vice-versa\\.mdx',\n  'src/content/algorithms/decimal-to-binary-conversion-without-using-arithmetic-operators\\.mdx',\n\\];\n\nfor \\(const file of files\\) \\{\n  const text = fs\\.readFileSync\\(file, 'utf8'\\);\n  const match = text\\.match\\(/```js\\\\n\\(\\[\\\\s\\\\S\\]\\*\\?\\)\\\\n```/\\);\n  if \\(!match\\) \\{\n    console\\.log\\(`\\[FAIL\\] \\$\\{file\\}: no js fence found`\\);\n    process\\.exitCode = 1;\n    continue;\n  \\}\n  try \\{\n    vm\\.runInNewContext\\(match\\[1\\], \\{ console, Math, Number, String, Error \\}\\);\n    console\\.log\\(`\\[OK\\] \\$\\{path\\.basename\\(file\\)\\}`\\);\n  \\} catch \\(err\\) \\{\n    console\\.log\\(`\\[FAIL\\] \\$\\{file\\}: \\$\\{err\\.message\\}`\\);\n    process\\.exitCode = 1;\n  \\}\n\\}\nNODE$/": {
       "approve": true,
       "matchCommandLine": true
+    },
+    "uniq": true,
+    "npx tsx": true,
+    "npx tsc": true,
+    "command": true,
+    "vercel": true,
+    "else": true,
+    "fi": true,
+    "/^npx vercel integration discover --format=json \\| node -e \"const fs=require\\('fs'\\); const raw=fs\\.readFileSync\\(0,'utf8'\\); const data=JSON\\.parse\\(raw\\); const matches=data\\.filter\\(\\(item\\)=>/neon\\|postgres/i\\.test\\(JSON\\.stringify\\(item\\)\\)\\); console\\.log\\(JSON\\.stringify\\(matches\\.map\\(\\(item\\)=>\\(\\{slug:item\\.slug,name:item\\.name,products:\\(item\\.products\\|\\|\\[\\]\\)\\.map\\(\\(product\\)=>product\\.slug \\|\\| product\\.name\\)\\}\\)\\), null, 2\\)\\);\"$/": {
+      "approve": true,
+      "matchCommandLine": true
     }
   }
 }
