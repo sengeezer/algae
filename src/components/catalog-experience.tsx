@@ -180,9 +180,21 @@ export function CatalogExperience({
               With {algorithms.length} references in play, the fastest way into the catalog is a shelf, not a flat list. Start from categories, swap to broader primary topics when the prompt is still fuzzy, and only then narrow by technique, structure, or study state.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
+              <Link
+                href="/categories"
+                className="rounded-full bg-[var(--foreground)] px-4 py-2 text-sm font-medium text-white transition hover:bg-[var(--accent-strong)]"
+              >
+                Category routes
+              </Link>
+              <Link
+                href="/topics"
+                className="pill rounded-full px-4 py-2 text-sm font-medium hover:border-[var(--accent)]"
+              >
+                Topic routes
+              </Link>
               <a
                 href="#browse-atlas"
-                className="rounded-full bg-[var(--foreground)] px-4 py-2 text-sm font-medium text-white transition hover:bg-[var(--accent-strong)]"
+                className="pill rounded-full px-4 py-2 text-sm font-medium hover:border-[var(--accent)]"
               >
                 Browse atlas
               </a>
@@ -609,6 +621,20 @@ export function CatalogExperience({
                 ? "Category shelves are the most concrete browse surface. Use them when the problem family is already clear."
                 : "Primary topics stay broader and help when you want one domain without locking yourself into a single category."}
             </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Link
+                href="/categories"
+                className="pill rounded-full px-4 py-2 text-sm font-medium hover:border-[var(--accent)]"
+              >
+                Open category directory
+              </Link>
+              <Link
+                href="/topics"
+                className="pill rounded-full px-4 py-2 text-sm font-medium hover:border-[var(--accent)]"
+              >
+                Open topic directory
+              </Link>
+            </div>
             <div className="mt-4 flex flex-wrap gap-2">
               {browseMode === "category"
                 ? categoryCounts.map(({ category, count }) => (
