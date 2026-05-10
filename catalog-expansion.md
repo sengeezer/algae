@@ -2074,4 +2074,22 @@ This one-hundred-seventy-fourth expansion slice lifts the catalog from 814 to 81
 - `Sgn value of a polynomial` stays distinct from the existing `Signum` entry because it first evaluates a whole polynomial with Horner's method before collapsing the result to `-1`, `0`, or `1`.
 - `Program to evaluate simple expressions` stays distinct from the existing equation and expression-related entries because it intentionally ignores operator precedence and returns `-1` for malformed left-to-right arithmetic strings.
 - Focused JavaScript-fence validation, `npm run db:catalog:seed`, `npm run lint`, `npx tsc --noEmit`, `npm run smoke:ui`, and targeted Playwright route checks all passed for batch 174 before publish; `npm run db:catalog:seed` synced 817 algorithms.
-- `Check if a number is a power of another number` is already covered locally by `check-if-a-number-is-power-of-k-using-base-changing-method`, so the next clean Mathematical Algorithms frontier after batch 174 narrows to `Make a fair coin from a biased coin` and `Implement *, - and / operations using only + arithmetic operator`.
+- `Check if a number is a power of another number` is already covered locally by `check-if-a-number-is-power-of-k-using-base-changing-method`, so the next clean Mathematical Algorithms queue after batch 174 is `Make a fair coin from a biased coin` and `Implement *, - and / operations using only + arithmetic operator`.
+
+## Batch 175 added
+
+This one-hundred-seventy-fifth expansion slice lifts the catalog from 817 to 819 entries.
+
+- Make a fair coin from a biased coin
+- Implement *, - and / operations using only + arithmetic operator
+
+## Current source-order note
+
+- `Make a fair coin from a biased coin` stays distinct from the existing random helpers because it uses the von Neumann extractor to recover an unbiased bit from an unknown biased binary source rather than generating a deterministic pseudo-random sequence or sampling from a known distribution.
+- `Implement *, - and / operations using only + arithmetic operator` stays distinct from the existing operator-restriction entries because it derives subtraction, multiplication, and truncating division from repeated addition and sign flipping instead of relying on bitwise arithmetic or one isolated operator trick.
+- Focused JavaScript-fence validation, `npm run db:queue:import-current`, `npm run db:queue:mark-drafted`, `npm run db:catalog:seed`, `npm run lint`, `npx tsc --noEmit`, `npm run smoke:ui`, and targeted Playwright route checks all passed for batch 175 before publish; `npm run db:catalog:seed` synced 819 algorithms.
+- The GeeksforGeeks Mathematical Algorithms page is exhausted in source order after `Implement *, - and / operations using only + arithmetic operator`.
+- The next vetted source branch after the exhausted Mathematical Algorithms page is the GeeksforGeeks Probability in Maths page: https://www.geeksforgeeks.org/maths/probability-in-maths/
+- On the Probability in Maths page, the opening beginner, aptitude, and practice sections are broad concept, formula, and drill overviews, so the first clean algorithmic queue starts from the `Probability for Programmers` subsection.
+- Destination-title cleanup in that opening Probability queue is `Probability of reaching a point in 2 or 3 steps` -> `Probability of reaching a point with 2 or 3 steps at a time`, `Probability of the maximum weighted pair` -> `Probability of a random pair being the maximum weighted pair`, and `Probability of maximum sum in an array` -> `Probability of choosing a random pair with maximum sum in an array`.
+- The next clean Probability in Maths queue is `Probability of reaching a point with 2 or 3 steps at a time`, `Probability of a random pair being the maximum weighted pair`, and `Probability of choosing a random pair with maximum sum in an array`.

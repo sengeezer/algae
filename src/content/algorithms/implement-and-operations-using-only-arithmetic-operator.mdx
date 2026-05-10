@@ -1,0 +1,214 @@
+---
+title: "Implement *, - and / operations using only + arithmetic operator"
+slug: implement-and-operations-using-only-arithmetic-operator
+category: Mathematics
+summary: "Build subtraction, multiplication, and integer division from repeated addition and sign flipping alone."
+description: "Implement *, - and / operations using only + arithmetic operator reduces each arithmetic operation to repeated addition, sign normalization, and counting loops."
+dataStructures:
+  - Number
+techniques:
+  - Repeated Addition
+  - Sign Handling
+  - Iterative Subtraction
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - arithmetic with only plus
+  - implement operators using addition only
+  - multiply subtract divide with plus only
+useCases:
+  - Demonstrating how richer arithmetic can be composed from one primitive operation
+  - Teaching how signs and repeated accumulation interact
+  - Practicing constraint-driven implementations where common operators are banned
+complexity:
+  time: O(max(|a|, |b|))
+  space: O(1)
+  notes: The loops depend on the magnitudes of the operands because subtraction, multiplication, and division are simulated step by step.
+interviewSignals:
+  - The prompt explicitly bans `*`, `-`, and `/` and asks you to derive them from `+`.
+  - The intended solution uses sign flipping, repeated addition, and repeated subtraction counts.
+relatedSlugs:
+  - russian-peasant-multiply-two-numbers-using-bitwise-operators
+  - detect-if-two-integers-have-opposite-signs
+  - decimal-to-binary-conversion-without-using-arithmetic-operators
+provenance:
+  - title: "GeeksforGeeks - Implement *, - and / operations using only + arithmetic operator"
+    href: https://www.geeksforgeeks.org/dsa/implement-and-operations-using-only-arithmetic-operator/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This prompt strips arithmetic down to one primitive. Once you can flip a sign using only repeated `+1` or `-1`, subtraction becomes addition with a negated operand, multiplication becomes repeated addition, and integer division becomes repeated subtraction with a counter.
+
+## Worked Example
+
+For `a = 15` and `b = 9`:
+
+- `subtractUsingOnlyAddition(15, 9)` returns `6`
+- `multiplyUsingOnlyAddition(15, -9)` returns `-135`
+- `divideUsingOnlyAddition(15, 4)` returns `3` because the result is truncated toward zero
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function flipSign(value) {
+  let current = value;
+  let negated = 0;
+  const delta = value < 0 ? 1 : -1;
+
+  while (current !== 0) {
+    current += delta;
+    negated += delta;
+  }
+
+  return negated;
+}
+
+function absoluteValue(value) {
+  return value < 0 ? flipSign(value) : value;
+}
+
+function haveDifferentSigns(left, right) {
+  return (left < 0 && right > 0) || (left > 0 && right < 0);
+}
+
+function subtractUsingOnlyAddition(left, right) {
+  return left + flipSign(right);
+}
+
+function multiplyUsingOnlyAddition(left, right) {
+  if (!Number.isInteger(left) || !Number.isInteger(right)) {
+    throw new TypeError('Inputs must be integers');
+  }
+
+  const negative = haveDifferentSigns(left, right);
+  let multiplicand = absoluteValue(left);
+  let multiplier = absoluteValue(right);
+  let result = 0;
+
+  if (multiplicand < multiplier) {
+    const temp = multiplicand;
+    multiplicand = multiplier;
+    multiplier = temp;
+  }
+
+  while (multiplier > 0) {
+    result += multiplicand;
+    multiplier = subtractUsingOnlyAddition(multiplier, 1);
+  }
+
+  return negative ? flipSign(result) : result;
+}
+
+function divideUsingOnlyAddition(dividend, divisor) {
+  if (!Number.isInteger(dividend) || !Number.isInteger(divisor)) {
+    throw new TypeError('Inputs must be integers');
+  }
+
+  if (divisor === 0) {
+    throw new RangeError('Division by zero is not allowed');
+  }
+
+  const negative = haveDifferentSigns(dividend, divisor);
+  const divisorAbs = absoluteValue(divisor);
+  let remainder = absoluteValue(dividend);
+  let quotient = 0;
+
+  while (remainder >= divisorAbs) {
+    remainder = subtractUsingOnlyAddition(remainder, divisorAbs);
+    quotient += 1;
+  }
+
+  return negative ? flipSign(quotient) : quotient;
+}
+```
+
+```ts
+function flipSign(value: number): number {
+  let current = value;
+  let negated = 0;
+  const delta = value < 0 ? 1 : -1;
+
+  while (current !== 0) {
+    current += delta;
+    negated += delta;
+  }
+
+  return negated;
+}
+
+function absoluteValue(value: number): number {
+  return value < 0 ? flipSign(value) : value;
+}
+
+function haveDifferentSigns(left: number, right: number): boolean {
+  return (left < 0 && right > 0) || (left > 0 && right < 0);
+}
+
+export function subtractUsingOnlyAddition(left: number, right: number): number {
+  return left + flipSign(right);
+}
+
+export function multiplyUsingOnlyAddition(left: number, right: number): number {
+  if (!Number.isInteger(left) || !Number.isInteger(right)) {
+    throw new TypeError('Inputs must be integers');
+  }
+
+  const negative = haveDifferentSigns(left, right);
+  let multiplicand = absoluteValue(left);
+  let multiplier = absoluteValue(right);
+  let result = 0;
+
+  if (multiplicand < multiplier) {
+    const temp = multiplicand;
+    multiplicand = multiplier;
+    multiplier = temp;
+  }
+
+  while (multiplier > 0) {
+    result += multiplicand;
+    multiplier = subtractUsingOnlyAddition(multiplier, 1);
+  }
+
+  return negative ? flipSign(result) : result;
+}
+
+export function divideUsingOnlyAddition(dividend: number, divisor: number): number {
+  if (!Number.isInteger(dividend) || !Number.isInteger(divisor)) {
+    throw new TypeError('Inputs must be integers');
+  }
+
+  if (divisor === 0) {
+    throw new RangeError('Division by zero is not allowed');
+  }
+
+  const negative = haveDifferentSigns(dividend, divisor);
+  const divisorAbs = absoluteValue(divisor);
+  let remainder = absoluteValue(dividend);
+  let quotient = 0;
+
+  while (remainder >= divisorAbs) {
+    remainder = subtractUsingOnlyAddition(remainder, divisorAbs);
+    quotient += 1;
+  }
+
+  return negative ? flipSign(quotient) : quotient;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Speed up multiplication by combining this idea with bit shifts or doubling.
+- Explain how integer division here differs from exact rational division.
+- Add overflow guards for fixed-width integer languages.
+
+## Common Pitfalls
+
+- Forgetting to normalize signs before the repeated-addition loops.
+- Returning a non-truncated division result when the prompt expects integer division.
+- Using forbidden arithmetic operators inside helper functions and quietly violating the exercise constraint.

@@ -1,0 +1,133 @@
+---
+title: "Make a fair coin from a biased coin"
+slug: make-a-fair-coin-from-a-biased-coin
+category: Mathematics
+summary: "Use two biased coin flips at a time and discard equal pairs to extract an unbiased 0/1 result."
+description: "Make a fair coin from a biased coin is the rejection-sampling trick that converts an unknown but non-degenerate biased binary source into a fair one by keeping only the equiprobable 01 and 10 outcomes."
+dataStructures:
+  - Function
+  - Number
+techniques:
+  - Rejection Sampling
+  - Probability Symmetry
+  - Randomized Algorithm
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - fair coin from biased coin
+  - unbiased bit from biased source
+  - von neumann extractor
+useCases:
+  - Turning a skewed binary source into an unbiased one
+  - Demonstrating how equal-probability events can be extracted from biased randomness
+  - Building simple randomized routines that require a fair bit source
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The expected number of trials is constant when the biased coin can return both outcomes with non-zero probability.
+interviewSignals:
+  - The prompt gives a black-box `foo()` or callback that returns `0` and `1` with unequal probabilities.
+  - The expected solution keeps only the `(0, 1)` and `(1, 0)` pairs because they occur with equal probability.
+relatedSlugs:
+  - pseudo-random-number-generator-prng
+  - simulated-annealing
+provenance:
+  - title: "GeeksforGeeks - Make a fair coin from a biased coin"
+    href: https://www.geeksforgeeks.org/dsa/print-0-and-1-with-50-probability/
+    kind: Implementation
+  - title: "Wikipedia - Fair results from a biased coin"
+    href: https://en.wikipedia.org/wiki/Fair_coin#Fair_results_from_a_biased_coin
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is a classic probability-construction problem. Even if one call to the source coin is biased, two calls create four ordered pairs. The pairs `(0, 1)` and `(1, 0)` have the same probability, so you can map one to `0`, the other to `1`, and ignore the equal pairs.
+
+## Worked Example
+
+Suppose the biased coin returns `0` with probability `0.6` and `1` with probability `0.4`.
+
+- `P(0, 1) = 0.6 * 0.4 = 0.24`
+- `P(1, 0) = 0.4 * 0.6 = 0.24`
+
+Because those two kept cases are equiprobable, returning `0` for `(0, 1)` and `1` for `(1, 0)` yields a fair result.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function makeAFairCoinFromABiasedCoin(biasedCoin, maxAttempts = 1_000_000) {
+  if (typeof biasedCoin !== 'function') {
+    throw new TypeError('biasedCoin must be a function that returns 0 or 1');
+  }
+
+  if (!Number.isInteger(maxAttempts) || maxAttempts <= 0) {
+    throw new RangeError('maxAttempts must be a positive integer');
+  }
+
+  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+    const first = biasedCoin();
+    const second = biasedCoin();
+
+    if ((first !== 0 && first !== 1) || (second !== 0 && second !== 1)) {
+      throw new TypeError('biasedCoin must return only 0 or 1');
+    }
+
+    if (first === 0 && second === 1) {
+      return 0;
+    }
+
+    if (first === 1 && second === 0) {
+      return 1;
+    }
+  }
+
+  throw new Error('biasedCoin did not produce a usable unequal pair within maxAttempts');
+}
+```
+
+```ts
+export function makeAFairCoinFromABiasedCoin(
+  biasedCoin: () => number,
+  maxAttempts = 1_000_000,
+): 0 | 1 {
+  if (!Number.isInteger(maxAttempts) || maxAttempts <= 0) {
+    throw new RangeError('maxAttempts must be a positive integer');
+  }
+
+  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+    const first = biasedCoin();
+    const second = biasedCoin();
+
+    if ((first !== 0 && first !== 1) || (second !== 0 && second !== 1)) {
+      throw new TypeError('biasedCoin must return only 0 or 1');
+    }
+
+    if (first === 0 && second === 1) {
+      return 0;
+    }
+
+    if (first === 1 && second === 0) {
+      return 1;
+    }
+  }
+
+  throw new Error('biasedCoin did not produce a usable unequal pair within maxAttempts');
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why the method still works when the bias is unknown.
+- Generalize the idea to extract fair integers from a larger biased discrete source.
+- Compare the expected retry count when the biased coin is near-fair versus heavily skewed.
+
+## Common Pitfalls
+
+- Returning one biased flip directly instead of using two-flip symmetry.
+- Forgetting to discard `(0, 0)` and `(1, 1)`.
+- Assuming the source can be deterministic; if it always returns one value, no fair extractor can succeed.
