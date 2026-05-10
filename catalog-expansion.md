@@ -2032,4 +2032,18 @@ This one-hundred-seventy-first expansion slice lifts the catalog from 805 to 808
 - `Interquartile Range (IQR)` adds the quartile-based spread measure and returns `Q1`, `Q2`, `Q3`, and `IQR` from a sorted copy rather than duplicating the existing median-only helper.
 - `Simulated Annealing` adds a seeded stochastic optimization framework with a temperature schedule, acceptance rule, and reusable neighbor callback surface.
 - Focused JavaScript-fence validation, `npm run db:catalog:seed`, `npm run smoke:ui`, targeted Playwright route checks, `npm run lint`, and `npx tsc --noEmit` all passed for batch 171 before publish; `npm run db:catalog:seed` synced 808 algorithms.
-- `Square root of a number using log` is already covered locally by `square-root-logarithmic`, so the next clean Mathematical Algorithms queue after batch 171 is `Pseudo Random Number Generator (PRNG)`, `Find ways an Integer can be expressed as sum of n-th power of unique natural numbers`, and `N-th root of a number`.
+## Batch 172 added
+
+This one-hundred-seventy-second expansion slice lifts the catalog from 808 to 811 entries.
+
+- Pseudo Random Number Generator (PRNG)
+- Find ways an Integer can be expressed as sum of n-th power of unique natural numbers
+- N-th root of a number
+
+## Current source-order note
+
+- `Pseudo Random Number Generator (PRNG)` adds a seeded linear congruential generator surface that stays reproducible across runs and remains explicitly non-cryptographic.
+- `Find ways an Integer can be expressed as sum of n-th power of unique natural numbers` stays distinct from the existing subset-sum style entries because each candidate base may be used at most once and the search space is formed by powers rather than raw inputs.
+- `N-th root of a number` stays distinct from the existing logarithmic square-root entry because it requires an exact integer `n`-th root and returns `-1` when no perfect power exists.
+- Focused JavaScript-fence validation, `npm run db:catalog:seed`, `npm run smoke:ui`, targeted Playwright route checks, `npm run lint`, and `npx tsc --noEmit` all passed for batch 172 before publish; `npm run db:catalog:seed` synced 811 algorithms.
+- `Square root of a number using log` is already covered locally by `square-root-logarithmic`, so the next clean Mathematical Algorithms queue after batch 172 is `Fast Fourier Transformation for polynomial multiplication`, `Find Harmonic mean using Arithmetic mean and Geometric mean`, and `Double Base Palindrome`.

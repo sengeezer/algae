@@ -1,0 +1,180 @@
+---
+title: "Pseudo Random Number Generator (PRNG)"
+slug: pseudo-random-number-generator-prng
+category: Mathematics
+summary: "Generate reproducible pseudo-random values with a seeded linear congruential recurrence."
+description: "Pseudo Random Number Generator (PRNG) is the deterministic sequence generator that uses a mathematical recurrence and a seed to produce values that look random enough for simulation and replayable testing."
+dataStructures:
+  - Number
+  - Object
+techniques:
+  - Modular Arithmetic
+  - Linear Congruential Generator
+  - Deterministic Simulation
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - prng
+  - linear congruential generator
+  - seeded random generator
+useCases:
+  - Replaying the same random-looking sequence during tests or simulations
+  - Teaching why deterministic machines need a recurrence to mimic randomness
+  - Providing a simple non-cryptographic random source for heuristics and games
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: "Each new value depends only on the previous state and a few constants, so generation is constant time and memory per step."
+interviewSignals:
+  - The prompt asks for reproducible random-looking values from a seed.
+  - The expected solution uses a recurrence such as the linear congruential generator instead of true randomness.
+relatedSlugs:
+  - modular-arithmetic
+  - simulated-annealing
+provenance:
+  - title: "GeeksforGeeks - Pseudo Random Number Generator (PRNG)"
+    href: https://www.geeksforgeeks.org/dsa/pseudo-random-number-generator-prng/
+    kind: Implementation
+  - title: "Wikipedia - Linear congruential generator"
+    href: https://en.wikipedia.org/wiki/Linear_congruential_generator
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Computers are deterministic, so they cannot produce true randomness just by following instructions. A PRNG solves the practical version of the problem by using a seed and a recurrence that generates values fast, repeatably, and with enough apparent randomness for many non-cryptographic tasks.
+
+## Worked Example
+
+With seed `7`, multiplier `23`, increment `43`, and modulus `97`, the linear congruential recurrence
+
+`X_(n + 1) = (23 * X_n + 43) mod 97`
+
+produces the sequence `10, 79, 17, 46, ...`. Running the same generator again with the same parameters yields exactly the same values.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function normalizeState(value, modulus) {
+  return ((value % modulus) + modulus) % modulus;
+}
+
+function createLinearCongruentialGenerator({
+  seed,
+  modulus = 0x100000000,
+  multiplier = 1664525,
+  increment = 1013904223,
+} = {}) {
+  if (![seed, modulus, multiplier, increment].every(Number.isInteger)) {
+    throw new TypeError('seed, modulus, multiplier, and increment must be integers');
+  }
+
+  if (modulus <= 1 || modulus > 0x100000000) {
+    throw new RangeError('modulus must be between 2 and 2^32');
+  }
+
+  if (multiplier <= 0 || multiplier >= modulus) {
+    throw new RangeError('multiplier must satisfy 0 < multiplier < modulus');
+  }
+
+  if (increment < 0 || increment >= modulus) {
+    throw new RangeError('increment must satisfy 0 <= increment < modulus');
+  }
+
+  let state = normalizeState(seed, modulus);
+  const usesUint32Math = modulus === 0x100000000;
+
+  return {
+    nextInt() {
+      state = usesUint32Math
+        ? (Math.imul(multiplier >>> 0, state >>> 0) + (increment >>> 0)) >>> 0
+        : (multiplier * state + increment) % modulus;
+
+      return state;
+    },
+
+    nextFloat() {
+      return this.nextInt() / modulus;
+    },
+
+    getState() {
+      return state;
+    },
+  };
+}
+```
+
+```ts
+function normalizeState(value: number, modulus: number): number {
+  return ((value % modulus) + modulus) % modulus;
+}
+
+export function createLinearCongruentialGenerator({
+  seed,
+  modulus = 0x100000000,
+  multiplier = 1664525,
+  increment = 1013904223,
+}: {
+  seed: number;
+  modulus?: number;
+  multiplier?: number;
+  increment?: number;
+}): {
+  nextInt: () => number;
+  nextFloat: () => number;
+  getState: () => number;
+} {
+  if (![seed, modulus, multiplier, increment].every(Number.isInteger)) {
+    throw new TypeError('seed, modulus, multiplier, and increment must be integers');
+  }
+
+  if (modulus <= 1 || modulus > 0x100000000) {
+    throw new RangeError('modulus must be between 2 and 2^32');
+  }
+
+  if (multiplier <= 0 || multiplier >= modulus) {
+    throw new RangeError('multiplier must satisfy 0 < multiplier < modulus');
+  }
+
+  if (increment < 0 || increment >= modulus) {
+    throw new RangeError('increment must satisfy 0 <= increment < modulus');
+  }
+
+  let state = normalizeState(seed, modulus);
+  const usesUint32Math = modulus === 0x100000000;
+
+  return {
+    nextInt() {
+      state = usesUint32Math
+        ? (Math.imul(multiplier >>> 0, state >>> 0) + (increment >>> 0)) >>> 0
+        : (multiplier * state + increment) % modulus;
+
+      return state;
+    },
+
+    nextFloat() {
+      return this.nextInt() / modulus;
+    },
+
+    getState() {
+      return state;
+    },
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why this generator is fine for simulation but not for cryptographic secrets.
+- Choose multiplier, increment, and modulus values that improve period length for a given modulus.
+- Replace the integer output with a helper that samples an interval like `[min, max]`.
+
+## Common Pitfalls
+
+- Forgetting that the sequence is deterministic and expecting two runs with the same seed to differ.
+- Using `%` on negative seeds without normalizing them back into the state range.
+- Treating a simple LCG as secure randomness for passwords, encryption, or gambling.

@@ -1,0 +1,167 @@
+---
+title: "N-th root of a number"
+slug: n-th-root-of-a-number
+category: Mathematics
+summary: "Use binary search on the answer space to find an exact integer n-th root or report that none exists."
+description: "N-th root of a number is the integer-root search problem where you must find `x` such that `x^n = m`, or return `-1` when the exact root is not an integer."
+dataStructures:
+  - Number
+techniques:
+  - Binary Search
+  - Numerical Search
+  - Overflow Guarding
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - exact nth root
+  - integer nth root
+  - binary search root
+useCases:
+  - Checking whether a value is a perfect n-th power
+  - Solving exact integer-root queries without floating-point precision issues
+  - Generalizing square-root answer search to higher powers
+complexity:
+  time: O(n log m)
+  space: O(1)
+  notes: "Each binary-search midpoint requires one guarded power comparison that multiplies at most `n` times before it can conclude exact match, too small, or too large."
+interviewSignals:
+  - The prompt asks for an exact integer root and expects `-1` when no exact root exists.
+  - A floating-point approximation is not sufficient because the answer must be exact.
+relatedSlugs:
+  - square-root-logarithmic
+  - perfect-square
+  - binary-search
+provenance:
+  - title: "GeeksforGeeks - N-th root of a number"
+    href: https://www.geeksforgeeks.org/dsa/n-th-root-number/
+    kind: Implementation
+  - title: "GeeksforGeeks - Find root of a number using Newton's Method"
+    href: https://www.geeksforgeeks.org/dsa/find-root-of-a-number-using-newtons-method/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the exact-root version of answer-space binary search. The trick is not the search itself, but comparing `mid^n` with the target without overflowing or drifting into floating-point rounding mistakes.
+
+## Worked Example
+
+For `n = 3` and `m = 27`, the answer is `3` because `3^3 = 27`. For `n = 3` and `m = 9`, there is no integer `x` such that `x^3 = 9`, so the function returns `-1`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function comparePowerToTarget(base, exponent, target) {
+  let product = 1;
+
+  for (let count = 0; count < exponent; count += 1) {
+    if (product > target / base) {
+      return 1;
+    }
+
+    product *= base;
+  }
+
+  if (product === target) {
+    return 0;
+  }
+
+  return product < target ? -1 : 1;
+}
+
+function nthRoot(exponent, value) {
+  if (!Number.isInteger(exponent) || !Number.isInteger(value) || exponent <= 0 || value < 0) {
+    throw new RangeError('exponent must be a positive integer and value must be a non-negative integer');
+  }
+
+  if (value === 0 || exponent === 1) {
+    return value;
+  }
+
+  let left = 1;
+  let right = value;
+
+  while (left <= right) {
+    const middle = Math.floor((left + right) / 2);
+    const comparison = comparePowerToTarget(middle, exponent, value);
+
+    if (comparison === 0) {
+      return middle;
+    }
+
+    if (comparison < 0) {
+      left = middle + 1;
+    } else {
+      right = middle - 1;
+    }
+  }
+
+  return -1;
+}
+```
+
+```ts
+function comparePowerToTarget(base: number, exponent: number, target: number): -1 | 0 | 1 {
+  let product = 1;
+
+  for (let count = 0; count < exponent; count += 1) {
+    if (product > target / base) {
+      return 1;
+    }
+
+    product *= base;
+  }
+
+  if (product === target) {
+    return 0;
+  }
+
+  return product < target ? -1 : 1;
+}
+
+export function nthRoot(exponent: number, value: number): number {
+  if (!Number.isInteger(exponent) || !Number.isInteger(value) || exponent <= 0 || value < 0) {
+    throw new RangeError('exponent must be a positive integer and value must be a non-negative integer');
+  }
+
+  if (value === 0 || exponent === 1) {
+    return value;
+  }
+
+  let left = 1;
+  let right = value;
+
+  while (left <= right) {
+    const middle = Math.floor((left + right) / 2);
+    const comparison = comparePowerToTarget(middle, exponent, value);
+
+    if (comparison === 0) {
+      return middle;
+    }
+
+    if (comparison < 0) {
+      left = middle + 1;
+    } else {
+      right = middle - 1;
+    }
+  }
+
+  return -1;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return a floating-point approximation when no exact integer root exists.
+- Compare this exact-search approach with Newton's method for approximation speed.
+- Generalize the guarded power comparison to work with `BigInt` for very large perfect powers.
+
+## Common Pitfalls
+
+- Using floating-point exponentiation and rounding the result, which can misclassify non-perfect powers.
+- Multiplying `mid * mid * ...` directly without an early overflow check.
+- Returning the floor root instead of `-1` when the prompt requires an exact integer answer.

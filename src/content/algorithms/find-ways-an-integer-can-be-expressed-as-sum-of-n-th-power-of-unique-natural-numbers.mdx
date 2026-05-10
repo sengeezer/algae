@@ -1,0 +1,143 @@
+---
+title: "Find ways an Integer can be expressed as sum of n-th power of unique natural numbers"
+slug: find-ways-an-integer-can-be-expressed-as-sum-of-n-th-power-of-unique-natural-numbers
+category: Mathematics
+summary: "Count how many distinct sets of natural numbers have n-th powers that add up to a target."
+description: "Find ways an Integer can be expressed as sum of n-th power of unique natural numbers is the recursive counting problem where each base can be used at most once while building an exact power-sum decomposition."
+dataStructures:
+  - Number
+techniques:
+  - Recursion
+  - Backtracking
+  - Inclusion Exclusion
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - power sum representations
+  - count unique n-th power decompositions
+  - count ways to write x as unique powers
+useCases:
+  - Counting exact decompositions under a uniqueness constraint
+  - Teaching inclusion-exclusion recursion over an ordered candidate set
+  - Exploring search trees where each candidate is either taken or skipped once
+complexity:
+  time: "Exponential in the number of candidate bases up to floor(x^(1 / n))"
+  space: O(x^(1 / n))
+  notes: "The recursion branches on include or skip decisions for each base, so the practical cost depends on how many bases fit before their n-th powers exceed the target."
+interviewSignals:
+  - The prompt asks for a count of valid power-sum decompositions rather than one example.
+  - Each natural number may be used at most once, which rules out unbounded coin-change style reuse.
+relatedSlugs:
+  - sum-of-subset
+  - target-sum-combinations
+  - generate-subsets
+provenance:
+  - title: "GeeksforGeeks - Find ways an Integer can be expressed as sum of n-th power of unique natural numbers"
+    href: https://www.geeksforgeeks.org/dsa/find-ways-integer-can-expressed-sum-n-th-power-unique-natural-numbers/
+    kind: Implementation
+  - title: "HackerRank - The Power Sum"
+    href: https://www.hackerrank.com/challenges/the-power-sum/problem
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This problem looks like subset sum, but the candidate numbers are implicit: `1^n, 2^n, 3^n, ...`. The interview value comes from seeing that once you process the bases in increasing order, uniqueness falls out naturally from the recursion because you never revisit a smaller base.
+
+## Worked Example
+
+For `x = 10` and `n = 2`, the only valid representation is `1^2 + 3^2 = 10`, so the answer is `1`. For `x = 100` and `n = 2`, there are `3` representations: `10^2`, `6^2 + 8^2`, and `1^2 + 3^2 + 4^2 + 5^2 + 7^2`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function integerPower(base, exponent, limit = Number.MAX_SAFE_INTEGER) {
+  let result = 1;
+
+  for (let count = 0; count < exponent; count += 1) {
+    result *= base;
+
+    if (result > limit) {
+      return limit + 1;
+    }
+  }
+
+  return result;
+}
+
+function countPowerSumWays(target, power) {
+  if (!Number.isInteger(target) || !Number.isInteger(power) || target < 0 || power <= 0) {
+    throw new RangeError('target must be a non-negative integer and power must be a positive integer');
+  }
+
+  function search(remaining, nextBase) {
+    const nextValue = integerPower(nextBase, power, remaining);
+
+    if (nextValue === remaining) {
+      return 1;
+    }
+
+    if (nextValue > remaining) {
+      return 0;
+    }
+
+    return search(remaining - nextValue, nextBase + 1) + search(remaining, nextBase + 1);
+  }
+
+  return search(target, 1);
+}
+```
+
+```ts
+function integerPower(base: number, exponent: number, limit = Number.MAX_SAFE_INTEGER): number {
+  let result = 1;
+
+  for (let count = 0; count < exponent; count += 1) {
+    result *= base;
+
+    if (result > limit) {
+      return limit + 1;
+    }
+  }
+
+  return result;
+}
+
+export function countPowerSumWays(target: number, power: number): number {
+  if (!Number.isInteger(target) || !Number.isInteger(power) || target < 0 || power <= 0) {
+    throw new RangeError('target must be a non-negative integer and power must be a positive integer');
+  }
+
+  function search(remaining: number, nextBase: number): number {
+    const nextValue = integerPower(nextBase, power, remaining);
+
+    if (nextValue === remaining) {
+      return 1;
+    }
+
+    if (nextValue > remaining) {
+      return 0;
+    }
+
+    return search(remaining - nextValue, nextBase + 1) + search(remaining, nextBase + 1);
+  }
+
+  return search(target, 1);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Add memoization keyed by `(remaining, nextBase)` to avoid recomputing overlapping subproblems.
+- Return the actual decompositions instead of only the count.
+- Compare this search tree with subset sum and explain why candidate reuse is forbidden here.
+
+## Common Pitfalls
+
+- Reusing the same base more than once and accidentally counting non-unique decompositions.
+- Calling `Math.pow` repeatedly without an upper bound check and doing extra work after the target has already been exceeded.
+- Confusing the count of valid representations with the number of terms in one representation.
