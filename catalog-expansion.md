@@ -2018,10 +2018,18 @@ This one-hundred-seventieth expansion slice lifts the catalog from 802 to 805 en
 - Introduction to Chinese Remainder Theorem
 - Implementation of Chinese Remainder theorem (Inverse Modulo based implementation)
 
+## Batch 171 added
+
+This one-hundred-seventy-first expansion slice lifts the catalog from 805 to 808 entries.
+
+- Using Chinese Remainder Theorem to Combine Modular equations
+- Interquartile Range (IQR)
+- Simulated Annealing
+
 ## Current source-order note
 
-- `Euler's Four Square Identity` stays distinct by using the direct four-square product identity itself instead of brute-force search over candidate quadruples.
-- `Introduction to Chinese Remainder Theorem` is kept as the conceptual baseline with pairwise-coprime validation and a smallest-positive-solution scan.
-- `Implementation of Chinese Remainder theorem (Inverse Modulo based implementation)` stays distinct from the intro entry by constructing the answer with partial products, modular inverses, and the extended Euclidean algorithm.
-- Focused JavaScript-fence validation, `npm run db:catalog:seed`, `npm run smoke:ui`, targeted Playwright route checks, `npm run lint`, and `npx tsc --noEmit` all passed for batch 170 before publish; `npm run db:catalog:seed` synced 805 algorithms.
-- `Cyclic Redundancy Check and Modulo-2 Division` is already covered locally, so the next clean Mathematical Algorithms queue after batch 170 is `Using Chinese Remainder Theorem to Combine Modular equations`, `Interquartile Range (IQR)`, and `Simulated Annealing`.
+- `Using Chinese Remainder Theorem to Combine Modular equations` stays distinct from the earlier CRT entries by folding congruences pairwise instead of using either naive search or the one-shot inverse-product formula.
+- `Interquartile Range (IQR)` adds the quartile-based spread measure and returns `Q1`, `Q2`, `Q3`, and `IQR` from a sorted copy rather than duplicating the existing median-only helper.
+- `Simulated Annealing` adds a seeded stochastic optimization framework with a temperature schedule, acceptance rule, and reusable neighbor callback surface.
+- Focused JavaScript-fence validation, `npm run db:catalog:seed`, `npm run smoke:ui`, targeted Playwright route checks, `npm run lint`, and `npx tsc --noEmit` all passed for batch 171 before publish; `npm run db:catalog:seed` synced 808 algorithms.
+- `Square root of a number using log` is already covered locally by `square-root-logarithmic`, so the next clean Mathematical Algorithms queue after batch 171 is `Pseudo Random Number Generator (PRNG)`, `Find ways an Integer can be expressed as sum of n-th power of unique natural numbers`, and `N-th root of a number`.

@@ -1,0 +1,171 @@
+---
+title: Interquartile Range (IQR)
+slug: interquartile-range-iqr
+category: Mathematics
+summary: Sort the sample, compute Q1 and Q3 from the lower and upper halves, and subtract them to measure the spread of the middle 50 percent.
+description: "Interquartile Range (IQR) is the descriptive-statistics measure that captures the spread of the middle half of an ordered dataset by computing Q3 - Q1."
+dataStructures:
+  - Array
+  - Number
+techniques:
+  - Sorting
+  - Descriptive Statistics
+  - Median Partitioning
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - interquartile spread
+  - iqr of array
+  - quartile range
+useCases:
+  - Measuring spread while reducing the impact of outliers
+  - Computing box-plot statistics such as quartiles and whisker cutoffs
+  - Teaching the difference between range and middle-half dispersion
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: The straightforward implementation sorts a copied array, which dominates runtime and preserves the caller's original ordering.
+interviewSignals:
+  - The prompt asks where the middle half of the values lie rather than the total range.
+  - The intended solution must split the sorted data around the median and handle odd and even lengths carefully.
+relatedSlugs:
+  - average-median
+  - average-mean
+  - find-min
+provenance:
+  - title: "GeeksforGeeks - Interquartile Range (IQR)"
+    href: https://www.geeksforgeeks.org/dsa/interquartile-range-iqr/
+    kind: Implementation
+  - title: "Wikipedia - Interquartile range"
+    href: https://en.wikipedia.org/wiki/Interquartile_range
+    kind: Reference
+---
+
+## Why It Surfaces
+
+IQR is a compact statistics prompt because it looks simple until you have to choose the lower and upper halves correctly. It is also a useful follow-up to median questions because it reinforces why median-based summaries are robust to outliers.
+
+## Worked Example
+
+For `[1, 19, 7, 6, 5, 9, 12, 27, 18, 2, 15]`, sort to `[1, 2, 5, 6, 7, 9, 12, 15, 18, 19, 27]`. The full median `Q2` is `9`, the lower-half median `Q1` is `5`, and the upper-half median `Q3` is `18`, so the interquartile range is `18 - 5 = 13`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function validateNumericValues(values) {
+  if (!Array.isArray(values) || values.length < 2) {
+    throw new RangeError('Expected an array with at least two numeric values');
+  }
+
+  for (const value of values) {
+    if (typeof value !== 'number' || Number.isNaN(value) || !Number.isFinite(value)) {
+      throw new TypeError('All values must be finite numbers');
+    }
+  }
+}
+
+function medianOfSortedSlice(sorted, start, end) {
+  const length = end - start;
+
+  if (length <= 0) {
+    throw new RangeError('Median requires a non-empty slice');
+  }
+
+  const middle = Math.floor(length / 2);
+
+  if (length % 2 === 1) {
+    return sorted[start + middle];
+  }
+
+  return (sorted[start + middle - 1] + sorted[start + middle]) / 2;
+}
+
+function interquartileRange(values) {
+  validateNumericValues(values);
+
+  const sorted = [...values].sort((left, right) => left - right);
+  const middle = Math.floor(sorted.length / 2);
+  const q2 = medianOfSortedSlice(sorted, 0, sorted.length);
+  const lowerEnd = middle;
+  const upperStart = sorted.length % 2 === 0 ? middle : middle + 1;
+  const q1 = medianOfSortedSlice(sorted, 0, lowerEnd);
+  const q3 = medianOfSortedSlice(sorted, upperStart, sorted.length);
+
+  return {
+    q1,
+    q2,
+    q3,
+    iqr: q3 - q1,
+  };
+}
+```
+
+```ts
+function validateNumericValues(values: number[]): void {
+  if (values.length < 2) {
+    throw new RangeError('Expected an array with at least two numeric values');
+  }
+
+  for (const value of values) {
+    if (Number.isNaN(value) || !Number.isFinite(value)) {
+      throw new TypeError('All values must be finite numbers');
+    }
+  }
+}
+
+function medianOfSortedSlice(sorted: number[], start: number, end: number): number {
+  const length = end - start;
+
+  if (length <= 0) {
+    throw new RangeError('Median requires a non-empty slice');
+  }
+
+  const middle = Math.floor(length / 2);
+
+  if (length % 2 === 1) {
+    return sorted[start + middle];
+  }
+
+  return (sorted[start + middle - 1] + sorted[start + middle]) / 2;
+}
+
+export function interquartileRange(values: number[]): {
+  q1: number;
+  q2: number;
+  q3: number;
+  iqr: number;
+} {
+  validateNumericValues(values);
+
+  const sorted = [...values].sort((left, right) => left - right);
+  const middle = Math.floor(sorted.length / 2);
+  const q2 = medianOfSortedSlice(sorted, 0, sorted.length);
+  const lowerEnd = middle;
+  const upperStart = sorted.length % 2 === 0 ? middle : middle + 1;
+  const q1 = medianOfSortedSlice(sorted, 0, lowerEnd);
+  const q3 = medianOfSortedSlice(sorted, upperStart, sorted.length);
+
+  return {
+    q1,
+    q2,
+    q3,
+    iqr: q3 - q1,
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Use the returned quartiles to flag outliers with the `1.5 * IQR` rule.
+- Compare this dispersion measure with variance and standard deviation on the same data.
+- Compute quartiles in place if mutating the input array is acceptable.
+
+## Common Pitfalls
+
+- Sorting the original input when callers expect the dataset to stay untouched.
+- Including the median itself in both halves for odd-length data.
+- Returning only `Q3 - Q1` when the caller also needs `Q1`, `Q2`, and `Q3` for later box-plot logic.

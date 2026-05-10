@@ -1,0 +1,221 @@
+---
+title: Simulated Annealing
+slug: simulated-annealing
+category: Mathematics
+summary: Explore a search space with random neighbors and a cooling schedule that occasionally accepts worse moves to escape local minima.
+description: "Simulated Annealing is the stochastic optimization heuristic that explores neighboring states with a temperature-controlled acceptance rule so it can escape local minima and still settle near a strong solution."
+dataStructures:
+  - Function
+  - Number
+  - Array
+techniques:
+  - Stochastic Optimization
+  - Heuristic Search
+  - Temperature Schedule
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - annealing heuristic
+  - stochastic local search annealing
+  - temperature-based optimization
+useCases:
+  - Finding near-optimal answers in large discrete search spaces
+  - Escaping local minima in scheduling, placement, or routing problems
+  - Building a reusable optimization framework around problem-specific neighbor generation
+complexity:
+  time: O(L * I * (cost + neighbor))
+  space: O(1)
+  notes: Runtime depends on the number of temperature levels `L`, the iterations per temperature `I`, and the cost of evaluating and generating one neighboring state.
+interviewSignals:
+  - The prompt describes a heuristic optimization method that sometimes accepts worse candidates.
+  - The intended solution depends on a cooling schedule, a neighbor generator, and an acceptance probability.
+relatedSlugs:
+  - traveling-salesman-problem
+  - n-queens
+  - minimum-cost-path
+provenance:
+  - title: "GeeksforGeeks - Simulated Annealing"
+    href: https://www.geeksforgeeks.org/dsa/simulated-annealing/
+    kind: Implementation
+  - title: "Wikipedia - Simulated annealing"
+    href: https://en.wikipedia.org/wiki/Simulated_annealing
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Simulated annealing shows up when exact optimization is too expensive and greedy local search gets trapped too easily. Its core idea is simple: at high temperature, explore aggressively; as the system cools, become more selective and keep the best state seen.
+
+## Worked Example
+
+Suppose the state is a single integer and the cost is `(x - 3)^2 + 1`. A simulated-annealing run might start at `x = 9`, explore nearby points like `8`, `10`, `7`, and even accept a temporary setback, but with enough cooling it should keep a best-so-far state near `x = 3`, where the cost is minimal.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function createLinearCongruentialGenerator(seed) {
+  let state = (seed >>> 0) || 1;
+
+  return function random() {
+    state = (1664525 * state + 1013904223) >>> 0;
+    return state / 0x100000000;
+  };
+}
+
+function simulatedAnnealing(options) {
+  const {
+    initialState,
+    cost,
+    neighbor,
+    initialTemperature = 1,
+    minimumTemperature = 0.0001,
+    coolingRate = 0.9,
+    iterationsPerTemperature = 100,
+    random = Math.random,
+  } = options;
+
+  if (typeof cost !== 'function' || typeof neighbor !== 'function') {
+    throw new TypeError('cost and neighbor must be functions');
+  }
+
+  if (!(initialTemperature > 0) || !(minimumTemperature > 0) || minimumTemperature >= initialTemperature) {
+    throw new RangeError('temperatures must satisfy initialTemperature > minimumTemperature > 0');
+  }
+
+  if (!(coolingRate > 0 && coolingRate < 1)) {
+    throw new RangeError('coolingRate must be between 0 and 1');
+  }
+
+  if (!Number.isInteger(iterationsPerTemperature) || iterationsPerTemperature <= 0) {
+    throw new RangeError('iterationsPerTemperature must be a positive integer');
+  }
+
+  let currentState = initialState;
+  let currentCost = cost(currentState);
+  let bestState = currentState;
+  let bestCost = currentCost;
+
+  for (let temperature = initialTemperature; temperature > minimumTemperature; temperature *= coolingRate) {
+    for (let iteration = 0; iteration < iterationsPerTemperature; iteration += 1) {
+      const candidateState = neighbor(currentState, random);
+      const candidateCost = cost(candidateState);
+      const delta = candidateCost - currentCost;
+
+      if (delta <= 0 || random() < Math.exp(-delta / temperature)) {
+        currentState = candidateState;
+        currentCost = candidateCost;
+
+        if (candidateCost < bestCost) {
+          bestState = candidateState;
+          bestCost = candidateCost;
+        }
+      }
+    }
+  }
+
+  return {
+    bestState,
+    bestCost,
+    finalState: currentState,
+    finalCost: currentCost,
+  };
+}
+```
+
+```ts
+export function createLinearCongruentialGenerator(seed: number): () => number {
+  let state = (seed >>> 0) || 1;
+
+  return function random(): number {
+    state = (1664525 * state + 1013904223) >>> 0;
+    return state / 0x100000000;
+  };
+}
+
+export type SimulatedAnnealingOptions<T> = {
+  initialState: T;
+  cost: (state: T) => number;
+  neighbor: (state: T, random: () => number) => T;
+  initialTemperature?: number;
+  minimumTemperature?: number;
+  coolingRate?: number;
+  iterationsPerTemperature?: number;
+  random?: () => number;
+};
+
+export function simulatedAnnealing<T>(options: SimulatedAnnealingOptions<T>): {
+  bestState: T;
+  bestCost: number;
+  finalState: T;
+  finalCost: number;
+} {
+  const {
+    initialState,
+    cost,
+    neighbor,
+    initialTemperature = 1,
+    minimumTemperature = 0.0001,
+    coolingRate = 0.9,
+    iterationsPerTemperature = 100,
+    random = Math.random,
+  } = options;
+
+  if (!(initialTemperature > 0) || !(minimumTemperature > 0) || minimumTemperature >= initialTemperature) {
+    throw new RangeError('temperatures must satisfy initialTemperature > minimumTemperature > 0');
+  }
+
+  if (!(coolingRate > 0 && coolingRate < 1)) {
+    throw new RangeError('coolingRate must be between 0 and 1');
+  }
+
+  if (!Number.isInteger(iterationsPerTemperature) || iterationsPerTemperature <= 0) {
+    throw new RangeError('iterationsPerTemperature must be a positive integer');
+  }
+
+  let currentState = initialState;
+  let currentCost = cost(currentState);
+  let bestState = currentState;
+  let bestCost = currentCost;
+
+  for (let temperature = initialTemperature; temperature > minimumTemperature; temperature *= coolingRate) {
+    for (let iteration = 0; iteration < iterationsPerTemperature; iteration += 1) {
+      const candidateState = neighbor(currentState, random);
+      const candidateCost = cost(candidateState);
+      const delta = candidateCost - currentCost;
+
+      if (delta <= 0 || random() < Math.exp(-delta / temperature)) {
+        currentState = candidateState;
+        currentCost = candidateCost;
+
+        if (candidateCost < bestCost) {
+          bestState = candidateState;
+          bestCost = candidateCost;
+        }
+      }
+    }
+  }
+
+  return {
+    bestState,
+    bestCost,
+    finalState: currentState,
+    finalCost: currentCost,
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Replace the simple scalar-state example with a permutation neighbor for routing or scheduling problems.
+- Tune the cooling schedule and iterations per temperature for faster convergence on a fixed budget.
+- Compare simulated annealing with hill climbing and explain why annealing can escape local minima more reliably.
+
+## Common Pitfalls
+
+- Using a cooling rate greater than or equal to `1`, which stops the system from ever cooling.
+- Mutating state objects in place and then losing track of which candidate was actually best.
+- Treating one seeded run as a proof of optimality rather than a heuristic sample.

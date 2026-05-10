@@ -50,7 +50,7 @@ export const importedQueueNote =
   "Imported from catalog-expansion.md latest next clean queue.";
 
 const latestQueuePattern =
-  /- The next clean ([^.\n]+?) queue(?: after[^\n]*?)? is ((?:\`[^\`]+\`(?:, |, and | and )?)+)\./g;
+  /- .*?\bthe next clean ([^.\n]+?) queue(?: after[^\n]*?)? is ((?:\`[^\`]+\`(?:, |, and | and )?)+)\./gi;
 const queueTitlePattern = /\`([^\`]+)\`/g;
 
 export async function listEditorialQueueEntries(): Promise<EditorialQueueEntry[]> {

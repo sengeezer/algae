@@ -1,0 +1,210 @@
+---
+title: Using Chinese Remainder Theorem to Combine Modular equations
+slug: using-chinese-remainder-theorem-to-combine-modular-equations
+category: Modular Arithmetic
+summary: Fold a list of pairwise-coprime congruences into one combined remainder by merging two equations at a time.
+description: "Using Chinese Remainder Theorem to Combine Modular equations is the iterative CRT construction that combines one congruence into the next until a single remainder modulo the full product remains."
+dataStructures:
+  - Array
+techniques:
+  - Modular Arithmetic
+  - Chinese Remainder Theorem
+  - Extended Euclidean Algorithm
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - combine modular equations with crt
+  - pairwise crt combination
+  - iterative chinese remainder theorem
+useCases:
+  - Combining many independent congruence constraints into one final modulus
+  - Solving CRT systems incrementally instead of with one full-product formula
+  - Reusing pairwise congruence merging inside larger number-theory workflows
+complexity:
+  time: O(k log M)
+  space: O(1)
+  notes: Each merge step uses one extended-Euclid solve and updates the running remainder and modulus, so the cost scales linearly with the number of congruences.
+interviewSignals:
+  - The prompt asks you to combine several modular equations into a single congruence.
+  - The intended approach merges equations progressively rather than building one direct full-product sum.
+relatedSlugs:
+  - introduction-to-chinese-remainder-theorem
+  - implementation-of-chinese-remainder-theorem-inverse-modulo-based-implementation
+  - modular-division
+provenance:
+  - title: "GeeksforGeeks - Using Chinese Remainder Theorem to Combine Modular equations"
+    href: https://www.geeksforgeeks.org/dsa/using-chinese-remainder-theorem-combine-modular-equations/
+    kind: Implementation
+  - title: "Wikipedia - Chinese remainder theorem"
+    href: https://en.wikipedia.org/wiki/Chinese_remainder_theorem
+    kind: Reference
+---
+
+## Why It Surfaces
+
+The direct inverse-product CRT formula is compact, but many implementations and proofs work by combining equations two at a time. That pairwise view is useful when you want to understand how the final remainder is assembled incrementally.
+
+## Worked Example
+
+Combine `x % 3 = 2` with `x % 5 = 3`. The smallest positive value satisfying both is `8`, so the two equations collapse into `x % 15 = 8`. Repeating that same merge process over a longer list eventually yields one final congruence modulo the full product.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function normalizeModulo(value, modulus) {
+  return ((value % modulus) + modulus) % modulus;
+}
+
+function gcdExtended(a, b) {
+  if (a === 0) {
+    return { gcd: b, x: 0, y: 1 };
+  }
+
+  const { gcd, x, y } = gcdExtended(b % a, a);
+  return {
+    gcd,
+    x: y - Math.floor(b / a) * x,
+    y: x,
+  };
+}
+
+function validateCongruenceSystem(remainders, moduli) {
+  if (!Array.isArray(remainders) || !Array.isArray(moduli) || remainders.length !== moduli.length || remainders.length === 0) {
+    throw new TypeError('remainders and moduli must be non-empty arrays of equal length');
+  }
+
+  if (!remainders.every((value) => Number.isInteger(value))) {
+    throw new RangeError('remainders must be integers');
+  }
+
+  if (!moduli.every((value) => Number.isInteger(value) && value > 1)) {
+    throw new RangeError('moduli must be integers greater than 1');
+  }
+}
+
+function combineTwoCongruences(leftRemainder, leftModulus, rightRemainder, rightModulus) {
+  const { gcd, x } = gcdExtended(leftModulus, rightModulus);
+
+  if (gcd !== 1) {
+    throw new RangeError('moduli must remain pairwise coprime during combination');
+  }
+
+  const delta = normalizeModulo(rightRemainder - leftRemainder, rightModulus);
+  const multiplier = normalizeModulo(delta * x, rightModulus);
+  const modulus = leftModulus * rightModulus;
+  const remainder = normalizeModulo(leftRemainder + leftModulus * multiplier, modulus);
+
+  return { remainder, modulus };
+}
+
+function combineModularEquations(remainders, moduli) {
+  validateCongruenceSystem(remainders, moduli);
+
+  let currentRemainder = normalizeModulo(remainders[0], moduli[0]);
+  let currentModulus = moduli[0];
+
+  for (let index = 1; index < moduli.length; index += 1) {
+    const combined = combineTwoCongruences(
+      currentRemainder,
+      currentModulus,
+      normalizeModulo(remainders[index], moduli[index]),
+      moduli[index],
+    );
+
+    currentRemainder = combined.remainder;
+    currentModulus = combined.modulus;
+  }
+
+  return currentRemainder === 0 ? currentModulus : currentRemainder;
+}
+```
+
+```ts
+function normalizeModulo(value: number, modulus: number): number {
+  return ((value % modulus) + modulus) % modulus;
+}
+
+function gcdExtended(a: number, b: number): { gcd: number; x: number; y: number } {
+  if (a === 0) {
+    return { gcd: b, x: 0, y: 1 };
+  }
+
+  const { gcd, x, y } = gcdExtended(b % a, a);
+  return {
+    gcd,
+    x: y - Math.floor(b / a) * x,
+    y: x,
+  };
+}
+
+function validateCongruenceSystem(remainders: number[], moduli: number[]): void {
+  if (remainders.length !== moduli.length || remainders.length === 0) {
+    throw new TypeError('remainders and moduli must be non-empty arrays of equal length');
+  }
+
+  if (!remainders.every((value) => Number.isInteger(value))) {
+    throw new RangeError('remainders must be integers');
+  }
+
+  if (!moduli.every((value) => Number.isInteger(value) && value > 1)) {
+    throw new RangeError('moduli must be integers greater than 1');
+  }
+}
+
+function combineTwoCongruences(
+  leftRemainder: number,
+  leftModulus: number,
+  rightRemainder: number,
+  rightModulus: number,
+): { remainder: number; modulus: number } {
+  const { gcd, x } = gcdExtended(leftModulus, rightModulus);
+
+  if (gcd !== 1) {
+    throw new RangeError('moduli must remain pairwise coprime during combination');
+  }
+
+  const delta = normalizeModulo(rightRemainder - leftRemainder, rightModulus);
+  const multiplier = normalizeModulo(delta * x, rightModulus);
+  const modulus = leftModulus * rightModulus;
+  const remainder = normalizeModulo(leftRemainder + leftModulus * multiplier, modulus);
+
+  return { remainder, modulus };
+}
+
+export function combineModularEquations(remainders: number[], moduli: number[]): number {
+  validateCongruenceSystem(remainders, moduli);
+
+  let currentRemainder = normalizeModulo(remainders[0], moduli[0]);
+  let currentModulus = moduli[0];
+
+  for (let index = 1; index < moduli.length; index += 1) {
+    const combined = combineTwoCongruences(
+      currentRemainder,
+      currentModulus,
+      normalizeModulo(remainders[index], moduli[index]),
+      moduli[index],
+    );
+
+    currentRemainder = combined.remainder;
+    currentModulus = combined.modulus;
+  }
+
+  return currentRemainder === 0 ? currentModulus : currentRemainder;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the final combined congruence as both `remainder` and `modulus` instead of only the smallest positive representative.
+- Extend the merge step to handle some non-coprime congruence systems that still have solutions.
+- Compare this pairwise combiner with the full-product inverse-based CRT formula from the related implementation.
+
+## Common Pitfalls
+
+- Forgetting that each merge step still requires coprime moduli in this simplified form.
+- Returning intermediate remainder `0` as the modulus too early and breaking later combinations.
+- Mixing the order of the remainders and moduli arrays when folding the equations.
