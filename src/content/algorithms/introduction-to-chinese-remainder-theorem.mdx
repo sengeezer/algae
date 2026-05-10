@@ -1,0 +1,191 @@
+---
+title: Introduction to Chinese Remainder Theorem
+slug: introduction-to-chinese-remainder-theorem
+category: Modular Arithmetic
+summary: Solve a pairwise-coprime congruence system by checking candidates one by one until all remainders line up.
+description: "Introduction to Chinese Remainder Theorem is the foundational congruence-system problem where the theorem explains why a solution exists and the baseline implementation finds the smallest positive one by direct search."
+dataStructures:
+  - Array
+techniques:
+  - Modular Arithmetic
+  - Congruence Systems
+  - Brute Force
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - chinese remainder theorem intro
+  - crt introduction
+  - smallest positive crt solution
+useCases:
+  - Teaching why pairwise-coprime congruence systems have a repeating solution class
+  - Building intuition before the inverse-modulo CRT formula
+  - Checking small congruence systems directly for correctness
+complexity:
+  time: O(answer * k)
+  space: O(1)
+  notes: The naive solver increments the candidate until it satisfies all `k` congruences, so the cost depends on the smallest positive solution.
+interviewSignals:
+  - The prompt introduces CRT and the examples use only a few small moduli.
+  - The intended first pass is conceptual clarity, not the fully optimized inverse-based formula.
+relatedSlugs:
+  - implementation-of-chinese-remainder-theorem-inverse-modulo-based-implementation
+  - modular-division
+  - primitive-root-of-a-prime-number-n-modulo-n
+provenance:
+  - title: "GeeksforGeeks - Introduction to Chinese Remainder Theorem"
+    href: https://www.geeksforgeeks.org/dsa/introduction-to-chinese-remainder-theorem/
+    kind: Implementation
+  - title: "Wikipedia - Chinese remainder theorem"
+    href: https://en.wikipedia.org/wiki/Chinese_remainder_theorem
+    kind: Reference
+---
+
+## Why It Surfaces
+
+CRT questions start with the promise that a system of congruences has a structured answer when the moduli are pairwise coprime. The introductory version usually favors understanding that repeating structure first, even if the code still searches candidates directly.
+
+## Worked Example
+
+For `x % 3 = 2`, `x % 4 = 3`, and `x % 5 = 1`, the smallest positive solution is `11`. Every later solution differs from `11` by a multiple of `3 * 4 * 5 = 60`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function gcd(left, right) {
+  let a = Math.abs(left);
+  let b = Math.abs(right);
+
+  while (b !== 0) {
+    const remainder = a % b;
+    a = b;
+    b = remainder;
+  }
+
+  return a;
+}
+
+function validateCongruenceSystem(moduli, remainders) {
+  if (!Array.isArray(moduli) || !Array.isArray(remainders) || moduli.length !== remainders.length || moduli.length === 0) {
+    throw new TypeError('moduli and remainders must be non-empty arrays of equal length');
+  }
+
+  if (!moduli.every((value) => Number.isInteger(value) && value > 1)) {
+    throw new RangeError('moduli must be integers greater than 1');
+  }
+
+  if (!remainders.every((value) => Number.isInteger(value))) {
+    throw new RangeError('remainders must be integers');
+  }
+
+  for (let index = 0; index < moduli.length; index += 1) {
+    for (let nextIndex = index + 1; nextIndex < moduli.length; nextIndex += 1) {
+      if (gcd(moduli[index], moduli[nextIndex]) !== 1) {
+        throw new RangeError('moduli must be pairwise coprime');
+      }
+    }
+  }
+}
+
+function chineseRemainderTheoremNaive(moduli, remainders) {
+  validateCongruenceSystem(moduli, remainders);
+
+  const normalizedRemainders = remainders.map((value, index) => ((value % moduli[index]) + moduli[index]) % moduli[index]);
+  let candidate = 1;
+
+  while (true) {
+    let satisfied = true;
+
+    for (let index = 0; index < moduli.length; index += 1) {
+      if (candidate % moduli[index] !== normalizedRemainders[index]) {
+        satisfied = false;
+        break;
+      }
+    }
+
+    if (satisfied) {
+      return candidate;
+    }
+
+    candidate += 1;
+  }
+}
+```
+
+```ts
+function gcd(left: number, right: number): number {
+  let a = Math.abs(left);
+  let b = Math.abs(right);
+
+  while (b !== 0) {
+    const remainder = a % b;
+    a = b;
+    b = remainder;
+  }
+
+  return a;
+}
+
+function validateCongruenceSystem(moduli: number[], remainders: number[]): void {
+  if (moduli.length !== remainders.length || moduli.length === 0) {
+    throw new TypeError('moduli and remainders must be non-empty arrays of equal length');
+  }
+
+  if (!moduli.every((value) => Number.isInteger(value) && value > 1)) {
+    throw new RangeError('moduli must be integers greater than 1');
+  }
+
+  if (!remainders.every((value) => Number.isInteger(value))) {
+    throw new RangeError('remainders must be integers');
+  }
+
+  for (let index = 0; index < moduli.length; index += 1) {
+    for (let nextIndex = index + 1; nextIndex < moduli.length; nextIndex += 1) {
+      if (gcd(moduli[index], moduli[nextIndex]) !== 1) {
+        throw new RangeError('moduli must be pairwise coprime');
+      }
+    }
+  }
+}
+
+export function chineseRemainderTheoremNaive(moduli: number[], remainders: number[]): number {
+  validateCongruenceSystem(moduli, remainders);
+
+  const normalizedRemainders = remainders.map(
+    (value, index) => ((value % moduli[index]) + moduli[index]) % moduli[index],
+  );
+  let candidate = 1;
+
+  while (true) {
+    let satisfied = true;
+
+    for (let index = 0; index < moduli.length; index += 1) {
+      if (candidate % moduli[index] !== normalizedRemainders[index]) {
+        satisfied = false;
+        break;
+      }
+    }
+
+    if (satisfied) {
+      return candidate;
+    }
+
+    candidate += 1;
+  }
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why all solutions are congruent modulo the product of the pairwise-coprime moduli.
+- Replace the linear scan with the inverse-based CRT formula.
+- Handle negative remainders by normalizing them before the checks.
+
+## Common Pitfalls
+
+- Forgetting the pairwise-coprime assumption that the theorem relies on in this form.
+- Comparing raw negative remainders instead of reducing them modulo their matching modulus.
+- Using the naive search for large moduli and then blaming CRT instead of the implementation choice.

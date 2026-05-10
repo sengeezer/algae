@@ -2010,10 +2010,18 @@ This one-hundred-sixty-ninth expansion slice lifts the catalog from 799 to 802 e
 - Euler's Totient function for all numbers smaller than or equal to n
 - Primitive root of a prime number n modulo n
 
+## Batch 170 added
+
+This one-hundred-seventieth expansion slice lifts the catalog from 802 to 805 entries.
+
+- Euler's Four Square Identity
+- Introduction to Chinese Remainder Theorem
+- Implementation of Chinese Remainder theorem (Inverse Modulo based implementation)
+
 ## Current source-order note
 
-- `Optimized Euler Totient Function for Multiple Evaluations` stays distinct from the existing single-value totient entries by reusing one shared prime sieve across many phi queries.
-- `Euler's Totient function for all numbers smaller than or equal to n` adds the sieve-built totient table for every value through `n`, not just one target input.
-- `Primitive root of a prime number n modulo n` extends the modular-arithmetic surface into generator search using factor checks on `p - 1`.
-- Focused JavaScript-fence validation, `npm run db:catalog:seed`, `npm run smoke:ui`, targeted Playwright route checks, `npm run lint`, and `npx tsc --noEmit` all passed for batch 169 before publish.
-- The next clean Mathematical Algorithms queue after batch 169 is `Euler's Four Square Identity`, `Introduction to Chinese Remainder Theorem`, and `Implementation of Chinese Remainder theorem (Inverse Modulo based implementation)`.
+- `Euler's Four Square Identity` stays distinct by using the direct four-square product identity itself instead of brute-force search over candidate quadruples.
+- `Introduction to Chinese Remainder Theorem` is kept as the conceptual baseline with pairwise-coprime validation and a smallest-positive-solution scan.
+- `Implementation of Chinese Remainder theorem (Inverse Modulo based implementation)` stays distinct from the intro entry by constructing the answer with partial products, modular inverses, and the extended Euclidean algorithm.
+- Focused JavaScript-fence validation, `npm run db:catalog:seed`, `npm run smoke:ui`, targeted Playwright route checks, `npm run lint`, and `npx tsc --noEmit` all passed for batch 170 before publish; `npm run db:catalog:seed` synced 805 algorithms.
+- `Cyclic Redundancy Check and Modulo-2 Division` is already covered locally, so the next clean Mathematical Algorithms queue after batch 170 is `Using Chinese Remainder Theorem to Combine Modular equations`, `Interquartile Range (IQR)`, and `Simulated Annealing`.

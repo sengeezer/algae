@@ -1,0 +1,120 @@
+---
+title: "Euler's Four Square Identity"
+slug: eulers-four-square-identity
+category: Mathematics
+summary: Combine two four-square representations into one representation of their product using Euler's identity directly.
+description: "Euler's Four Square Identity is the algebraic construction that turns `(a1^2 + a2^2 + a3^2 + a4^2) * (b1^2 + b2^2 + b3^2 + b4^2)` into another sum of four squares without any search."
+dataStructures:
+  - Array
+techniques:
+  - Number Theory
+  - Algebraic Identity
+  - Construction
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - four-square identity
+  - euler four square theorem
+  - product of two sums of four squares
+useCases:
+  - Constructing a four-square representation of a product directly
+  - Explaining why the set of sums of four squares is closed under multiplication
+  - Connecting algebraic identities with number-theory existence results
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The identity computes one valid representation directly from the eight input coefficients, so no brute-force search over candidates is needed.
+interviewSignals:
+  - The prompt gives two numbers already written as sums of four squares and asks for a product representation.
+  - The intended solution is an algebraic construction rather than searching all quadruples whose squares add to the product.
+relatedSlugs:
+  - eulers-totient
+  - primitive-root-of-a-prime-number-n-modulo-n
+  - modular-arithmetic
+provenance:
+  - title: "GeeksforGeeks - Euler's Four Square Identity"
+    href: https://www.geeksforgeeks.org/dsa/eulers-four-square-identity/
+    kind: Implementation
+  - title: "Wikipedia - Euler's four-square identity"
+    href: https://en.wikipedia.org/wiki/Euler%27s_four-square_identity
+    kind: Reference
+---
+
+## Why It Surfaces
+
+The source article demonstrates the identity by searching quadruples, but the mathematical heart of the problem is the closed-form construction itself. If two values are already known as sums of four squares, Euler's identity gives a representation of their product immediately.
+
+## Worked Example
+
+Take `30 = 1^2 + 2^2 + 3^2 + 4^2` and `4 = 1^2 + 1^2 + 1^2 + 1^2`. Applying the identity to `[1, 2, 3, 4]` and `[1, 1, 1, 1]` produces `[-8, 2, 6, 4]`, and `(-8)^2 + 2^2 + 6^2 + 4^2 = 120 = 30 * 4`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function validateFourSquareInput(value, name) {
+  if (
+    !Array.isArray(value)
+    || value.length !== 4
+    || !value.every((entry) => Number.isInteger(entry))
+  ) {
+    throw new TypeError(`${name} must be an array of four integers`);
+  }
+}
+
+function eulersFourSquareIdentity(left, right) {
+  validateFourSquareInput(left, 'left');
+  validateFourSquareInput(right, 'right');
+
+  const [a1, a2, a3, a4] = left;
+  const [b1, b2, b3, b4] = right;
+
+  return [
+    a1 * b1 - a2 * b2 - a3 * b3 - a4 * b4,
+    a1 * b2 + a2 * b1 + a3 * b4 - a4 * b3,
+    a1 * b3 - a2 * b4 + a3 * b1 + a4 * b2,
+    a1 * b4 + a2 * b3 - a3 * b2 + a4 * b1,
+  ];
+}
+```
+
+```ts
+function validateFourSquareInput(value: number[], name: string): void {
+  if (value.length !== 4 || !value.every((entry) => Number.isInteger(entry))) {
+    throw new TypeError(`${name} must be an array of four integers`);
+  }
+}
+
+export function eulersFourSquareIdentity(
+  left: [number, number, number, number],
+  right: [number, number, number, number],
+): [number, number, number, number] {
+  validateFourSquareInput(left, 'left');
+  validateFourSquareInput(right, 'right');
+
+  const [a1, a2, a3, a4] = left;
+  const [b1, b2, b3, b4] = right;
+
+  return [
+    a1 * b1 - a2 * b2 - a3 * b3 - a4 * b4,
+    a1 * b2 + a2 * b1 + a3 * b4 - a4 * b3,
+    a1 * b3 - a2 * b4 + a3 * b1 + a4 * b2,
+    a1 * b4 + a2 * b3 - a3 * b2 + a4 * b1,
+  ];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Verify the returned coefficients by comparing the two squared-sum totals.
+- Explain the relation between the identity and quaternion multiplication.
+- Extend the idea to repeated multiplication of many four-square representations.
+
+## Common Pitfalls
+
+- Replacing the identity with brute-force search and missing the direct construction.
+- Assuming the output coefficients must all be non-negative; the squares work regardless of sign.
+- Mixing the signs in the four formulas and losing the norm-preserving property.

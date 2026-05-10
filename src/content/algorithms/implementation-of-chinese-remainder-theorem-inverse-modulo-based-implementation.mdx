@@ -1,0 +1,225 @@
+---
+title: "Implementation of Chinese Remainder theorem (Inverse Modulo based implementation)"
+slug: implementation-of-chinese-remainder-theorem-inverse-modulo-based-implementation
+category: Modular Arithmetic
+summary: Combine pairwise-coprime congruences in one pass by weighting each remainder with the product of the other moduli and its modular inverse.
+description: "Implementation of Chinese Remainder theorem (Inverse Modulo based implementation) is the efficient CRT construction that computes the smallest positive solution using modular inverses instead of incrementing candidates one by one."
+dataStructures:
+  - Array
+techniques:
+  - Modular Arithmetic
+  - Chinese Remainder Theorem
+  - Extended Euclidean Algorithm
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - crt inverse modulo implementation
+  - efficient chinese remainder theorem
+  - inverse-based crt
+useCases:
+  - Solving pairwise-coprime congruence systems efficiently
+  - Combining independent remainder constraints into one canonical solution modulo the product
+  - Demonstrating modular inverse use in constructive number theory
+complexity:
+  time: O(k^2 + k log product)
+  space: O(1)
+  notes: The implementation validates pairwise coprimality, computes the total modulus product, and then accumulates each remainder's weighted contribution using one modular inverse.
+interviewSignals:
+  - The prompt gives several congruences and expects more than a brute-force search.
+  - The intended leap is from theorem intuition to the constructive inverse-modulo formula.
+relatedSlugs:
+  - introduction-to-chinese-remainder-theorem
+  - modular-division
+  - optimized-euler-totient-function-for-multiple-evaluations
+provenance:
+  - title: "GeeksforGeeks - Implementation of Chinese Remainder theorem (Inverse Modulo based implementation)"
+    href: https://www.geeksforgeeks.org/dsa/implementation-of-chinese-remainder-theorem-inverse-modulo-based-implementation/
+    kind: Implementation
+  - title: "Wikipedia - Chinese remainder theorem"
+    href: https://en.wikipedia.org/wiki/Chinese_remainder_theorem
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Once the introductory CRT idea is clear, the real interview step is constructing the answer directly. The efficient formula builds the final result by letting each congruence contribute a term that is zero modulo every other modulus and equal to the intended remainder modulo its own modulus.
+
+## Worked Example
+
+For moduli `[3, 4, 5]` and remainders `[2, 3, 1]`, the full product is `60`. The partial products are `[20, 15, 12]`, their modular inverses with respect to the matching moduli are `[2, 3, 3]`, and the weighted sum gives `(2 * 20 * 2 + 3 * 15 * 3 + 1 * 12 * 3) % 60 = 11`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function gcd(left, right) {
+  let a = Math.abs(left);
+  let b = Math.abs(right);
+
+  while (b !== 0) {
+    const remainder = a % b;
+    a = b;
+    b = remainder;
+  }
+
+  return a;
+}
+
+function validateCongruenceSystem(moduli, remainders) {
+  if (!Array.isArray(moduli) || !Array.isArray(remainders) || moduli.length !== remainders.length || moduli.length === 0) {
+    throw new TypeError('moduli and remainders must be non-empty arrays of equal length');
+  }
+
+  if (!moduli.every((value) => Number.isInteger(value) && value > 1)) {
+    throw new RangeError('moduli must be integers greater than 1');
+  }
+
+  if (!remainders.every((value) => Number.isInteger(value))) {
+    throw new RangeError('remainders must be integers');
+  }
+
+  for (let index = 0; index < moduli.length; index += 1) {
+    for (let nextIndex = index + 1; nextIndex < moduli.length; nextIndex += 1) {
+      if (gcd(moduli[index], moduli[nextIndex]) !== 1) {
+        throw new RangeError('moduli must be pairwise coprime');
+      }
+    }
+  }
+}
+
+function gcdExtended(a, b) {
+  if (a === 0) {
+    return { gcd: b, x: 0, y: 1 };
+  }
+
+  const { gcd: divisor, x, y } = gcdExtended(b % a, a);
+  return {
+    gcd: divisor,
+    x: y - Math.floor(b / a) * x,
+    y: x,
+  };
+}
+
+function modInverse(value, modulus) {
+  const reduced = ((value % modulus) + modulus) % modulus;
+  const { gcd: divisor, x } = gcdExtended(reduced, modulus);
+
+  if (divisor !== 1) {
+    throw new RangeError('inverse does not exist for non-coprime values');
+  }
+
+  return ((x % modulus) + modulus) % modulus;
+}
+
+function chineseRemainderTheoremInverseModulo(moduli, remainders) {
+  validateCongruenceSystem(moduli, remainders);
+
+  const normalizedRemainders = remainders.map((value, index) => ((value % moduli[index]) + moduli[index]) % moduli[index]);
+  const product = moduli.reduce((accumulator, value) => accumulator * value, 1);
+  let result = 0;
+
+  for (let index = 0; index < moduli.length; index += 1) {
+    const partialProduct = Math.floor(product / moduli[index]);
+    const inverse = modInverse(partialProduct, moduli[index]);
+    result += normalizedRemainders[index] * partialProduct * inverse;
+  }
+
+  const reduced = ((result % product) + product) % product;
+  return reduced === 0 ? product : reduced;
+}
+```
+
+```ts
+function gcd(left: number, right: number): number {
+  let a = Math.abs(left);
+  let b = Math.abs(right);
+
+  while (b !== 0) {
+    const remainder = a % b;
+    a = b;
+    b = remainder;
+  }
+
+  return a;
+}
+
+function validateCongruenceSystem(moduli: number[], remainders: number[]): void {
+  if (moduli.length !== remainders.length || moduli.length === 0) {
+    throw new TypeError('moduli and remainders must be non-empty arrays of equal length');
+  }
+
+  if (!moduli.every((value) => Number.isInteger(value) && value > 1)) {
+    throw new RangeError('moduli must be integers greater than 1');
+  }
+
+  if (!remainders.every((value) => Number.isInteger(value))) {
+    throw new RangeError('remainders must be integers');
+  }
+
+  for (let index = 0; index < moduli.length; index += 1) {
+    for (let nextIndex = index + 1; nextIndex < moduli.length; nextIndex += 1) {
+      if (gcd(moduli[index], moduli[nextIndex]) !== 1) {
+        throw new RangeError('moduli must be pairwise coprime');
+      }
+    }
+  }
+}
+
+function gcdExtended(a: number, b: number): { gcd: number; x: number; y: number } {
+  if (a === 0) {
+    return { gcd: b, x: 0, y: 1 };
+  }
+
+  const { gcd: divisor, x, y } = gcdExtended(b % a, a);
+  return {
+    gcd: divisor,
+    x: y - Math.floor(b / a) * x,
+    y: x,
+  };
+}
+
+function modInverse(value: number, modulus: number): number {
+  const reduced = ((value % modulus) + modulus) % modulus;
+  const { gcd: divisor, x } = gcdExtended(reduced, modulus);
+
+  if (divisor !== 1) {
+    throw new RangeError('inverse does not exist for non-coprime values');
+  }
+
+  return ((x % modulus) + modulus) % modulus;
+}
+
+export function chineseRemainderTheoremInverseModulo(moduli: number[], remainders: number[]): number {
+  validateCongruenceSystem(moduli, remainders);
+
+  const normalizedRemainders = remainders.map(
+    (value, index) => ((value % moduli[index]) + moduli[index]) % moduli[index],
+  );
+  const product = moduli.reduce((accumulator, value) => accumulator * value, 1);
+  let result = 0;
+
+  for (let index = 0; index < moduli.length; index += 1) {
+    const partialProduct = Math.floor(product / moduli[index]);
+    const inverse = modInverse(partialProduct, moduli[index]);
+    result += normalizedRemainders[index] * partialProduct * inverse;
+  }
+
+  const reduced = ((result % product) + product) % product;
+  return reduced === 0 ? product : reduced;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Swap the number arithmetic to `BigInt` when the modulus product can overflow safe integer range.
+- Generalize the implementation to non-coprime systems that may or may not have solutions.
+- Explain why each weighted term vanishes modulo every other modulus.
+
+## Common Pitfalls
+
+- Forgetting to normalize negative remainders before combining the terms.
+- Using modular inverse when the moduli are not pairwise coprime.
+- Returning `0` when the theorem asks for the smallest positive solution modulo the product.
