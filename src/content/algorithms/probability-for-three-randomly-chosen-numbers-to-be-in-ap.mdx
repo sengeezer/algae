@@ -1,0 +1,91 @@
+---
+title: "Probability for three randomly chosen numbers to be in AP"
+slug: probability-for-three-randomly-chosen-numbers-to-be-in-ap
+category: Mathematics
+summary: "Use a closed-form count to compute how likely three values chosen from 1 through 2n+1 form an arithmetic progression."
+description: "Probability for three randomly chosen numbers to be in AP counts how many three-element arithmetic progressions exist among the consecutive numbers from 1 through 2n+1 and divides by the total number of three-element selections."
+dataStructures:
+  - Number
+techniques:
+  - Combinatorics
+  - Closed Form Formula
+  - Probability
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - probability of numbers in AP
+  - probability three numbers form arithmetic progression
+  - random triplet in AP
+useCases:
+  - Turning a counting argument into a direct probability formula
+  - Practicing combinations on structured consecutive sets
+  - Recognizing when an apparent enumeration problem collapses to a closed form
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: Once the counting argument is derived, the probability is a direct formula in n.
+interviewSignals:
+  - The numbers are chosen from the consecutive set 1 through 2n+1.
+  - The intended solution counts valid arithmetic-progression triplets instead of enumerating all combinations.
+relatedSlugs:
+  - count-of-ap-arithmetic-progression-subsequences-in-an-array
+  - permutation-and-combination
+  - combinations-with-repetitions
+provenance:
+  - title: "GeeksforGeeks - Probability for three randomly chosen numbers to be in AP"
+    href: https://www.geeksforgeeks.org/dsa/probability-three-randomly-chosen-numbers-ap/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This prompt looks like a brute-force triplet problem, but the real task is spotting the combinatorial pattern. Among the numbers `1` through `2n + 1`, every valid three-term arithmetic progression is determined by its middle value and common difference, so the count collapses to a closed form.
+
+## Worked Example
+
+For `n = 2`, the set is `{1, 2, 3, 4, 5}`. The valid AP triplets are:
+
+- `{1, 2, 3}`
+- `{2, 3, 4}`
+- `{3, 4, 5}`
+- `{1, 3, 5}`
+
+There are `4` valid triplets out of `C(5, 3) = 10` total triplets, so the probability is `4 / 10 = 0.4`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function probabilityForThreeRandomlyChosenNumbersToBeInAP(n) {
+  if (!Number.isInteger(n) || n <= 0) {
+    throw new RangeError('n must be a positive integer');
+  }
+
+  return (3 * n) / (4 * n * n - 1);
+}
+```
+
+```ts
+export function probabilityForThreeRandomlyChosenNumbersToBeInAP(n: number): number {
+  if (!Number.isInteger(n) || n <= 0) {
+    throw new RangeError('n must be a positive integer');
+  }
+
+  return (3 * n) / (4 * n * n - 1);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Derive the same formula from `C(2n + 1, 3)` explicitly instead of memorizing it.
+- Generalize from three-term APs to longer arithmetic progressions.
+- Compare this structured consecutive-set problem with counting AP subsequences in an arbitrary array.
+
+## Common Pitfalls
+
+- Treating `n` as the array length instead of the parameter in `2n + 1`.
+- Enumerating every triplet and missing the constant-time closed form.
+- Forgetting that the denominator is the total number of unordered triplets.

@@ -1,0 +1,160 @@
+---
+title: "Find the probability of reaching all points after N moves from point N"
+slug: find-the-probability-of-reaching-all-points-after-n-moves-from-point-n
+category: Mathematics
+summary: "Return the probability distribution over points 0 through 2N after N left-or-right moves starting from point N."
+description: "Find the probability of reaching all points after N moves from point N uses dynamic programming on a number line to propagate left and right move probabilities across N steps."
+dataStructures:
+  - Array
+techniques:
+  - Dynamic Programming
+  - Random Walk
+  - Probability Distribution
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - probability of reaching all points after n moves
+  - random walk distribution from point n
+  - number line move probabilities
+useCases:
+  - Modeling a finite-horizon random walk on a number line
+  - Teaching probability DP over positions and time steps
+  - Returning a full probability distribution instead of one aggregated answer
+complexity:
+  time: O(n^2)
+  space: O(n)
+  notes: There are O(n) positions and O(n) steps, and only the current distribution row must be stored.
+interviewSignals:
+  - The prompt starts at point `N` and asks for the probability of each point after exactly `N` moves.
+  - The intended solution pushes probability mass left and right through repeated DP transitions.
+relatedSlugs:
+  - probability-of-reaching-a-point-with-2-or-3-steps-at-a-time
+  - count-ways-to-reach-the-nth-stair-using-step-1-2-or-3
+  - pi-approximation-monte-carlo
+provenance:
+  - title: "GeeksforGeeks - Find the probability of reaching all points after N moves from point N"
+    href: https://www.geeksforgeeks.org/dsa/find-the-probability-of-reaching-all-points-after-n-moves-from-point-n/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is the distribution-valued version of a random walk. Instead of asking for one destination probability, the prompt asks for every point's probability after exactly `N` moves, so the natural state is a DP array over current position.
+
+## Worked Example
+
+For `N = 2` and left-move probability `0.5`, the walk starts at point `2` and makes exactly two `+1` or `-1` moves.
+
+- Reaching point `0` requires two left moves: probability `0.25`
+- Reaching point `2` requires one left and one right move in either order: probability `0.5`
+- Reaching point `4` requires two right moves: probability `0.25`
+
+So the final distribution over points `0..4` is `[0.25, 0, 0.5, 0, 0.25]`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function findTheProbabilityOfReachingAllPointsAfterNMovesFromPointN(moves, leftProbability) {
+  if (!Number.isInteger(moves) || moves < 0) {
+    throw new RangeError('moves must be a non-negative integer');
+  }
+
+  if (
+    typeof leftProbability !== 'number' ||
+    !Number.isFinite(leftProbability) ||
+    leftProbability < 0 ||
+    leftProbability > 1
+  ) {
+    throw new RangeError('leftProbability must be between 0 and 1');
+  }
+
+  const width = 2 * moves + 1;
+  const rightProbability = 1 - leftProbability;
+  let distribution = new Array(width).fill(0);
+  distribution[moves] = 1;
+
+  for (let step = 0; step < moves; step += 1) {
+    const nextDistribution = new Array(width).fill(0);
+
+    for (let index = 0; index < width; index += 1) {
+      const currentProbability = distribution[index];
+
+      if (currentProbability === 0) {
+        continue;
+      }
+
+      if (index > 0) {
+        nextDistribution[index - 1] += currentProbability * leftProbability;
+      }
+
+      if (index + 1 < width) {
+        nextDistribution[index + 1] += currentProbability * rightProbability;
+      }
+    }
+
+    distribution = nextDistribution;
+  }
+
+  return distribution;
+}
+```
+
+```ts
+export function findTheProbabilityOfReachingAllPointsAfterNMovesFromPointN(
+  moves: number,
+  leftProbability: number,
+): number[] {
+  if (!Number.isInteger(moves) || moves < 0) {
+    throw new RangeError('moves must be a non-negative integer');
+  }
+
+  if (!Number.isFinite(leftProbability) || leftProbability < 0 || leftProbability > 1) {
+    throw new RangeError('leftProbability must be between 0 and 1');
+  }
+
+  const width = 2 * moves + 1;
+  const rightProbability = 1 - leftProbability;
+  let distribution = new Array(width).fill(0);
+  distribution[moves] = 1;
+
+  for (let step = 0; step < moves; step += 1) {
+    const nextDistribution = new Array(width).fill(0);
+
+    for (let index = 0; index < width; index += 1) {
+      const currentProbability = distribution[index];
+
+      if (currentProbability === 0) {
+        continue;
+      }
+
+      if (index > 0) {
+        nextDistribution[index - 1] += currentProbability * leftProbability;
+      }
+
+      if (index + 1 < width) {
+        nextDistribution[index + 1] += currentProbability * rightProbability;
+      }
+    }
+
+    distribution = nextDistribution;
+  }
+
+  return distribution;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compress the output to only reachable positions with the correct parity.
+- Compute the probability of ending within a range instead of returning the whole distribution.
+- Compare this DP with the corresponding binomial-coefficient closed form for one target point.
+
+## Common Pitfalls
+
+- Forgetting that the walk starts at point `N`, not at `0`.
+- Mutating the current distribution in place and accidentally reusing same-step updates.
+- Returning only one endpoint probability when the prompt asks for all points.

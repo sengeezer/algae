@@ -1,0 +1,191 @@
+---
+title: "Birthday Paradox"
+slug: birthday-paradox
+category: Mathematics
+summary: "Compute the chance of a shared birthday in a group, or the smallest group size needed to cross a probability threshold."
+description: "Birthday Paradox uses the complement probability that all birthdays are distinct, then subtracts from 1 to get the collision probability for a group."
+dataStructures:
+  - Number
+techniques:
+  - Complement Rule
+  - Probability
+  - Collision Analysis
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - birthday problem
+  - shared birthday probability
+  - birthday collision paradox
+useCases:
+  - Estimating collision risk in hashing and identifier spaces
+  - Teaching why collision probabilities grow faster than intuition suggests
+  - Solving threshold questions such as the classic 23-person example
+complexity:
+  time: O(min(peopleCount, daysInYear))
+  space: O(1)
+  notes: The exact probability can be computed with a rolling product of distinct-birthday probabilities instead of enumerating pairs.
+interviewSignals:
+  - The prompt asks for the probability that at least two people share a birthday.
+  - The intended reasoning works through the complement event that all birthdays are different.
+relatedSlugs:
+  - probability-of-a-random-pair-being-the-maximum-weighted-pair
+  - pi-approximation-monte-carlo
+  - pseudo-random-number-generator-prng
+provenance:
+  - title: "GeeksforGeeks - Birthday Paradox"
+    href: https://www.geeksforgeeks.org/dsa/birthday-paradox/
+    kind: Implementation
+  - title: "Wikipedia - Birthday problem"
+    href: https://en.wikipedia.org/wiki/Birthday_problem
+    kind: Reference
+---
+
+## Why It Surfaces
+
+The paradox is not in the math. It is in human intuition. People often reason about one fixed person matching someone else, but the real collision count grows with all possible pairs in the room, so the probability rises much faster than expected.
+
+## Worked Example
+
+For `23` people in a `365`-day year, the probability that everyone has a different birthday is approximately `0.4927`, so the probability that at least two people share a birthday is about `0.5073`. That is why the 50% threshold arrives much earlier than most people guess.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function birthdayParadoxProbability(peopleCount, daysInYear = 365) {
+  if (!Number.isInteger(peopleCount) || peopleCount < 0) {
+    throw new RangeError('peopleCount must be a non-negative integer');
+  }
+
+  if (!Number.isInteger(daysInYear) || daysInYear <= 0) {
+    throw new RangeError('daysInYear must be a positive integer');
+  }
+
+  if (peopleCount <= 1) {
+    return 0;
+  }
+
+  if (peopleCount > daysInYear) {
+    return 1;
+  }
+
+  let allDistinctProbability = 1;
+
+  for (let person = 0; person < peopleCount; person += 1) {
+    allDistinctProbability *= (daysInYear - person) / daysInYear;
+  }
+
+  return 1 - allDistinctProbability;
+}
+
+function minimumPeopleForBirthdayParadox(threshold, daysInYear = 365) {
+  if (typeof threshold !== 'number' || !Number.isFinite(threshold) || threshold < 0 || threshold > 1) {
+    throw new RangeError('threshold must be between 0 and 1');
+  }
+
+  if (!Number.isInteger(daysInYear) || daysInYear <= 0) {
+    throw new RangeError('daysInYear must be a positive integer');
+  }
+
+  if (threshold === 0) {
+    return 0;
+  }
+
+  if (threshold === 1) {
+    return daysInYear + 1;
+  }
+
+  let allDistinctProbability = 1;
+
+  for (let people = 1; people <= daysInYear + 1; people += 1) {
+    if (people <= daysInYear) {
+      allDistinctProbability *= (daysInYear - (people - 1)) / daysInYear;
+    } else {
+      allDistinctProbability = 0;
+    }
+
+    if (1 - allDistinctProbability >= threshold) {
+      return people;
+    }
+  }
+
+  return daysInYear + 1;
+}
+```
+
+```ts
+export function birthdayParadoxProbability(peopleCount: number, daysInYear = 365): number {
+  if (!Number.isInteger(peopleCount) || peopleCount < 0) {
+    throw new RangeError('peopleCount must be a non-negative integer');
+  }
+
+  if (!Number.isInteger(daysInYear) || daysInYear <= 0) {
+    throw new RangeError('daysInYear must be a positive integer');
+  }
+
+  if (peopleCount <= 1) {
+    return 0;
+  }
+
+  if (peopleCount > daysInYear) {
+    return 1;
+  }
+
+  let allDistinctProbability = 1;
+
+  for (let person = 0; person < peopleCount; person += 1) {
+    allDistinctProbability *= (daysInYear - person) / daysInYear;
+  }
+
+  return 1 - allDistinctProbability;
+}
+
+export function minimumPeopleForBirthdayParadox(threshold: number, daysInYear = 365): number {
+  if (!Number.isFinite(threshold) || threshold < 0 || threshold > 1) {
+    throw new RangeError('threshold must be between 0 and 1');
+  }
+
+  if (!Number.isInteger(daysInYear) || daysInYear <= 0) {
+    throw new RangeError('daysInYear must be a positive integer');
+  }
+
+  if (threshold === 0) {
+    return 0;
+  }
+
+  if (threshold === 1) {
+    return daysInYear + 1;
+  }
+
+  let allDistinctProbability = 1;
+
+  for (let people = 1; people <= daysInYear + 1; people += 1) {
+    if (people <= daysInYear) {
+      allDistinctProbability *= (daysInYear - (people - 1)) / daysInYear;
+    } else {
+      allDistinctProbability = 0;
+    }
+
+    if (1 - allDistinctProbability >= threshold) {
+      return people;
+    }
+  }
+
+  return daysInYear + 1;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Compare the exact probability with the common exponential approximation.
+- Generalize the calculation to a custom number of equally likely days.
+- Explain why hashing collisions follow the same pair-growth intuition.
+
+## Common Pitfalls
+
+- Counting collisions directly instead of using the easier complement event.
+- Forgetting that once the group size exceeds the number of days, the collision probability is 1.
+- Mixing the approximate threshold formula with an exact-probability question.

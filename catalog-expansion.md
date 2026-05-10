@@ -2111,3 +2111,22 @@ This one-hundred-seventy-sixth expansion slice lifts the catalog from 819 to 822
 - The next clean Probability in Maths queue stays within the `Probability for Programmers` subsection.
 - Destination-title cleanup in that next Probability queue is `Probability of numbers in AP` -> `Probability for three randomly chosen numbers to be in AP`; `Birthday Paradox` and `Find the probability of reaching all points after N moves from point N` already match their destination titles.
 - The next clean Probability in Maths queue is `Probability for three randomly chosen numbers to be in AP`, `Birthday Paradox`, and `Find the probability of reaching all points after N moves from point N`.
+
+## Batch 177 added
+
+This one-hundred-seventy-seventh expansion slice lifts the catalog from 822 to 825 entries.
+
+- Probability for three randomly chosen numbers to be in AP
+- Birthday Paradox
+- Find the probability of reaching all points after N moves from point N
+
+## Current source-order note
+
+- `Probability for three randomly chosen numbers to be in AP` stays distinct from the existing arithmetic-progression entries because it counts AP triplets in a fixed consecutive range and returns a closed-form probability instead of detecting or enumerating AP subsequences in an arbitrary array.
+- `Birthday Paradox` stays distinct from the existing probability helpers because it reasons about collision probability through the complement event that all birthdays are distinct, which is the same shape used in hashing-collision analysis.
+- `Find the probability of reaching all points after N moves from point N` stays distinct from the earlier weighted-step probability entry because it returns the entire left-right random-walk distribution over the number line after exactly `N` moves instead of one target-point probability.
+- Focused JavaScript-fence validation, `npm run db:queue:mark-drafted`, `npm run db:catalog:seed`, `npm run lint`, `npx tsc --noEmit`, `npm run smoke:ui`, and targeted Playwright route checks all passed for batch 177 before publish; `npm run db:catalog:seed` synced 825 algorithms.
+- The `Probability for Programmers` subsection on the GeeksforGeeks Probability in Maths page is exhausted in source order after `Find the probability of reaching all points after N moves from point N`.
+- In the `Advanced Topics on Probability` subsection, `Probability Theory`, `Random Variable`, `Probability Distribution`, and `Probability Distribution Function` are broad overview pages, so the next clean queue starts from the first concrete distribution articles.
+- Destination-title cleanup in that next Probability queue is `Binomial Distribution` -> `Binomial Distribution in Probability`; `Poisson Distribution` and `Geometric Distribution` already match their destination titles.
+- The next clean Probability in Maths queue is `Poisson Distribution`, `Binomial Distribution in Probability`, and `Geometric Distribution`.
