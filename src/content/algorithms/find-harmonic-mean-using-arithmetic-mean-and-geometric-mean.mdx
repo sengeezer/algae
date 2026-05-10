@@ -1,0 +1,124 @@
+---
+title: "Find Harmonic mean using Arithmetic mean and Geometric mean"
+slug: find-harmonic-mean-using-arithmetic-mean-and-geometric-mean
+category: Mathematics
+summary: "Compute the harmonic mean of two non-negative numbers by first finding their arithmetic and geometric means."
+description: "Find Harmonic mean using Arithmetic mean and Geometric mean is the small algebraic exercise that derives the harmonic mean from the identity GM^2 = AM * HM after computing the arithmetic and geometric means of the pair."
+dataStructures:
+  - Number
+techniques:
+  - Mean Computation
+  - Algebraic Rearrangement
+  - Square Root
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - harmonic mean from am and gm
+  - compute hm using am and gm
+  - relation between arithmetic geometric and harmonic mean
+useCases:
+  - Demonstrating how common means are related algebraically
+  - Returning all three means for small numeric utilities
+  - Practicing constant-time numeric validation and formula selection
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The work is a fixed number of arithmetic operations and one square root.
+interviewSignals:
+  - The prompt explicitly gives or asks for arithmetic and geometric means first.
+  - The intended derivation uses the identity $GM^2 = AM \cdot HM$.
+relatedSlugs:
+  - arithmetic-geometric-mean
+  - average-mean
+  - mean-absolute-deviation
+provenance:
+  - title: "GeeksforGeeks - Find Harmonic mean using Arithmetic mean and Geometric mean"
+    href: https://www.geeksforgeeks.org/dsa/find-harmonic-mean-using-arithmetic-mean-geometric-mean/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is a compact formula problem. Once you compute
+
+- `AM = (a + b) / 2`
+- `GM = sqrt(a * b)`
+
+the harmonic mean follows from `HM = GM^2 / AM`, which is equivalent to the familiar `2ab / (a + b)` when the numbers are non-negative.
+
+## Worked Example
+
+For `a = 5` and `b = 15`:
+
+- `AM = 10`
+- `GM = sqrt(75) ≈ 8.660254`
+- `HM = 75 / 10 = 7.5`
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function harmonicMeanFromArithmeticAndGeometric(a, b) {
+  if (![a, b].every((value) => typeof value === 'number' && Number.isFinite(value))) {
+    throw new TypeError('Inputs must be finite numbers');
+  }
+
+  if (a < 0 || b < 0) {
+    throw new RangeError('This implementation expects non-negative inputs');
+  }
+
+  const arithmeticMean = (a + b) / 2;
+  const geometricMean = Math.sqrt(a * b);
+  const harmonicMean = arithmeticMean === 0 ? 0 : (a * b) / arithmeticMean;
+
+  return {
+    arithmeticMean,
+    geometricMean,
+    harmonicMean,
+  };
+}
+```
+
+```ts
+export function harmonicMeanFromArithmeticAndGeometric(
+  a: number,
+  b: number,
+): {
+  arithmeticMean: number;
+  geometricMean: number;
+  harmonicMean: number;
+} {
+  if (![a, b].every((value) => Number.isFinite(value))) {
+    throw new TypeError('Inputs must be finite numbers');
+  }
+
+  if (a < 0 || b < 0) {
+    throw new RangeError('This implementation expects non-negative inputs');
+  }
+
+  const arithmeticMean = (a + b) / 2;
+  const geometricMean = Math.sqrt(a * b);
+  const harmonicMean = arithmeticMean === 0 ? 0 : (a * b) / arithmeticMean;
+
+  return {
+    arithmeticMean,
+    geometricMean,
+    harmonicMean,
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Prove that `HM <= GM <= AM` for positive inputs.
+- Return only the harmonic mean once the arithmetic and geometric means are already known.
+- Explain why negative inputs are rejected in this version even though the direct harmonic-mean formula can be extended more carefully.
+
+## Common Pitfalls
+
+- Forgetting that the geometric mean requires a non-negative product in the real-number setting.
+- Dividing by zero when both inputs are zero unless that case is handled explicitly.
+- Rounding the intermediate means too early and losing accuracy in the harmonic mean.

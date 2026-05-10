@@ -1,0 +1,300 @@
+---
+title: "Fast Fourier Transformation for polynomial multiplication"
+slug: fast-fourier-transformation-for-polynomial-multiplication
+category: Mathematics
+summary: "Multiply large integer-coefficient polynomials by turning convolution into pointwise multiplication with the FFT."
+description: "Fast Fourier Transformation for polynomial multiplication is the divide-and-conquer convolution technique that evaluates coefficient arrays at roots of unity, multiplies point values, and interpolates the result back in O(n log n) time."
+dataStructures:
+  - Array
+  - Number
+techniques:
+  - Fast Fourier Transform
+  - Divide and Conquer
+  - Convolution
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - fft polynomial multiplication
+  - polynomial multiplication using fft
+  - dft convolution
+useCases:
+  - Speeding up multiplication of long coefficient arrays
+  - Modeling convolution in signal-processing style problems
+  - Serving as the foundation for faster large-integer multiplication ideas
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: n is the next power of two at least as large as the output length.
+interviewSignals:
+  - The prompt asks for polynomial multiplication faster than the quadratic nested-loop method.
+  - The expected solution reframes coefficient convolution as pointwise multiplication after a transform.
+  - The discussion mentions roots of unity, DFT, or FFT.
+relatedSlugs:
+  - multiply-two-polynomials
+  - karatsuba-algorithm-for-fast-multiplication-using-divide-and-conquer-algorithm
+  - polynomial
+provenance:
+  - title: "GeeksforGeeks - Fast Fourier Transformation for polynomial multiplication"
+    href: https://www.geeksforgeeks.org/dsa/fast-fourier-transformation-poynomial-multiplication/
+    kind: Implementation
+  - title: "Wikipedia - Cooley-Tukey FFT algorithm"
+    href: https://en.wikipedia.org/wiki/Cooley%E2%80%93Tukey_FFT_algorithm
+    kind: Reference
+---
+
+## Why It Surfaces
+
+The schoolbook polynomial product loops over every coefficient pair, so it costs $O(mn)$. FFT-based multiplication is the standard next step when the arrays grow large: pad both inputs, transform them into point values, multiply term by term, then invert the transform to recover the coefficients.
+
+## Worked Example
+
+For `A = [9, -10, 7, 6]` and `B = [-5, 4, 0, -2]`, the FFT-based product is `[-45, 86, -75, -20, 44, -14, -12]`, which represents
+
+`-45 + 86x - 75x^2 - 20x^3 + 44x^4 - 14x^5 - 12x^6`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function validateCoefficientArray(name, coefficients) {
+  if (!Array.isArray(coefficients) || coefficients.some((value) => !Number.isSafeInteger(value))) {
+    throw new TypeError(`${name} must be an array of safe integers`);
+  }
+}
+
+function nextPowerOfTwo(value) {
+  let size = 1;
+
+  while (size < value) {
+    size <<= 1;
+  }
+
+  return size;
+}
+
+function fftInPlace(real, imag, invert) {
+  const n = real.length;
+
+  for (let i = 1, j = 0; i < n; i += 1) {
+    let bit = n >> 1;
+
+    while (j & bit) {
+      j ^= bit;
+      bit >>= 1;
+    }
+
+    j ^= bit;
+
+    if (i < j) {
+      [real[i], real[j]] = [real[j], real[i]];
+      [imag[i], imag[j]] = [imag[j], imag[i]];
+    }
+  }
+
+  for (let length = 2; length <= n; length <<= 1) {
+    const angle = (2 * Math.PI / length) * (invert ? -1 : 1);
+    const stepReal = Math.cos(angle);
+    const stepImag = Math.sin(angle);
+
+    for (let start = 0; start < n; start += length) {
+      let unitReal = 1;
+      let unitImag = 0;
+
+      for (let offset = 0; offset < length / 2; offset += 1) {
+        const left = start + offset;
+        const right = left + length / 2;
+        const evenReal = real[left];
+        const evenImag = imag[left];
+        const oddReal = real[right] * unitReal - imag[right] * unitImag;
+        const oddImag = real[right] * unitImag + imag[right] * unitReal;
+
+        real[left] = evenReal + oddReal;
+        imag[left] = evenImag + oddImag;
+        real[right] = evenReal - oddReal;
+        imag[right] = evenImag - oddImag;
+
+        const nextUnitReal = unitReal * stepReal - unitImag * stepImag;
+        const nextUnitImag = unitReal * stepImag + unitImag * stepReal;
+        unitReal = nextUnitReal;
+        unitImag = nextUnitImag;
+      }
+    }
+  }
+
+  if (invert) {
+    for (let index = 0; index < n; index += 1) {
+      real[index] /= n;
+      imag[index] /= n;
+    }
+  }
+}
+
+function multiplyPolynomialsWithFFT(leftCoefficients, rightCoefficients) {
+  validateCoefficientArray('leftCoefficients', leftCoefficients);
+  validateCoefficientArray('rightCoefficients', rightCoefficients);
+
+  if (leftCoefficients.length === 0 || rightCoefficients.length === 0) {
+    return [];
+  }
+
+  const outputLength = leftCoefficients.length + rightCoefficients.length - 1;
+  const size = nextPowerOfTwo(outputLength);
+  const leftReal = new Array(size).fill(0);
+  const leftImag = new Array(size).fill(0);
+  const rightReal = new Array(size).fill(0);
+  const rightImag = new Array(size).fill(0);
+
+  for (let index = 0; index < leftCoefficients.length; index += 1) {
+    leftReal[index] = leftCoefficients[index];
+  }
+
+  for (let index = 0; index < rightCoefficients.length; index += 1) {
+    rightReal[index] = rightCoefficients[index];
+  }
+
+  fftInPlace(leftReal, leftImag, false);
+  fftInPlace(rightReal, rightImag, false);
+
+  for (let index = 0; index < size; index += 1) {
+    const realProduct = leftReal[index] * rightReal[index] - leftImag[index] * rightImag[index];
+    const imagProduct = leftReal[index] * rightImag[index] + leftImag[index] * rightReal[index];
+    leftReal[index] = realProduct;
+    leftImag[index] = imagProduct;
+  }
+
+  fftInPlace(leftReal, leftImag, true);
+
+  return leftReal.slice(0, outputLength).map((value) => Math.round(value));
+}
+```
+
+```ts
+function validateCoefficientArray(name: string, coefficients: number[]): void {
+  if (!Array.isArray(coefficients) || coefficients.some((value) => !Number.isSafeInteger(value))) {
+    throw new TypeError(`${name} must be an array of safe integers`);
+  }
+}
+
+function nextPowerOfTwo(value: number): number {
+  let size = 1;
+
+  while (size < value) {
+    size <<= 1;
+  }
+
+  return size;
+}
+
+function fftInPlace(real: number[], imag: number[], invert: boolean): void {
+  const n = real.length;
+
+  for (let i = 1, j = 0; i < n; i += 1) {
+    let bit = n >> 1;
+
+    while (j & bit) {
+      j ^= bit;
+      bit >>= 1;
+    }
+
+    j ^= bit;
+
+    if (i < j) {
+      [real[i], real[j]] = [real[j], real[i]];
+      [imag[i], imag[j]] = [imag[j], imag[i]];
+    }
+  }
+
+  for (let length = 2; length <= n; length <<= 1) {
+    const angle = (2 * Math.PI / length) * (invert ? -1 : 1);
+    const stepReal = Math.cos(angle);
+    const stepImag = Math.sin(angle);
+
+    for (let start = 0; start < n; start += length) {
+      let unitReal = 1;
+      let unitImag = 0;
+
+      for (let offset = 0; offset < length / 2; offset += 1) {
+        const left = start + offset;
+        const right = left + length / 2;
+        const evenReal = real[left];
+        const evenImag = imag[left];
+        const oddReal = real[right] * unitReal - imag[right] * unitImag;
+        const oddImag = real[right] * unitImag + imag[right] * unitReal;
+
+        real[left] = evenReal + oddReal;
+        imag[left] = evenImag + oddImag;
+        real[right] = evenReal - oddReal;
+        imag[right] = evenImag - oddImag;
+
+        const nextUnitReal = unitReal * stepReal - unitImag * stepImag;
+        const nextUnitImag = unitReal * stepImag + unitImag * stepReal;
+        unitReal = nextUnitReal;
+        unitImag = nextUnitImag;
+      }
+    }
+  }
+
+  if (invert) {
+    for (let index = 0; index < n; index += 1) {
+      real[index] /= n;
+      imag[index] /= n;
+    }
+  }
+}
+
+export function multiplyPolynomialsWithFFT(
+  leftCoefficients: number[],
+  rightCoefficients: number[],
+): number[] {
+  validateCoefficientArray('leftCoefficients', leftCoefficients);
+  validateCoefficientArray('rightCoefficients', rightCoefficients);
+
+  if (leftCoefficients.length === 0 || rightCoefficients.length === 0) {
+    return [];
+  }
+
+  const outputLength = leftCoefficients.length + rightCoefficients.length - 1;
+  const size = nextPowerOfTwo(outputLength);
+  const leftReal = new Array<number>(size).fill(0);
+  const leftImag = new Array<number>(size).fill(0);
+  const rightReal = new Array<number>(size).fill(0);
+  const rightImag = new Array<number>(size).fill(0);
+
+  for (let index = 0; index < leftCoefficients.length; index += 1) {
+    leftReal[index] = leftCoefficients[index];
+  }
+
+  for (let index = 0; index < rightCoefficients.length; index += 1) {
+    rightReal[index] = rightCoefficients[index];
+  }
+
+  fftInPlace(leftReal, leftImag, false);
+  fftInPlace(rightReal, rightImag, false);
+
+  for (let index = 0; index < size; index += 1) {
+    const realProduct = leftReal[index] * rightReal[index] - leftImag[index] * rightImag[index];
+    const imagProduct = leftReal[index] * rightImag[index] + leftImag[index] * rightReal[index];
+    leftReal[index] = realProduct;
+    leftImag[index] = imagProduct;
+  }
+
+  fftInPlace(leftReal, leftImag, true);
+
+  return leftReal.slice(0, outputLength).map((value) => Math.round(value));
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Explain why zero-padding to a power of two is convenient for a radix-2 FFT.
+- Compare FFT multiplication with the quadratic schoolbook method and Karatsuba.
+- Adapt the implementation so it works for floating-point coefficients without rounding to integers.
+
+## Common Pitfalls
+
+- Forgetting to pad both inputs to cover the full output length before transforming.
+- Mixing ascending and descending coefficient order.
+- Returning raw inverse-FFT floating-point noise instead of rounding back to integer coefficients.

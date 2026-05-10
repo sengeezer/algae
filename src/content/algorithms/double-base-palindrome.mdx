@@ -1,0 +1,180 @@
+---
+title: "Double Base Palindrome"
+slug: double-base-palindrome
+category: Mathematics
+summary: "Sum the numbers below a limit that are palindromic in base 10 and in another base k."
+description: "Double Base Palindrome is the mirrored-number generation problem where decimal palindromes are constructed directly and then filtered by whether their representation in a second base is also palindromic."
+dataStructures:
+  - Number
+techniques:
+  - Palindrome Generation
+  - Base Conversion
+  - Symmetry
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - sum of double base palindromes
+  - decimal and binary palindrome sum
+  - palindrome in two bases
+useCases:
+  - Summing mirrored values without scanning every integer below the limit
+  - Combining decimal construction with arbitrary-base checks
+  - Practicing direct generation of structured candidates
+complexity:
+  time: O(sqrt(n) log n)
+  space: O(1)
+  notes: Only decimal palindromes are generated, and each candidate is checked in the second base.
+interviewSignals:
+  - The prompt asks for numbers palindromic in base 10 and another base.
+  - Brute-force scanning every value under the limit is avoidable by generating decimal palindromes directly.
+relatedSlugs:
+  - nth-binary-palindrome
+  - is-palindrome-integer-number
+  - check-if-binary-representation-is-palindrome
+provenance:
+  - title: "GeeksforGeeks - Double Base Palindrome"
+    href: https://www.geeksforgeeks.org/dsa/double-base-palindrome/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+The naive solution checks every number below the limit in both bases. A cleaner approach is to generate only the decimal palindromes, because every answer must already be mirrored in base 10. That cuts the candidate set sharply before the second-base test even starts.
+
+## Worked Example
+
+For `limit = 100` and `base = 2`, the valid numbers are `1, 3, 5, 7, 9, 33, 99`, so the total is `157`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function makeDecimalPalindrome(seed, oddLength) {
+  let value = seed;
+  let tail = oddLength ? Math.floor(seed / 10) : seed;
+
+  while (tail > 0) {
+    value = value * 10 + (tail % 10);
+    tail = Math.floor(tail / 10);
+  }
+
+  return value;
+}
+
+function isPalindromeInBase(value, base) {
+  if (value === 0) {
+    return true;
+  }
+
+  let reversed = 0;
+  let working = value;
+
+  while (working > 0) {
+    reversed = reversed * base + (working % base);
+    working = Math.floor(working / base);
+  }
+
+  return reversed === value;
+}
+
+function sumDoubleBasePalindromes(limit, base) {
+  if (!Number.isSafeInteger(limit) || limit <= 0) {
+    throw new RangeError('limit must be a positive safe integer');
+  }
+
+  if (!Number.isSafeInteger(base) || base < 2) {
+    throw new RangeError('base must be an integer greater than or equal to 2');
+  }
+
+  let sum = 0;
+
+  for (const oddLength of [true, false]) {
+    for (let seed = 1; ; seed += 1) {
+      const palindrome = makeDecimalPalindrome(seed, oddLength);
+
+      if (palindrome >= limit) {
+        break;
+      }
+
+      if (isPalindromeInBase(palindrome, base)) {
+        sum += palindrome;
+      }
+    }
+  }
+
+  return sum;
+}
+```
+
+```ts
+function makeDecimalPalindrome(seed: number, oddLength: boolean): number {
+  let value = seed;
+  let tail = oddLength ? Math.floor(seed / 10) : seed;
+
+  while (tail > 0) {
+    value = value * 10 + (tail % 10);
+    tail = Math.floor(tail / 10);
+  }
+
+  return value;
+}
+
+function isPalindromeInBase(value: number, base: number): boolean {
+  if (value === 0) {
+    return true;
+  }
+
+  let reversed = 0;
+  let working = value;
+
+  while (working > 0) {
+    reversed = reversed * base + (working % base);
+    working = Math.floor(working / base);
+  }
+
+  return reversed === value;
+}
+
+export function sumDoubleBasePalindromes(limit: number, base: number): number {
+  if (!Number.isSafeInteger(limit) || limit <= 0) {
+    throw new RangeError('limit must be a positive safe integer');
+  }
+
+  if (!Number.isSafeInteger(base) || base < 2) {
+    throw new RangeError('base must be an integer greater than or equal to 2');
+  }
+
+  let sum = 0;
+
+  for (const oddLength of [true, false]) {
+    for (let seed = 1; ; seed += 1) {
+      const palindrome = makeDecimalPalindrome(seed, oddLength);
+
+      if (palindrome >= limit) {
+        break;
+      }
+
+      if (isPalindromeInBase(palindrome, base)) {
+        sum += palindrome;
+      }
+    }
+  }
+
+  return sum;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the list of qualifying numbers instead of only their sum.
+- Specialize the implementation for base `2` and explain which candidates can be skipped.
+- Compare this construction approach with brute-force scanning of every integer below the limit.
+
+## Common Pitfalls
+
+- Scanning every integer when the decimal-palindrome construction already narrows the candidate set.
+- Generating palindromes with leading zeros and counting them as distinct values.
+- Using string conversion everywhere when the base-palindrome test can be done numerically.

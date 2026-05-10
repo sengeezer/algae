@@ -2046,4 +2046,18 @@ This one-hundred-seventy-second expansion slice lifts the catalog from 808 to 81
 - `Find ways an Integer can be expressed as sum of n-th power of unique natural numbers` stays distinct from the existing subset-sum style entries because each candidate base may be used at most once and the search space is formed by powers rather than raw inputs.
 - `N-th root of a number` stays distinct from the existing logarithmic square-root entry because it requires an exact integer `n`-th root and returns `-1` when no perfect power exists.
 - Focused JavaScript-fence validation, `npm run db:catalog:seed`, `npm run smoke:ui`, targeted Playwright route checks, `npm run lint`, and `npx tsc --noEmit` all passed for batch 172 before publish; `npm run db:catalog:seed` synced 811 algorithms.
-- `Square root of a number using log` is already covered locally by `square-root-logarithmic`, so the next clean Mathematical Algorithms queue after batch 172 is `Fast Fourier Transformation for polynomial multiplication`, `Find Harmonic mean using Arithmetic mean and Geometric mean`, and `Double Base Palindrome`.
+## Batch 173 added
+
+This one-hundred-seventy-third expansion slice lifts the catalog from 811 to 814 entries.
+
+- Fast Fourier Transformation for polynomial multiplication
+- Find Harmonic mean using Arithmetic mean and Geometric mean
+- Double Base Palindrome
+
+## Current source-order note
+
+- `Fast Fourier Transformation for polynomial multiplication` stays distinct from the existing polynomial helpers because it upgrades coefficient convolution to an FFT-based $O(n log n)$ multiplication surface instead of the quadratic schoolbook loop.
+- `Find Harmonic mean using Arithmetic mean and Geometric mean` stays distinct from the existing `Arithmetic Geometric Mean` entry because it computes the three classical means for one fixed pair rather than iterating a convergence process.
+- `Double Base Palindrome` stays distinct from the existing palindrome checks because it generates decimal palindromes under a limit and filters them by a second base before summing.
+- Focused JavaScript-fence validation, `npm run db:catalog:seed`, `npm run lint`, `npx tsc --noEmit`, `npm run smoke:ui`, and targeted Playwright route checks all passed for batch 173 before publish; `npm run db:catalog:seed` synced 814 algorithms.
+- `Check if a number is a power of another number` is already covered locally by `check-if-a-number-is-power-of-k-using-base-changing-method`, so the next clean Mathematical Algorithms queue after batch 173 is `Program for Derivative of a Polynomial`, `Sgn value of a polynomial`, and `Program to evaluate simple expressions`.
