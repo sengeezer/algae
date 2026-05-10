@@ -2002,11 +2002,18 @@ This one-hundred-sixty-eighth expansion slice lifts the catalog from 796 to 799 
 - Sieve of Sundaram to print all primes smaller than n
 - Prime Factorization using Sieve O(log n) for multiple queries
 
+## Batch 169 added
+
+This one-hundred-sixty-ninth expansion slice lifts the catalog from 799 to 802 entries.
+
+- Optimized Euler Totient Function for Multiple Evaluations
+- Euler's Totient function for all numbers smaller than or equal to n
+- Primitive root of a prime number n modulo n
+
 ## Current source-order note
 
-- `Sieve of Atkin` adds the quadratic-form and square-free filtering variant of prime sieving, which stays distinct from both the classical and segmented sieve entries.
-- `Sieve of Sundaram to print all primes smaller than n` keeps the odd-only index-removal formulation instead of another multiples-marking sieve.
-- `Prime Factorization using Sieve O(log n) for multiple queries` adds the reusable smallest-prime-factor preprocessing pattern for repeated factorization queries.
-- Focused JavaScript-fence validation, `npm run db:catalog:seed`, `npm run smoke:ui`, targeted Playwright route checks, `npm run lint`, and `npx tsc --noEmit` all passed for batch 168 before publish.
-- Duplicate-level source skip immediately after batch 168: the Euler Totient overview article is already represented locally by the existing `Euler's Totient` and `Euler's Totient Function` entries.
-- The next clean Mathematical Algorithms queue after batch 168 is `Optimized Euler Totient Function for Multiple Evaluations`, `Euler's Totient function for all numbers smaller than or equal to n`, and `Primitive root of a prime number n modulo n`.
+- `Optimized Euler Totient Function for Multiple Evaluations` stays distinct from the existing single-value totient entries by reusing one shared prime sieve across many phi queries.
+- `Euler's Totient function for all numbers smaller than or equal to n` adds the sieve-built totient table for every value through `n`, not just one target input.
+- `Primitive root of a prime number n modulo n` extends the modular-arithmetic surface into generator search using factor checks on `p - 1`.
+- Focused JavaScript-fence validation, `npm run db:catalog:seed`, `npm run smoke:ui`, targeted Playwright route checks, `npm run lint`, and `npx tsc --noEmit` all passed for batch 169 before publish.
+- The next clean Mathematical Algorithms queue after batch 169 is `Euler's Four Square Identity`, `Introduction to Chinese Remainder Theorem`, and `Implementation of Chinese Remainder theorem (Inverse Modulo based implementation)`.

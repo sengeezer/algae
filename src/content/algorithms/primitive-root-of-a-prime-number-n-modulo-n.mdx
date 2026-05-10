@@ -1,0 +1,254 @@
+---
+title: Primitive root of a prime number n modulo n
+slug: primitive-root-of-a-prime-number-n-modulo-n
+category: Modular Arithmetic
+summary: "Find the smallest generator modulo a prime by checking that no factor test of `phi(p) = p - 1` collapses its order early."
+description: "Primitive root of a prime number n modulo n is the generator-search problem where a candidate is valid exactly when its modular powers span every non-zero residue before repeating."
+dataStructures:
+  - Number
+  - Array
+techniques:
+  - Number Theory
+  - Modular Exponentiation
+  - Prime Factorization
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - primitive root modulo prime
+  - generator modulo p
+  - smallest primitive root
+useCases:
+  - Finding multiplicative-group generators modulo a prime
+  - Supporting discrete-log or modular-cycling follow-up questions
+  - Practicing the connection between totient, order, and modular exponentiation
+complexity:
+  time: O(p * omega(p - 1) * log p)
+  space: O(sqrt(p))
+  notes: "The expensive part is testing candidates, but each candidate only needs exponent checks for the distinct prime factors of `p - 1` rather than every power from `1` to `p - 2`."
+interviewSignals:
+  - The prompt asks for a generator of the multiplicative group modulo a prime.
+  - The intended shortcut uses the prime factors of `p - 1` together with fast modular exponentiation.
+relatedSlugs:
+  - eulers-totient
+  - binary-exponentiation
+  - fermats-little-theorem
+provenance:
+  - title: "GeeksforGeeks - Primitive root of a prime number n modulo n"
+    href: https://www.geeksforgeeks.org/dsa/primitive-root-of-a-prime-number-n-modulo-n/
+    kind: Implementation
+  - title: "Wikipedia - Primitive root modulo n"
+    href: https://en.wikipedia.org/wiki/Primitive_root_modulo_n
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Primitive-root questions show up when the interviewer wants a concrete generator of the non-zero residues modulo a prime. The key idea is that a candidate `g` is a primitive root modulo prime `p` iff for every distinct prime factor `q` of `p - 1`, the value `g^((p - 1) / q) mod p` is not `1`.
+
+## Worked Example
+
+For `p = 7`, we have `phi(7) = 6`, whose distinct prime factors are `2` and `3`. Candidate `2` fails because `2^(6 / 2) mod 7 = 1`, but candidate `3` passes both checks, so the smallest primitive root is `3`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function isPrime(value) {
+  if (value <= 1) {
+    return false;
+  }
+
+  if (value <= 3) {
+    return true;
+  }
+
+  if (value % 2 === 0 || value % 3 === 0) {
+    return false;
+  }
+
+  for (let divisor = 5; divisor * divisor <= value; divisor += 6) {
+    if (value % divisor === 0 || value % (divisor + 2) === 0) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function modPow(base, exponent, mod) {
+  let value = ((base % mod) + mod) % mod;
+  let power = exponent;
+  let result = 1;
+
+  while (power > 0) {
+    if (power & 1) {
+      result = (result * value) % mod;
+    }
+
+    value = (value * value) % mod;
+    power >>= 1;
+  }
+
+  return result;
+}
+
+function distinctPrimeFactors(value) {
+  const factors = [];
+  let remaining = value;
+
+  for (let divisor = 2; divisor * divisor <= remaining; divisor += 1) {
+    if (remaining % divisor !== 0) {
+      continue;
+    }
+
+    factors.push(divisor);
+    while (remaining % divisor === 0) {
+      remaining = Math.floor(remaining / divisor);
+    }
+  }
+
+  if (remaining > 1) {
+    factors.push(remaining);
+  }
+
+  return factors;
+}
+
+function primitiveRootOfPrimeNumberModulo(prime) {
+  if (!Number.isInteger(prime) || !isPrime(prime)) {
+    return -1;
+  }
+
+  if (prime === 2) {
+    return 1;
+  }
+
+  const phi = prime - 1;
+  const factors = distinctPrimeFactors(phi);
+
+  for (let candidate = 2; candidate < prime; candidate += 1) {
+    let isPrimitiveRoot = true;
+
+    for (const factor of factors) {
+      if (modPow(candidate, Math.floor(phi / factor), prime) === 1) {
+        isPrimitiveRoot = false;
+        break;
+      }
+    }
+
+    if (isPrimitiveRoot) {
+      return candidate;
+    }
+  }
+
+  return -1;
+}
+```
+
+```ts
+function isPrime(value: number): boolean {
+  if (value <= 1) {
+    return false;
+  }
+
+  if (value <= 3) {
+    return true;
+  }
+
+  if (value % 2 === 0 || value % 3 === 0) {
+    return false;
+  }
+
+  for (let divisor = 5; divisor * divisor <= value; divisor += 6) {
+    if (value % divisor === 0 || value % (divisor + 2) === 0) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function modPow(base: number, exponent: number, mod: number): number {
+  let value = ((base % mod) + mod) % mod;
+  let power = exponent;
+  let result = 1;
+
+  while (power > 0) {
+    if (power & 1) {
+      result = (result * value) % mod;
+    }
+
+    value = (value * value) % mod;
+    power >>= 1;
+  }
+
+  return result;
+}
+
+function distinctPrimeFactors(value: number): number[] {
+  const factors: number[] = [];
+  let remaining = value;
+
+  for (let divisor = 2; divisor * divisor <= remaining; divisor += 1) {
+    if (remaining % divisor !== 0) {
+      continue;
+    }
+
+    factors.push(divisor);
+    while (remaining % divisor === 0) {
+      remaining = Math.floor(remaining / divisor);
+    }
+  }
+
+  if (remaining > 1) {
+    factors.push(remaining);
+  }
+
+  return factors;
+}
+
+export function primitiveRootOfPrimeNumberModulo(prime: number): number {
+  if (!Number.isInteger(prime) || !isPrime(prime)) {
+    return -1;
+  }
+
+  if (prime === 2) {
+    return 1;
+  }
+
+  const phi = prime - 1;
+  const factors = distinctPrimeFactors(phi);
+
+  for (let candidate = 2; candidate < prime; candidate += 1) {
+    let isPrimitiveRoot = true;
+
+    for (const factor of factors) {
+      if (modPow(candidate, Math.floor(phi / factor), prime) === 1) {
+        isPrimitiveRoot = false;
+        break;
+      }
+    }
+
+    if (isPrimitiveRoot) {
+      return candidate;
+    }
+  }
+
+  return -1;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return all primitive roots instead of only the smallest one.
+- Explain why only the distinct prime factors of `p - 1` are needed in the test.
+- Swap in a stronger primality test if the modulus range grows much larger.
+
+## Common Pitfalls
+
+- Checking every exponent from `1` to `p - 2` instead of only the factor-derived exponents.
+- Forgetting the edge case `p = 2`, whose primitive root is `1`.
+- Factoring the candidate instead of factoring `p - 1`, which tests the wrong quantity entirely.

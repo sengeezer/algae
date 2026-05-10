@@ -1,0 +1,201 @@
+---
+title: Optimized Euler Totient Function for Multiple Evaluations
+slug: optimized-euler-totient-function-for-multiple-evaluations
+category: Mathematics
+summary: "Precompute primes once, then answer many totient queries by factoring each value only through the shared prime list."
+description: "Optimized Euler Totient Function for Multiple Evaluations is the repeated-query totient pattern that replaces per-call divisor scanning with one shared sieve of primes up to the largest needed square root."
+dataStructures:
+  - Array
+techniques:
+  - Number Theory
+  - Prime Sieve
+  - Preprocessing
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - repeated totient queries
+  - multi-query euler totient
+  - phi with prime precomputation
+useCases:
+  - Computing Euler's totient for many values from the same input batch
+  - Reusing one prime list across repeated number-theory queries
+  - Avoiding repeated composite trial divisors in totient-heavy workloads
+complexity:
+  time: O(sqrt(maxValue) log log maxValue + q * pi(sqrt(maxValue)))
+  space: O(sqrt(maxValue))
+  notes: "The shared sieve builds primes once up to the largest needed square root, and each later query scans only those primes instead of every integer divisor candidate."
+interviewSignals:
+  - The prompt asks for Euler's totient many times on different inputs.
+  - The expected improvement is to reuse prime preprocessing rather than recomputing divisors from scratch per query.
+relatedSlugs:
+  - eulers-totient
+  - eulers-totient-function
+  - sieve-of-eratosthenes
+provenance:
+  - title: "GeeksforGeeks - Optimized Euler Totient Function for Multiple Evaluations"
+    href: https://www.geeksforgeeks.org/dsa/optimized-euler-totient-function-multiple-evaluations/
+    kind: Implementation
+  - title: "Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+The single-value totient formulas are enough for one input, but they waste work when the same program must answer the question thousands of times. The optimization is to sieve primes once up to the largest square root you will need and then reuse that prime list for every totient evaluation.
+
+## Worked Example
+
+For queries `[5, 6, 10, 13]`, build the shared prime list `[2, 3]` because `sqrt(13)` is less than `4`. Then evaluate each totient with the same primes: `phi(5) = 4`, `phi(6) = 2`, `phi(10) = 4`, and `phi(13) = 12`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function sievePrimes(limit) {
+  if (limit < 2) {
+    return [];
+  }
+
+  const isComposite = new Array(limit + 1).fill(false);
+  const primes = [];
+
+  for (let value = 2; value <= limit; value += 1) {
+    if (!isComposite[value]) {
+      primes.push(value);
+
+      if (value <= Math.floor(limit / value)) {
+        for (let multiple = value * value; multiple <= limit; multiple += value) {
+          isComposite[multiple] = true;
+        }
+      }
+    }
+  }
+
+  return primes;
+}
+
+function phiWithPrimeList(value, primes) {
+  let remaining = value;
+  let result = value;
+
+  for (const prime of primes) {
+    if (prime * prime > remaining) {
+      break;
+    }
+
+    if (remaining % prime !== 0) {
+      continue;
+    }
+
+    while (remaining % prime === 0) {
+      remaining = Math.floor(remaining / prime);
+    }
+
+    result -= Math.floor(result / prime);
+  }
+
+  if (remaining > 1) {
+    result -= Math.floor(result / remaining);
+  }
+
+  return result;
+}
+
+function optimizedEulerTotientMultipleEvaluations(values) {
+  if (!Array.isArray(values) || values.length === 0) {
+    return [];
+  }
+
+  if (!values.every((value) => Number.isInteger(value) && value >= 1)) {
+    throw new RangeError('Values must be positive integers');
+  }
+
+  const maxValue = Math.max(...values);
+  const primes = sievePrimes(Math.floor(Math.sqrt(maxValue)));
+
+  return values.map((value) => phiWithPrimeList(value, primes));
+}
+```
+
+```ts
+function sievePrimes(limit: number): number[] {
+  if (limit < 2) {
+    return [];
+  }
+
+  const isComposite = new Array<boolean>(limit + 1).fill(false);
+  const primes: number[] = [];
+
+  for (let value = 2; value <= limit; value += 1) {
+    if (!isComposite[value]) {
+      primes.push(value);
+
+      if (value <= Math.floor(limit / value)) {
+        for (let multiple = value * value; multiple <= limit; multiple += value) {
+          isComposite[multiple] = true;
+        }
+      }
+    }
+  }
+
+  return primes;
+}
+
+function phiWithPrimeList(value: number, primes: number[]): number {
+  let remaining = value;
+  let result = value;
+
+  for (const prime of primes) {
+    if (prime * prime > remaining) {
+      break;
+    }
+
+    if (remaining % prime !== 0) {
+      continue;
+    }
+
+    while (remaining % prime === 0) {
+      remaining = Math.floor(remaining / prime);
+    }
+
+    result -= Math.floor(result / prime);
+  }
+
+  if (remaining > 1) {
+    result -= Math.floor(result / remaining);
+  }
+
+  return result;
+}
+
+export function optimizedEulerTotientMultipleEvaluations(values: number[]): number[] {
+  if (!Array.isArray(values) || values.length === 0) {
+    return [];
+  }
+
+  if (!values.every((value) => Number.isInteger(value) && value >= 1)) {
+    throw new RangeError('Values must be positive integers');
+  }
+
+  const maxValue = Math.max(...values);
+  const primes = sievePrimes(Math.floor(Math.sqrt(maxValue)));
+
+  return values.map((value) => phiWithPrimeList(value, primes));
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Cache the prime list across multiple batches of queries instead of rebuilding it every call.
+- Compare this repeated-query approach against the full `phi[1..n]` sieve table.
+- Extend the same precomputation to support repeated coprime-count or divisor-count queries.
+
+## Common Pitfalls
+
+- Sieving fresh primes for every input value and losing the whole repeated-query win.
+- Iterating all integers up to `sqrt(n)` instead of only the precomputed primes.
+- Forgetting the leftover prime factor after the prime loop ends.

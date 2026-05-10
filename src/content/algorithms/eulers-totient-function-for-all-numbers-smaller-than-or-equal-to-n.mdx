@@ -1,0 +1,119 @@
+---
+title: "Euler's Totient function for all numbers smaller than or equal to n"
+slug: eulers-totient-function-for-all-numbers-smaller-than-or-equal-to-n
+category: Mathematics
+summary: "Build the full totient table `phi(1)..phi(n)` in one sieve-style pass instead of recomputing each value independently."
+description: "Euler's Totient function for all numbers smaller than or equal to n is the preprocessing variant that fills every totient value up to a limit by applying each prime's multiplicative update across its multiples."
+dataStructures:
+  - Array
+techniques:
+  - Number Theory
+  - Prime Sieve
+  - Preprocessing
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - totient table up to n
+  - phi values from 1 to n
+  - sieve totient array
+useCases:
+  - Precomputing all totient values for many later modular-arithmetic queries
+  - Teaching how the multiplicative totient formula becomes a sieve update
+  - Supporting prefix-style arithmetic preprocessing tasks
+complexity:
+  time: O(n log log n)
+  space: O(n)
+  notes: "Each prime updates all of its multiples once, mirroring the classical sieve while maintaining the running multiplicative totient values."
+interviewSignals:
+  - The prompt asks for every totient value up to a limit rather than one standalone phi call.
+  - The intended optimization is a full preprocessing table, not repeated single-value factorization.
+relatedSlugs:
+  - eulers-totient
+  - optimized-euler-totient-function-for-multiple-evaluations
+  - linear-sieve
+provenance:
+  - title: "GeeksforGeeks - Euler's Totient function for all numbers smaller than or equal to n"
+    href: https://www.geeksforgeeks.org/dsa/eulers-totient-function-for-all-numbers-smaller-than-or-equal-to-n/
+    kind: Implementation
+  - title: "Competitive Programmer's Handbook"
+    href: https://cses.fi/book/book.pdf
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Sometimes the task is not to evaluate `phi(n)` once, but to have every totient value from `1` through `n` ready for later use. The sieve-style solution initializes `phi[i] = i` and then lets every prime `p` apply the multiplicative update `phi[multiple] -= phi[multiple] / p` across its multiples.
+
+## Worked Example
+
+For `n = 10`, start with `phi = [0, 1, 2, 3, ... , 10]`. When you encounter prime `2`, update all multiples of `2`; when you encounter prime `3`, update all multiples of `3`; and so on. The final table from `1` through `10` becomes `[1, 1, 2, 2, 4, 2, 6, 4, 6, 4]`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function eulersTotientFunctionForAllNumbersUpTo(limit) {
+  if (!Number.isInteger(limit) || limit < 1) {
+    return [];
+  }
+
+  const phi = new Array(limit + 1).fill(0);
+
+  for (let value = 1; value <= limit; value += 1) {
+    phi[value] = value;
+  }
+
+  for (let prime = 2; prime <= limit; prime += 1) {
+    if (phi[prime] !== prime) {
+      continue;
+    }
+
+    for (let multiple = prime; multiple <= limit; multiple += prime) {
+      phi[multiple] -= Math.floor(phi[multiple] / prime);
+    }
+  }
+
+  return phi.slice(1);
+}
+```
+
+```ts
+export function eulersTotientFunctionForAllNumbersUpTo(limit: number): number[] {
+  if (!Number.isInteger(limit) || limit < 1) {
+    return [];
+  }
+
+  const phi = new Array<number>(limit + 1).fill(0);
+
+  for (let value = 1; value <= limit; value += 1) {
+    phi[value] = value;
+  }
+
+  for (let prime = 2; prime <= limit; prime += 1) {
+    if (phi[prime] !== prime) {
+      continue;
+    }
+
+    for (let multiple = prime; multiple <= limit; multiple += prime) {
+      phi[multiple] -= Math.floor(phi[multiple] / prime);
+    }
+  }
+
+  return phi.slice(1);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Keep the zero index too if later code wants direct `phi[n]` lookup.
+- Reuse the same prime-iteration pattern to build other arithmetic-function tables.
+- Compare this full table against the repeated-query prime-list approach.
+
+## Common Pitfalls
+
+- Forgetting to initialize `phi[i] = i`, which breaks the multiplicative update formula.
+- Starting prime updates at `2 * prime` instead of `prime`, which leaves `phi[prime]` itself wrong.
+- Confusing the returned table with primality flags instead of completed totient values.
