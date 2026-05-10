@@ -1,0 +1,155 @@
+---
+title: "Probability of reaching a point with 2 or 3 steps at a time"
+slug: probability-of-reaching-a-point-with-2-or-3-steps-at-a-time
+category: Mathematics
+summary: "Compute the exact probability of landing on a target point when each move is either 2 or 3 steps with fixed probabilities."
+description: "Probability of reaching a point with 2 or 3 steps at a time uses a weighted dynamic programming recurrence to add the probabilities of the last move being length 2 or length 3."
+dataStructures:
+  - Number
+techniques:
+  - Dynamic Programming
+  - Weighted Recurrence
+  - Probability
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - probability of reaching point with 2 or 3 steps
+  - weighted step probability dp
+  - reach target with 2-step and 3-step moves
+useCases:
+  - Modeling random walks with a small fixed move set
+  - Turning a counting recurrence into a probability recurrence
+  - Practicing dynamic programming on weighted transitions instead of integer counts
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: Each target position is evaluated once from the previous reachable probabilities, and only the last three states must be kept.
+interviewSignals:
+  - The prompt gives a target `N` and the probability of taking a 2-step move versus a 3-step move.
+  - The intended solution uses a recurrence like `dp[i] = p * dp[i - 2] + (1 - p) * dp[i - 3]`.
+relatedSlugs:
+  - count-ways-to-reach-the-nth-stair-using-step-1-2-or-3
+  - pi-approximation-monte-carlo
+  - pseudo-random-number-generator-prng
+provenance:
+  - title: "GeeksforGeeks - Probability of reaching a point with 2 or 3 steps at a time"
+    href: https://www.geeksforgeeks.org/dsa/probability-reaching-point-2-3-steps-time/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This problem looks like a stair-counting recurrence at first, but the state stores probability mass instead of the number of ways. The key move is to condition on the last jump: you arrive at position `i` either from `i - 2` with probability `p` or from `i - 3` with probability `1 - p`.
+
+## Worked Example
+
+For `N = 5` and `p = 0.2`, there are only two valid move sequences:
+
+- `2 + 3` with probability `0.2 * 0.8 = 0.16`
+- `3 + 2` with probability `0.8 * 0.2 = 0.16`
+
+So the final probability is `0.32`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function probabilityOfReachingAPointWith2Or3StepsAtATime(target, probabilityOfTwoStep) {
+  if (!Number.isInteger(target) || target < 0) {
+    throw new RangeError('target must be a non-negative integer');
+  }
+
+  if (
+    typeof probabilityOfTwoStep !== 'number' ||
+    !Number.isFinite(probabilityOfTwoStep) ||
+    probabilityOfTwoStep < 0 ||
+    probabilityOfTwoStep > 1
+  ) {
+    throw new RangeError('probabilityOfTwoStep must be between 0 and 1');
+  }
+
+  if (target === 0) {
+    return 1;
+  }
+
+  if (target === 1) {
+    return 0;
+  }
+
+  if (target === 2) {
+    return probabilityOfTwoStep;
+  }
+
+  let dpMinus3 = 1;
+  let dpMinus2 = 0;
+  let dpMinus1 = probabilityOfTwoStep;
+
+  for (let position = 3; position <= target; position += 1) {
+    const current = probabilityOfTwoStep * dpMinus2 + (1 - probabilityOfTwoStep) * dpMinus3;
+    dpMinus3 = dpMinus2;
+    dpMinus2 = dpMinus1;
+    dpMinus1 = current;
+  }
+
+  return dpMinus1;
+}
+```
+
+```ts
+export function probabilityOfReachingAPointWith2Or3StepsAtATime(
+  target: number,
+  probabilityOfTwoStep: number,
+): number {
+  if (!Number.isInteger(target) || target < 0) {
+    throw new RangeError('target must be a non-negative integer');
+  }
+
+  if (
+    !Number.isFinite(probabilityOfTwoStep) ||
+    probabilityOfTwoStep < 0 ||
+    probabilityOfTwoStep > 1
+  ) {
+    throw new RangeError('probabilityOfTwoStep must be between 0 and 1');
+  }
+
+  if (target === 0) {
+    return 1;
+  }
+
+  if (target === 1) {
+    return 0;
+  }
+
+  if (target === 2) {
+    return probabilityOfTwoStep;
+  }
+
+  let dpMinus3 = 1;
+  let dpMinus2 = 0;
+  let dpMinus1 = probabilityOfTwoStep;
+
+  for (let position = 3; position <= target; position += 1) {
+    const current = probabilityOfTwoStep * dpMinus2 + (1 - probabilityOfTwoStep) * dpMinus3;
+    dpMinus3 = dpMinus2;
+    dpMinus2 = dpMinus1;
+    dpMinus1 = current;
+  }
+
+  return dpMinus1;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Generalize the recurrence to an arbitrary set of step lengths with assigned probabilities.
+- Compute the expected number of moves instead of only the hit probability.
+- Compare this weighted recurrence with the plain count-of-ways stair DP.
+
+## Common Pitfalls
+
+- Counting valid sequences without multiplying by their move probabilities.
+- Forgetting the base cases for unreachable positions like `1`.
+- Allowing probabilities outside the range `[0, 1]`.

@@ -2093,3 +2093,21 @@ This one-hundred-seventy-fifth expansion slice lifts the catalog from 817 to 819
 - On the Probability in Maths page, the opening beginner, aptitude, and practice sections are broad concept, formula, and drill overviews, so the first clean algorithmic queue starts from the `Probability for Programmers` subsection.
 - Destination-title cleanup in that opening Probability queue is `Probability of reaching a point in 2 or 3 steps` -> `Probability of reaching a point with 2 or 3 steps at a time`, `Probability of the maximum weighted pair` -> `Probability of a random pair being the maximum weighted pair`, and `Probability of maximum sum in an array` -> `Probability of choosing a random pair with maximum sum in an array`.
 - The next clean Probability in Maths queue is `Probability of reaching a point with 2 or 3 steps at a time`, `Probability of a random pair being the maximum weighted pair`, and `Probability of choosing a random pair with maximum sum in an array`.
+
+## Batch 176 added
+
+This one-hundred-seventy-sixth expansion slice lifts the catalog from 819 to 822 entries.
+
+- Probability of reaching a point with 2 or 3 steps at a time
+- Probability of a random pair being the maximum weighted pair
+- Probability of choosing a random pair with maximum sum in an array
+
+## Current source-order note
+
+- `Probability of reaching a point with 2 or 3 steps at a time` stays distinct from the existing stair-count entries because it propagates probability mass through a weighted recurrence instead of counting the number of valid move sequences.
+- `Probability of a random pair being the maximum weighted pair` stays distinct from the existing pair-counting entries because it works on a Cartesian product of two arrays and collapses the result to a single probability determined by the two maximum frequencies.
+- `Probability of choosing a random pair with maximum sum in an array` stays distinct from the existing maximum-pair and pair-count prompts because it asks for the probability of hitting a maximum-sum unordered pair rather than the pair values themselves or a raw count.
+- Focused JavaScript-fence validation, `npm run db:queue:mark-drafted`, `npm run db:catalog:seed`, `npm run lint`, `npx tsc --noEmit`, `npm run smoke:ui`, and targeted Playwright route checks all passed for batch 176 before publish; `npm run db:catalog:seed` synced 822 algorithms.
+- The next clean Probability in Maths queue stays within the `Probability for Programmers` subsection.
+- Destination-title cleanup in that next Probability queue is `Probability of numbers in AP` -> `Probability for three randomly chosen numbers to be in AP`; `Birthday Paradox` and `Find the probability of reaching all points after N moves from point N` already match their destination titles.
+- The next clean Probability in Maths queue is `Probability for three randomly chosen numbers to be in AP`, `Birthday Paradox`, and `Find the probability of reaching all points after N moves from point N`.
