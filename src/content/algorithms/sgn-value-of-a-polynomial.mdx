@@ -1,0 +1,141 @@
+---
+title: "Sgn value of a polynomial"
+slug: sgn-value-of-a-polynomial
+category: Mathematics
+summary: "Evaluate a polynomial with Horner's method and return whether the result is negative, zero, or positive."
+description: "Sgn value of a polynomial evaluates a coefficient array at a chosen x-value and collapses the result to -1, 0, or 1 according to its sign."
+dataStructures:
+  - Array
+  - Number
+techniques:
+  - Horner's Method
+  - Sign Classification
+  - Polynomial Evaluation
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - polynomial sign
+  - sign of polynomial value
+  - horner sign evaluation
+useCases:
+  - Determining whether a polynomial is above, below, or exactly on zero at one point
+  - Pairing Horner's method with a simple classification result
+  - Building helper predicates for root-bracketing style logic
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: "n is the number of coefficients, stored in descending degree order for Horner's method."
+interviewSignals:
+  - The prompt asks for only the sign of the polynomial value, not the value itself.
+  - Horner's method is the intended optimization over separately computing every power of x.
+relatedSlugs:
+  - signum
+  - polynomial
+  - program-for-derivative-of-a-polynomial
+provenance:
+  - title: "GeeksforGeeks - Sgn value of a polynomial"
+    href: https://www.geeksforgeeks.org/dsa/sgn-value-polynomial/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This prompt is the polynomial analogue of a generic sign function. Instead of classifying one number directly, you first evaluate the polynomial efficiently with Horner's method and then map the result to `-1`, `0`, or `1`.
+
+## Worked Example
+
+For coefficients `[2, -6, 2, -1]`, which represent `2x^3 - 6x^2 + 2x - 1`, evaluating at `x = 3` gives `5`, so the sign value is `1`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function evaluatePolynomialWithHorner(coefficients, x) {
+  if (!Array.isArray(coefficients) || coefficients.length === 0) {
+    throw new TypeError('coefficients must be a non-empty array');
+  }
+
+  if (coefficients.some((value) => typeof value !== 'number' || !Number.isFinite(value))) {
+    throw new TypeError('coefficients must contain only finite numbers');
+  }
+
+  if (typeof x !== 'number' || !Number.isFinite(x)) {
+    throw new TypeError('x must be a finite number');
+  }
+
+  let result = coefficients[0];
+
+  for (let index = 1; index < coefficients.length; index += 1) {
+    result = result * x + coefficients[index];
+  }
+
+  return result;
+}
+
+function sgnValueOfPolynomial(coefficients, x) {
+  const value = evaluatePolynomialWithHorner(coefficients, x);
+
+  if (value > 0) {
+    return 1;
+  }
+
+  if (value < 0) {
+    return -1;
+  }
+
+  return 0;
+}
+```
+
+```ts
+function evaluatePolynomialWithHorner(coefficients: number[], x: number): number {
+  if (!Array.isArray(coefficients) || coefficients.length === 0) {
+    throw new TypeError('coefficients must be a non-empty array');
+  }
+
+  if (coefficients.some((value) => !Number.isFinite(value))) {
+    throw new TypeError('coefficients must contain only finite numbers');
+  }
+
+  if (!Number.isFinite(x)) {
+    throw new TypeError('x must be a finite number');
+  }
+
+  let result = coefficients[0];
+
+  for (let index = 1; index < coefficients.length; index += 1) {
+    result = result * x + coefficients[index];
+  }
+
+  return result;
+}
+
+export function sgnValueOfPolynomial(coefficients: number[], x: number): -1 | 0 | 1 {
+  const value = evaluatePolynomialWithHorner(coefficients, x);
+
+  if (value > 0) {
+    return 1;
+  }
+
+  if (value < 0) {
+    return -1;
+  }
+
+  return 0;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the full evaluated value along with its sign.
+- Explain why Horner's method avoids repeated exponentiation.
+- Use the sign helper inside a bisection-style root search.
+
+## Common Pitfalls
+
+- Mixing ascending and descending coefficient order.
+- Recomputing powers of x instead of folding the polynomial in one pass.
+- Treating this as a duplicate of a generic `signum` helper even though the interesting part is the polynomial evaluation step.

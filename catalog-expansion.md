@@ -2060,4 +2060,18 @@ This one-hundred-seventy-third expansion slice lifts the catalog from 811 to 814
 - `Find Harmonic mean using Arithmetic mean and Geometric mean` stays distinct from the existing `Arithmetic Geometric Mean` entry because it computes the three classical means for one fixed pair rather than iterating a convergence process.
 - `Double Base Palindrome` stays distinct from the existing palindrome checks because it generates decimal palindromes under a limit and filters them by a second base before summing.
 - Focused JavaScript-fence validation, `npm run db:catalog:seed`, `npm run lint`, `npx tsc --noEmit`, `npm run smoke:ui`, and targeted Playwright route checks all passed for batch 173 before publish; `npm run db:catalog:seed` synced 814 algorithms.
-- `Check if a number is a power of another number` is already covered locally by `check-if-a-number-is-power-of-k-using-base-changing-method`, so the next clean Mathematical Algorithms queue after batch 173 is `Program for Derivative of a Polynomial`, `Sgn value of a polynomial`, and `Program to evaluate simple expressions`.
+## Batch 174 added
+
+This one-hundred-seventy-fourth expansion slice lifts the catalog from 814 to 817 entries.
+
+- Program for Derivative of a Polynomial
+- Sgn value of a polynomial
+- Program to evaluate simple expressions
+
+## Current source-order note
+
+- `Program for Derivative of a Polynomial` stays distinct from the existing polynomial helpers because it parses monomial terms from a string and evaluates the derivative at a specific input value rather than only evaluating or combining coefficient arrays.
+- `Sgn value of a polynomial` stays distinct from the existing `Signum` entry because it first evaluates a whole polynomial with Horner's method before collapsing the result to `-1`, `0`, or `1`.
+- `Program to evaluate simple expressions` stays distinct from the existing equation and expression-related entries because it intentionally ignores operator precedence and returns `-1` for malformed left-to-right arithmetic strings.
+- Focused JavaScript-fence validation, `npm run db:catalog:seed`, `npm run lint`, `npx tsc --noEmit`, `npm run smoke:ui`, and targeted Playwright route checks all passed for batch 174 before publish; `npm run db:catalog:seed` synced 817 algorithms.
+- `Check if a number is a power of another number` is already covered locally by `check-if-a-number-is-power-of-k-using-base-changing-method`, so the next clean Mathematical Algorithms frontier after batch 174 narrows to `Make a fair coin from a biased coin` and `Implement *, - and / operations using only + arithmetic operator`.

@@ -1,0 +1,165 @@
+---
+title: "Program for Derivative of a Polynomial"
+slug: program-for-derivative-of-a-polynomial
+category: Mathematics
+summary: "Parse a polynomial written as monomial terms and evaluate its derivative at a chosen x-value."
+description: "Program for Derivative of a Polynomial parses a sum of monomials like ax^n, differentiates each term, and evaluates the derivative at the requested input value."
+dataStructures:
+  - String
+  - Array
+  - Number
+techniques:
+  - Parsing
+  - Term-by-Term Differentiation
+  - Polynomial Evaluation
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - derivative of polynomial string
+  - evaluate polynomial derivative at x
+  - monomial derivative parser
+useCases:
+  - Evaluating analytic slopes from a compact polynomial string input
+  - Practicing algebraic differentiation in code
+  - Parsing structured math expressions without building a full parser
+complexity:
+  time: O(t)
+  space: O(t)
+  notes: "t is the length of the polynomial string after tokenizing its signed monomial terms."
+interviewSignals:
+  - The prompt provides a polynomial as formatted terms such as `3x^3 + 4x^2 + 6x^1 + 89x^0`.
+  - The goal is the derivative value at a specific x rather than the symbolic derivative string itself.
+relatedSlugs:
+  - polynomial
+  - multiply-two-polynomials
+  - sgn-value-of-a-polynomial
+provenance:
+  - title: "GeeksforGeeks - Program for Derivative of a Polynomial"
+    href: https://www.geeksforgeeks.org/dsa/program-derivative-polynomial/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This problem combines a little string parsing with a direct calculus rule. Once each term is read as `ax^n`, its derivative contribution at `x = value` is `a * n * value^(n - 1)`, and the full answer is the sum of those contributions.
+
+## Worked Example
+
+For `3x^3 + 4x^2 + 6x^1 + 89x^0` at `x = 2`, the derivative is `9x^2 + 8x + 6`, so the evaluated result is `9 * 4 + 8 * 2 + 6 = 58`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function parsePolynomialTerms(expression) {
+  if (typeof expression !== 'string' || expression.trim() === '') {
+    throw new TypeError('expression must be a non-empty string');
+  }
+
+  const compact = expression.replace(/\s+/g, '');
+  const terms = compact.match(/[+-]?[^+-]+/g);
+
+  if (!terms || terms.join('') !== compact) {
+    throw new SyntaxError('expression must be a sum of signed monomials');
+  }
+
+  return terms.map((term) => {
+    const match = term.match(/^([+-]?\d+)x\^(\d+)$/);
+
+    if (!match) {
+      throw new SyntaxError('each term must look like ax^n');
+    }
+
+    return {
+      coefficient: Number(match[1]),
+      exponent: Number(match[2]),
+    };
+  });
+}
+
+function evaluateDerivativeOfPolynomial(expression, x) {
+  if (typeof x !== 'number' || !Number.isFinite(x)) {
+    throw new TypeError('x must be a finite number');
+  }
+
+  const terms = parsePolynomialTerms(expression);
+  let total = 0;
+
+  for (const { coefficient, exponent } of terms) {
+    if (exponent === 0) {
+      continue;
+    }
+
+    total += coefficient * exponent * x ** (exponent - 1);
+  }
+
+  return total;
+}
+```
+
+```ts
+type PolynomialTerm = {
+  coefficient: number;
+  exponent: number;
+};
+
+function parsePolynomialTerms(expression: string): PolynomialTerm[] {
+  if (expression.trim() === '') {
+    throw new TypeError('expression must be a non-empty string');
+  }
+
+  const compact = expression.replace(/\s+/g, '');
+  const terms = compact.match(/[+-]?[^+-]+/g);
+
+  if (!terms || terms.join('') !== compact) {
+    throw new SyntaxError('expression must be a sum of signed monomials');
+  }
+
+  return terms.map((term) => {
+    const match = term.match(/^([+-]?\d+)x\^(\d+)$/);
+
+    if (!match) {
+      throw new SyntaxError('each term must look like ax^n');
+    }
+
+    return {
+      coefficient: Number(match[1]),
+      exponent: Number(match[2]),
+    };
+  });
+}
+
+export function evaluateDerivativeOfPolynomial(expression: string, x: number): number {
+  if (!Number.isFinite(x)) {
+    throw new TypeError('x must be a finite number');
+  }
+
+  const terms = parsePolynomialTerms(expression);
+  let total = 0;
+
+  for (const { coefficient, exponent } of terms) {
+    if (exponent === 0) {
+      continue;
+    }
+
+    total += coefficient * exponent * x ** (exponent - 1);
+  }
+
+  return total;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the symbolic derivative string instead of only its value at `x`.
+- Support negative terms such as `3x^3 - 4x^2 + 1x^0` in a more human-friendly input format.
+- Replace direct exponentiation with Horner-style evaluation on the derivative coefficients.
+
+## Common Pitfalls
+
+- Treating the constant term as if it contributes to the derivative.
+- Failing to validate that every term follows the expected `ax^n` format.
+- Parsing only `+` separators and breaking on negative coefficients.
