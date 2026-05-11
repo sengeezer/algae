@@ -74,10 +74,12 @@ export async function importEditorialQueueAction(
   }
 
   try {
-    const { sourceLabel, titles } = await importEditorialQueueFromMarkdown();
+    const { queues, totalTitles } = await importEditorialQueueFromMarkdown();
     revalidatePath(editorialQueuePath);
 
-    return successState(`Imported ${titles.length} queued items for ${sourceLabel}.`);
+    return successState(
+      `Imported ${totalTitles} queued items across ${queues.length} source queue${queues.length === 1 ? "" : "s"}.`,
+    );
   } catch (error) {
     return errorState(toErrorMessage(error, "Unable to import the latest queue."));
   }

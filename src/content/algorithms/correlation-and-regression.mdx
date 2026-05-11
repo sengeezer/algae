@@ -1,0 +1,188 @@
+---
+title: Correlation and Regression
+slug: correlation-and-regression
+category: Mathematics
+summary: Return Pearson correlation together with the simple linear regression slope and intercept for two numeric arrays.
+description: "Correlation and Regression combines relationship strength with a best-fit prediction line by aggregating the same summary statistics in one pass."
+dataStructures:
+  - Array
+  - Number
+techniques:
+  - Statistics
+  - Formula Evaluation
+  - Aggregation
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - simple linear regression
+  - pearson correlation and regression line
+  - correlation with slope and intercept
+useCases:
+  - Summarizing both association strength and a predictive linear trend
+  - Building analytics helpers for paired numeric measurements
+  - Demonstrating how shared aggregates support multiple statistics at once
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The same running sums support Pearson's r and the least-squares slope/intercept.
+interviewSignals:
+  - Two equal-length numeric arrays are provided.
+  - The prompt asks both how strongly the variables move together and what line best predicts `Y` from `X`.
+  - The expected solution uses Pearson correlation plus simple linear regression formulas.
+relatedSlugs:
+  - program-to-find-correlation-coefficient
+  - variance-and-standard-deviation
+  - average-mean
+provenance:
+  - title: "GeeksforGeeks - Correlation and Regression"
+    href: https://www.geeksforgeeks.org/engineering-mathematics/correlation-and-regression/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This prompt is a good follow-up to correlation alone because it asks for both interpretation and prediction. Once the running sums are available, you can compute Pearson's `r`, the regression slope, and the intercept without revisiting the data.
+
+## Worked Example
+
+For `X = [1, 2, 3, 4, 5]` and `Y = [2, 4, 6, 8, 10]`:
+
+- the correlation coefficient is `1`
+- the regression slope is `2`
+- the intercept is `0`
+
+So the best-fit line is `Y = 2X`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function correlationAndRegression(xValues, yValues) {
+  if (!Array.isArray(xValues) || !Array.isArray(yValues) || xValues.length !== yValues.length) {
+    throw new RangeError('Expected two arrays of equal length');
+  }
+
+  if (xValues.length < 2) {
+    throw new RangeError('Expected at least two paired observations');
+  }
+
+  let sumX = 0;
+  let sumY = 0;
+  let sumXY = 0;
+  let sumX2 = 0;
+  let sumY2 = 0;
+
+  for (let index = 0; index < xValues.length; index += 1) {
+    const x = xValues[index];
+    const y = yValues[index];
+
+    if (
+      typeof x !== 'number' ||
+      !Number.isFinite(x) ||
+      typeof y !== 'number' ||
+      !Number.isFinite(y)
+    ) {
+      throw new TypeError('All values must be finite numbers');
+    }
+
+    sumX += x;
+    sumY += y;
+    sumXY += x * y;
+    sumX2 += x * x;
+    sumY2 += y * y;
+  }
+
+  const n = xValues.length;
+  const covarianceFactor = n * sumXY - sumX * sumY;
+  const xVarianceFactor = n * sumX2 - sumX * sumX;
+  const yVarianceFactor = n * sumY2 - sumY * sumY;
+
+  if (xVarianceFactor === 0 || yVarianceFactor === 0) {
+    throw new RangeError('Correlation and regression require non-zero variance in both arrays');
+  }
+
+  const correlationCoefficient = covarianceFactor / Math.sqrt(xVarianceFactor * yVarianceFactor);
+  const slope = covarianceFactor / xVarianceFactor;
+  const intercept = (sumY - slope * sumX) / n;
+
+  return {
+    correlationCoefficient,
+    slope,
+    intercept,
+  };
+}
+```
+
+```ts
+export function correlationAndRegression(
+  xValues: number[],
+  yValues: number[],
+): {
+  correlationCoefficient: number;
+  slope: number;
+  intercept: number;
+} {
+  if (!Array.isArray(xValues) || !Array.isArray(yValues) || xValues.length !== yValues.length) {
+    throw new RangeError('Expected two arrays of equal length');
+  }
+
+  if (xValues.length < 2) {
+    throw new RangeError('Expected at least two paired observations');
+  }
+
+  let sumX = 0;
+  let sumY = 0;
+  let sumXY = 0;
+  let sumX2 = 0;
+  let sumY2 = 0;
+
+  for (let index = 0; index < xValues.length; index += 1) {
+    const x = xValues[index];
+    const y = yValues[index];
+
+    if (!Number.isFinite(x) || !Number.isFinite(y)) {
+      throw new TypeError('All values must be finite numbers');
+    }
+
+    sumX += x;
+    sumY += y;
+    sumXY += x * y;
+    sumX2 += x * x;
+    sumY2 += y * y;
+  }
+
+  const n = xValues.length;
+  const covarianceFactor = n * sumXY - sumX * sumY;
+  const xVarianceFactor = n * sumX2 - sumX * sumX;
+  const yVarianceFactor = n * sumY2 - sumY * sumY;
+
+  if (xVarianceFactor === 0 || yVarianceFactor === 0) {
+    throw new RangeError('Correlation and regression require non-zero variance in both arrays');
+  }
+
+  const correlationCoefficient = covarianceFactor / Math.sqrt(xVarianceFactor * yVarianceFactor);
+  const slope = covarianceFactor / xVarianceFactor;
+  const intercept = (sumY - slope * sumX) / n;
+
+  return {
+    correlationCoefficient,
+    slope,
+    intercept,
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Add a `predict(x)` helper that evaluates the fitted line.
+- Extend the implementation to rank correlation or multiple linear regression.
+- Explain why high correlation alone does not imply causation.
+
+## Common Pitfalls
+
+- Computing regression without checking that the `X` values have non-zero variance.
+- Mixing the slope formula with the correlation denominator.
+- Treating a strong correlation as proof of a causal relationship.

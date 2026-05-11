@@ -1,0 +1,225 @@
+---
+title: "Bayes' Theorem"
+slug: bayes-theorem
+category: Mathematics
+summary: "Update a prior probability after observing new evidence by dividing the weighted likelihood of one hypothesis by the total evidence probability."
+description: "Bayes' Theorem converts priors and likelihoods into posterior probabilities, making probability updates explicit after new evidence is observed."
+dataStructures:
+  - Number
+  - Array
+techniques:
+  - Probability
+  - Posterior Update
+  - Total Probability
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - bayes rule
+  - posterior probability update
+  - reverse conditional probability
+useCases:
+  - Updating diagnosis probability after a test result
+  - Reversing conditional probabilities from observed evidence
+  - Comparing several hypotheses that could explain the same outcome
+complexity:
+  time: O(1) for one hypothesis; O(n) for an n-way partition
+  space: O(1)
+  notes: "The single-hypothesis form is constant time, while the partition form sums weighted likelihoods across all candidate causes."
+interviewSignals:
+  - The prompt gives a prior probability and asks for the probability after new evidence is observed.
+  - The numerator is one weighted cause, and the denominator is total evidence probability.
+relatedSlugs:
+  - conditional-probability
+  - marginal-distribution
+  - binomial-distribution-in-probability
+provenance:
+  - title: "GeeksforGeeks - Bayes' Theorem"
+    href: https://www.geeksforgeeks.org/maths/bayes-theorem/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Bayes' theorem is the standard way to reverse a conditional probability when you know a prior and a likelihood. In interview-style probability questions, the algorithmic part is usually computing the denominator correctly by summing all weighted explanations for the observed evidence.
+
+## Worked Example
+
+Assume a disease has prevalence `0.01`, a test has true-positive rate `0.95`, and the false-positive rate is `0.05`. The posterior probability of having the disease after a positive result is `0.95 * 0.01 / (0.95 * 0.01 + 0.05 * 0.99)`, which is about `0.161`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function bayesTheorem(prior, likelihood, evidenceProbability) {
+  for (const value of [prior, likelihood, evidenceProbability]) {
+    if (typeof value !== 'number' || !Number.isFinite(value)) {
+      throw new TypeError('All inputs must be finite numbers');
+    }
+  }
+
+  if (prior < 0 || prior > 1 || likelihood < 0 || likelihood > 1) {
+    throw new RangeError('prior and likelihood must be between 0 and 1');
+  }
+
+  if (evidenceProbability <= 0 || evidenceProbability > 1) {
+    throw new RangeError('evidenceProbability must be between 0 and 1');
+  }
+
+  const numerator = prior * likelihood;
+
+  if (numerator > evidenceProbability) {
+    throw new RangeError('prior * likelihood cannot exceed evidenceProbability');
+  }
+
+  return numerator / evidenceProbability;
+}
+
+function posteriorFromPartition(priors, likelihoods, targetIndex) {
+  if (!Array.isArray(priors) || !Array.isArray(likelihoods)) {
+    throw new TypeError('priors and likelihoods must be arrays');
+  }
+
+  if (priors.length === 0 || priors.length !== likelihoods.length) {
+    throw new RangeError('priors and likelihoods must be non-empty arrays of equal length');
+  }
+
+  if (!Number.isInteger(targetIndex) || targetIndex < 0 || targetIndex >= priors.length) {
+    throw new RangeError('targetIndex must point to a valid hypothesis');
+  }
+
+  let priorSum = 0;
+  let evidenceProbability = 0;
+
+  for (let index = 0; index < priors.length; index += 1) {
+    const prior = priors[index];
+    const likelihood = likelihoods[index];
+
+    if (typeof prior !== 'number' || typeof likelihood !== 'number') {
+      throw new TypeError('All priors and likelihoods must be numbers');
+    }
+
+    if (!Number.isFinite(prior) || !Number.isFinite(likelihood)) {
+      throw new TypeError('All priors and likelihoods must be finite numbers');
+    }
+
+    if (prior < 0 || prior > 1 || likelihood < 0 || likelihood > 1) {
+      throw new RangeError('All priors and likelihoods must be between 0 and 1');
+    }
+
+    priorSum += prior;
+    evidenceProbability += prior * likelihood;
+  }
+
+  if (Math.abs(priorSum - 1) > 1e-12) {
+    throw new RangeError('Priors must sum to 1');
+  }
+
+  return bayesTheorem(priors[targetIndex], likelihoods[targetIndex], evidenceProbability);
+}
+
+function approximatelyEqual(left, right, epsilon = 1e-12) {
+  return Math.abs(left - right) <= epsilon;
+}
+
+const diseasePosterior = posteriorFromPartition([0.01, 0.99], [0.95, 0.05], 0);
+console.assert(
+  approximatelyEqual(diseasePosterior, 0.16101694915254236),
+  'positive test posterior should be about 0.1610'
+);
+console.assert(
+  approximatelyEqual(posteriorFromPartition([0.25, 0.75], [0.8, 0.2], 0), 4 / 7),
+  'posterior should match weighted partition update'
+);
+console.assert(
+  approximatelyEqual(bayesTheorem(1 / 6, 3 / 4, 1 / 3), 3 / 8),
+  'liar die example should produce 3/8'
+);
+```
+
+```ts
+export function bayesTheorem(
+  prior: number,
+  likelihood: number,
+  evidenceProbability: number,
+): number {
+  for (const value of [prior, likelihood, evidenceProbability]) {
+    if (!Number.isFinite(value)) {
+      throw new TypeError('All inputs must be finite numbers');
+    }
+  }
+
+  if (prior < 0 || prior > 1 || likelihood < 0 || likelihood > 1) {
+    throw new RangeError('prior and likelihood must be between 0 and 1');
+  }
+
+  if (evidenceProbability <= 0 || evidenceProbability > 1) {
+    throw new RangeError('evidenceProbability must be between 0 and 1');
+  }
+
+  const numerator = prior * likelihood;
+
+  if (numerator > evidenceProbability) {
+    throw new RangeError('prior * likelihood cannot exceed evidenceProbability');
+  }
+
+  return numerator / evidenceProbability;
+}
+
+export function posteriorFromPartition(
+  priors: number[],
+  likelihoods: number[],
+  targetIndex: number,
+): number {
+  if (!Array.isArray(priors) || !Array.isArray(likelihoods)) {
+    throw new TypeError('priors and likelihoods must be arrays');
+  }
+
+  if (priors.length === 0 || priors.length !== likelihoods.length) {
+    throw new RangeError('priors and likelihoods must be non-empty arrays of equal length');
+  }
+
+  if (!Number.isInteger(targetIndex) || targetIndex < 0 || targetIndex >= priors.length) {
+    throw new RangeError('targetIndex must point to a valid hypothesis');
+  }
+
+  let priorSum = 0;
+  let evidenceProbability = 0;
+
+  for (let index = 0; index < priors.length; index += 1) {
+    const prior = priors[index];
+    const likelihood = likelihoods[index];
+
+    if (!Number.isFinite(prior) || !Number.isFinite(likelihood)) {
+      throw new TypeError('All priors and likelihoods must be finite numbers');
+    }
+
+    if (prior < 0 || prior > 1 || likelihood < 0 || likelihood > 1) {
+      throw new RangeError('All priors and likelihoods must be between 0 and 1');
+    }
+
+    priorSum += prior;
+    evidenceProbability += prior * likelihood;
+  }
+
+  if (Math.abs(priorSum - 1) > 1e-12) {
+    throw new RangeError('Priors must sum to 1');
+  }
+
+  return bayesTheorem(priors[targetIndex], likelihoods[targetIndex], evidenceProbability);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Add a helper that returns all posterior probabilities instead of just one target hypothesis.
+- Compare Bayes' theorem with direct conditional probability and explain when the denominator needs total probability.
+- Show how the same update appears in spam filtering or medical-testing prompts.
+
+## Common Pitfalls
+
+- Plugging `P(B)` into the numerator instead of `P(B given A)`.
+- Forgetting to compute the evidence probability from all competing hypotheses.
+- Treating Bayes' theorem as necessary when direct conditional probability already answers the question.

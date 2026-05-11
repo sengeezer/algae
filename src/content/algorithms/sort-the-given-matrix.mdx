@@ -1,0 +1,150 @@
+---
+title: Sort the given matrix
+slug: sort-the-given-matrix
+category: Matrix
+summary: Rearrange a matrix so every row is increasing and each row starts at or after the previous row's last value.
+description: "Sort the given matrix is the row-major sorting routine that gathers every value, sorts the full collection, and writes the result back in strict matrix order."
+dataStructures:
+  - Matrix
+  - Array
+techniques:
+  - Sorting
+  - Flattening
+  - Row-major Reconstruction
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - strict order matrix sort
+  - row-major matrix sort
+  - sorted matrix reconstruction
+useCases:
+  - Rebuilding an unsorted matrix into strict row-major order
+  - Demonstrating when a full flatten-and-sort pass is simpler than local row sorts
+  - Preparing matrix data for later monotonic traversal questions
+complexity:
+  time: O(rows * cols * log(rows * cols))
+  space: O(rows * cols)
+  notes: Flattening all values is the clearest pure implementation; memory-efficient variants can treat the matrix as a virtual 1D array.
+interviewSignals:
+  - Strict order means row-wise ascending order plus nondecreasing values across row boundaries.
+  - Sorting rows independently is not enough.
+  - The matrix is treated as one global collection before reconstruction.
+relatedSlugs:
+  - matrix-operations
+  - rotate-matrix-clockwise-by-1
+  - search-in-a-row-wise-and-column-wise-sorted-2d-array-using-divide-and-conquer-algorithm
+provenance:
+  - title: "GeeksforGeeks - Sort the given matrix"
+    href: https://www.geeksforgeeks.org/dsa/sort-given-matrix/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This question tests whether you interpret the sorting requirement globally instead of row by row. Once the prompt defines strict order across row boundaries, the simplest correct strategy is to flatten, sort once, and rebuild the matrix in row-major order.
+
+## Worked Example
+
+For `[[5, 4, 7], [1, 3, 8], [2, 9, 6]]`, sorting all values produces `[1, 2, 3, 4, 5, 6, 7, 8, 9]`. Writing them back row by row yields `[[1, 2, 3], [4, 5, 6], [7, 8, 9]]`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function validateNumericMatrix(matrix) {
+  if (!Array.isArray(matrix) || matrix.length === 0 || !matrix.every((row) => Array.isArray(row))) {
+    throw new TypeError('matrix must be a non-empty 2D array');
+  }
+
+  const width = matrix[0].length;
+  if (width === 0) {
+    throw new TypeError('matrix rows must not be empty');
+  }
+
+  if (!matrix.every((row) => row.length === width && row.every((value) => Number.isFinite(value)))) {
+    throw new TypeError('matrix rows must have equal length and contain only finite numbers');
+  }
+}
+
+function sortTheGivenMatrix(matrix) {
+  validateNumericMatrix(matrix);
+
+  const rows = matrix.length;
+  const cols = matrix[0].length;
+  const sortedValues = matrix.flat().sort((left, right) => left - right);
+
+  return Array.from({ length: rows }, (_, rowIndex) =>
+    Array.from({ length: cols }, (_, colIndex) => sortedValues[rowIndex * cols + colIndex]),
+  );
+}
+
+const sortedSquare = sortTheGivenMatrix([
+  [5, 4, 7],
+  [1, 3, 8],
+  [2, 9, 6],
+]);
+console.assert(
+  JSON.stringify(sortedSquare) === JSON.stringify([
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9],
+  ]),
+  '3x3 matrix should rebuild into strict row-major order',
+);
+
+const sortedRectangle = sortTheGivenMatrix([
+  [5, 4, 7],
+  [1, 3, 8],
+]);
+console.assert(
+  JSON.stringify(sortedRectangle) === JSON.stringify([
+    [1, 3, 4],
+    [5, 7, 8],
+  ]),
+  '2x3 matrix should also sort globally across row boundaries',
+);
+```
+
+```ts
+function validateNumericMatrix(matrix: number[][]): void {
+  if (!Array.isArray(matrix) || matrix.length === 0 || !matrix.every((row) => Array.isArray(row))) {
+    throw new TypeError('matrix must be a non-empty 2D array');
+  }
+
+  const width = matrix[0].length;
+  if (width === 0) {
+    throw new TypeError('matrix rows must not be empty');
+  }
+
+  if (!matrix.every((row) => row.length === width && row.every((value) => Number.isFinite(value)))) {
+    throw new TypeError('matrix rows must have equal length and contain only finite numbers');
+  }
+}
+
+export function sortTheGivenMatrix(matrix: number[][]): number[][] {
+  validateNumericMatrix(matrix);
+
+  const rows = matrix.length;
+  const cols = matrix[0].length;
+  const sortedValues = matrix.flat().sort((left, right) => left - right);
+
+  return Array.from({ length: rows }, (_, rowIndex) =>
+    Array.from({ length: cols }, (_, colIndex) => sortedValues[rowIndex * cols + colIndex]),
+  );
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you implement the memory-efficient virtual-1D approach?
+- Why is sorting each row independently incorrect for this prompt?
+- How could you adapt the solution for descending strict order?
+
+## Common Pitfalls
+
+- Sorting rows one at a time and ignoring ordering across row boundaries.
+- Reconstructing with the wrong row-major index formula.
+- Mutating the input matrix when a pure transformed result is easier to verify.

@@ -1,0 +1,174 @@
+---
+title: "Conditional Probability"
+slug: conditional-probability
+category: Mathematics
+summary: "Compute the probability of one event after restricting the sample space to outcomes where another event has already happened."
+description: "Conditional Probability applies the direct update rule for dependent events by dividing joint probability by the probability of the known event."
+dataStructures:
+  - Number
+techniques:
+  - Probability
+  - Joint Probability
+  - Multiplication Rule
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - conditional event probability
+  - probability given another event
+  - p of a given b
+useCases:
+  - Updating event probability after new evidence is known
+  - Solving card-draw and survey overlap questions
+  - Distinguishing dependent events from independent ones
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: "The computation is constant time once the joint probability and conditioning probability are known."
+interviewSignals:
+  - The prompt asks for the probability of event A given that event B has already occurred.
+  - The useful reduction is to shrink the sample space to outcomes where B holds.
+relatedSlugs:
+  - bayes-theorem
+  - marginal-distribution
+  - birthday-paradox
+provenance:
+  - title: "GeeksforGeeks - Conditional Probability"
+    href: https://www.geeksforgeeks.org/maths/conditional-probability/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Conditional probability is the first probability update rule that feels algorithmic instead of purely symbolic. The main move is to treat the known event as the new sample space, then measure how much of that restricted space also satisfies the target event.
+
+## Worked Example
+
+Suppose 60 percent of students play basketball and 40 percent play both football and basketball. The probability that a student plays football given that the student plays basketball is `0.40 / 0.60 = 2 / 3`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function conditionalProbability(jointProbability, conditioningProbability) {
+  if (typeof jointProbability !== 'number' || !Number.isFinite(jointProbability)) {
+    throw new TypeError('jointProbability must be a finite number');
+  }
+
+  if (
+    typeof conditioningProbability !== 'number' ||
+    !Number.isFinite(conditioningProbability)
+  ) {
+    throw new TypeError('conditioningProbability must be a finite number');
+  }
+
+  if (jointProbability < 0 || jointProbability > 1) {
+    throw new RangeError('jointProbability must be between 0 and 1');
+  }
+
+  if (conditioningProbability <= 0 || conditioningProbability > 1) {
+    throw new RangeError('conditioningProbability must be between 0 and 1');
+  }
+
+  if (jointProbability > conditioningProbability) {
+    throw new RangeError('jointProbability cannot exceed conditioningProbability');
+  }
+
+  return jointProbability / conditioningProbability;
+}
+
+function conditionalProbabilityFromCounts(jointCount, conditioningCount) {
+  if (!Number.isInteger(jointCount) || !Number.isInteger(conditioningCount)) {
+    throw new TypeError('Counts must be integers');
+  }
+
+  if (jointCount < 0 || conditioningCount <= 0) {
+    throw new RangeError('Counts must be non-negative and conditioningCount must be positive');
+  }
+
+  if (jointCount > conditioningCount) {
+    throw new RangeError('jointCount cannot exceed conditioningCount');
+  }
+
+  return jointCount / conditioningCount;
+}
+
+function approximatelyEqual(left, right, epsilon = 1e-12) {
+  return Math.abs(left - right) <= epsilon;
+}
+
+console.assert(
+  approximatelyEqual(conditionalProbability(0.4, 0.6), 2 / 3),
+  'football given basketball should be 2/3'
+);
+console.assert(
+  approximatelyEqual(conditionalProbability(0.24, 0.6), 0.4),
+  'rain given umbrella should be 0.4'
+);
+console.assert(
+  approximatelyEqual(conditionalProbabilityFromCounts(20, 50), 0.4),
+  '20 favorable outcomes among 50 conditioning outcomes should be 0.4'
+);
+```
+
+```ts
+export function conditionalProbability(
+  jointProbability: number,
+  conditioningProbability: number,
+): number {
+  if (!Number.isFinite(jointProbability)) {
+    throw new TypeError('jointProbability must be a finite number');
+  }
+
+  if (!Number.isFinite(conditioningProbability)) {
+    throw new TypeError('conditioningProbability must be a finite number');
+  }
+
+  if (jointProbability < 0 || jointProbability > 1) {
+    throw new RangeError('jointProbability must be between 0 and 1');
+  }
+
+  if (conditioningProbability <= 0 || conditioningProbability > 1) {
+    throw new RangeError('conditioningProbability must be between 0 and 1');
+  }
+
+  if (jointProbability > conditioningProbability) {
+    throw new RangeError('jointProbability cannot exceed conditioningProbability');
+  }
+
+  return jointProbability / conditioningProbability;
+}
+
+export function conditionalProbabilityFromCounts(
+  jointCount: number,
+  conditioningCount: number,
+): number {
+  if (!Number.isInteger(jointCount) || !Number.isInteger(conditioningCount)) {
+    throw new TypeError('Counts must be integers');
+  }
+
+  if (jointCount < 0 || conditioningCount <= 0) {
+    throw new RangeError('Counts must be non-negative and conditioningCount must be positive');
+  }
+
+  if (jointCount > conditioningCount) {
+    throw new RangeError('jointCount cannot exceed conditioningCount');
+  }
+
+  return jointCount / conditioningCount;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Reconstruct the joint probability with the multiplication rule `P(A and B) = P(B) * P(A given B)`.
+- Explain why independent events satisfy `P(A given B) = P(A)`.
+- Extend the helper to work from a whole contingency table instead of one scalar overlap.
+
+## Common Pitfalls
+
+- Dividing by `P(A)` when the prompt asks for `P(A given B)`.
+- Forgetting that the conditioning event must have positive probability.
+- Confusing conditional probability with marginal probability from a full joint table.

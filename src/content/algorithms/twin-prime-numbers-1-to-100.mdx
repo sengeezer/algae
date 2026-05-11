@@ -1,0 +1,158 @@
+---
+title: "Twin Prime Numbers | 1 to 100"
+slug: twin-prime-numbers-1-to-100
+category: "Prime Numbers & Primality Tests"
+summary: "Enumerate prime pairs with gap 2 up to a limit using one sieve pass and a linear scan."
+description: "Twin Prime Numbers | 1 to 100 is the gap-2 prime pairs reference for checking whether two numbers form a twin pair or listing every such pair up to a bound."
+dataStructures:
+  - Array
+techniques:
+  - Prime Sieve
+  - Number Theory
+  - Sequence Filtering
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - twin primes
+  - prime pairs with difference 2
+  - gap 2 primes
+useCases:
+  - Listing all twin prime pairs up to a limit
+  - Checking whether two candidate values are twin primes
+  - Contrasting twin primes with generic coprime pairs
+complexity:
+  time: "O(n log log n)"
+  space: "O(n)"
+  notes: "A single sieve builds primality flags, and the later scan only checks adjacent values separated by 2."
+interviewSignals:
+  - The task asks for prime pairs with a fixed gap of 2.
+  - A repeated primality test for every candidate pair would waste work.
+relatedSlugs:
+  - sieve-of-eratosthenes
+  - prime-check
+  - super-prime
+  - prime-triplet
+provenance:
+  - title: "GeeksforGeeks - Twin Prime Numbers | 1 to 100"
+    href: https://www.geeksforgeeks.org/maths/twin-prime/
+    kind: Reference
+  - title: "Wikipedia - Twin prime"
+    href: https://en.wikipedia.org/wiki/Twin_prime
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Twin primes are the simplest fixed-gap prime pattern: gap-2 prime pairs. Once the prompt asks you to list or count them up to a limit, the right move is to precompute primality once and then scan for pairs `[p, p + 2]`.
+
+## Worked Example
+
+Up to `20`, the twin prime pairs are `[3, 5]`, `[5, 7]`, `[11, 13]`, and `[17, 19]`. The pair `[9, 11]` fails because only one side is prime, and `[7, 13]` fails because the gap is too large.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function sieve(limit) {
+  const isPrime = new Array(limit + 1).fill(true);
+
+  if (limit >= 0) {
+    isPrime[0] = false;
+  }
+
+  if (limit >= 1) {
+    isPrime[1] = false;
+  }
+
+  for (let value = 2; value * value <= limit; value += 1) {
+    if (!isPrime[value]) {
+      continue;
+    }
+
+    for (let multiple = value * value; multiple <= limit; multiple += value) {
+      isPrime[multiple] = false;
+    }
+  }
+
+  return isPrime;
+}
+
+function twinPrimePairs(limit) {
+  if (!Number.isInteger(limit) || limit < 3) {
+    return [];
+  }
+
+  const isPrime = sieve(limit);
+  const pairs = [];
+
+  for (let value = 3; value + 2 <= limit; value += 1) {
+    if (isPrime[value] && isPrime[value + 2]) {
+      pairs.push([value, value + 2]);
+    }
+  }
+
+  return pairs;
+}
+
+console.assert(JSON.stringify(twinPrimePairs(20)) === JSON.stringify([[3, 5], [5, 7], [11, 13], [17, 19]]), 'Twin primes up to 20');
+console.assert(JSON.stringify(twinPrimePairs(100)) === JSON.stringify([[3, 5], [5, 7], [11, 13], [17, 19], [29, 31], [41, 43], [59, 61], [71, 73]]), 'Twin primes up to 100');
+console.assert(JSON.stringify(twinPrimePairs(4)) === JSON.stringify([]), 'Twin primes up to 4');
+```
+
+```ts
+function sieve(limit: number): boolean[] {
+  const isPrime = new Array<boolean>(limit + 1).fill(true);
+
+  if (limit >= 0) {
+    isPrime[0] = false;
+  }
+
+  if (limit >= 1) {
+    isPrime[1] = false;
+  }
+
+  for (let value = 2; value * value <= limit; value += 1) {
+    if (!isPrime[value]) {
+      continue;
+    }
+
+    for (let multiple = value * value; multiple <= limit; multiple += value) {
+      isPrime[multiple] = false;
+    }
+  }
+
+  return isPrime;
+}
+
+export function twinPrimePairs(limit: number): Array<[number, number]> {
+  if (!Number.isInteger(limit) || limit < 3) {
+    return [];
+  }
+
+  const isPrime = sieve(limit);
+  const pairs: Array<[number, number]> = [];
+
+  for (let value = 3; value + 2 <= limit; value += 1) {
+    if (isPrime[value] && isPrime[value + 2]) {
+      pairs.push([value, value + 2]);
+    }
+  }
+
+  return pairs;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Count twin prime pairs instead of returning the pairs themselves.
+- Check whether one proposed pair is twin-prime without enumerating everything below it.
+- Compare twin prime pairs with cousin primes or prime triplets.
+
+## Common Pitfalls
+
+- Treating any two numbers with difference `2` as twin primes without checking primality on both sides.
+- Confusing twin primes with coprime numbers, which only require gcd `1`.
+- Running trial division from scratch for every candidate pair instead of sieving once.

@@ -1,0 +1,178 @@
+---
+title: Triangular Number Sequence
+slug: triangular-number-sequence
+category: "Mathematics"
+summary: Generate or identify numbers that represent triangular arrangements where the nth triangular number is the sum of the first n natural numbers.
+description: Triangular Number Sequence is the figurate-number generator that computes the nth triangular number for enumeration and position lookups.
+dataStructures:
+  - Array
+  - Number
+techniques:
+  - Figurate Numbers
+  - Arithmetic Sequence
+  - Closed-form Calculation
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - triangular numbers
+  - triangular sequence
+  - triangle numbers
+useCases:
+  - Generating triangular numbers up to a given count or limit
+  - Checking if a number is triangular
+  - Finding the nth triangular number by direct formula
+  - Comparing with tetrahedral and polygonal numbers
+complexity:
+  time: O(1) for nth number; O(n) to generate first n numbers
+  space: O(1) or O(n) depending on output format
+  notes: Direct formula provides constant-time lookup; checking uses quadratic equation solving.
+interviewSignals:
+  - The prompt asks for the sequence up to a limit or the nth element.
+  - Follow-ups often involve figural relationships with other sequences.
+relatedSlugs:
+  - tetrahedral-number
+  - perfect-number
+  - sum-of-first-n-natural-numbers
+  - figurate-numbers
+provenance:
+  - title: "GeeksforGeeks - Triangular Numbers"
+    href: https://www.geeksforgeeks.org/triangular-numbers/
+    kind: Reference
+  - title: "Wikipedia - Triangular number"
+    href: https://en.wikipedia.org/wiki/Triangular_number
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Triangular numbers appear in array problems, combinatorial counting, and figurate-number classifications. The sequence is fundamental to understanding polygonal numbers and their relationships.
+
+## Worked Example
+
+The first five triangular numbers are: 1, 3 (1+2), 6 (1+2+3), 10 (1+2+3+4), and 15 (1+2+3+4+5). The 4th triangular number is 10.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function triangularNumber(n) {
+  if (!Number.isInteger(n) || n < 1) {
+    throw new RangeError('n must be a positive integer');
+  }
+
+  return (n * (n + 1)) / 2;
+}
+
+function generateTriangularNumbers(limit) {
+  if (!Number.isInteger(limit) || limit < 1) {
+    throw new RangeError('Limit must be a positive integer');
+  }
+
+  const triangular = [];
+  let n = 1;
+
+  while (true) {
+    const tri = triangularNumber(n);
+    if (tri > limit) {
+      break;
+    }
+    triangular.push(tri);
+    n += 1;
+  }
+
+  return triangular;
+}
+
+function isTriangularNumber(num) {
+  if (!Number.isInteger(num) || num < 1) {
+    return false;
+  }
+
+  const discriminant = 1 + 8 * num;
+  const sqrtDiscriminant = Math.sqrt(discriminant);
+
+  if (!Number.isInteger(sqrtDiscriminant)) {
+    return false;
+  }
+
+  const n = (-1 + sqrtDiscriminant) / 2;
+  return Number.isInteger(n) && n > 0;
+}
+
+console.assert(triangularNumber(4) === 10, 'T(4) = 10');
+console.assert(triangularNumber(5) === 15, 'T(5) = 15');
+console.assert(
+  JSON.stringify(generateTriangularNumbers(30)) ===
+    JSON.stringify([1, 3, 6, 10, 15, 21, 28]),
+  'Generated triangular numbers up to 30'
+);
+console.assert(isTriangularNumber(10) === true, '10 is triangular');
+console.assert(isTriangularNumber(11) === false, '11 is not triangular');
+console.assert(isTriangularNumber(21) === true, '21 is triangular');
+```
+
+```ts
+function triangularNumber(n: number): number {
+  if (!Number.isInteger(n) || n < 1) {
+    throw new RangeError('n must be a positive integer');
+  }
+
+  return (n * (n + 1)) / 2;
+}
+
+function generateTriangularNumbers(limit: number): number[] {
+  if (!Number.isInteger(limit) || limit < 1) {
+    throw new RangeError('Limit must be a positive integer');
+  }
+
+  const triangular: number[] = [];
+  let n = 1;
+
+  while (true) {
+    const tri = triangularNumber(n);
+    if (tri > limit) {
+      break;
+    }
+    triangular.push(tri);
+    n += 1;
+  }
+
+  return triangular;
+}
+
+function isTriangularNumber(num: number): boolean {
+  if (!Number.isInteger(num) || num < 1) {
+    return false;
+  }
+
+  const discriminant = 1 + 8 * num;
+  const sqrtDiscriminant = Math.sqrt(discriminant);
+
+  if (!Number.isInteger(sqrtDiscriminant)) {
+    return false;
+  }
+
+  const n = (-1 + sqrtDiscriminant) / 2;
+  return Number.isInteger(n) && n > 0;
+}
+
+console.assert(triangularNumber(4) === 10, 'T(4) = 10');
+console.assert(triangularNumber(5) === 15, 'T(5) = 15');
+console.assert(
+  JSON.stringify(generateTriangularNumbers(30)) ===
+    JSON.stringify([1, 3, 6, 10, 15, 21, 28]),
+  'Generated triangular numbers up to 30'
+);
+console.assert(isTriangularNumber(10) === true, '10 is triangular');
+console.assert(isTriangularNumber(11) === false, '11 is not triangular');
+```
+
+</ExamplePair>
+
+## Key Insights
+
+- The formula T(n) = n times (n+1) divided by 2 provides constant-time lookup.
+- Triangular numbers are cumulative sums of the first n natural numbers.
+- Tetrahedral numbers are built by summing consecutive triangular numbers.
+- Testing membership requires solving a quadratic equation and checking if the root is positive.

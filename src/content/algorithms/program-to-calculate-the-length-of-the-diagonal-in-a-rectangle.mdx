@@ -1,0 +1,113 @@
+---
+title: Program to calculate the length of the diagonal in a rectangle
+slug: program-to-calculate-the-length-of-the-diagonal-in-a-rectangle
+category: Mathematics
+summary: Use the Pythagorean theorem on the rectangle's side lengths to compute the diagonal.
+description: "Program to calculate the length of the diagonal in a rectangle is the constant-time geometry helper that turns a rectangle's length and width into its longest segment."
+dataStructures:
+  - Number
+techniques:
+  - Pythagorean Theorem
+  - Formula Evaluation
+  - Input Validation
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - rectangle diagonal length
+  - diagonal of a rectangle
+  - rectangle hypotenuse
+useCases:
+  - Computing the longest straight-line span across a rectangle
+  - Reusing a right-triangle formula inside layout or geometry helpers
+  - Deriving a missing rectangle measurement from its side lengths
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The work is one fixed-size arithmetic formula after validating the two side lengths.
+interviewSignals:
+  - The prompt gives only a rectangle's length and width.
+  - The requested output is the diagonal rather than area or perimeter.
+  - The intended reduction is a right triangle formed inside the rectangle.
+relatedSlugs:
+  - program-for-area-and-perimeter-of-rectangle
+  - euclidean-distance
+  - program-to-find-the-mid-point-of-a-line
+provenance:
+  - title: "GeeksforGeeks - Program to calculate the length of the diagonal in a rectangle"
+    href: https://www.geeksforgeeks.org/dsa/program-to-calculate-the-length-of-the-diagonal-in-a-rectangle/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is the rectangle version of the Pythagorean theorem. Once you notice that the diagonal splits the rectangle into two right triangles, the whole problem becomes the same as finding the hypotenuse from two legs.
+
+## Worked Example
+
+For `length = 8` and `width = 6`, the diagonal is `sqrt(8^2 + 6^2) = sqrt(100) = 10`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function programToCalculateTheLengthOfTheDiagonalInARectangle(length, width) {
+  if (
+    typeof length !== 'number' ||
+    typeof width !== 'number' ||
+    !Number.isFinite(length) ||
+    !Number.isFinite(width) ||
+    length <= 0 ||
+    width <= 0
+  ) {
+    throw new RangeError('Rectangle side lengths must be positive finite numbers');
+  }
+
+  return Math.hypot(length, width);
+}
+
+function approximatelyEqual(left, right, epsilon = 1e-12) {
+  return Math.abs(left - right) <= epsilon;
+}
+
+console.assert(
+  approximatelyEqual(programToCalculateTheLengthOfTheDiagonalInARectangle(8, 6), 10),
+  '8 by 6 rectangle should have diagonal 10'
+);
+console.assert(
+  approximatelyEqual(programToCalculateTheLengthOfTheDiagonalInARectangle(5, 12), 13),
+  '5 by 12 rectangle should have diagonal 13'
+);
+```
+
+```ts
+export function programToCalculateTheLengthOfTheDiagonalInARectangle(
+  length: number,
+  width: number,
+): number {
+  if (
+    !Number.isFinite(length) ||
+    !Number.isFinite(width) ||
+    length <= 0 ||
+    width <= 0
+  ) {
+    throw new RangeError('Rectangle side lengths must be positive finite numbers');
+  }
+
+  return Math.hypot(length, width);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you extend the helper to return the area and perimeter in the same result?
+- Why is the diagonal problem equivalent to a right-triangle hypotenuse calculation?
+- What changes if the rectangle is specified by corner coordinates instead of side lengths?
+
+## Common Pitfalls
+
+- Mixing diagonal length up with perimeter.
+- Accepting zero or negative side lengths as valid input.
+- Squaring the sum `length + width` instead of summing the squares of each side.

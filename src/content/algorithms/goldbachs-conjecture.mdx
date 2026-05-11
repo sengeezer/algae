@@ -1,0 +1,160 @@
+---
+title: "Goldbach's Conjecture"
+slug: goldbachs-conjecture
+category: "Number Theory"
+summary: "Enumerate the prime pairs that sum to a given even integer by combining a sieve with constant-time primality lookups."
+description: "Goldbach's Conjecture is the prime-partition problem where an even number is decomposed into one or more pairs of prime addends."
+dataStructures:
+  - Array
+techniques:
+  - Prime Sieve
+  - Number Theory
+  - Complement Search
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - goldbach partition
+  - sum of two primes
+  - even number as prime sum
+useCases:
+  - Finding prime decompositions of even integers
+  - Reusing a sieve for additive number theory queries
+  - Comparing one-off prime checks with precomputed primality tables
+complexity:
+  time: "O(n log log n)"
+  space: "O(n)"
+  notes: "The sieve dominates the work, and the later complement scan is linear in the even target."
+interviewSignals:
+  - The prompt asks for prime pairs rather than primality of one number.
+  - The input is one even number or several even numbers with a shared upper bound.
+relatedSlugs:
+  - sieve-of-eratosthenes
+  - prime-check
+  - twin-prime-numbers-1-to-100
+  - prime-triplet
+provenance:
+  - title: "GeeksforGeeks - Goldbach's Conjecture"
+    href: https://www.geeksforgeeks.org/engineering-mathematics/goldbach-conjecture/
+    kind: Reference
+  - title: "Wikipedia - Goldbach's conjecture"
+    href: https://en.wikipedia.org/wiki/Goldbach%27s_conjecture
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Goldbach's conjecture turns into a practical prime-partition problem as soon as the prompt asks you to verify or construct prime pairs for one even number. The implementation goal is not to prove the conjecture for all inputs, but to find the prime addends that witness a concrete instance.
+
+## Worked Example
+
+For `26`, the valid Goldbach partitions are `[3, 23]`, `[7, 19]`, and `[13, 13]`. A sieve gives constant-time primality checks, so you can scan `left` from `2` through `13` and test whether `26 - left` is also prime.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function sieve(limit) {
+  const isPrime = new Array(limit + 1).fill(true);
+
+  if (limit >= 0) {
+    isPrime[0] = false;
+  }
+
+  if (limit >= 1) {
+    isPrime[1] = false;
+  }
+
+  for (let value = 2; value * value <= limit; value += 1) {
+    if (!isPrime[value]) {
+      continue;
+    }
+
+    for (let multiple = value * value; multiple <= limit; multiple += value) {
+      isPrime[multiple] = false;
+    }
+  }
+
+  return isPrime;
+}
+
+function goldbachPartitions(evenNumber) {
+  if (!Number.isInteger(evenNumber) || evenNumber < 4 || evenNumber % 2 !== 0) {
+    throw new RangeError('Value must be an even integer at least 4');
+  }
+
+  const isPrime = sieve(evenNumber);
+  const partitions = [];
+
+  for (let left = 2; left <= Math.floor(evenNumber / 2); left += 1) {
+    const right = evenNumber - left;
+    if (isPrime[left] && isPrime[right]) {
+      partitions.push([left, right]);
+    }
+  }
+
+  return partitions;
+}
+
+console.assert(JSON.stringify(goldbachPartitions(4)) === JSON.stringify([[2, 2]]), 'Goldbach partitions of 4');
+console.assert(JSON.stringify(goldbachPartitions(10)) === JSON.stringify([[3, 7], [5, 5]]), 'Goldbach partitions of 10');
+console.assert(JSON.stringify(goldbachPartitions(26)) === JSON.stringify([[3, 23], [7, 19], [13, 13]]), 'Goldbach partitions of 26');
+```
+
+```ts
+function sieve(limit: number): boolean[] {
+  const isPrime = new Array<boolean>(limit + 1).fill(true);
+
+  if (limit >= 0) {
+    isPrime[0] = false;
+  }
+
+  if (limit >= 1) {
+    isPrime[1] = false;
+  }
+
+  for (let value = 2; value * value <= limit; value += 1) {
+    if (!isPrime[value]) {
+      continue;
+    }
+
+    for (let multiple = value * value; multiple <= limit; multiple += value) {
+      isPrime[multiple] = false;
+    }
+  }
+
+  return isPrime;
+}
+
+export function goldbachPartitions(evenNumber: number): Array<[number, number]> {
+  if (!Number.isInteger(evenNumber) || evenNumber < 4 || evenNumber % 2 !== 0) {
+    throw new RangeError('Value must be an even integer at least 4');
+  }
+
+  const isPrime = sieve(evenNumber);
+  const partitions: Array<[number, number]> = [];
+
+  for (let left = 2; left <= Math.floor(evenNumber / 2); left += 1) {
+    const right = evenNumber - left;
+    if (isPrime[left] && isPrime[right]) {
+      partitions.push([left, right]);
+    }
+  }
+
+  return partitions;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return only the first partition instead of every valid pair.
+- Reuse one sieve to answer Goldbach queries for many even numbers below the same limit.
+- Count Goldbach partitions instead of materializing them.
+
+## Common Pitfalls
+
+- Accepting odd inputs even though the constructive prompt is about even integers greater than `2`.
+- Scanning the full `2..n-2` range and producing each partition twice.
+- Rechecking primality with trial division for each complement instead of reusing a sieve.

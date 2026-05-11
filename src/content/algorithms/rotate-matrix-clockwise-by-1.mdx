@@ -1,0 +1,198 @@
+---
+title: Rotate Matrix Clockwise by 1
+slug: rotate-matrix-clockwise-by-1
+category: Matrix
+summary: Rotate each ring of a matrix one step clockwise without flattening the whole structure.
+description: "Rotate Matrix Clockwise by 1 is the layer-by-layer matrix transformation that shifts every boundary ring forward by one position in clockwise order."
+dataStructures:
+  - Matrix
+  - Array
+techniques:
+  - Layer Traversal
+  - In-Place Rotation
+  - Simulation
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - rotate matrix elements clockwise
+  - one-step ring rotation
+  - clockwise boundary rotation
+useCases:
+  - Rotating concentric matrix layers without performing a 90-degree transform
+  - Practicing boundary traversal and state carry between assignments
+  - Reusing ring logic for image or puzzle-grid transformations
+complexity:
+  time: O(rows * cols)
+  space: O(rows * cols)
+  notes: Copying the matrix keeps the helper pure while the rotation itself still reassigns each ring position once.
+interviewSignals:
+  - The prompt asks for one clockwise step rather than a transpose-and-reverse 90-degree rotation.
+  - Elements move around concentric layers or rings.
+  - The center of an odd square matrix remains unchanged.
+relatedSlugs:
+  - matrix-operations
+  - sort-the-given-matrix
+  - matrix-multiplication
+provenance:
+  - title: "GeeksforGeeks - Rotate Matrix Clockwise by 1"
+    href: https://www.geeksforgeeks.org/dsa/rotate-matrix-elements/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is a common matrix-manipulation interview variant because it looks like a rotation question but is not the usual 90-degree transform. The intended solution treats the matrix as nested rings and walks each boundary once while carrying the displaced value forward.
+
+## Worked Example
+
+For `[[1, 2, 3], [4, 5, 6], [7, 8, 9]]`, the outer ring shifts clockwise to produce `[[4, 1, 2], [7, 5, 3], [8, 9, 6]]`. The middle `5` stays in place because a one-cell center has no ring to rotate.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function validateMatrix(matrix) {
+  if (!Array.isArray(matrix) || matrix.length === 0 || !matrix.every((row) => Array.isArray(row))) {
+    throw new TypeError('matrix must be a non-empty 2D array');
+  }
+
+  const width = matrix[0].length;
+  if (width === 0) {
+    throw new TypeError('matrix rows must not be empty');
+  }
+
+  if (!matrix.every((row) => row.length === width && row.every((value) => Number.isFinite(value)))) {
+    throw new TypeError('matrix rows must have equal length and contain only finite numbers');
+  }
+}
+
+function rotateMatrixClockwiseBy1(matrix) {
+  validateMatrix(matrix);
+
+  const result = matrix.map((row) => row.slice());
+  let top = 0;
+  let bottom = result.length - 1;
+  let left = 0;
+  let right = result[0].length - 1;
+
+  while (top < bottom && left < right) {
+    let previous = result[top + 1][left];
+
+    for (let col = left; col <= right; col += 1) {
+      [result[top][col], previous] = [previous, result[top][col]];
+    }
+    top += 1;
+
+    for (let row = top; row <= bottom; row += 1) {
+      [result[row][right], previous] = [previous, result[row][right]];
+    }
+    right -= 1;
+
+    for (let col = right; col >= left; col -= 1) {
+      [result[bottom][col], previous] = [previous, result[bottom][col]];
+    }
+    bottom -= 1;
+
+    for (let row = bottom; row >= top; row -= 1) {
+      [result[row][left], previous] = [previous, result[row][left]];
+    }
+    left += 1;
+  }
+
+  return result;
+}
+
+const rotatedSquare = rotateMatrixClockwiseBy1([
+  [1, 2, 3],
+  [4, 5, 6],
+  [7, 8, 9],
+]);
+console.assert(
+  JSON.stringify(rotatedSquare) === JSON.stringify([
+    [4, 1, 2],
+    [7, 5, 3],
+    [8, 9, 6],
+  ]),
+  '3x3 matrix should rotate its outer ring by one step',
+);
+
+const rotatedRectangle = rotateMatrixClockwiseBy1([
+  [1, 2, 3, 4],
+  [5, 6, 7, 8],
+]);
+console.assert(
+  JSON.stringify(rotatedRectangle) === JSON.stringify([
+    [5, 1, 2, 3],
+    [6, 7, 8, 4],
+  ]),
+  '2x4 matrix should rotate its single ring clockwise',
+);
+```
+
+```ts
+function validateMatrix(matrix: number[][]): void {
+  if (!Array.isArray(matrix) || matrix.length === 0 || !matrix.every((row) => Array.isArray(row))) {
+    throw new TypeError('matrix must be a non-empty 2D array');
+  }
+
+  const width = matrix[0].length;
+  if (width === 0) {
+    throw new TypeError('matrix rows must not be empty');
+  }
+
+  if (!matrix.every((row) => row.length === width && row.every((value) => Number.isFinite(value)))) {
+    throw new TypeError('matrix rows must have equal length and contain only finite numbers');
+  }
+}
+
+export function rotateMatrixClockwiseBy1(matrix: number[][]): number[][] {
+  validateMatrix(matrix);
+
+  const result = matrix.map((row) => row.slice());
+  let top = 0;
+  let bottom = result.length - 1;
+  let left = 0;
+  let right = result[0].length - 1;
+
+  while (top < bottom && left < right) {
+    let previous = result[top + 1][left];
+
+    for (let col = left; col <= right; col += 1) {
+      [result[top][col], previous] = [previous, result[top][col]];
+    }
+    top += 1;
+
+    for (let row = top; row <= bottom; row += 1) {
+      [result[row][right], previous] = [previous, result[row][right]];
+    }
+    right -= 1;
+
+    for (let col = right; col >= left; col -= 1) {
+      [result[bottom][col], previous] = [previous, result[bottom][col]];
+    }
+    bottom -= 1;
+
+    for (let row = bottom; row >= top; row -= 1) {
+      [result[row][left], previous] = [previous, result[row][left]];
+    }
+    left += 1;
+  }
+
+  return result;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you rotate the matrix counterclockwise by one step instead?
+- Why is this different from rotating the whole matrix by 90 degrees?
+- How would you support a rotation by `k` steps on each ring?
+
+## Common Pitfalls
+
+- Solving the 90-degree rotation problem instead of the one-step ring shift.
+- Overwriting values without carrying the displaced element forward.
+- Forgetting that a single center cell or a single-row remainder should stay unchanged.

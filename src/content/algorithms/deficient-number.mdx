@@ -1,0 +1,136 @@
+---
+title: Deficient Number
+slug: deficient-number
+category: "Number Theory"
+summary: Determine whether a number's proper divisors add up to less than the number itself.
+description: Deficient Number is the divisor-sum predicate that checks whether a positive integer falls short of its proper-divisor total.
+dataStructures:
+  - Number
+techniques:
+  - Divisor Pair Scan
+  - Proper Divisor Sum
+  - Number Theory
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - deficient check
+  - proper-divisor deficit test
+useCases:
+  - Classifying integers by their proper-divisor sums
+  - Contrasting deficient, perfect, and abundant numbers
+  - Reusing divisor-pair scans across number-theory predicates
+complexity:
+  time: O(sqrt(n))
+  space: O(1)
+  notes: Proper divisors can be accumulated from complementary pairs while scanning only to the square root.
+interviewSignals:
+  - The prompt asks whether the proper-divisor sum is smaller than the original number.
+  - The intended improvement is to avoid scanning every value from `1` to `n - 1`.
+relatedSlugs:
+  - perfect-number
+  - aliquot-sum
+  - abundant-number
+provenance:
+  - title: "GeeksforGeeks - Deficient Number"
+    href: https://www.geeksforgeeks.org/dsa/deficient-number/
+    kind: Implementation
+  - title: "Wikipedia - Deficient number"
+    href: https://en.wikipedia.org/wiki/Deficient_number
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Deficient-number questions are the simplest classification variant of proper-divisor sums. Once you can compute the sum of proper divisors efficiently, the rest is only a comparison.
+
+## Worked Example
+
+`21` is deficient because its proper divisors are `1`, `3`, and `7`, and their sum is `11`, which is less than `21`. By contrast, `12` is not deficient because its proper divisors sum to `16`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function sumProperDivisors(value) {
+  if (value <= 1) {
+    return 0;
+  }
+
+  let sum = 1;
+
+  for (let divisor = 2; divisor * divisor <= value; divisor += 1) {
+    if (value % divisor !== 0) {
+      continue;
+    }
+
+    sum += divisor;
+    const pairedDivisor = value / divisor;
+
+    if (pairedDivisor !== divisor) {
+      sum += pairedDivisor;
+    }
+  }
+
+  return sum;
+}
+
+function deficientNumber(value) {
+  if (!Number.isInteger(value) || value < 1) {
+    throw new RangeError('Value must be a positive integer');
+  }
+
+  return sumProperDivisors(value) < value;
+}
+
+console.assert(deficientNumber(1) === true, '1 is deficient');
+console.assert(deficientNumber(21) === true, '21 is deficient');
+console.assert(deficientNumber(12) === false, '12 is not deficient');
+```
+
+```ts
+function sumProperDivisors(value: number): number {
+  if (value <= 1) {
+    return 0;
+  }
+
+  let sum = 1;
+
+  for (let divisor = 2; divisor * divisor <= value; divisor += 1) {
+    if (value % divisor !== 0) {
+      continue;
+    }
+
+    sum += divisor;
+    const pairedDivisor = value / divisor;
+
+    if (pairedDivisor !== divisor) {
+      sum += pairedDivisor;
+    }
+  }
+
+  return sum;
+}
+
+export function deficientNumber(value: number): boolean {
+  if (!Number.isInteger(value) || value < 1) {
+    throw new RangeError('Value must be a positive integer');
+  }
+
+  return sumProperDivisors(value) < value;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the deficiency amount instead of only a boolean answer.
+- Reuse the same helper to classify numbers as deficient, perfect, or abundant.
+- Explain why every prime number greater than `1` is deficient.
+
+## Common Pitfalls
+
+- Including the number itself in the proper-divisor sum.
+- Forgetting that `1` has no proper divisors and is therefore deficient.
+- Double-counting the square root divisor on perfect squares.

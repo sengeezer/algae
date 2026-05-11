@@ -1,0 +1,236 @@
+---
+title: Anova Test
+slug: anova-test
+category: Mathematics
+summary: Compute the one-way ANOVA F-statistic and its supporting sums of squares for three or more numeric groups.
+description: "Anova Test compares between-group variation with within-group variation to determine whether at least one group mean differs meaningfully from the others."
+dataStructures:
+  - Array
+  - Number
+techniques:
+  - Statistical Testing
+  - Aggregation
+  - Sum of Squares
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - analysis of variance
+  - one way anova
+  - anova f statistic
+useCases:
+  - Comparing multiple experiment groups with one helper
+  - Separating between-group signal from within-group noise
+  - Preparing statistics summaries before table lookup or library-based p-value calculation
+complexity:
+  time: O(n)
+  space: O(g)
+  notes: The implementation walks every observation and stores one mean per group.
+interviewSignals:
+  - The prompt gives three or more independent numeric groups.
+  - The intended result is an F-statistic rather than pairwise t-tests.
+  - The solution must separate between-group and within-group variation.
+relatedSlugs:
+  - variance-and-standard-deviation
+  - confidence-interval
+  - p-value
+provenance:
+  - title: "GeeksforGeeks - Anova Test"
+    href: https://www.geeksforgeeks.org/maths/anova-formula/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+ANOVA is the clean next step after descriptive statistics because it asks whether multiple group means differ beyond ordinary within-group noise. A code-oriented version usually stops at the F-statistic and its supporting table values, leaving critical-value lookup or p-value estimation to the caller.
+
+## Worked Example
+
+For the groups `[[10, 11, 12], [7, 8, 9], [4, 5, 6]]`:
+
+- group means: `[11, 8, 5]`
+- grand mean: `8`
+- sum of squares between groups: `54`
+- sum of squares within groups: `6`
+- F-statistic: `27`
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function anovaTest(groups) {
+  if (!Array.isArray(groups) || groups.length < 2) {
+    throw new RangeError('Expected at least two groups');
+  }
+
+  let grandTotal = 0;
+  let totalObservations = 0;
+  const groupMeans = [];
+
+  for (const group of groups) {
+    if (!Array.isArray(group) || group.length === 0) {
+      throw new RangeError('Each group must be a non-empty array of numbers');
+    }
+
+    let groupTotal = 0;
+
+    for (const value of group) {
+      if (typeof value !== 'number' || !Number.isFinite(value)) {
+        throw new TypeError('All observations must be finite numbers');
+      }
+
+      groupTotal += value;
+      grandTotal += value;
+      totalObservations += 1;
+    }
+
+    groupMeans.push(groupTotal / group.length);
+  }
+
+  const degreesOfFreedomBetween = groups.length - 1;
+  const degreesOfFreedomWithin = totalObservations - groups.length;
+
+  if (degreesOfFreedomWithin <= 0) {
+    throw new RangeError('ANOVA requires at least one within-group degree of freedom');
+  }
+
+  const grandMean = grandTotal / totalObservations;
+  let sumSquaresBetween = 0;
+  let sumSquaresWithin = 0;
+
+  for (let groupIndex = 0; groupIndex < groups.length; groupIndex += 1) {
+    const group = groups[groupIndex];
+    const groupMean = groupMeans[groupIndex];
+    const betweenDifference = groupMean - grandMean;
+
+    sumSquaresBetween += group.length * betweenDifference * betweenDifference;
+
+    for (const value of group) {
+      const withinDifference = value - groupMean;
+      sumSquaresWithin += withinDifference * withinDifference;
+    }
+  }
+
+  const meanSquareBetween = sumSquaresBetween / degreesOfFreedomBetween;
+  const meanSquareWithin = sumSquaresWithin / degreesOfFreedomWithin;
+  const fStatistic =
+    meanSquareWithin === 0
+      ? sumSquaresBetween === 0
+        ? 0
+        : Number.POSITIVE_INFINITY
+      : meanSquareBetween / meanSquareWithin;
+
+  return {
+    groupMeans,
+    grandMean,
+    sumSquaresBetween,
+    sumSquaresWithin,
+    degreesOfFreedomBetween,
+    degreesOfFreedomWithin,
+    meanSquareBetween,
+    meanSquareWithin,
+    fStatistic,
+  };
+}
+```
+
+```ts
+export function anovaTest(groups: number[][]): {
+  groupMeans: number[];
+  grandMean: number;
+  sumSquaresBetween: number;
+  sumSquaresWithin: number;
+  degreesOfFreedomBetween: number;
+  degreesOfFreedomWithin: number;
+  meanSquareBetween: number;
+  meanSquareWithin: number;
+  fStatistic: number;
+} {
+  if (!Array.isArray(groups) || groups.length < 2) {
+    throw new RangeError('Expected at least two groups');
+  }
+
+  let grandTotal = 0;
+  let totalObservations = 0;
+  const groupMeans: number[] = [];
+
+  for (const group of groups) {
+    if (!Array.isArray(group) || group.length === 0) {
+      throw new RangeError('Each group must be a non-empty array of numbers');
+    }
+
+    let groupTotal = 0;
+
+    for (const value of group) {
+      if (!Number.isFinite(value)) {
+        throw new TypeError('All observations must be finite numbers');
+      }
+
+      groupTotal += value;
+      grandTotal += value;
+      totalObservations += 1;
+    }
+
+    groupMeans.push(groupTotal / group.length);
+  }
+
+  const degreesOfFreedomBetween = groups.length - 1;
+  const degreesOfFreedomWithin = totalObservations - groups.length;
+
+  if (degreesOfFreedomWithin <= 0) {
+    throw new RangeError('ANOVA requires at least one within-group degree of freedom');
+  }
+
+  const grandMean = grandTotal / totalObservations;
+  let sumSquaresBetween = 0;
+  let sumSquaresWithin = 0;
+
+  for (let groupIndex = 0; groupIndex < groups.length; groupIndex += 1) {
+    const group = groups[groupIndex];
+    const groupMean = groupMeans[groupIndex];
+    const betweenDifference = groupMean - grandMean;
+
+    sumSquaresBetween += group.length * betweenDifference * betweenDifference;
+
+    for (const value of group) {
+      const withinDifference = value - groupMean;
+      sumSquaresWithin += withinDifference * withinDifference;
+    }
+  }
+
+  const meanSquareBetween = sumSquaresBetween / degreesOfFreedomBetween;
+  const meanSquareWithin = sumSquaresWithin / degreesOfFreedomWithin;
+  const fStatistic =
+    meanSquareWithin === 0
+      ? sumSquaresBetween === 0
+        ? 0
+        : Number.POSITIVE_INFINITY
+      : meanSquareBetween / meanSquareWithin;
+
+  return {
+    groupMeans,
+    grandMean,
+    sumSquaresBetween,
+    sumSquaresWithin,
+    degreesOfFreedomBetween,
+    degreesOfFreedomWithin,
+    meanSquareBetween,
+    meanSquareWithin,
+    fStatistic,
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Add p-value lookup or F-distribution integration for a complete decision helper.
+- Extend the implementation to two-way ANOVA with interaction terms.
+- Return an ANOVA table that is ready to render in the UI.
+
+## Common Pitfalls
+
+- Mixing up total, between-group, and within-group sums of squares.
+- Running pairwise comparisons when the prompt explicitly asks for one overall multi-group test.
+- Forgetting that ANOVA detects whether some mean differs, not which pair differs.

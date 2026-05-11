@@ -1,0 +1,417 @@
+---
+title: Program to check congruency of two triangles
+slug: program-to-check-congruency-of-two-triangles
+category: Mathematics
+summary: Normalize two triangles' measurements, then report whether SSS, SAS, ASA, AAS, or HL congruency holds.
+description: "Program to check congruency of two triangles compares sorted side and angle triples to determine whether two triangles match exactly rather than only up to scale."
+dataStructures:
+  - Array
+  - Number
+  - Object
+techniques:
+  - Triangle Congruence
+  - Sorting
+  - Pattern Matching
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - triangle congruency check
+  - congruent triangles theorem checker
+  - sss sas asa aas hl triangle comparison
+useCases:
+  - Verifying whether two triangle descriptions represent the same exact shape
+  - Reporting which congruency theorems are sufficient from fixed-size measurements
+  - Normalizing unordered side and angle triples before theorem checks
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The triangles always have three sides and three angles, so the fixed-size sorts and theorem scans remain constant work.
+interviewSignals:
+  - The prompt supplies side and angle triples for two triangles.
+  - The output needs both the congruent or not verdict and the theorem names.
+  - The interesting work is classifying measurement patterns, not computing coordinates.
+relatedSlugs:
+  - check-whether-triangle-is-valid-or-not-if-sides-are-given
+  - find-all-angles-of-a-given-triangle
+  - check-if-right-triangle-possible-from-given-area-and-hypotenuse
+provenance:
+  - title: "GeeksforGeeks - Program to check congruency of two triangles"
+    href: https://www.geeksforgeeks.org/dsa/program-to-check-congruency-of-two-triangles/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is the exact-match version of the triangle comparison problem. After sorting the three side lengths and the three angles for each triangle, you can test the standard congruency patterns directly: all sides equal for `SSS`, two sides and an included angle for `SAS`, two angles plus an included side for `ASA`, two angles plus a non-included side for `AAS`, and the right-triangle-specific `HL` case.
+
+## Worked Example
+
+Two triangles with side sets `[3, 4, 5]` and `[4, 5, 3]` are congruent because the sorted side lengths match exactly. Since both are right triangles with the same hypotenuse and legs, they also satisfy the `HL` criterion.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function approximatelyEqual(left, right, epsilon = 1e-9) {
+  const scale = Math.max(1, Math.abs(left), Math.abs(right));
+  return Math.abs(left - right) <= epsilon * scale;
+}
+
+function normalizeTriangle(sides, angles, label) {
+  if (!Array.isArray(sides) || sides.length !== 3) {
+    throw new RangeError(label + ' sides must contain exactly 3 numbers');
+  }
+
+  if (!Array.isArray(angles) || angles.length !== 3) {
+    throw new RangeError(label + ' angles must contain exactly 3 numbers');
+  }
+
+  if (!sides.every((value) => typeof value === 'number' && Number.isFinite(value) && value > 0)) {
+    throw new TypeError(label + ' sides must be positive finite numbers');
+  }
+
+  if (!angles.every((value) => typeof value === 'number' && Number.isFinite(value) && value > 0)) {
+    throw new TypeError(label + ' angles must be positive finite numbers');
+  }
+
+  const normalizedSides = [...sides].sort((left, right) => left - right);
+  const normalizedAngles = [...angles].sort((left, right) => left - right);
+
+  if (normalizedSides[0] + normalizedSides[1] <= normalizedSides[2]) {
+    throw new RangeError(label + ' sides must satisfy the triangle inequality');
+  }
+
+  const angleSum = normalizedAngles[0] + normalizedAngles[1] + normalizedAngles[2];
+  if (!approximatelyEqual(angleSum, 180, 1e-7)) {
+    throw new RangeError(label + ' angles must sum to 180 degrees');
+  }
+
+  return { sides: normalizedSides, angles: normalizedAngles };
+}
+
+function equalSidePair(firstSides, secondSides, leftIndex, rightIndex) {
+  return (
+    approximatelyEqual(firstSides[leftIndex], secondSides[leftIndex], 1e-7) &&
+    approximatelyEqual(firstSides[rightIndex], secondSides[rightIndex], 1e-7)
+  );
+}
+
+function equalAnglePair(firstAngles, secondAngles, leftIndex, rightIndex) {
+  return (
+    approximatelyEqual(firstAngles[leftIndex], secondAngles[leftIndex], 1e-7) &&
+    approximatelyEqual(firstAngles[rightIndex], secondAngles[rightIndex], 1e-7)
+  );
+}
+
+function isRightTriangle(triangle) {
+  return (
+    approximatelyEqual(triangle.angles[2], 90, 1e-7) ||
+    approximatelyEqual(
+      triangle.sides[0] * triangle.sides[0] + triangle.sides[1] * triangle.sides[1],
+      triangle.sides[2] * triangle.sides[2],
+      1e-7,
+    )
+  );
+}
+
+function programToCheckCongruencyOfTwoTriangles(
+  firstSides,
+  firstAngles,
+  secondSides,
+  secondAngles,
+) {
+  const firstTriangle = normalizeTriangle(firstSides, firstAngles, 'first triangle');
+  const secondTriangle = normalizeTriangle(secondSides, secondAngles, 'second triangle');
+  const theorems = [];
+
+  if (
+    equalSidePair(firstTriangle.sides, secondTriangle.sides, 0, 1) &&
+    approximatelyEqual(firstTriangle.sides[2], secondTriangle.sides[2], 1e-7)
+  ) {
+    theorems.push('SSS');
+  }
+
+  const sasPatterns = [
+    { sideIndexes: [0, 1], angleIndex: 2 },
+    { sideIndexes: [0, 2], angleIndex: 1 },
+    { sideIndexes: [1, 2], angleIndex: 0 },
+  ];
+
+  if (
+    sasPatterns.some(({ sideIndexes, angleIndex }) => {
+      const [leftIndex, rightIndex] = sideIndexes;
+      return (
+        equalSidePair(firstTriangle.sides, secondTriangle.sides, leftIndex, rightIndex) &&
+        approximatelyEqual(firstTriangle.angles[angleIndex], secondTriangle.angles[angleIndex], 1e-7)
+      );
+    })
+  ) {
+    theorems.push('SAS');
+  }
+
+  const asaPatterns = [
+    { angleIndexes: [0, 1], sideIndex: 2 },
+    { angleIndexes: [0, 2], sideIndex: 1 },
+    { angleIndexes: [1, 2], sideIndex: 0 },
+  ];
+
+  if (
+    asaPatterns.some(({ angleIndexes, sideIndex }) => {
+      const [leftIndex, rightIndex] = angleIndexes;
+      return (
+        equalAnglePair(firstTriangle.angles, secondTriangle.angles, leftIndex, rightIndex) &&
+        approximatelyEqual(firstTriangle.sides[sideIndex], secondTriangle.sides[sideIndex], 1e-7)
+      );
+    })
+  ) {
+    theorems.push('ASA');
+  }
+
+  const aasPatterns = [
+    { angleIndexes: [0, 1], sideIndexes: [0, 1] },
+    { angleIndexes: [0, 2], sideIndexes: [0, 2] },
+    { angleIndexes: [1, 2], sideIndexes: [1, 2] },
+  ];
+
+  if (
+    aasPatterns.some(({ angleIndexes, sideIndexes }) => {
+      const [leftAngleIndex, rightAngleIndex] = angleIndexes;
+      return (
+        equalAnglePair(firstTriangle.angles, secondTriangle.angles, leftAngleIndex, rightAngleIndex) &&
+        sideIndexes.some((sideIndex) =>
+          approximatelyEqual(firstTriangle.sides[sideIndex], secondTriangle.sides[sideIndex], 1e-7),
+        )
+      );
+    })
+  ) {
+    theorems.push('AAS');
+  }
+
+  if (
+    isRightTriangle(firstTriangle) &&
+    isRightTriangle(secondTriangle) &&
+    approximatelyEqual(firstTriangle.sides[2], secondTriangle.sides[2], 1e-7) &&
+    (approximatelyEqual(firstTriangle.sides[0], secondTriangle.sides[0], 1e-7) ||
+      approximatelyEqual(firstTriangle.sides[1], secondTriangle.sides[1], 1e-7))
+  ) {
+    theorems.push('HL');
+  }
+
+  return {
+    isCongruent: theorems.length > 0,
+    theorems,
+  };
+}
+
+const congruentTriangles = programToCheckCongruencyOfTwoTriangles(
+  [3, 4, 5],
+  [36.86989764584401, 53.13010235415598, 90],
+  [4, 5, 3],
+  [53.13010235415598, 90, 36.86989764584401],
+);
+console.assert(congruentTriangles.isCongruent, 'reordered 3-4-5 triangles should be congruent');
+console.assert(
+  congruentTriangles.theorems.join(',') === 'SSS,SAS,ASA,AAS,HL',
+  'identical right triangles should satisfy every congruency theorem used here'
+);
+
+const differentTriangles = programToCheckCongruencyOfTwoTriangles(
+  [3, 4, 5],
+  [36.86989764584401, 53.13010235415598, 90],
+  [5, 5, 6],
+  [53.13010235415598, 53.13010235415598, 73.73979529168804],
+);
+console.assert(
+  !differentTriangles.isCongruent && differentTriangles.theorems.length === 0,
+  'non-matching triangles should not be marked congruent'
+);
+```
+
+```ts
+type CongruencyTheorem = 'SSS' | 'SAS' | 'ASA' | 'AAS' | 'HL';
+
+type CongruencyResult = {
+  isCongruent: boolean;
+  theorems: CongruencyTheorem[];
+};
+
+function approximatelyEqual(left: number, right: number, epsilon = 1e-9): boolean {
+  const scale = Math.max(1, Math.abs(left), Math.abs(right));
+  return Math.abs(left - right) <= epsilon * scale;
+}
+
+function normalizeTriangle(
+  sides: number[],
+  angles: number[],
+  label: string,
+): { sides: number[]; angles: number[] } {
+  if (sides.length !== 3) {
+    throw new RangeError(label + ' sides must contain exactly 3 numbers');
+  }
+
+  if (angles.length !== 3) {
+    throw new RangeError(label + ' angles must contain exactly 3 numbers');
+  }
+
+  if (!sides.every((value) => Number.isFinite(value) && value > 0)) {
+    throw new TypeError(label + ' sides must be positive finite numbers');
+  }
+
+  if (!angles.every((value) => Number.isFinite(value) && value > 0)) {
+    throw new TypeError(label + ' angles must be positive finite numbers');
+  }
+
+  const normalizedSides = [...sides].sort((left, right) => left - right);
+  const normalizedAngles = [...angles].sort((left, right) => left - right);
+
+  if (normalizedSides[0] + normalizedSides[1] <= normalizedSides[2]) {
+    throw new RangeError(label + ' sides must satisfy the triangle inequality');
+  }
+
+  const angleSum = normalizedAngles[0] + normalizedAngles[1] + normalizedAngles[2];
+  if (!approximatelyEqual(angleSum, 180, 1e-7)) {
+    throw new RangeError(label + ' angles must sum to 180 degrees');
+  }
+
+  return { sides: normalizedSides, angles: normalizedAngles };
+}
+
+function equalSidePair(
+  firstSides: number[],
+  secondSides: number[],
+  leftIndex: number,
+  rightIndex: number,
+): boolean {
+  return (
+    approximatelyEqual(firstSides[leftIndex], secondSides[leftIndex], 1e-7) &&
+    approximatelyEqual(firstSides[rightIndex], secondSides[rightIndex], 1e-7)
+  );
+}
+
+function equalAnglePair(
+  firstAngles: number[],
+  secondAngles: number[],
+  leftIndex: number,
+  rightIndex: number,
+): boolean {
+  return (
+    approximatelyEqual(firstAngles[leftIndex], secondAngles[leftIndex], 1e-7) &&
+    approximatelyEqual(firstAngles[rightIndex], secondAngles[rightIndex], 1e-7)
+  );
+}
+
+function isRightTriangle(triangle: { sides: number[]; angles: number[] }): boolean {
+  return (
+    approximatelyEqual(triangle.angles[2], 90, 1e-7) ||
+    approximatelyEqual(
+      triangle.sides[0] * triangle.sides[0] + triangle.sides[1] * triangle.sides[1],
+      triangle.sides[2] * triangle.sides[2],
+      1e-7,
+    )
+  );
+}
+
+export function programToCheckCongruencyOfTwoTriangles(
+  firstSides: number[],
+  firstAngles: number[],
+  secondSides: number[],
+  secondAngles: number[],
+): CongruencyResult {
+  const firstTriangle = normalizeTriangle(firstSides, firstAngles, 'first triangle');
+  const secondTriangle = normalizeTriangle(secondSides, secondAngles, 'second triangle');
+  const theorems: CongruencyTheorem[] = [];
+
+  if (
+    equalSidePair(firstTriangle.sides, secondTriangle.sides, 0, 1) &&
+    approximatelyEqual(firstTriangle.sides[2], secondTriangle.sides[2], 1e-7)
+  ) {
+    theorems.push('SSS');
+  }
+
+  const sasPatterns = [
+    { sideIndexes: [0, 1] as const, angleIndex: 2 },
+    { sideIndexes: [0, 2] as const, angleIndex: 1 },
+    { sideIndexes: [1, 2] as const, angleIndex: 0 },
+  ];
+
+  if (
+    sasPatterns.some(({ sideIndexes, angleIndex }) => {
+      const [leftIndex, rightIndex] = sideIndexes;
+      return (
+        equalSidePair(firstTriangle.sides, secondTriangle.sides, leftIndex, rightIndex) &&
+        approximatelyEqual(firstTriangle.angles[angleIndex], secondTriangle.angles[angleIndex], 1e-7)
+      );
+    })
+  ) {
+    theorems.push('SAS');
+  }
+
+  const asaPatterns = [
+    { angleIndexes: [0, 1] as const, sideIndex: 2 },
+    { angleIndexes: [0, 2] as const, sideIndex: 1 },
+    { angleIndexes: [1, 2] as const, sideIndex: 0 },
+  ];
+
+  if (
+    asaPatterns.some(({ angleIndexes, sideIndex }) => {
+      const [leftIndex, rightIndex] = angleIndexes;
+      return (
+        equalAnglePair(firstTriangle.angles, secondTriangle.angles, leftIndex, rightIndex) &&
+        approximatelyEqual(firstTriangle.sides[sideIndex], secondTriangle.sides[sideIndex], 1e-7)
+      );
+    })
+  ) {
+    theorems.push('ASA');
+  }
+
+  const aasPatterns = [
+    { angleIndexes: [0, 1] as const, sideIndexes: [0, 1] as const },
+    { angleIndexes: [0, 2] as const, sideIndexes: [0, 2] as const },
+    { angleIndexes: [1, 2] as const, sideIndexes: [1, 2] as const },
+  ];
+
+  if (
+    aasPatterns.some(({ angleIndexes, sideIndexes }) => {
+      const [leftAngleIndex, rightAngleIndex] = angleIndexes;
+      return (
+        equalAnglePair(firstTriangle.angles, secondTriangle.angles, leftAngleIndex, rightAngleIndex) &&
+        sideIndexes.some((sideIndex) =>
+          approximatelyEqual(firstTriangle.sides[sideIndex], secondTriangle.sides[sideIndex], 1e-7),
+        )
+      );
+    })
+  ) {
+    theorems.push('AAS');
+  }
+
+  if (
+    isRightTriangle(firstTriangle) &&
+    isRightTriangle(secondTriangle) &&
+    approximatelyEqual(firstTriangle.sides[2], secondTriangle.sides[2], 1e-7) &&
+    (approximatelyEqual(firstTriangle.sides[0], secondTriangle.sides[0], 1e-7) ||
+      approximatelyEqual(firstTriangle.sides[1], secondTriangle.sides[1], 1e-7))
+  ) {
+    theorems.push('HL');
+  }
+
+  return {
+    isCongruent: theorems.length > 0,
+    theorems,
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would the implementation change if you only received side lengths and had to decide which congruency theorems were still available?
+- Why does `HL` need a right-triangle check while the other theorems do not?
+- What extra data would you need to compare triangles given as coordinates instead of side and angle triples?
+
+## Common Pitfalls
+
+- Treating similarity and congruency as the same classification problem.
+- Comparing measurement triples without normalizing their order first.
+- Forgetting that `HL` only applies to right triangles.

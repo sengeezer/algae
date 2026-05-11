@@ -1,0 +1,259 @@
+---
+title: "Introduction to Möbius inversion"
+slug: introduction-to-mobius-inversion
+category: "Number Theory"
+summary: Recover `f(1..n)` from divisor sums `g(n) = sum_{d|n} f(d)` by weighting the same divisor lattice with Möbius values.
+description: "Introduction to Möbius inversion is the divisor-sum inversion technique that reconstructs an arithmetic function from its cumulative divisor transform using precomputed Möbius values."
+dataStructures:
+  - Array
+  - Number
+techniques:
+  - Number Theory
+  - Sieve
+  - Divisor Enumeration
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - mobius inversion
+  - divisor sum inversion
+  - recover arithmetic function from divisor sums
+useCases:
+  - Reversing divisor-sum transforms in arithmetic-function problems
+  - Recovering exact counts from cumulative divisor contributions
+  - Pairing Möbius precomputation with multiplicative-function workflows
+complexity:
+  time: O(n log n)
+  space: O(n)
+  notes: "A linear Möbius sieve plus harmonic-series multiple loops recovers every value up to n efficiently."
+interviewSignals:
+  - The prompt gives `g(n) = sum_{d|n} f(d)` and asks you to recover `f`.
+  - The intended approach uses Möbius values instead of solving a full linear system.
+  - Precomputation across all values up to a limit matters more than one isolated query.
+relatedSlugs:
+  - mobius-function
+  - is-square-free
+  - liouville-function
+provenance:
+  - title: "GeeksforGeeks - Introduction to Möbius inversion"
+    href: https://www.geeksforgeeks.org/dsa/introduction-to-mobius-inversion/
+    kind: Implementation
+  - title: "Wikipedia - Möbius inversion formula"
+    href: https://en.wikipedia.org/wiki/M%C3%B6bius_inversion_formula
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Möbius inversion shows up when a divisor-sum view is easy to compute but the interviewer really wants the original per-value function back. Instead of undoing that transform by ad hoc algebra for each `n`, the Möbius function supplies the exact inverse weights.
+
+## Worked Example
+
+Suppose the original function values are `f(1..6) = [1, 2, 3, 4, 5, 6]`, and define `g(n)` as the sum of `f(d)` over every divisor `d` of `n`. Then:
+
+- `g(1) = 1`
+- `g(2) = 1 + 2 = 3`
+- `g(3) = 1 + 3 = 4`
+- `g(4) = 1 + 2 + 4 = 7`
+- `g(5) = 1 + 5 = 6`
+- `g(6) = 1 + 2 + 3 + 6 = 12`
+
+Möbius inversion takes `[1, 3, 4, 7, 6, 12]` and reconstructs the original `[1, 2, 3, 4, 5, 6]` exactly.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function computeMobiusValues(limit) {
+  if (!Number.isInteger(limit) || limit < 1) {
+    throw new RangeError('Limit must be a positive integer');
+  }
+
+  const mu = new Array(limit + 1).fill(0);
+  const primes = [];
+  const isComposite = new Array(limit + 1).fill(false);
+  mu[1] = 1;
+
+  for (let value = 2; value <= limit; value += 1) {
+    if (!isComposite[value]) {
+      primes.push(value);
+      mu[value] = -1;
+    }
+
+    for (const prime of primes) {
+      const composite = value * prime;
+      if (composite > limit) {
+        break;
+      }
+
+      isComposite[composite] = true;
+
+      if (value % prime === 0) {
+        mu[composite] = 0;
+        break;
+      }
+
+      mu[composite] = -mu[value];
+    }
+  }
+
+  return mu;
+}
+
+function validateSequence(values, label) {
+  if (!Array.isArray(values) || values.length === 0) {
+    throw new TypeError(`${label} must be a non-empty array`);
+  }
+
+  if (!values.every((value) => typeof value === 'number' && Number.isFinite(value))) {
+    throw new RangeError(`${label} must contain only finite numbers`);
+  }
+}
+
+function divisorSumTransform(values) {
+  validateSequence(values, 'values');
+
+  const transformed = new Array(values.length).fill(0);
+
+  for (let divisor = 1; divisor <= values.length; divisor += 1) {
+    const contribution = values[divisor - 1];
+
+    for (let multiple = divisor; multiple <= values.length; multiple += divisor) {
+      transformed[multiple - 1] += contribution;
+    }
+  }
+
+  return transformed;
+}
+
+function mobiusInvert(divisorSums) {
+  validateSequence(divisorSums, 'divisorSums');
+
+  const limit = divisorSums.length;
+  const mu = computeMobiusValues(limit);
+  const recovered = new Array(limit).fill(0);
+
+  for (let divisor = 1; divisor <= limit; divisor += 1) {
+    const weight = mu[divisor];
+    if (weight === 0) {
+      continue;
+    }
+
+    for (let multiple = divisor; multiple <= limit; multiple += divisor) {
+      recovered[multiple - 1] += weight * divisorSums[multiple / divisor - 1];
+    }
+  }
+
+  return recovered;
+}
+
+function arraysEqual(left, right) {
+  return left.length === right.length && left.every((value, index) => value === right[index]);
+}
+
+const original = [1, 2, 3, 4, 5, 6];
+const transformed = divisorSumTransform(original);
+console.assert(arraysEqual(transformed, [1, 3, 4, 7, 6, 12]), 'Divisor transform example should match the worked example');
+
+const recovered = mobiusInvert(transformed);
+console.assert(arraysEqual(recovered, original), 'Möbius inversion should recover the original values');
+```
+
+```ts
+function computeMobiusValues(limit: number): number[] {
+  if (!Number.isInteger(limit) || limit < 1) {
+    throw new RangeError('Limit must be a positive integer');
+  }
+
+  const mu = new Array(limit + 1).fill(0);
+  const primes: number[] = [];
+  const isComposite = new Array(limit + 1).fill(false);
+  mu[1] = 1;
+
+  for (let value = 2; value <= limit; value += 1) {
+    if (!isComposite[value]) {
+      primes.push(value);
+      mu[value] = -1;
+    }
+
+    for (const prime of primes) {
+      const composite = value * prime;
+      if (composite > limit) {
+        break;
+      }
+
+      isComposite[composite] = true;
+
+      if (value % prime === 0) {
+        mu[composite] = 0;
+        break;
+      }
+
+      mu[composite] = -mu[value];
+    }
+  }
+
+  return mu;
+}
+
+function validateSequence(values: number[], label: string): void {
+  if (values.length === 0) {
+    throw new TypeError(`${label} must be a non-empty array`);
+  }
+
+  if (!values.every((value) => Number.isFinite(value))) {
+    throw new RangeError(`${label} must contain only finite numbers`);
+  }
+}
+
+export function divisorSumTransform(values: number[]): number[] {
+  validateSequence(values, 'values');
+
+  const transformed = new Array(values.length).fill(0);
+
+  for (let divisor = 1; divisor <= values.length; divisor += 1) {
+    const contribution = values[divisor - 1];
+
+    for (let multiple = divisor; multiple <= values.length; multiple += divisor) {
+      transformed[multiple - 1] += contribution;
+    }
+  }
+
+  return transformed;
+}
+
+export function mobiusInvert(divisorSums: number[]): number[] {
+  validateSequence(divisorSums, 'divisorSums');
+
+  const limit = divisorSums.length;
+  const mu = computeMobiusValues(limit);
+  const recovered = new Array(limit).fill(0);
+
+  for (let divisor = 1; divisor <= limit; divisor += 1) {
+    const weight = mu[divisor];
+    if (weight === 0) {
+      continue;
+    }
+
+    for (let multiple = divisor; multiple <= limit; multiple += divisor) {
+      recovered[multiple - 1] += weight * divisorSums[multiple / divisor - 1];
+    }
+  }
+
+  return recovered;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Adapt the inversion helper to recover only one value `f(n)` instead of the entire prefix `f(1..n)`.
+- Compare this full transform inversion with the simpler `Mobius Function` pointwise classifier.
+- Combine Möbius inversion with a divisor-count or gcd-aggregate problem where the forward transform is easier than the original query.
+
+## Common Pitfalls
+
+- Mixing up `g(d)` and `g(n / d)` in the inversion formula.
+- Treating Möbius inversion as a one-off prime-factorization trick instead of an inverse transform over divisors.
+- Forgetting that the sieve must set `mu(k) = 0` as soon as any squared prime factor appears.

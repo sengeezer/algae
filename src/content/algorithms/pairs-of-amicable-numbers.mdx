@@ -1,0 +1,217 @@
+---
+title: Pairs of Amicable Numbers
+slug: pairs-of-amicable-numbers
+category: "Number Theory"
+summary: Find all amicable number pairs within a given array or range where each pair's proper divisors sum to the other number.
+description: Pairs of Amicable Numbers is the array-scanning algorithm that locates amicable pairs (a, b) such that the sum of proper divisors of a equals b and vice versa.
+dataStructures:
+  - Array
+  - Map/Set
+  - Number
+techniques:
+  - Proper Divisor Sum
+  - Hash-based Search
+  - Number Theory
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - amicable pair detection
+  - friendly number pairs
+  - amicable number search
+useCases:
+  - Locating symmetric divisor-sum relationships in a dataset
+  - Interview exploration of divisor-sum classification
+  - Contrasting element-wise amicable pairing with range-based enumeration
+complexity:
+  time: O(n * sqrt(max)) where n is array size and max is largest element
+  space: O(n) for the divisor sum map
+  notes: Proper-divisor sums are precomputed once, then a hash lookup finds pairs.
+interviewSignals:
+  - The prompt specifies a collection (array or range) rather than enumeration.
+  - Follow-ups ask for the count or properties of pairs found.
+relatedSlugs:
+  - deficient-number
+  - abundant-number
+  - perfect-number
+  - aliquot-sum
+  - problem021
+provenance:
+  - title: "Wikipedia - Amicable numbers"
+    href: https://en.wikipedia.org/wiki/Amicable_numbers
+    kind: Reference
+  - title: "GeeksforGeeks - Amicable Numbers"
+    href: https://www.geeksforgeeks.org/amicable-numbers/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+Amicable number prompts typically ask: given a collection, find or count the pairs (a, b) where each number's proper-divisor sum equals the other. This is distinct from enumeration problems that list all amicable pairs below a limit, focusing instead on membership testing and pair extraction within a fixed dataset.
+
+## Worked Example
+
+In the array `[220, 284, 50, 100]`, the pair `(220, 284)` is amicable because the proper divisors of `220` (1, 2, 4, 5, 10, 11, 20, 22, 44, 55, 110) sum to `284`, and the proper divisors of `284` (1, 2, 4, 71, 142) sum to `220`. The other elements are not part of amicable pairs.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function sumProperDivisors(value) {
+  if (value <= 1) {
+    return 0;
+  }
+
+  let sum = 1;
+
+  for (let divisor = 2; divisor * divisor <= value; divisor += 1) {
+    if (value % divisor !== 0) {
+      continue;
+    }
+
+    sum += divisor;
+    const pairedDivisor = value / divisor;
+
+    if (pairedDivisor !== divisor) {
+      sum += pairedDivisor;
+    }
+  }
+
+  return sum;
+}
+
+function findAmicablePairs(numbers) {
+  if (!Array.isArray(numbers)) {
+    throw new TypeError('Input must be an array');
+  }
+
+  const divisorSumMap = new Map();
+
+  for (const num of numbers) {
+    if (!Number.isInteger(num) || num < 1) {
+      continue;
+    }
+
+    divisorSumMap.set(num, sumProperDivisors(num));
+  }
+
+  const pairs = [];
+
+  for (const [num, divisorSum] of divisorSumMap) {
+    if (
+      divisorSum !== num &&
+      divisorSumMap.has(divisorSum) &&
+      divisorSumMap.get(divisorSum) === num
+    ) {
+      pairs.push([Math.min(num, divisorSum), Math.max(num, divisorSum)]);
+    }
+  }
+
+  // Remove duplicate pairs (e.g., [220, 284] and [284, 220] are the same)
+  const uniquePairs = [];
+  const seen = new Set();
+
+  for (const [a, b] of pairs) {
+    const key = `${a},${b}`;
+    if (!seen.has(key)) {
+      uniquePairs.push([a, b]);
+      seen.add(key);
+    }
+  }
+
+  return uniquePairs;
+}
+
+console.assert(
+  JSON.stringify(findAmicablePairs([220, 284])) === JSON.stringify([[220, 284]]),
+  'Found amicable pair (220, 284)'
+);
+console.assert(
+  findAmicablePairs([100, 200, 300]).length === 0,
+  'No amicable pairs in [100, 200, 300]'
+);
+console.assert(
+  findAmicablePairs([220, 284, 1184, 1210]).length === 2,
+  'Found two amicable pairs'
+);
+```
+
+```ts
+function sumProperDivisors(value: number): number {
+  if (value <= 1) {
+    return 0;
+  }
+
+  let sum = 1;
+
+  for (let divisor = 2; divisor * divisor <= value; divisor += 1) {
+    if (value % divisor !== 0) {
+      continue;
+    }
+
+    sum += divisor;
+    const pairedDivisor = value / divisor;
+
+    if (pairedDivisor !== divisor) {
+      sum += pairedDivisor;
+    }
+  }
+
+  return sum;
+}
+
+function findAmicablePairs(numbers: number[]): Array<[number, number]> {
+  const divisorSumMap = new Map<number, number>();
+
+  for (const num of numbers) {
+    if (!Number.isInteger(num) || num < 1) {
+      continue;
+    }
+
+    divisorSumMap.set(num, sumProperDivisors(num));
+  }
+
+  const pairs: Array<[number, number]> = [];
+
+  for (const [num, divisorSum] of divisorSumMap) {
+    if (
+      divisorSum !== num &&
+      divisorSumMap.has(divisorSum) &&
+      divisorSumMap.get(divisorSum) === num
+    ) {
+      pairs.push([Math.min(num, divisorSum), Math.max(num, divisorSum)]);
+    }
+  }
+
+  const uniquePairs: Array<[number, number]> = [];
+  const seen = new Set<string>();
+
+  for (const [a, b] of pairs) {
+    const key = `${a},${b}`;
+    if (!seen.has(key)) {
+      uniquePairs.push([a, b]);
+      seen.add(key);
+    }
+  }
+
+  return uniquePairs;
+}
+
+console.assert(
+  JSON.stringify(findAmicablePairs([220, 284])) === JSON.stringify([[220, 284]]),
+  'Found amicable pair (220, 284)'
+);
+console.assert(
+  findAmicablePairs([100, 200, 300]).length === 0,
+  'No amicable pairs in [100, 200, 300]'
+);
+```
+
+</ExamplePair>
+
+## Key Insights
+
+- **Proper divisors** of a number include all divisors except the number itself.
+- **Amicable pairs** form a bidirectional relationship: if $s(a) = b$ then $s(b) = a$ (where $s(n)$ is the sum of proper divisors).
+- The smallest amicable pair is **(220, 284)**, known since ancient times.
+- Finding pairs in a fixed collection is O(n) after the divisor-sum precomputation, making this more efficient than range-based enumeration.

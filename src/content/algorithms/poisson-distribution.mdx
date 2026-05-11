@@ -1,0 +1,107 @@
+---
+title: Poisson Distribution
+slug: poisson-distribution
+category: Mathematics
+summary: Calculate the probability of observing exactly k events in a fixed interval from an average event rate.
+description: "Poisson Distribution evaluates the discrete probability mass function for event counts that occur independently at a constant average rate."
+dataStructures:
+  - Number
+techniques:
+  - Probability Distribution
+  - Formula Evaluation
+  - Multiplicative Recurrence
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - poisson pmf
+  - event count distribution
+  - poisson probability
+useCases:
+  - Modeling arrivals such as calls, failures, or requests per interval
+  - Approximating rare-event counts from a known average rate
+  - Practicing closed-form probability mass functions
+complexity:
+  time: O(k)
+  space: O(1)
+  notes: Iteratively accumulating `lambda / step` avoids computing separate powers and factorials.
+interviewSignals:
+  - The prompt gives an average event rate and asks for the probability of exactly `k` events.
+  - Events occur independently in a fixed interval.
+  - The intended solution uses `e^-lambda * lambda^k / k!`.
+relatedSlugs:
+  - binomial-distribution-in-probability
+  - geometric-distribution
+  - probability-of-a-random-pair-being-the-maximum-weighted-pair
+provenance:
+  - title: "GeeksforGeeks - Poisson Distribution"
+    href: https://www.geeksforgeeks.org/maths/poisson-distribution/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Poisson distribution is the interview-friendly model for exact event counts when the prompt gives an average rate rather than a fixed number of trials. The key implementation detail is to compute the PMF without separately expanding a large factorial.
+
+## Worked Example
+
+Suppose a help desk receives `lambda = 4` urgent tickets per hour on average. The probability of receiving exactly `k = 2` tickets in the next hour is:
+
+`P(X = 2) = e^-4 * 4^2 / 2! = e^-4 * 8 ≈ 0.1465`
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function poissonDistribution(lambda, observedEvents) {
+  if (typeof lambda !== 'number' || !Number.isFinite(lambda) || lambda < 0) {
+    throw new RangeError('lambda must be a non-negative finite number');
+  }
+
+  if (!Number.isInteger(observedEvents) || observedEvents < 0) {
+    throw new RangeError('observedEvents must be a non-negative integer');
+  }
+
+  let probability = Math.exp(-lambda);
+
+  for (let step = 1; step <= observedEvents; step += 1) {
+    probability = (probability * lambda) / step;
+  }
+
+  return probability;
+}
+```
+
+```ts
+export function poissonDistribution(lambda: number, observedEvents: number): number {
+  if (!Number.isFinite(lambda) || lambda < 0) {
+    throw new RangeError('lambda must be a non-negative finite number');
+  }
+
+  if (!Number.isInteger(observedEvents) || observedEvents < 0) {
+    throw new RangeError('observedEvents must be a non-negative integer');
+  }
+
+  let probability = Math.exp(-lambda);
+
+  for (let step = 1; step <= observedEvents; step += 1) {
+    probability = (probability * lambda) / step;
+  }
+
+  return probability;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Extend the helper to return `P(X <= k)` by summing the PMF up to `k`.
+- Use the recurrence `P(k) = lambda / k * P(k - 1)` to generate a full table of probabilities.
+- Compare when Poisson is a good approximation to binomial distribution.
+
+## Common Pitfalls
+
+- Forgetting that `k` must be a non-negative integer.
+- Computing `lambda^k` and `k!` separately and losing precision earlier than necessary.
+- Confusing the average rate `lambda` with a fixed number of Bernoulli trials.

@@ -1,0 +1,174 @@
+---
+title: "Prime Triplet"
+slug: prime-triplet
+category: "Prime Numbers & Primality Tests"
+summary: "Generate the closest three-prime clusters up to a limit by scanning a sieve for the canonical triplet patterns."
+description: "Prime Triplet is the sieve-backed enumeration problem for triplets of the form `(p, p+2, p+6)` or `(p, p+4, p+6)`."
+dataStructures:
+  - Array
+techniques:
+  - Prime Sieve
+  - Number Theory
+  - Pattern Matching
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - prime triplets
+  - closest three-prime cluster
+  - prime pattern enumeration
+useCases:
+  - Listing prime triplets up to a limit
+  - Reusing a sieve to test small prime-gap patterns quickly
+  - Explaining why three nearby odd primes must follow restricted layouts
+complexity:
+  time: "O(n log log n)"
+  space: "O(n)"
+  notes: "The sieve builds primality once, and the later scan checks only the two admissible triplet layouts at each starting value."
+interviewSignals:
+  - The prompt asks for triplets rather than isolated primes or twin pairs.
+  - The intended optimization is to precompute primality and then test only the allowed prime-triplet shapes.
+relatedSlugs:
+  - sieve-of-eratosthenes
+  - twin-prime-numbers-1-to-100
+  - prime-check
+  - super-prime
+provenance:
+  - title: "GeeksforGeeks - Prime Triplet"
+    href: https://www.geeksforgeeks.org/dsa/prime-triplet/
+    kind: Reference
+  - title: "Wikipedia - Prime constellation"
+    href: https://en.wikipedia.org/wiki/Prime_k-tuple
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Prime triplets are the closest three-prime clusters that survive divisibility by `3`. For odd primes above `3`, the only canonical layouts are `(p, p + 2, p + 6)` and `(p, p + 4, p + 6)`, so the algorithm reduces to sieving once and checking those two patterns.
+
+## Worked Example
+
+Up to `25`, the canonical prime triplets are `[5, 7, 11]`, `[7, 11, 13]`, `[11, 13, 17]`, `[13, 17, 19]`, and `[17, 19, 23]`. Small exceptions such as `[3, 5, 7]` exist, but the standard coding prompt usually enumerates only the two canonical forms above.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function sieve(limit) {
+  const isPrime = new Array(limit + 1).fill(true);
+
+  if (limit >= 0) {
+    isPrime[0] = false;
+  }
+
+  if (limit >= 1) {
+    isPrime[1] = false;
+  }
+
+  for (let value = 2; value * value <= limit; value += 1) {
+    if (!isPrime[value]) {
+      continue;
+    }
+
+    for (let multiple = value * value; multiple <= limit; multiple += value) {
+      isPrime[multiple] = false;
+    }
+  }
+
+  return isPrime;
+}
+
+function primeTriplets(limit) {
+  if (!Number.isInteger(limit) || limit < 11) {
+    return [];
+  }
+
+  const isPrime = sieve(limit);
+  const triplets = [];
+
+  for (let value = 5; value + 6 <= limit; value += 1) {
+    if (!isPrime[value] || !isPrime[value + 6]) {
+      continue;
+    }
+
+    if (isPrime[value + 2]) {
+      triplets.push([value, value + 2, value + 6]);
+    }
+
+    if (isPrime[value + 4]) {
+      triplets.push([value, value + 4, value + 6]);
+    }
+  }
+
+  return triplets;
+}
+
+console.assert(JSON.stringify(primeTriplets(15)) === JSON.stringify([[5, 7, 11], [7, 11, 13]]), 'Prime triplets up to 15');
+console.assert(JSON.stringify(primeTriplets(25)) === JSON.stringify([[5, 7, 11], [7, 11, 13], [11, 13, 17], [13, 17, 19], [17, 19, 23]]), 'Prime triplets up to 25');
+console.assert(JSON.stringify(primeTriplets(10)) === JSON.stringify([]), 'Prime triplets up to 10');
+```
+
+```ts
+function sieve(limit: number): boolean[] {
+  const isPrime = new Array<boolean>(limit + 1).fill(true);
+
+  if (limit >= 0) {
+    isPrime[0] = false;
+  }
+
+  if (limit >= 1) {
+    isPrime[1] = false;
+  }
+
+  for (let value = 2; value * value <= limit; value += 1) {
+    if (!isPrime[value]) {
+      continue;
+    }
+
+    for (let multiple = value * value; multiple <= limit; multiple += value) {
+      isPrime[multiple] = false;
+    }
+  }
+
+  return isPrime;
+}
+
+export function primeTriplets(limit: number): Array<[number, number, number]> {
+  if (!Number.isInteger(limit) || limit < 11) {
+    return [];
+  }
+
+  const isPrime = sieve(limit);
+  const triplets: Array<[number, number, number]> = [];
+
+  for (let value = 5; value + 6 <= limit; value += 1) {
+    if (!isPrime[value] || !isPrime[value + 6]) {
+      continue;
+    }
+
+    if (isPrime[value + 2]) {
+      triplets.push([value, value + 2, value + 6]);
+    }
+
+    if (isPrime[value + 4]) {
+      triplets.push([value, value + 4, value + 6]);
+    }
+  }
+
+  return triplets;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Count only the triplets instead of returning them.
+- Include or exclude exceptional small triplets such as `[3, 5, 7]` explicitly.
+- Generalize the same scan to other fixed-gap prime constellations.
+
+## Common Pitfalls
+
+- Treating every three nearby primes as a valid canonical triplet even when the gaps do not match the allowed patterns.
+- Forgetting that one of every three odd numbers is divisible by `3`, which is why the canonical layouts are so constrained.
+- Recomputing primality from scratch for each candidate instead of using one sieve.

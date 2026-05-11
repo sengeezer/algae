@@ -1,0 +1,199 @@
+---
+title: Matrix Operations
+slug: matrix-operations
+category: Matrix
+summary: Follow a direction-changing walk through a binary matrix and return the last in-bounds cell before the path exits.
+description: "Matrix Operations is the grid-simulation problem that flips visited 1 cells to 0, turns clockwise, and tracks the final valid position before leaving the matrix."
+dataStructures:
+  - Matrix
+  - Array
+techniques:
+  - Simulation
+  - Direction Tracking
+  - State Mutation
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - end point of matrix traversal
+  - binary matrix exit cell
+  - matrix end point
+useCases:
+  - Simulating stateful movement on a grid
+  - Reasoning about direction changes caused by cell values
+  - Returning the last valid coordinate before a traversal leaves a matrix
+complexity:
+  time: O(rows * cols)
+  space: O(rows * cols)
+  notes: Copying the matrix keeps the helper pure while still using the source trick of clearing 1 cells after turning.
+interviewSignals:
+  - The matrix contains only 0 and 1 values.
+  - Hitting a 1 means both flipping the cell and turning clockwise.
+  - The requested answer is the final in-bounds coordinate, not the whole traversal path.
+relatedSlugs:
+  - rotate-matrix-clockwise-by-1
+  - sort-the-given-matrix
+  - row-echelon
+provenance:
+  - title: "GeeksforGeeks - Matrix Operations"
+    href: https://www.geeksforgeeks.org/problems/matrix-operations/1
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This prompt checks whether you can keep matrix state, movement direction, and stopping conditions synchronized. The key detail is that a `1` does two things at once: it changes the direction and it becomes `0` so the same turn does not happen again on a revisit.
+
+## Worked Example
+
+For `[[0, 1], [1, 0]]`, start at `[0, 0]` moving right. The `0` keeps the direction unchanged, so the walk moves to `[0, 1]`. That cell is `1`, so it flips to `0`, turns downward, and moves to `[1, 1]`. The next step would leave the matrix, so `[1, 1]` is the answer.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function validateBinaryMatrix(matrix) {
+  if (!Array.isArray(matrix) || matrix.length === 0 || !matrix.every((row) => Array.isArray(row))) {
+    throw new TypeError('matrix must be a non-empty 2D array');
+  }
+
+  const width = matrix[0].length;
+  if (width === 0) {
+    throw new TypeError('matrix rows must not be empty');
+  }
+
+  if (!matrix.every((row) => row.length === width && row.every((value) => value === 0 || value === 1))) {
+    throw new TypeError('matrix must contain only 0 and 1 values');
+  }
+}
+
+function matrixOperations(matrix) {
+  validateBinaryMatrix(matrix);
+
+  const state = matrix.map((row) => row.slice());
+  const directions = [
+    [0, 1],
+    [1, 0],
+    [0, -1],
+    [-1, 0],
+  ];
+
+  let row = 0;
+  let col = 0;
+  let directionIndex = 0;
+
+  while (true) {
+    if (state[row][col] === 1) {
+      state[row][col] = 0;
+      directionIndex = (directionIndex + 1) % directions.length;
+    }
+
+    const [rowStep, colStep] = directions[directionIndex];
+    const nextRow = row + rowStep;
+    const nextCol = col + colStep;
+
+    if (
+      nextRow < 0 ||
+      nextRow >= state.length ||
+      nextCol < 0 ||
+      nextCol >= state[0].length
+    ) {
+      return [row, col];
+    }
+
+    row = nextRow;
+    col = nextCol;
+  }
+}
+
+const firstExit = matrixOperations([
+  [0, 1],
+  [1, 0],
+]);
+console.assert(
+  JSON.stringify(firstExit) === JSON.stringify([1, 1]),
+  '2x2 example should exit from the bottom-right cell',
+);
+
+const secondExit = matrixOperations([
+  [0, 1, 1, 1, 0],
+  [1, 0, 1, 0, 1],
+  [1, 1, 1, 0, 0],
+]);
+console.assert(
+  JSON.stringify(secondExit) === JSON.stringify([2, 0]),
+  'larger example should exit from cell [2, 0]',
+);
+```
+
+```ts
+export type MatrixCoordinate = [number, number];
+
+function validateBinaryMatrix(matrix: number[][]): void {
+  if (!Array.isArray(matrix) || matrix.length === 0 || !matrix.every((row) => Array.isArray(row))) {
+    throw new TypeError('matrix must be a non-empty 2D array');
+  }
+
+  const width = matrix[0].length;
+  if (width === 0) {
+    throw new TypeError('matrix rows must not be empty');
+  }
+
+  if (!matrix.every((row) => row.length === width && row.every((value) => value === 0 || value === 1))) {
+    throw new TypeError('matrix must contain only 0 and 1 values');
+  }
+}
+
+export function matrixOperations(matrix: number[][]): MatrixCoordinate {
+  validateBinaryMatrix(matrix);
+
+  const state = matrix.map((row) => row.slice());
+  const directions: MatrixCoordinate[] = [
+    [0, 1],
+    [1, 0],
+    [0, -1],
+    [-1, 0],
+  ];
+
+  let row = 0;
+  let col = 0;
+  let directionIndex = 0;
+
+  while (true) {
+    if (state[row][col] === 1) {
+      state[row][col] = 0;
+      directionIndex = (directionIndex + 1) % directions.length;
+    }
+
+    const [rowStep, colStep] = directions[directionIndex];
+    const nextRow = row + rowStep;
+    const nextCol = col + colStep;
+
+    if (
+      nextRow < 0 ||
+      nextRow >= state.length ||
+      nextCol < 0 ||
+      nextCol >= state[0].length
+    ) {
+      return [row, col];
+    }
+
+    row = nextRow;
+    col = nextCol;
+  }
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you return the full visited path instead of only the exit cell?
+- Why does turning without clearing a `1` risk an infinite loop?
+- How would the solution change if left turns replaced clockwise turns?
+
+## Common Pitfalls
+
+- Returning the first out-of-bounds coordinate instead of the last valid one.
+- Turning after moving instead of before computing the next step from a `1` cell.
+- Mutating the caller's matrix unintentionally when a pure helper is easier to test.

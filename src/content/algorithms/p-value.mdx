@@ -1,0 +1,140 @@
+---
+title: P-value
+slug: p-value
+category: Mathematics
+summary: Approximate a one-tailed or two-tailed p-value from a z-score by evaluating the standard normal CDF.
+description: "P-value converts a test statistic into a tail probability that measures how surprising the observation would be under the null hypothesis."
+dataStructures:
+  - Number
+techniques:
+  - Hypothesis Testing
+  - Normal CDF Approximation
+  - Error Function Approximation
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - p value from z score
+  - two tailed p value
+  - tail probability from z statistic
+useCases:
+  - Turning a z-score into a hypothesis-testing decision aid
+  - Comparing one-tailed and two-tailed significance checks
+  - Building lightweight statistical helpers without external libraries
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The implementation approximates the standard normal CDF with an error-function polynomial.
+interviewSignals:
+  - The prompt gives a z-score or asks for significance from a standard normal test statistic.
+  - The solution must distinguish one-tailed from two-tailed probability.
+  - The p-value should shrink as the absolute z-score grows.
+relatedSlugs:
+  - confidence-interval
+  - variance-and-standard-deviation
+  - correlation-and-regression
+provenance:
+  - title: "GeeksforGeeks - P-Value: Comprehensive Guide to Understand, Apply and Interpret"
+    href: https://www.geeksforgeeks.org/machine-learning/p-value/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+P-value questions often show up after a z-score or test statistic has already been computed. The implementation challenge is not the test itself but converting the statistic into the correct one-tailed or two-tailed tail probability.
+
+## Worked Example
+
+For a z-score of `2.0`, the upper-tail probability under the standard normal curve is about `0.02275`.
+
+- one-tailed p-value: `0.02275`
+- two-tailed p-value: `2 * 0.02275 = 0.0455`
+
+So a two-tailed z-test with `z = 2.0` has `p ≈ 0.0455`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function errorFunction(x) {
+  const sign = x < 0 ? -1 : 1;
+  const absoluteX = Math.abs(x);
+  const a1 = 0.254829592;
+  const a2 = -0.284496736;
+  const a3 = 1.421413741;
+  const a4 = -1.453152027;
+  const a5 = 1.061405429;
+  const p = 0.3275911;
+  const t = 1 / (1 + p * absoluteX);
+  const polynomial = (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t;
+  const approximation = 1 - polynomial * Math.exp(-absoluteX * absoluteX);
+
+  return sign * approximation;
+}
+
+function standardNormalCdf(zScore) {
+  return 0.5 * (1 + errorFunction(zScore / Math.sqrt(2)));
+}
+
+function pValue(zScore, tails = 2) {
+  if (typeof zScore !== 'number' || !Number.isFinite(zScore)) {
+    throw new TypeError('zScore must be a finite number');
+  }
+
+  if (tails !== 1 && tails !== 2) {
+    throw new RangeError('tails must be 1 or 2');
+  }
+
+  const upperTail = 1 - standardNormalCdf(Math.abs(zScore));
+  return tails === 1 ? upperTail : Math.min(1, 2 * upperTail);
+}
+```
+
+```ts
+function errorFunction(x: number): number {
+  const sign = x < 0 ? -1 : 1;
+  const absoluteX = Math.abs(x);
+  const a1 = 0.254829592;
+  const a2 = -0.284496736;
+  const a3 = 1.421413741;
+  const a4 = -1.453152027;
+  const a5 = 1.061405429;
+  const p = 0.3275911;
+  const t = 1 / (1 + p * absoluteX);
+  const polynomial = (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t;
+  const approximation = 1 - polynomial * Math.exp(-absoluteX * absoluteX);
+
+  return sign * approximation;
+}
+
+function standardNormalCdf(zScore: number): number {
+  return 0.5 * (1 + errorFunction(zScore / Math.sqrt(2)));
+}
+
+export function pValue(zScore: number, tails = 2): number {
+  if (!Number.isFinite(zScore)) {
+    throw new TypeError('zScore must be a finite number');
+  }
+
+  if (tails !== 1 && tails !== 2) {
+    throw new RangeError('tails must be 1 or 2');
+  }
+
+  const upperTail = 1 - standardNormalCdf(Math.abs(zScore));
+  return tails === 1 ? upperTail : Math.min(1, 2 * upperTail);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Accept a t-statistic and degrees of freedom instead of a z-score.
+- Return the decision for a chosen significance level `alpha`.
+- Explain how p-value and confidence interval tell the same story from different angles.
+
+## Common Pitfalls
+
+- Forgetting to use the absolute value for a two-tailed test.
+- Confusing the p-value with the significance threshold `alpha`.
+- Reporting a generic p-value without specifying whether the test is one-tailed or two-tailed.

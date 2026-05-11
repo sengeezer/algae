@@ -1,0 +1,155 @@
+---
+title: Farey Sequence
+slug: farey-sequence
+category: "Number Theory"
+summary: Generate all reduced fractions between `0` and `1` with denominator at most `n`, in sorted order.
+description: Farey Sequence is the order-`n` fraction enumeration routine that emits every reduced rational in `[0, 1]` whose denominator is at most the given limit.
+dataStructures:
+  - Array
+  - Object
+techniques:
+  - Fraction Enumeration
+  - Number Theory
+  - Recurrence
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - farey fractions
+  - generate reduced fractions up to order n
+  - order n rational sequence
+useCases:
+  - Enumerating reduced fractions in sorted order
+  - Teaching recurrence-based fraction generation
+  - Contrasting full Farey enumeration with one-off rational approximation
+complexity:
+  time: O(m)
+  space: O(m)
+  notes: "The recurrence emits each Farey term once, where `m` is the number of fractions in the sequence."
+interviewSignals:
+  - The prompt asks for all reduced fractions of order `n`, not one approximation target.
+  - The intended solution uses neighboring Farey terms to derive the next fraction directly.
+relatedSlugs:
+  - farey-approximation
+  - get-euclid-gcd
+  - decimal-expansion
+provenance:
+  - title: "GeeksforGeeks - Farey Sequence"
+    href: https://www.geeksforgeeks.org/dsa/farey-sequence/
+    kind: Implementation
+  - title: "Wikipedia - Farey sequence"
+    href: https://en.wikipedia.org/wiki/Farey_sequence
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Farey-sequence questions are about enumeration rather than approximation. The task is to list every reduced fraction between `0 / 1` and `1 / 1` whose denominator stays within an order bound, while preserving sorted order without sorting a large candidate set afterward.
+
+## Worked Example
+
+For order `4`, the Farey sequence is `0 / 1`, `1 / 4`, `1 / 3`, `1 / 2`, `2 / 3`, `3 / 4`, and `1 / 1`. Each term is in lowest terms, and every denominator is at most `4`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function fareySequence(order) {
+  if (!Number.isInteger(order) || order < 1) {
+    throw new RangeError('Order must be a positive integer');
+  }
+
+  const sequence = [{ numerator: 0, denominator: 1 }];
+
+  let a = 0;
+  let b = 1;
+  let c = 1;
+  let d = order;
+
+  sequence.push({ numerator: c, denominator: d });
+
+  while (!(c === 1 && d === 1)) {
+    const step = Math.floor((order + b) / d);
+    const nextNumerator = step * c - a;
+    const nextDenominator = step * d - b;
+
+    a = c;
+    b = d;
+    c = nextNumerator;
+    d = nextDenominator;
+
+    sequence.push({ numerator: c, denominator: d });
+  }
+
+  return sequence;
+}
+
+console.assert(
+  JSON.stringify(fareySequence(1)) === JSON.stringify([
+    { numerator: 0, denominator: 1 },
+    { numerator: 1, denominator: 1 },
+  ]),
+  'Farey sequence of order 1'
+);
+
+console.assert(
+  JSON.stringify(fareySequence(4)) === JSON.stringify([
+    { numerator: 0, denominator: 1 },
+    { numerator: 1, denominator: 4 },
+    { numerator: 1, denominator: 3 },
+    { numerator: 1, denominator: 2 },
+    { numerator: 2, denominator: 3 },
+    { numerator: 3, denominator: 4 },
+    { numerator: 1, denominator: 1 },
+  ]),
+  'Farey sequence of order 4'
+);
+```
+
+```ts
+type FareyTerm = { numerator: number; denominator: number };
+
+export function fareySequence(order: number): FareyTerm[] {
+  if (!Number.isInteger(order) || order < 1) {
+    throw new RangeError('Order must be a positive integer');
+  }
+
+  const sequence: FareyTerm[] = [{ numerator: 0, denominator: 1 }];
+
+  let a = 0;
+  let b = 1;
+  let c = 1;
+  let d = order;
+
+  sequence.push({ numerator: c, denominator: d });
+
+  while (!(c === 1 && d === 1)) {
+    const step = Math.floor((order + b) / d);
+    const nextNumerator = step * c - a;
+    const nextDenominator = step * d - b;
+
+    a = c;
+    b = d;
+    c = nextNumerator;
+    d = nextDenominator;
+
+    sequence.push({ numerator: c, denominator: d });
+  }
+
+  return sequence;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Return the sequence as strings like `"a/b"` instead of structured terms.
+- Compare the full Farey sequence with the narrower `Farey Approximation` routine.
+- Explain why neighboring Farey terms satisfy `bc - ad = 1`.
+
+## Common Pitfalls
+
+- Generating every numerator-denominator pair and sorting afterward instead of using the recurrence.
+- Forgetting that every term must already be in reduced form.
+- Treating Farey-sequence generation as the same task as approximating one decimal target.

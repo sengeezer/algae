@@ -2127,6 +2127,161 @@ This one-hundred-seventy-seventh expansion slice lifts the catalog from 822 to 8
 - `Find the probability of reaching all points after N moves from point N` stays distinct from the earlier weighted-step probability entry because it returns the entire left-right random-walk distribution over the number line after exactly `N` moves instead of one target-point probability.
 - Focused JavaScript-fence validation, `npm run db:queue:mark-drafted`, `npm run db:catalog:seed`, `npm run lint`, `npx tsc --noEmit`, `npm run smoke:ui`, and targeted Playwright route checks all passed for batch 177 before publish; `npm run db:catalog:seed` synced 825 algorithms.
 - The `Probability for Programmers` subsection on the GeeksforGeeks Probability in Maths page is exhausted in source order after `Find the probability of reaching all points after N moves from point N`.
-- In the `Advanced Topics on Probability` subsection, `Probability Theory`, `Random Variable`, `Probability Distribution`, and `Probability Distribution Function` are broad overview pages, so the next clean queue starts from the first concrete distribution articles.
-- Destination-title cleanup in that next Probability queue is `Binomial Distribution` -> `Binomial Distribution in Probability`; `Poisson Distribution` and `Geometric Distribution` already match their destination titles.
-- The next clean Probability in Maths queue is `Poisson Distribution`, `Binomial Distribution in Probability`, and `Geometric Distribution`.
+- In the `Advanced Topics on Probability` subsection, `Probability Theory`, `Random Variable`, `Probability Distribution`, and `Probability Distribution Function` are broad overview pages, so the next clean queue starts from the first concrete distribution articles and runs through `Marginal Distribution`, the last remaining concrete absence on that page.
+- Destination-title cleanup in that next Probability queue is `Binomial Distribution` -> `Binomial Distribution in Probability`; `Poisson Distribution`, `Geometric Distribution`, and `Marginal Distribution` already match their destination titles.
+- The next clean Probability in Maths queue is `Poisson Distribution`, `Binomial Distribution in Probability`, `Geometric Distribution`, and `Marginal Distribution`.
+- On the GeeksforGeeks Statistics in Maths page, `Frequency Distribution`, `Central tendency`, `Measures of Spread`, `Real life Application of Statistics`, `Statistics for Economics`, `Categorical Data`, `Data Collection & Its Methods`, `Population vs Sample`, `Tests of Significance`, `Z-Score Table`, `Sampling Error Formula`, `Interpolation Formula`, and `Statistical Process Control (SPC)` stay skipped as overview, survey, or table-heavy reference pages rather than clean implementation prompts.
+- `Quartiles` is duplicate-level coverage of the existing `Interquartile Range (IQR)` entry because that article already computes `Q1` and `Q3` directly, and `Mean Deviation` is duplicate-level coverage of the existing `Mean Absolute Deviation` entry.
+- Destination-title cleanup in that next Statistics queue is `P-Value: Comprehensive Guide to Understand, Apply and Interpret` -> `P-value`; the other queued Statistics titles already match their destination titles.
+- The next clean Statistics in Maths queue is `Variance and Standard Deviation`, `Confidence Interval`, `Correlation and Regression`, `P-value`, `Anova Test`, and `Chi-Square Test`.
+
+## Batch 178 added
+
+This one-hundred-seventy-eighth expansion slice lifts the catalog from 825 to 833 entries.
+
+- Poisson Distribution
+- Binomial Distribution in Probability
+- Geometric Distribution
+- Marginal Distribution
+- Variance and Standard Deviation
+- Confidence Interval
+- Correlation and Regression
+- P-value
+
+## Current source-order note
+
+- `Poisson Distribution`, `Binomial Distribution in Probability`, `Geometric Distribution`, and `Marginal Distribution` stay distinct from the earlier probability helpers because they move the catalog from one-off event and random-walk probabilities into named distribution primitives, including discrete PMFs and marginalization over joint tables.
+- `Variance and Standard Deviation`, `Confidence Interval`, `Correlation and Regression`, and `P-value` stay distinct from the existing statistics coverage because they extend the catalog from descriptive summaries into inferential helpers, linear relationship measures, and tail-probability interpretation.
+- Focused JavaScript-fence validation, `npm run db:queue:mark-drafted`, `npm run db:catalog:seed`, `npm run lint`, `npx tsc --noEmit`, `npm run smoke:ui`, and targeted Playwright route checks all passed for batch 178 before publish; `npm run db:catalog:seed` synced 833 algorithms.
+- The `Advanced Topics on Probability` subsection on the GeeksforGeeks Probability in Maths page is exhausted in source order after `Marginal Distribution`.
+- On the GeeksforGeeks Statistics in Maths page, `Anova Test` and `Chi-Square Test` are now the only remaining clean source-ordered absences in that advanced-topics stretch.
+- Destination-title cleanup in that remaining Statistics queue is `Chi-Squared Test` -> `Chi-Square Test`; `Anova Test` already matches the destination title used by the statistics index.
+- The next clean Statistics in Maths queue is `Anova Test` and `Chi-Square Test`.
+
+## Current source-order note
+
+- `Anova Test` and `Chi-Square Test` are now locally drafted, so the GeeksforGeeks Statistics in Maths page is exhausted in source order after that two-item tail.
+- On the GeeksforGeeks Set Theory page, `Power Set` is duplicate-level coverage of the local subset-generation entries, the notation/symbol/formula pages and `De Morgan's Laws` are theory-heavy detours, and `Cartesian Product of Sets` is the lone concrete survivor rather than a sustainable queue source.
+- The next vetted source branch after that thin Set Theory detour is the GeeksforGeeks Number Theory page: https://www.geeksforgeeks.org/engineering-mathematics/number-theory/
+- On the Number Theory page, the opening `Number System`, `Basic Concepts`, and `Number Theory For Programmers` stretches remain duplicate-heavy because local coverage already includes base conversions, gcd/lcm, modular arithmetic, Euler totient, Chinese remainder theorem, many prime tests, and `Mobius Function`.
+- `Wilson's Theorem` stays distinct from the earlier primality-test entries because it turns prime checking into a factorial congruence criterion rather than a school-method, Fermat, Lucas, Vantieghems, or AKS test.
+- `Linear Diophantine Equations` stays distinct from the existing `Extended Euclidean GCD` entry because the interview surface is the solvability predicate for `ax + by = c`, not coefficient recovery itself.
+- Destination-title cleanup in the next Number Theory queue is `Mobius Inversion` -> `Introduction to Möbius inversion`; `Wilson's Theorem` and `Linear Diophantine Equations` already match their destination titles.
+- The next clean Number Theory queue is `Wilson's Theorem`, `Linear Diophantine Equations`, and `Introduction to Möbius inversion`.
+
+## Batch 179 added
+
+This one-hundred-seventy-ninth expansion slice lifts the catalog from 835 to 838 entries.
+
+- Wilson's Theorem
+- Linear Diophantine Equations
+- Introduction to Möbius inversion
+
+## Current source-order note
+
+- `Wilson's Theorem`, `Linear Diophantine Equations`, and `Introduction to Möbius inversion` stay distinct from the earlier number-theory catalog because they add one factorial-congruence primality criterion, one gcd-driven solvability wrapper for `ax + by = c`, and one full divisor-transform inversion technique on top of the already-covered `Mobius Function` pointwise classifier.
+- Focused JavaScript-fence validation, `npm run db:queue:mark-drafted`, `npm run db:catalog:seed`, `npm run lint`, `npx tsc --noEmit`, `npm run smoke:ui`, and targeted Playwright route checks all passed for batch 179 before publish; `npm run db:catalog:seed` synced 838 algorithms.
+- On the GeeksforGeeks Number Theory page, `Chinese Remainder Theorem`, `Bezout's Identity`, and `Mobius Function` remain duplicate-level coverage of existing local entries, while `Cousin Prime Numbers - Definition with Examples` is a thin definition detour without a stronger implementation surface and should stay skipped.
+- `Goldbach's Conjecture` stays distinct from the existing prime-test entries because the implementation surface is verifying or constructing prime partitions for a given even integer rather than deciding primality of one number.
+- `Twin Primes` resolves to the destination title `Twin Prime Numbers | 1 to 100`; it stays distinct from the existing co-prime and primality helpers because the task is to detect or enumerate prime pairs at gap `2`.
+- `Prime Triplet` stays distinct because it asks for sieve-backed enumeration of the `(p, p+2, p+6)` and `(p, p+4, p+6)` prime patterns up to a limit.
+- The next clean Number Theory queue is `Goldbach's Conjecture`, `Twin Prime Numbers | 1 to 100`, and `Prime Triplet`.
+
+## Batch 180 added
+
+This one-hundred-eightieth expansion slice lifts the catalog from 838 to 841 entries.
+
+- Goldbach's Conjecture
+- Twin Prime Numbers | 1 to 100
+- Prime Triplet
+
+## Current source-order note
+
+- `Goldbach's Conjecture`, `Twin Prime Numbers | 1 to 100`, and `Prime Triplet` stay distinct from the earlier number-theory catalog because they add one prime-partition constructor for even integers, one sieve-backed gap-`2` prime-pair enumerator, and one sieve-backed scan of the canonical `(p, p+2, p+6)` and `(p, p+4, p+6)` triplet patterns.
+- Focused JavaScript-fence validation, `npm run db:catalog:seed`, `npm run lint`, `npx tsc --noEmit`, `npm run smoke:ui`, and targeted Playwright route checks all passed for batch 180 before publish; `npm run db:catalog:seed` synced 841 algorithms.
+- On the GeeksforGeeks Number Theory page, `Cousin Prime Numbers - Definition with Examples` remains a thin definition detour without a stronger implementation surface, and the listed `Prime Quadruplets` link currently points at the already-covered `Pythagorean Quadruple`, so the prime-distribution branch is exhausted after batch 180.
+- In the opening `Miscellaneous Topics of Number Theory` stretch, `Catalan Numbers` and `Fibonacci Sequence` remain duplicate-level coverage of existing local entries.
+- `Farey Sequence` stays distinct because it enumerates every reduced fraction of order `n`, which is broader than the current `Farey Approximation` entry that only narrows one decimal target with mediants.
+- `Pigeonhole Principle` is a proof-oriented discrete-math detour rather than a strong implementation surface for this catalog, and `Perfect Numbers` remains duplicate-level coverage of the existing `Perfect Number` entry.
+- `Deficient Number` stays distinct because the local catalog does not yet expose the standalone deficient-number predicate, while `Abundant Number` stays distinct because the existing abundant-number coverage is only embedded as a subroutine inside `Problem 023`.
+- The next clean Number Theory queue is `Farey Sequence`, `Deficient Number`, and `Abundant Number`.
+
+## Batch 181 added
+
+This one-hundred-eighty-first expansion slice lifts the catalog from 841 to 844 entries.
+
+- Farey Sequence
+- Deficient Number
+- Abundant Number
+
+## Current source-order note
+
+- `Farey Sequence`, `Deficient Number`, and `Abundant Number` stay distinct from the earlier catalog because they add one full order-`n` reduced-fraction enumerator, one standalone deficient-number predicate, and one standalone abundant-number predicate instead of the narrower existing `Farey Approximation`, `Perfect Number`, and `Problem 023` surfaces.
+- Focused JavaScript-fence validation, `npm run db:catalog:seed`, `npm run lint`, `npx tsc --noEmit`, `npm run smoke:ui`, and targeted Playwright route checks all passed for batch 181 before publish; `npm run db:catalog:seed` synced 844 algorithms.
+- In the `Miscellaneous Topics of Number Theory` stretch, `Pairs of Amicable Numbers` stays distinct from `Problem 021` because the source task counts amicable pairs inside an input array rather than summing all amicable values below a limit.
+- `Automorphic Numbers` is duplicate-level coverage of the existing `Automorphic Number` entry, and `Perfect Numbers` remains duplicate-level coverage of the existing `Perfect Number` entry.
+- `Triangular Number Sequence` stays distinct because the local catalog does not yet expose the standalone figurate-number generator and position formulas for triangular numbers.
+- `Tetrahedral Number` stays distinct because the local catalog does not yet cover the closed-form sum-of-triangular-numbers pyramid sequence.
+- The next clean Number Theory queue is `Pairs of Amicable Numbers`, `Triangular Number Sequence`, and `Tetrahedral Number`.
+## Batch 182 added
+
+This one-hundred-eighty-second expansion slice lifts the catalog from 844 to 847 entries.
+
+- Pairs of Amicable Numbers
+- Triangular Number Sequence
+- Tetrahedral Number
+
+## Current source-order note
+
+- `Pairs of Amicable Numbers` stays distinct from `Problem 021` because the source task counts amicable pairs inside an input array rather than summing all amicable values below a limit.
+- `Triangular Number Sequence` stays distinct from the existing `Triangular Number` predicate because it adds the full generator, enumeration, and membership-test surface for the figurate-number sequence.
+- `Tetrahedral Number` stays distinct because the local catalog does not yet cover the closed-form sum-of-triangular-numbers pyramid sequence, which extends figurate-number coverage into 3D structures.
+- Focused JavaScript-fence validation, `npm run db:catalog:seed`, `npm run lint`, `npx tsc --noEmit`, `npm run smoke:ui`, and targeted Playwright route checks all passed for batch 182 before publish; `npm run db:catalog:seed` synced 847 algorithms.
+- On the GeeksforGeeks Number Theory page, the `Miscellaneous Topics of Number Theory` stretch is now exhausted in source order after `Tetrahedral Number`.
+- The GeeksforGeeks `Combinatorics` overview is duplicate-heavy at the top: `Combination`, `Permutation`, `Permutation and Combination`, and `Binomial Theorem` are already covered locally, while `Pigeonhole Principle` remains a proof-oriented detour instead of a strong next implementation surface.
+- The GeeksforGeeks `Probability in Maths` page is the next stronger source branch after those combinatorics skips; `Basic Concepts of Probability`, `Probability Formulas`, `Events in Probability`, and `Real-Life Applications of Probability` stay skipped as overview or formula-sheet material.
+- `Conditional Probability` stays distinct because the local catalog does not yet expose the direct `P(A | B)` update surface for dependent events.
+- `Bayes' Theorem` stays distinct because it adds posterior updating from priors and likelihoods, which goes beyond the existing marginal-distribution coverage.
+- `Probability of reaching a point with 2 or 3 steps at a time` stays distinct because it is a dynamic-programming probability recurrence over weighted step choices rather than the broader existing `Find the probability of reaching all points after N moves from point N` distribution builder.
+- The next clean Probability in Maths queue is `Conditional Probability`, `Bayes' Theorem`, and `Probability of reaching a point with 2 or 3 steps at a time`.
+
+## Batch 183 added
+
+This one-hundred-eighty-third expansion slice lifts the catalog from 847 to 849 entries.
+
+- Conditional Probability
+- Bayes' Theorem
+
+## Batch 184 added
+
+This one-hundred-eighty-fourth expansion slice lifts the catalog from 849 to 852 entries.
+
+- Program to calculate the length of the diagonal in a rectangle
+- Program to check similarity of given two triangles
+- Program to check congruency of two triangles
+
+## Batch 185 added
+
+This one-hundred-eighty-fifth expansion slice lifts the catalog from 852 to 854 entries.
+
+- 3 Sum - Pythagorean Triplet in an array
+- Find Pythagorean Triplet with given sum
+
+## Batch 186 added
+
+This one-hundred-eighty-sixth expansion slice lifts the catalog from 854 to 857 entries.
+
+- Matrix Operations
+- Rotate Matrix Clockwise by 1
+- Sort the given matrix
+
+## Current source-order note
+
+- `Matrix Operations` stays distinct from the local matrix catalog because it simulates a direction-changing walk over binary cells and returns the final in-bounds exit coordinate rather than computing an algebraic matrix transform.
+- `Rotate Matrix Clockwise by 1` stays distinct because it performs a one-step ring rotation, not a 90-degree rotation or multiplication-based transform.
+- `Sort the given matrix` stays distinct because it globally rebuilds matrix values in strict row-major order instead of searching, multiplying, or optimizing over an already structured grid.
+- Focused JavaScript-fence validation, `npm run db:catalog:seed`, `npm run lint`, `npx tsc --noEmit`, `npm run smoke:ui`, and targeted Playwright route checks all passed for batch 186 before publish; `npm run db:catalog:seed` synced 857 algorithms.
+- Within the GeeksforGeeks `Matrices for Programmers` subsection, `Program to multiply two matrices` remains a duplicate-level detour because the local catalog already has `Matrix Multiplication`.
+- Destination-title cleanup in the next Matrices for Programmers queue is `Find the row with the maximum number of 1s` -> `Find the row with maximum number of 1s` and `Boundary elements of a Matrix` -> `Boundary Elements of a Matrix`; `Check if a matrix is a Toeplitz Matrix` already matches its live destination title.
+- The next clean Matrices for Programmers queue is `Find the row with maximum number of 1s`, `Boundary Elements of a Matrix`, and `Check if a matrix is a Toeplitz Matrix`.
+- The later `Print a given matrix in spiral form` label currently points at the same boundary-elements destination URL, so it remains a duplicate-level follow-up to skip when the frontier reaches it.

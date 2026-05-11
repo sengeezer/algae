@@ -1,0 +1,226 @@
+---
+title: Chi-Square Test
+slug: chi-square-test
+category: Mathematics
+summary: Compute the chi-square statistic, expected table, and degrees of freedom for a contingency table.
+description: "Chi-Square Test compares observed and expected categorical counts to measure how strongly a contingency table departs from independence."
+dataStructures:
+  - Matrix
+  - Array
+  - Number
+techniques:
+  - Statistical Testing
+  - Table Aggregation
+  - Expected Frequency Calculation
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - chi squared test
+  - chi square contingency test
+  - test of independence
+useCases:
+  - Testing independence between categorical variables
+  - Building simple analytics checks for contingency tables
+  - Preparing expected-frequency tables before significance lookup
+complexity:
+  time: O(r * c)
+  space: O(r * c)
+  notes: The helper computes row totals, column totals, and an expected table before accumulating the chi-square statistic.
+interviewSignals:
+  - The prompt provides a contingency table of observed counts.
+  - The intended solution compares observed frequencies against independence-based expected frequencies.
+  - The result should include both the statistic and the degrees of freedom.
+relatedSlugs:
+  - p-value
+  - confidence-interval
+  - anova-test
+provenance:
+  - title: "GeeksforGeeks - Chi-Square Test"
+    href: https://www.geeksforgeeks.org/maths/chi-square-test/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Chi-square is a common categorical-data follow-up once averages and distributions are already covered. The implementation is mostly bookkeeping: compute expected counts from row and column totals, then accumulate the squared standardized deviations.
+
+## Worked Example
+
+For the table `[[20, 15, 10], [25, 20, 30]]`:
+
+- row totals: `[45, 75]`
+- column totals: `[45, 35, 40]`
+- expected first row: `[16.875, 13.125, 15]`
+- chi-square statistic: `≈ 4.0212`
+- degrees of freedom: `(2 - 1) * (3 - 1) = 2`
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function chiSquareTest(observedTable) {
+  if (!Array.isArray(observedTable) || observedTable.length < 2) {
+    throw new RangeError('Expected at least two rows in the contingency table');
+  }
+
+  const columnCount = Array.isArray(observedTable[0]) ? observedTable[0].length : 0;
+
+  if (columnCount < 2) {
+    throw new RangeError('Expected at least two columns in the contingency table');
+  }
+
+  const rowTotals = [];
+  const columnTotals = new Array(columnCount).fill(0);
+  let grandTotal = 0;
+
+  for (const row of observedTable) {
+    if (!Array.isArray(row) || row.length !== columnCount) {
+      throw new RangeError('All rows must have the same number of columns');
+    }
+
+    let rowTotal = 0;
+
+    for (let columnIndex = 0; columnIndex < columnCount; columnIndex += 1) {
+      const value = row[columnIndex];
+
+      if (typeof value !== 'number' || !Number.isFinite(value) || value < 0) {
+        throw new TypeError('Observed frequencies must be non-negative finite numbers');
+      }
+
+      rowTotal += value;
+      columnTotals[columnIndex] += value;
+      grandTotal += value;
+    }
+
+    rowTotals.push(rowTotal);
+  }
+
+  if (grandTotal === 0) {
+    throw new RangeError('Observed frequencies must sum to a positive total');
+  }
+
+  const expectedTable = observedTable.map((row, rowIndex) =>
+    row.map((_, columnIndex) => (rowTotals[rowIndex] * columnTotals[columnIndex]) / grandTotal),
+  );
+
+  let chiSquareStatistic = 0;
+
+  for (let rowIndex = 0; rowIndex < observedTable.length; rowIndex += 1) {
+    for (let columnIndex = 0; columnIndex < columnCount; columnIndex += 1) {
+      const observed = observedTable[rowIndex][columnIndex];
+      const expected = expectedTable[rowIndex][columnIndex];
+
+      if (expected === 0) {
+        throw new RangeError('Expected frequencies must be positive in every cell');
+      }
+
+      const difference = observed - expected;
+      chiSquareStatistic += (difference * difference) / expected;
+    }
+  }
+
+  return {
+    rowTotals,
+    columnTotals,
+    grandTotal,
+    expectedTable,
+    degreesOfFreedom: (observedTable.length - 1) * (columnCount - 1),
+    chiSquareStatistic,
+  };
+}
+```
+
+```ts
+export function chiSquareTest(observedTable: number[][]): {
+  rowTotals: number[];
+  columnTotals: number[];
+  grandTotal: number;
+  expectedTable: number[][];
+  degreesOfFreedom: number;
+  chiSquareStatistic: number;
+} {
+  if (!Array.isArray(observedTable) || observedTable.length < 2) {
+    throw new RangeError('Expected at least two rows in the contingency table');
+  }
+
+  const columnCount = Array.isArray(observedTable[0]) ? observedTable[0].length : 0;
+
+  if (columnCount < 2) {
+    throw new RangeError('Expected at least two columns in the contingency table');
+  }
+
+  const rowTotals: number[] = [];
+  const columnTotals = new Array<number>(columnCount).fill(0);
+  let grandTotal = 0;
+
+  for (const row of observedTable) {
+    if (!Array.isArray(row) || row.length !== columnCount) {
+      throw new RangeError('All rows must have the same number of columns');
+    }
+
+    let rowTotal = 0;
+
+    for (let columnIndex = 0; columnIndex < columnCount; columnIndex += 1) {
+      const value = row[columnIndex];
+
+      if (!Number.isFinite(value) || value < 0) {
+        throw new TypeError('Observed frequencies must be non-negative finite numbers');
+      }
+
+      rowTotal += value;
+      columnTotals[columnIndex] += value;
+      grandTotal += value;
+    }
+
+    rowTotals.push(rowTotal);
+  }
+
+  if (grandTotal === 0) {
+    throw new RangeError('Observed frequencies must sum to a positive total');
+  }
+
+  const expectedTable = observedTable.map((row, rowIndex) =>
+    row.map((_, columnIndex) => (rowTotals[rowIndex] * columnTotals[columnIndex]) / grandTotal),
+  );
+
+  let chiSquareStatistic = 0;
+
+  for (let rowIndex = 0; rowIndex < observedTable.length; rowIndex += 1) {
+    for (let columnIndex = 0; columnIndex < columnCount; columnIndex += 1) {
+      const observed = observedTable[rowIndex][columnIndex];
+      const expected = expectedTable[rowIndex][columnIndex];
+
+      if (expected === 0) {
+        throw new RangeError('Expected frequencies must be positive in every cell');
+      }
+
+      const difference = observed - expected;
+      chiSquareStatistic += (difference * difference) / expected;
+    }
+  }
+
+  return {
+    rowTotals,
+    columnTotals,
+    grandTotal,
+    expectedTable,
+    degreesOfFreedom: (observedTable.length - 1) * (columnCount - 1),
+    chiSquareStatistic,
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Add a goodness-of-fit mode that accepts one observed vector and one expected vector.
+- Approximate or look up a p-value from the chi-square distribution.
+- Emit a decision flag for a provided significance threshold and critical value.
+
+## Common Pitfalls
+
+- Using raw observed counts as expected counts instead of deriving them from row and column totals.
+- Applying the test to non-categorical measurements without binning them first.
+- Forgetting that a significant chi-square result indicates association, not causation.

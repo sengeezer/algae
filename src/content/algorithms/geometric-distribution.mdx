@@ -1,0 +1,100 @@
+---
+title: Geometric Distribution
+slug: geometric-distribution
+category: Mathematics
+summary: Return the probability that the first success happens on a specific trial in repeated Bernoulli experiments.
+description: "Geometric Distribution models the first-success probability in independent trials with constant success probability."
+dataStructures:
+  - Number
+techniques:
+  - Probability Distribution
+  - Formula Evaluation
+  - Bernoulli Trials
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - geometric pmf
+  - first success probability
+  - geometric probability distribution
+useCases:
+  - Modeling the waiting time until the first success
+  - Evaluating retry loops or repeated independent attempts
+  - Practicing discrete probability formulas with an off-by-one exponent
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The PMF uses a direct closed form with no iteration.
+interviewSignals:
+  - The prompt asks when the first success occurs rather than how many successes occur.
+  - Trials are independent and each trial has the same success probability.
+  - The intended formula is `(1 - p)^(x - 1) * p`.
+relatedSlugs:
+  - binomial-distribution-in-probability
+  - poisson-distribution
+  - probability-of-reaching-a-point-with-2-or-3-steps-at-a-time
+provenance:
+  - title: "GeeksforGeeks - Geometric Distribution"
+    href: https://www.geeksforgeeks.org/maths/geometric-distribution/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Geometric distribution is the clean model for waiting time until the first success. It looks similar to binomial at first glance, but the exponent belongs on the failures before the success, which is where most mistakes happen.
+
+## Worked Example
+
+If the probability of success on each attempt is `0.4`, the probability that the first success happens on trial `3` is:
+
+`(1 - 0.4)^(3 - 1) * 0.4 = 0.6^2 * 0.4 = 0.144`
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function geometricDistribution(successProbability, trialNumber) {
+  if (
+    typeof successProbability !== 'number' ||
+    !Number.isFinite(successProbability) ||
+    successProbability < 0 ||
+    successProbability > 1
+  ) {
+    throw new RangeError('successProbability must be between 0 and 1');
+  }
+
+  if (!Number.isInteger(trialNumber) || trialNumber <= 0) {
+    throw new RangeError('trialNumber must be a positive integer');
+  }
+
+  return (1 - successProbability) ** (trialNumber - 1) * successProbability;
+}
+```
+
+```ts
+export function geometricDistribution(successProbability: number, trialNumber: number): number {
+  if (!Number.isFinite(successProbability) || successProbability < 0 || successProbability > 1) {
+    throw new RangeError('successProbability must be between 0 and 1');
+  }
+
+  if (!Number.isInteger(trialNumber) || trialNumber <= 0) {
+    throw new RangeError('trialNumber must be a positive integer');
+  }
+
+  return (1 - successProbability) ** (trialNumber - 1) * successProbability;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Add the cumulative probability of succeeding by or before trial `x`.
+- Return the expected trial count `1 / p` and variance `(1 - p) / p^2`.
+- Contrast this waiting-time model with the fixed-trial binomial distribution.
+
+## Common Pitfalls
+
+- Using `trialNumber` instead of `trialNumber - 1` in the failure exponent.
+- Treating the prompt as a binomial count problem instead of a first-success problem.
+- Forgetting that the trial number starts at `1`, not `0`.

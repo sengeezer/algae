@@ -1,0 +1,172 @@
+---
+title: "3 Sum - Pythagorean Triplet in an array"
+slug: "3-sum-pythagorean-triplet-in-an-array"
+category: Mathematics
+summary: Check whether an unsorted input array contains any three values that satisfy the Pythagorean equation.
+description: "3 Sum - Pythagorean Triplet in an array is the array-based existence check that sorts candidate side lengths and searches for a^2 + b^2 = c^2 with two pointers."
+dataStructures:
+  - Array
+  - Number
+techniques:
+  - Two Pointers
+  - Sorting
+  - Square Comparison
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - pythagorean triplet in array
+  - array pythagorean 3 sum
+  - find a2 plus b2 equals c2 in an array
+useCases:
+  - Detecting whether raw numeric input can form an integer right triangle
+  - Reusing two-pointer search after sorting numeric measurements
+  - Translating a geometry predicate into an array problem
+complexity:
+  time: O(n^2)
+  space: O(n)
+  notes: Sorting a copy of the array takes O(n log n), then each candidate hypotenuse is scanned once with two pointers.
+interviewSignals:
+  - The input is an unsorted array rather than a target perimeter.
+  - The output is primarily whether a valid triplet exists, possibly with one witness triplet.
+  - Sorting plus two pointers is the intended improvement over a cubic scan.
+relatedSlugs:
+  - generate-pythagorean-triplets
+  - problem009
+  - find-pythagorean-triplet-with-given-sum
+provenance:
+  - title: "GeeksforGeeks - 3 Sum - Pythagorean Triplet in an array"
+    href: https://www.geeksforgeeks.org/dsa/find-pythagorean-triplet-in-an-unsorted-array/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is the array-search version of the Pythagorean triplet problem. The important observation is that after sorting the candidate side lengths, you can fix the largest value as `c` and use two pointers to search the smaller prefix for `a^2 + b^2 = c^2`.
+
+## Worked Example
+
+For `[3, 1, 4, 6, 5]`, sorting gives `[1, 3, 4, 5, 6]`. Fixing `5` as the candidate hypotenuse reveals `3^2 + 4^2 = 5^2`, so the array does contain a Pythagorean triplet.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function validatePositiveIntegerArray(values) {
+  if (!Array.isArray(values)) {
+    throw new TypeError('values must be an array');
+  }
+
+  if (!values.every((value) => Number.isInteger(value) && value > 0)) {
+    throw new TypeError('values must contain only positive integers');
+  }
+}
+
+function findPythagoreanTripletInArray(values) {
+  validatePositiveIntegerArray(values);
+
+  if (values.length < 3) {
+    return null;
+  }
+
+  const sorted = [...values].sort((left, right) => left - right);
+
+  for (let hypotenuseIndex = sorted.length - 1; hypotenuseIndex >= 2; hypotenuseIndex -= 1) {
+    let left = 0;
+    let right = hypotenuseIndex - 1;
+    const target = sorted[hypotenuseIndex] * sorted[hypotenuseIndex];
+
+    while (left < right) {
+      const sumOfSquares = sorted[left] * sorted[left] + sorted[right] * sorted[right];
+
+      if (sumOfSquares === target) {
+        return [sorted[left], sorted[right], sorted[hypotenuseIndex]];
+      }
+
+      if (sumOfSquares < target) {
+        left += 1;
+      } else {
+        right -= 1;
+      }
+    }
+  }
+
+  return null;
+}
+
+function threeSumPythagoreanTripletInAnArray(values) {
+  return findPythagoreanTripletInArray(values) !== null;
+}
+
+const foundTriplet = findPythagoreanTripletInArray([3, 1, 4, 6, 5]);
+console.assert(
+  JSON.stringify(foundTriplet) === JSON.stringify([3, 4, 5]),
+  'array should reveal the triplet 3, 4, 5'
+);
+console.assert(
+  threeSumPythagoreanTripletInAnArray([10, 4, 6, 12, 5]) === false,
+  'array without a valid triple should return false'
+);
+```
+
+```ts
+export type PythagoreanTriplet = [number, number, number];
+
+function validatePositiveIntegerArray(values: number[]): void {
+  if (!values.every((value) => Number.isInteger(value) && value > 0)) {
+    throw new TypeError('values must contain only positive integers');
+  }
+}
+
+export function findPythagoreanTripletInArray(
+  values: number[],
+): PythagoreanTriplet | null {
+  validatePositiveIntegerArray(values);
+
+  if (values.length < 3) {
+    return null;
+  }
+
+  const sorted = [...values].sort((left, right) => left - right);
+
+  for (let hypotenuseIndex = sorted.length - 1; hypotenuseIndex >= 2; hypotenuseIndex -= 1) {
+    let left = 0;
+    let right = hypotenuseIndex - 1;
+    const target = sorted[hypotenuseIndex] * sorted[hypotenuseIndex];
+
+    while (left < right) {
+      const sumOfSquares = sorted[left] * sorted[left] + sorted[right] * sorted[right];
+
+      if (sumOfSquares === target) {
+        return [sorted[left], sorted[right], sorted[hypotenuseIndex]];
+      }
+
+      if (sumOfSquares < target) {
+        left += 1;
+      } else {
+        right -= 1;
+      }
+    }
+  }
+
+  return null;
+}
+
+export function threeSumPythagoreanTripletInAnArray(values: number[]): boolean {
+  return findPythagoreanTripletInArray(values) !== null;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you return all matching triplets instead of the first witness triplet?
+- Why does sorting make the two-pointer search valid here?
+- When would a hashing approach be preferable to the sorted two-pointer version?
+
+## Common Pitfalls
+
+- Checking every triple with three loops even after sorting would support a tighter search.
+- Comparing raw side sums instead of squared values.
+- Forgetting that the prompt uses positive integers, so zero and negative inputs should be rejected.

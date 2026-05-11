@@ -5,12 +5,18 @@ import { importEditorialQueueFromMarkdown } from "../src/lib/editorial-queue";
 async function main() {
   loadEnvConfig(process.cwd());
 
-  const { sourceLabel, titles } = await importEditorialQueueFromMarkdown(process.argv[2]);
+  const { queues, totalTitles } = await importEditorialQueueFromMarkdown(process.argv[2]);
 
-  console.log(`Imported ${titles.length} queued items for ${sourceLabel}.`);
+  console.log(
+    `Imported ${totalTitles} queued items across ${queues.length} source queue${queues.length === 1 ? "" : "s"}.`,
+  );
 
-  for (const [index, title] of titles.entries()) {
-    console.log(`${index + 1}. ${title}`);
+  for (const queue of queues) {
+    console.log(`\n${queue.sourceLabel}:`);
+
+    for (const [index, title] of queue.titles.entries()) {
+      console.log(`${index + 1}. ${title}`);
+    }
   }
 }
 

@@ -1,0 +1,207 @@
+---
+title: Linear Diophantine Equations
+slug: linear-diophantine-equations
+category: "Number Theory"
+summary: Determine whether `ax + by = c` has integer solutions and recover one particular solution when it does.
+description: "Linear Diophantine Equations wraps Bezout's identity into a solvability test for ax + by = c, with one concrete integer solution and the step sizes for the full family."
+dataStructures:
+  - Number
+  - Object
+techniques:
+  - Number Theory
+  - Extended Euclidean Algorithm
+  - Bezout Identity
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - ax plus by equals c
+  - diophantine solvability test
+  - linear dio equation
+useCases:
+  - Deciding whether a coin or balance equation has an integer solution
+  - Producing one witness pair for `ax + by = c`
+  - Reusing gcd structure in modular and congruence follow-up questions
+complexity:
+  time: O(log(min(|a|, |b|)))
+  space: O(1)
+  notes: "One extended-Euclid pass gives both the gcd and the coefficient pair needed to scale to a solution for c."
+interviewSignals:
+  - The prompt asks whether integers x and y can satisfy `ax + by = c`.
+  - The intended shortcut is gcd divisibility, not brute-force search over integer pairs.
+  - A natural follow-up asks for one solution or the step pattern for all solutions.
+relatedSlugs:
+  - extended-euclidean-gcd
+  - modular-division
+  - using-chinese-remainder-theorem-to-combine-modular-equations
+provenance:
+  - title: "GeeksforGeeks - Linear Diophantine Equations"
+    href: https://www.geeksforgeeks.org/dsa/linear-diophantine-equations/
+    kind: Implementation
+  - title: "Wikipedia - Linear Diophantine equation"
+    href: https://en.wikipedia.org/wiki/Diophantine_equation#Linear_Diophantine_equations
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is where gcd becomes more than a divisor check. Once you know that `gcd(a, b)` divides every value of `ax + by`, the whole feasibility question collapses to one divisibility test, and extended Euclid gives the witness pair immediately.
+
+## Worked Example
+
+For `3x + 6y = 9`, `gcd(3, 6) = 3`, and `3` divides `9`, so a solution exists. One valid pair is `x = 3`, `y = 0`.
+
+For `3x + 6y = 8`, the same gcd is `3`, but `3` does not divide `8`, so no integer solution can exist.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function extendedGcd(a, b) {
+  let oldR = Math.abs(a);
+  let r = Math.abs(b);
+  let oldS = 1;
+  let s = 0;
+  let oldT = 0;
+  let t = 1;
+
+  while (r !== 0) {
+    const quotient = Math.floor(oldR / r);
+    [oldR, r] = [r, oldR - quotient * r];
+    [oldS, s] = [s, oldS - quotient * s];
+    [oldT, t] = [t, oldT - quotient * t];
+  }
+
+  return {
+    gcd: oldR,
+    x: a < 0 ? -oldS : oldS,
+    y: b < 0 ? -oldT : oldT,
+  };
+}
+
+function linearDiophantineEquations(a, b, c) {
+  if (![a, b, c].every((value) => Number.isInteger(value))) {
+    throw new TypeError('Coefficients and target must be integers');
+  }
+
+  if (a === 0 && b === 0) {
+    throw new RangeError('At least one coefficient must be non-zero');
+  }
+
+  const { gcd, x, y } = extendedGcd(a, b);
+
+  if (c % gcd !== 0) {
+    return {
+      hasSolution: false,
+      gcd,
+      x: null,
+      y: null,
+      stepX: null,
+      stepY: null,
+    };
+  }
+
+  const scale = c / gcd;
+
+  return {
+    hasSolution: true,
+    gcd,
+    x: x * scale,
+    y: y * scale,
+    stepX: b / gcd,
+    stepY: -a / gcd,
+  };
+}
+
+const first = linearDiophantineEquations(3, 6, 9);
+console.assert(first.hasSolution === true, '3x + 6y = 9 should be solvable');
+console.assert(first.x !== null && first.y !== null && 3 * first.x + 6 * first.y === 9, 'Returned pair should satisfy the equation');
+
+const second = linearDiophantineEquations(3, 6, 8);
+console.assert(second.hasSolution === false, '3x + 6y = 8 should be unsolvable');
+
+const third = linearDiophantineEquations(2, 5, 1);
+console.assert(third.hasSolution === true, '2x + 5y = 1 should be solvable');
+console.assert(third.x !== null && third.y !== null && 2 * third.x + 5 * third.y === 1, 'A returned pair should satisfy 2x + 5y = 1');
+```
+
+```ts
+type LinearDiophantineResult = {
+  hasSolution: boolean;
+  gcd: number;
+  x: number | null;
+  y: number | null;
+  stepX: number | null;
+  stepY: number | null;
+};
+
+function extendedGcd(a: number, b: number): { gcd: number; x: number; y: number } {
+  let oldR = Math.abs(a);
+  let r = Math.abs(b);
+  let oldS = 1;
+  let s = 0;
+  let oldT = 0;
+  let t = 1;
+
+  while (r !== 0) {
+    const quotient = Math.floor(oldR / r);
+    [oldR, r] = [r, oldR - quotient * r];
+    [oldS, s] = [s, oldS - quotient * s];
+    [oldT, t] = [t, oldT - quotient * t];
+  }
+
+  return {
+    gcd: oldR,
+    x: a < 0 ? -oldS : oldS,
+    y: b < 0 ? -oldT : oldT,
+  };
+}
+
+export function linearDiophantineEquations(a: number, b: number, c: number): LinearDiophantineResult {
+  if (![a, b, c].every((value) => Number.isInteger(value))) {
+    throw new TypeError('Coefficients and target must be integers');
+  }
+
+  if (a === 0 && b === 0) {
+    throw new RangeError('At least one coefficient must be non-zero');
+  }
+
+  const { gcd, x, y } = extendedGcd(a, b);
+
+  if (c % gcd !== 0) {
+    return {
+      hasSolution: false,
+      gcd,
+      x: null,
+      y: null,
+      stepX: null,
+      stepY: null,
+    };
+  }
+
+  const scale = c / gcd;
+
+  return {
+    hasSolution: true,
+    gcd,
+    x: x * scale,
+    y: y * scale,
+    stepX: b / gcd,
+    stepY: -a / gcd,
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Write the full family of solutions from one returned pair using `x = x0 + k * (b / g)` and `y = y0 - k * (a / g)`.
+- Reduce the same reasoning to modular inverse questions when `c = 1`.
+- Compare this wrapper with the lower-level `Extended Euclidean GCD` entry.
+
+## Common Pitfalls
+
+- Brute-forcing candidate `x` and `y` pairs instead of using gcd divisibility.
+- Forgetting that the input coefficients may be negative, so the returned witness must respect the original signs.
+- Returning only a boolean and omitting the particular solution even though extended Euclid already computed it.

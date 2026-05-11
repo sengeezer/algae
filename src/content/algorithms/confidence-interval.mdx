@@ -1,0 +1,140 @@
+---
+title: Confidence Interval
+slug: confidence-interval
+category: Mathematics
+summary: Compute a lower and upper estimate around a sample mean using standard error and a critical value.
+description: "Confidence Interval turns summary statistics into an uncertainty range by combining the sample mean with a margin of error derived from the standard error."
+dataStructures:
+  - Number
+techniques:
+  - Statistical Estimation
+  - Standard Error
+  - Interval Calculation
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - confidence interval in statistics
+  - mean estimate interval
+  - margin of error interval
+useCases:
+  - Reporting uncertainty around a sample estimate
+  - Building A/B test and survey-reporting helpers
+  - Separating point estimates from interval estimates
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: The helper assumes the caller already chose the correct z or t critical value.
+interviewSignals:
+  - The prompt gives a sample mean, standard deviation, sample size, and confidence level or critical value.
+  - The intended computation is `estimate +/- criticalValue * standardError`.
+  - The result should include both the margin of error and the final range.
+relatedSlugs:
+  - variance-and-standard-deviation
+  - p-value
+  - average-mean
+provenance:
+  - title: "GeeksforGeeks - Confidence Interval"
+    href: https://www.geeksforgeeks.org/dsa/confidence-interval/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Confidence intervals are the shortest path from descriptive statistics into statistical inference. The implementation is small, but it still tests whether you keep the confidence level, critical value, standard error, and margin of error conceptually separate.
+
+## Worked Example
+
+Suppose a sample has mean `4.63`, standard deviation `0.54`, sample size `50`, and a `95%` z-critical value of `1.96`.
+
+- standard error: `0.54 / sqrt(50) ≈ 0.07637`
+- margin of error: `1.96 * 0.07637 ≈ 0.14969`
+- confidence interval: `4.63 +/- 0.14969 ≈ [4.4803, 4.7797]`
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function confidenceInterval(sampleMean, standardDeviation, sampleSize, criticalValue) {
+  if (typeof sampleMean !== 'number' || !Number.isFinite(sampleMean)) {
+    throw new TypeError('sampleMean must be a finite number');
+  }
+
+  if (
+    typeof standardDeviation !== 'number' ||
+    !Number.isFinite(standardDeviation) ||
+    standardDeviation < 0
+  ) {
+    throw new RangeError('standardDeviation must be a non-negative finite number');
+  }
+
+  if (!Number.isInteger(sampleSize) || sampleSize <= 0) {
+    throw new RangeError('sampleSize must be a positive integer');
+  }
+
+  if (typeof criticalValue !== 'number' || !Number.isFinite(criticalValue) || criticalValue <= 0) {
+    throw new RangeError('criticalValue must be a positive finite number');
+  }
+
+  const standardError = standardDeviation / Math.sqrt(sampleSize);
+  const marginOfError = criticalValue * standardError;
+
+  return {
+    marginOfError,
+    lowerBound: sampleMean - marginOfError,
+    upperBound: sampleMean + marginOfError,
+  };
+}
+```
+
+```ts
+export function confidenceInterval(
+  sampleMean: number,
+  standardDeviation: number,
+  sampleSize: number,
+  criticalValue: number,
+): {
+  marginOfError: number;
+  lowerBound: number;
+  upperBound: number;
+} {
+  if (!Number.isFinite(sampleMean)) {
+    throw new TypeError('sampleMean must be a finite number');
+  }
+
+  if (!Number.isFinite(standardDeviation) || standardDeviation < 0) {
+    throw new RangeError('standardDeviation must be a non-negative finite number');
+  }
+
+  if (!Number.isInteger(sampleSize) || sampleSize <= 0) {
+    throw new RangeError('sampleSize must be a positive integer');
+  }
+
+  if (!Number.isFinite(criticalValue) || criticalValue <= 0) {
+    throw new RangeError('criticalValue must be a positive finite number');
+  }
+
+  const standardError = standardDeviation / Math.sqrt(sampleSize);
+  const marginOfError = criticalValue * standardError;
+
+  return {
+    marginOfError,
+    lowerBound: sampleMean - marginOfError,
+    upperBound: sampleMean + marginOfError,
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Accept a confidence level and look up or approximate the matching z critical value.
+- Add proportion confidence intervals instead of mean-based intervals.
+- Compare a confidence interval with a hypothesis test on the same summary statistics.
+
+## Common Pitfalls
+
+- Confusing the confidence level (for example `95%`) with the critical value (`1.96`).
+- Forgetting the square root in the standard error.
+- Using variance where the formula expects standard deviation.

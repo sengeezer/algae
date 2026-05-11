@@ -1,0 +1,154 @@
+---
+title: Binomial Distribution in Probability
+slug: binomial-distribution-in-probability
+category: Mathematics
+summary: Compute the probability of getting exactly r successes in n independent trials with success probability p.
+description: "Binomial Distribution in Probability evaluates the probability mass function for repeated yes-or-no trials with constant success probability."
+dataStructures:
+  - Number
+techniques:
+  - Probability Distribution
+  - Combinatorics
+  - Formula Evaluation
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - binomial distribution
+  - binomial pmf
+  - exact successes in bernoulli trials
+useCases:
+  - Computing success counts in repeated coin-flip or defect-rate scenarios
+  - Turning Bernoulli-trial prompts into a direct probability formula
+  - Connecting combinatorics with probability mass functions
+complexity:
+  time: O(min(r, n - r))
+  space: O(1)
+  notes: The multiplicative `nCr` helper avoids full factorial expansion.
+interviewSignals:
+  - The prompt gives a fixed number of independent trials.
+  - Each trial has success and failure with the same probability each time.
+  - The question asks for exactly `r` successes.
+relatedSlugs:
+  - binomial-coefficient
+  - poisson-distribution
+  - geometric-distribution
+provenance:
+  - title: "GeeksforGeeks - Binomial Distribution in Probability"
+    href: https://www.geeksforgeeks.org/maths/binomial-distribution/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+This is the standard probability model for repeated binary outcomes. Once you recognize fixed independent trials with constant success probability, the implementation reduces to `nCr * p^r * (1 - p)^(n - r)`.
+
+## Worked Example
+
+If a fair coin is tossed `3` times, the probability of getting exactly `2` heads is:
+
+`C(3, 2) * 0.5^2 * 0.5^1 = 3 * 0.25 * 0.5 = 0.375`
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function binomialCoefficient(n, r) {
+  if (r < 0 || r > n) {
+    return 0;
+  }
+
+  const choose = Math.min(r, n - r);
+  let result = 1;
+
+  for (let step = 1; step <= choose; step += 1) {
+    result = (result * (n - choose + step)) / step;
+  }
+
+  return result;
+}
+
+function binomialDistributionInProbability(trials, successes, successProbability) {
+  if (!Number.isInteger(trials) || trials < 0) {
+    throw new RangeError('trials must be a non-negative integer');
+  }
+
+  if (!Number.isInteger(successes) || successes < 0 || successes > trials) {
+    throw new RangeError('successes must be an integer between 0 and trials');
+  }
+
+  if (
+    typeof successProbability !== 'number' ||
+    !Number.isFinite(successProbability) ||
+    successProbability < 0 ||
+    successProbability > 1
+  ) {
+    throw new RangeError('successProbability must be between 0 and 1');
+  }
+
+  const failureProbability = 1 - successProbability;
+
+  return (
+    binomialCoefficient(trials, successes) *
+    successProbability ** successes *
+    failureProbability ** (trials - successes)
+  );
+}
+```
+
+```ts
+function binomialCoefficient(n: number, r: number): number {
+  if (r < 0 || r > n) {
+    return 0;
+  }
+
+  const choose = Math.min(r, n - r);
+  let result = 1;
+
+  for (let step = 1; step <= choose; step += 1) {
+    result = (result * (n - choose + step)) / step;
+  }
+
+  return result;
+}
+
+export function binomialDistributionInProbability(
+  trials: number,
+  successes: number,
+  successProbability: number,
+): number {
+  if (!Number.isInteger(trials) || trials < 0) {
+    throw new RangeError('trials must be a non-negative integer');
+  }
+
+  if (!Number.isInteger(successes) || successes < 0 || successes > trials) {
+    throw new RangeError('successes must be an integer between 0 and trials');
+  }
+
+  if (!Number.isFinite(successProbability) || successProbability < 0 || successProbability > 1) {
+    throw new RangeError('successProbability must be between 0 and 1');
+  }
+
+  const failureProbability = 1 - successProbability;
+
+  return (
+    binomialCoefficient(trials, successes) *
+    successProbability ** successes *
+    failureProbability ** (trials - successes)
+  );
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Sum the PMF over a range to answer `at least` or `at most` questions.
+- Return the mean `n * p` and variance `n * p * (1 - p)` alongside the PMF.
+- Explain when Poisson becomes a good approximation.
+
+## Common Pitfalls
+
+- Using the model when the trials are not independent or the success probability changes.
+- Forgetting that the number of successes must lie between `0` and `n`.
+- Expanding factorials directly instead of using a reduced multiplicative combination helper.

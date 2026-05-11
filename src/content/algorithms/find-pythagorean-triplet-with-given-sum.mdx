@@ -1,0 +1,132 @@
+---
+title: Find Pythagorean Triplet with given sum
+slug: find-pythagorean-triplet-with-given-sum
+category: Mathematics
+summary: Enumerate all integer Pythagorean triplets whose three values add up to a target sum.
+description: "Find Pythagorean Triplet with given sum is the constrained triplet search that uses a fixed perimeter to derive c from a and b instead of scanning all three values independently."
+dataStructures:
+  - Array
+  - Number
+techniques:
+  - Constraint Pruning
+  - Nested Search
+  - Pythagorean Triplet Check
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - pythagorean triplet with target sum
+  - perimeter constrained pythagorean triplets
+  - triplets adding to a target
+useCases:
+  - Listing every integer right triangle with a fixed perimeter
+  - Showing how a sum constraint removes one full search loop
+  - Distinguishing a general perimeter query from Project Euler's product-only variant
+complexity:
+  time: O(s^2)
+  space: O(k)
+  notes: Once a and b are chosen, c is fixed by target - a - b, so the search avoids a cubic enumeration and stores only the matches.
+interviewSignals:
+  - The input is a single target sum rather than an array of candidates.
+  - The prompt asks for all matching triplets, not only one product or a boolean answer.
+  - The sum constraint should be used to derive c directly.
+relatedSlugs:
+  - problem009
+  - generate-pythagorean-triplets
+  - 3-sum-pythagorean-triplet-in-an-array
+provenance:
+  - title: "GeeksforGeeks - Find Pythagorean Triplet with given sum"
+    href: https://www.geeksforgeeks.org/dsa/pythagorean-triplet-given-sum/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This problem looks similar to a generic triplet generator, but the fixed target sum changes the search shape. Once `a` and `b` are chosen, `c` is already determined as `target - a - b`, so the real task is to scan the remaining pairs efficiently and keep every match.
+
+## Worked Example
+
+For `target = 60`, the valid integer right-triangle triples are `[10, 24, 26]` and `[15, 20, 25]`. Both satisfy `a + b + c = 60` and `a^2 + b^2 = c^2`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function findPythagoreanTripletWithGivenSum(target) {
+  if (!Number.isInteger(target) || target < 3) {
+    throw new RangeError('target must be an integer at least 3');
+  }
+
+  const triplets = [];
+
+  for (let a = 1; a < target / 3; a += 1) {
+    for (let b = a + 1; b < (target - a) / 2; b += 1) {
+      const c = target - a - b;
+
+      if (a * a + b * b === c * c) {
+        triplets.push([a, b, c]);
+      }
+    }
+  }
+
+  return triplets;
+}
+
+function hasPythagoreanTripletWithGivenSum(target) {
+  return findPythagoreanTripletWithGivenSum(target).length > 0;
+}
+
+const perimeterSixtyTriplets = findPythagoreanTripletWithGivenSum(60);
+console.assert(
+  JSON.stringify(perimeterSixtyTriplets) === JSON.stringify([[10, 24, 26], [15, 20, 25]]),
+  'sum 60 should yield exactly two triplets'
+);
+console.assert(
+  hasPythagoreanTripletWithGivenSum(4) === false,
+  'sum 4 should not yield any triplet'
+);
+```
+
+```ts
+export type PythagoreanTriplet = [number, number, number];
+
+export function findPythagoreanTripletWithGivenSum(
+  target: number,
+): PythagoreanTriplet[] {
+  if (!Number.isInteger(target) || target < 3) {
+    throw new RangeError('target must be an integer at least 3');
+  }
+
+  const triplets: PythagoreanTriplet[] = [];
+
+  for (let a = 1; a < target / 3; a += 1) {
+    for (let b = a + 1; b < (target - a) / 2; b += 1) {
+      const c = target - a - b;
+
+      if (a * a + b * b === c * c) {
+        triplets.push([a, b, c]);
+      }
+    }
+  }
+
+  return triplets;
+}
+
+export function hasPythagoreanTripletWithGivenSum(target: number): boolean {
+  return findPythagoreanTripletWithGivenSum(target).length > 0;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you rewrite the search to return only the first triplet or only the product `abc`?
+- Why does the fixed-sum condition let you remove the third loop completely?
+- When would Euclid's formula outperform this perimeter scan?
+
+## Common Pitfalls
+
+- Using three nested loops even though `c` is fixed once `a` and `b` are known.
+- Forgetting the ordering constraint `a < b < c`, which can create duplicates.
+- Returning a single product when the prompt asks for every valid triplet.

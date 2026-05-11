@@ -46,6 +46,11 @@ type ExtractedQueue = {
   titles: string[];
 };
 
+type ImportedQueues = {
+  queues: ExtractedQueue[];
+  totalTitles: number;
+};
+
 export const importedQueueNote =
   "Imported from catalog-expansion.md latest next clean queue.";
 
@@ -157,43 +162,60 @@ export async function updateEditorialQueueEntry({
 
 export async function importEditorialQueueFromMarkdown(
   markdownRelativePath = "catalog-expansion.md",
-): Promise<ExtractedQueue> {
+): Promise<ImportedQueues> {
   const markdownPath = path.resolve(process.cwd(), markdownRelativePath);
   const markdown = fs.readFileSync(markdownPath, "utf8");
-  const extractedQueue = extractLatestQueue(markdown);
+  const extractedQueues = extractLatestQueues(markdown);
   const sql = getDatabaseClient();
 
+  const sourceLabels = new Set<string>();
+
+  for (const { sourceLabel } of extractedQueues) {
+    if (sourceLabels.has(sourceLabel)) {
+      throw new Error(
+        `The latest source-order note declares multiple queues for ${sourceLabel}.`,
+      );
+    }
+
+    sourceLabels.add(sourceLabel);
+  }
+
   await sql.transaction([
-    sql`
-      delete from editorial_source_queue
-      where source_label = ${extractedQueue.sourceLabel}
-        and status = ${"queued" satisfies EditorialQueueStatus}
-        and notes = ${importedQueueNote}
-    `,
-    ...extractedQueue.titles.map((title, index) =>
+    ...extractedQueues.flatMap((queue) => [
       sql`
-        insert into editorial_source_queue (
-          source_label,
-          source_order,
-          title,
-          candidate_slug,
-          status,
-          notes,
-          updated_at
-        ) values (
-          ${extractedQueue.sourceLabel},
-          ${index + 1},
-          ${title},
-          ${buildCandidateSlug(title)},
-          ${"queued" satisfies EditorialQueueStatus},
-          ${importedQueueNote},
-          now()
-        )
+        delete from editorial_source_queue
+        where source_label = ${queue.sourceLabel}
+          and status = ${"queued" satisfies EditorialQueueStatus}
+          and notes = ${importedQueueNote}
       `,
-    ),
+      ...queue.titles.map((title, index) =>
+        sql`
+          insert into editorial_source_queue (
+            source_label,
+            source_order,
+            title,
+            candidate_slug,
+            status,
+            notes,
+            updated_at
+          ) values (
+            ${queue.sourceLabel},
+            ${index + 1},
+            ${title},
+            ${buildCandidateSlug(title)},
+            ${"queued" satisfies EditorialQueueStatus},
+            ${importedQueueNote},
+            now()
+          )
+        `,
+      ),
+    ]),
   ]);
 
-  return extractedQueue;
+  return {
+    queues: extractedQueues,
+    totalTitles: extractedQueues.reduce((count, queue) => count + queue.titles.length, 0),
+  };
 }
 
 export function buildCandidateSlug(title: string): string | null {
@@ -208,27 +230,44 @@ export function buildCandidateSlug(title: string): string | null {
   return candidateSlug.length > 0 ? candidateSlug : null;
 }
 
-function extractLatestQueue(markdown: string): ExtractedQueue {
-  const matches = Array.from(markdown.matchAll(latestQueuePattern));
-  const latestMatch = matches[matches.length - 1];
+function extractLatestQueues(markdown: string): ExtractedQueue[] {
+  const latestNoteBlock = extractLatestSourceOrderNoteBlock(markdown);
+  const matches = Array.from(latestNoteBlock.matchAll(latestQueuePattern));
 
-  if (!latestMatch) {
+  if (matches.length === 0) {
     throw new Error(
-      "Could not find a 'next clean ... queue' entry in catalog-expansion.md.",
+      "Could not find a 'next clean ... queue' entry in the latest 'Current source-order note' block.",
     );
   }
 
-  const sourceLabel = latestMatch[1].trim();
-  const titles = Array.from(latestMatch[2].matchAll(queueTitlePattern), (match) => match[1].trim());
+  return matches.map((match) => {
+    const sourceLabel = match[1].trim();
+    const titles = Array.from(match[2].matchAll(queueTitlePattern), (titleMatch) =>
+      titleMatch[1].trim(),
+    );
 
-  if (titles.length === 0) {
-    throw new Error("The latest markdown queue did not contain any queued titles.");
+    if (titles.length === 0) {
+      throw new Error(`The latest markdown queue for ${sourceLabel} did not contain any queued titles.`);
+    }
+
+    return {
+      sourceLabel,
+      titles,
+    };
+  });
+}
+
+function extractLatestSourceOrderNoteBlock(markdown: string): string {
+  const noteHeader = "## Current source-order note";
+  const noteStart = markdown.lastIndexOf(noteHeader);
+
+  if (noteStart === -1) {
+    throw new Error("Could not find a 'Current source-order note' block in catalog-expansion.md.");
   }
 
-  return {
-    sourceLabel,
-    titles,
-  };
+  const nextTopLevelHeader = markdown.indexOf("\n## ", noteStart + noteHeader.length);
+
+  return markdown.slice(noteStart, nextTopLevelHeader === -1 ? undefined : nextTopLevelHeader);
 }
 
 function mapEditorialQueueRow(row: EditorialQueueRow): EditorialQueueEntry {

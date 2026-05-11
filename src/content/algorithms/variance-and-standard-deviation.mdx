@@ -1,0 +1,155 @@
+---
+title: Variance and Standard Deviation
+slug: variance-and-standard-deviation
+category: Mathematics
+summary: Return the mean, variance, and standard deviation of a numeric dataset using either population or sample formulas.
+description: "Variance and Standard Deviation summarize how spread out numeric values are around their mean by averaging squared deviations and then taking the square root."
+dataStructures:
+  - Array
+  - Number
+techniques:
+  - Statistical Aggregation
+  - Squared Deviation
+  - Root Extraction
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - variance of array
+  - standard deviation of array
+  - dataset dispersion
+useCases:
+  - Measuring how tightly or loosely values cluster around the mean
+  - Comparing the stability of different datasets
+  - Building reusable statistics helpers for analytics code
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: One pass computes the mean and a second pass accumulates squared deviations.
+interviewSignals:
+  - The prompt asks for spread around the mean rather than the middle value.
+  - The solution must distinguish population and sample denominators.
+  - The intended implementation computes variance before taking its square root.
+relatedSlugs:
+  - average-mean
+  - mean-absolute-deviation
+  - interquartile-range-iqr
+provenance:
+  - title: "GeeksforGeeks - Variance and Standard Deviation"
+    href: https://www.geeksforgeeks.org/maths/variance-and-standard-deviation/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Variance and standard deviation are the first statistics helpers where a straightforward formula still needs careful implementation details. The main fork in the road is whether the prompt wants population statistics or sample statistics with Bessel's correction.
+
+## Worked Example
+
+For `[2, 4, 6, 8]`, the mean is `5`.
+
+- squared deviations: `[9, 1, 1, 9]`
+- population variance: `(9 + 1 + 1 + 9) / 4 = 5`
+- population standard deviation: `sqrt(5) ≈ 2.2361`
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function varianceAndStandardDeviation(values, sample = false) {
+  if (!Array.isArray(values) || values.length === 0) {
+    throw new RangeError('Expected a non-empty array of numbers');
+  }
+
+  if (sample && values.length < 2) {
+    throw new RangeError('Sample statistics require at least two values');
+  }
+
+  let total = 0;
+
+  for (const value of values) {
+    if (typeof value !== 'number' || !Number.isFinite(value)) {
+      throw new TypeError('All values must be finite numbers');
+    }
+
+    total += value;
+  }
+
+  const mean = total / values.length;
+  let squaredDeviationSum = 0;
+
+  for (const value of values) {
+    const difference = value - mean;
+    squaredDeviationSum += difference * difference;
+  }
+
+  const divisor = sample ? values.length - 1 : values.length;
+  const variance = squaredDeviationSum / divisor;
+
+  return {
+    mean,
+    variance,
+    standardDeviation: Math.sqrt(variance),
+  };
+}
+```
+
+```ts
+export function varianceAndStandardDeviation(
+  values: number[],
+  sample = false,
+): {
+  mean: number;
+  variance: number;
+  standardDeviation: number;
+} {
+  if (!Array.isArray(values) || values.length === 0) {
+    throw new RangeError('Expected a non-empty array of numbers');
+  }
+
+  if (sample && values.length < 2) {
+    throw new RangeError('Sample statistics require at least two values');
+  }
+
+  let total = 0;
+
+  for (const value of values) {
+    if (!Number.isFinite(value)) {
+      throw new TypeError('All values must be finite numbers');
+    }
+
+    total += value;
+  }
+
+  const mean = total / values.length;
+  let squaredDeviationSum = 0;
+
+  for (const value of values) {
+    const difference = value - mean;
+    squaredDeviationSum += difference * difference;
+  }
+
+  const divisor = sample ? values.length - 1 : values.length;
+  const variance = squaredDeviationSum / divisor;
+
+  return {
+    mean,
+    variance,
+    standardDeviation: Math.sqrt(variance),
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Add a streaming version that updates the statistics as values arrive.
+- Compare variance and standard deviation with mean absolute deviation on the same dataset.
+- Return both population and sample statistics in one call.
+
+## Common Pitfalls
+
+- Using `n` when the prompt actually wants sample variance with `n - 1`.
+- Forgetting to compute the mean before accumulating squared deviations.
+- Treating variance and standard deviation as interchangeable even though their units differ.

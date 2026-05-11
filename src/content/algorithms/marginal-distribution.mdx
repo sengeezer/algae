@@ -1,0 +1,191 @@
+---
+title: Marginal Distribution
+slug: marginal-distribution
+category: Mathematics
+summary: Collapse a joint count or probability table into row or column probabilities by summing across the other variable.
+description: "Marginal Distribution reduces a joint table to a one-variable distribution by aggregating row totals or column totals and normalizing by the grand total."
+dataStructures:
+  - Matrix
+  - Array
+techniques:
+  - Probability Distribution
+  - Table Aggregation
+  - Row and Column Summation
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - marginal probability distribution
+  - marginal from joint table
+  - joint table projection
+useCases:
+  - Summarizing a single variable from a joint distribution table
+  - Turning contingency-table counts into probabilities
+  - Building intuition for independence and conditional probability
+complexity:
+  time: O(rows * columns)
+  space: O(rows) or O(columns)
+  notes: The implementation scans the table once and normalizes by the grand total.
+interviewSignals:
+  - The prompt starts from a joint table and asks for the distribution of one variable alone.
+  - The correct solution sums across the other dimension rather than dividing by a conditional subtotal.
+  - The output should still form a valid probability distribution.
+relatedSlugs:
+  - find-the-probability-of-reaching-all-points-after-n-moves-from-point-n
+  - confidence-interval
+  - p-value
+provenance:
+  - title: "GeeksforGeeks - Marginal Distribution"
+    href: https://www.geeksforgeeks.org/maths/marginal-distribution/
+    kind: Reference
+---
+
+## Why It Surfaces
+
+Marginal distribution is the simplest place where a probability table becomes an algorithmic aggregation problem. The implementation is not about new math so much as correctly summing over the dimension you want to ignore and normalizing the result.
+
+## Worked Example
+
+Consider the count table:
+
+`[[12, 25, 26], [12, 13, 12]]`
+
+If rows represent genders and columns represent sports, then the column marginal distribution is:
+
+- baseball: `(12 + 12) / 100 = 0.24`
+- basketball: `(25 + 13) / 100 = 0.38`
+- football: `(26 + 12) / 100 = 0.38`
+
+So the column marginal distribution is `[0.24, 0.38, 0.38]`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function validateJointTable(jointTable) {
+  if (!Array.isArray(jointTable) || jointTable.length === 0) {
+    throw new RangeError('Expected a non-empty matrix');
+  }
+
+  const columnCount = Array.isArray(jointTable[0]) ? jointTable[0].length : 0;
+
+  if (columnCount === 0) {
+    throw new RangeError('Expected rows with at least one value');
+  }
+
+  let total = 0;
+
+  for (const row of jointTable) {
+    if (!Array.isArray(row) || row.length !== columnCount) {
+      throw new RangeError('All rows must have the same number of columns');
+    }
+
+    for (const value of row) {
+      if (typeof value !== 'number' || !Number.isFinite(value) || value < 0) {
+        throw new TypeError('Joint table values must be non-negative finite numbers');
+      }
+
+      total += value;
+    }
+  }
+
+  if (total <= 0) {
+    throw new RangeError('Joint table must contain a positive total mass');
+  }
+
+  return { columnCount, total };
+}
+
+function marginalDistribution(jointTable, axis = 'columns') {
+  const { columnCount, total } = validateJointTable(jointTable);
+
+  if (axis === 'rows') {
+    return jointTable.map((row) => row.reduce((sum, value) => sum + value, 0) / total);
+  }
+
+  if (axis === 'columns') {
+    const distribution = new Array(columnCount).fill(0);
+
+    for (const row of jointTable) {
+      for (let column = 0; column < columnCount; column += 1) {
+        distribution[column] += row[column];
+      }
+    }
+
+    return distribution.map((value) => value / total);
+  }
+
+  throw new RangeError("axis must be 'rows' or 'columns'");
+}
+```
+
+```ts
+function validateJointTable(jointTable: number[][]): { columnCount: number; total: number } {
+  if (!Array.isArray(jointTable) || jointTable.length === 0) {
+    throw new RangeError('Expected a non-empty matrix');
+  }
+
+  const columnCount = Array.isArray(jointTable[0]) ? jointTable[0].length : 0;
+
+  if (columnCount === 0) {
+    throw new RangeError('Expected rows with at least one value');
+  }
+
+  let total = 0;
+
+  for (const row of jointTable) {
+    if (!Array.isArray(row) || row.length !== columnCount) {
+      throw new RangeError('All rows must have the same number of columns');
+    }
+
+    for (const value of row) {
+      if (!Number.isFinite(value) || value < 0) {
+        throw new TypeError('Joint table values must be non-negative finite numbers');
+      }
+
+      total += value;
+    }
+  }
+
+  if (total <= 0) {
+    throw new RangeError('Joint table must contain a positive total mass');
+  }
+
+  return { columnCount, total };
+}
+
+export function marginalDistribution(
+  jointTable: number[][],
+  axis: 'rows' | 'columns' = 'columns',
+): number[] {
+  const { columnCount, total } = validateJointTable(jointTable);
+
+  if (axis === 'rows') {
+    return jointTable.map((row) => row.reduce((sum, value) => sum + value, 0) / total);
+  }
+
+  const distribution = new Array(columnCount).fill(0);
+
+  for (const row of jointTable) {
+    for (let column = 0; column < columnCount; column += 1) {
+      distribution[column] += row[column];
+    }
+  }
+
+  return distribution.map((value) => value / total);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Add conditional distribution by normalizing each row or column separately.
+- Support higher-dimensional tensors by summing across more than one axis.
+- Detect whether the table factors into independent row and column marginals.
+
+## Common Pitfalls
+
+- Mixing up row marginals and column marginals.
+- Forgetting to normalize when the input table contains counts rather than probabilities.
+- Accepting ragged rows that do not form a rectangular table.

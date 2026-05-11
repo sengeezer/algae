@@ -1,0 +1,314 @@
+---
+title: Program to check similarity of given two triangles
+slug: program-to-check-similarity-of-given-two-triangles
+category: Mathematics
+summary: Normalize two triangles' side and angle triples, then report whether SSS, AA, or SAS similarity holds.
+description: "Program to check similarity of given two triangles compares sorted side ratios and matching angle patterns to decide whether two triangles represent the same shape at different scales."
+dataStructures:
+  - Array
+  - Number
+  - Object
+techniques:
+  - Triangle Similarity
+  - Sorting
+  - Pattern Matching
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - triangle similarity check
+  - similar triangles theorem checker
+  - sss aa sas triangle comparison
+useCases:
+  - Testing whether two triangles have the same shape at different scales
+  - Reporting which similarity theorems are sufficient from fixed-size measurements
+  - Normalizing unordered side and angle triples before comparison
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: Each triangle has exactly three sides and three angles, so the sorts and theorem checks stay constant time.
+interviewSignals:
+  - Two triangles are given as side and angle triples.
+  - The prompt asks for theorem names rather than only a boolean result.
+  - Sorting the fixed-size triples simplifies the comparison surface.
+relatedSlugs:
+  - check-whether-triangle-is-valid-or-not-if-sides-are-given
+  - find-all-angles-of-a-given-triangle
+  - third-side-of-triangle-using-law-of-cosines
+provenance:
+  - title: "GeeksforGeeks - Program to check similarity of given two triangles"
+    href: https://www.geeksforgeeks.org/dsa/program-to-check-similarity-of-given-two-triangles/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This prompt is a small classification problem instead of a formula problem. Once the sides and angles are sorted, the remaining work is to check three fixed theorem patterns: all side ratios match for `SSS`, two angles match for `AA`, or two corresponding side ratios plus the included angle match for `SAS`.
+
+## Worked Example
+
+Take triangles with sides `[3, 4, 5]` and `[6, 8, 10]`. Their sorted side ratios are all `2`, and their angle triples are the same, so the triangles are similar by `SSS`, `AA`, and `SAS`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function approximatelyEqual(left, right, epsilon = 1e-9) {
+  const scale = Math.max(1, Math.abs(left), Math.abs(right));
+  return Math.abs(left - right) <= epsilon * scale;
+}
+
+function normalizeTriangle(sides, angles, label) {
+  if (!Array.isArray(sides) || sides.length !== 3) {
+    throw new RangeError(label + ' sides must contain exactly 3 numbers');
+  }
+
+  if (!Array.isArray(angles) || angles.length !== 3) {
+    throw new RangeError(label + ' angles must contain exactly 3 numbers');
+  }
+
+  if (!sides.every((value) => typeof value === 'number' && Number.isFinite(value) && value > 0)) {
+    throw new TypeError(label + ' sides must be positive finite numbers');
+  }
+
+  if (!angles.every((value) => typeof value === 'number' && Number.isFinite(value) && value > 0)) {
+    throw new TypeError(label + ' angles must be positive finite numbers');
+  }
+
+  const normalizedSides = [...sides].sort((left, right) => left - right);
+  const normalizedAngles = [...angles].sort((left, right) => left - right);
+
+  if (normalizedSides[0] + normalizedSides[1] <= normalizedSides[2]) {
+    throw new RangeError(label + ' sides must satisfy the triangle inequality');
+  }
+
+  const angleSum = normalizedAngles[0] + normalizedAngles[1] + normalizedAngles[2];
+  if (!approximatelyEqual(angleSum, 180, 1e-7)) {
+    throw new RangeError(label + ' angles must sum to 180 degrees');
+  }
+
+  return { sides: normalizedSides, angles: normalizedAngles };
+}
+
+function allSidesAreProportional(firstSides, secondSides) {
+  const scale = secondSides[0] / firstSides[0];
+  return firstSides.every((side, index) => approximatelyEqual(side * scale, secondSides[index], 1e-7));
+}
+
+function hasMatchingAnglePair(firstAngles, secondAngles) {
+  return (
+    (approximatelyEqual(firstAngles[0], secondAngles[0], 1e-7) &&
+      approximatelyEqual(firstAngles[1], secondAngles[1], 1e-7)) ||
+    (approximatelyEqual(firstAngles[0], secondAngles[0], 1e-7) &&
+      approximatelyEqual(firstAngles[2], secondAngles[2], 1e-7)) ||
+    (approximatelyEqual(firstAngles[1], secondAngles[1], 1e-7) &&
+      approximatelyEqual(firstAngles[2], secondAngles[2], 1e-7))
+  );
+}
+
+function hasSasSimilarity(firstTriangle, secondTriangle) {
+  const patterns = [
+    { sideIndexes: [0, 1], angleIndex: 2 },
+    { sideIndexes: [0, 2], angleIndex: 1 },
+    { sideIndexes: [1, 2], angleIndex: 0 },
+  ];
+
+  return patterns.some(({ sideIndexes, angleIndex }) => {
+    const [leftIndex, rightIndex] = sideIndexes;
+    const scale = secondTriangle.sides[leftIndex] / firstTriangle.sides[leftIndex];
+
+    return (
+      approximatelyEqual(
+        firstTriangle.sides[rightIndex] * scale,
+        secondTriangle.sides[rightIndex],
+        1e-7,
+      ) &&
+      approximatelyEqual(firstTriangle.angles[angleIndex], secondTriangle.angles[angleIndex], 1e-7)
+    );
+  });
+}
+
+function programToCheckSimilarityOfGivenTwoTriangles(
+  firstSides,
+  firstAngles,
+  secondSides,
+  secondAngles,
+) {
+  const firstTriangle = normalizeTriangle(firstSides, firstAngles, 'first triangle');
+  const secondTriangle = normalizeTriangle(secondSides, secondAngles, 'second triangle');
+  const theorems = [];
+
+  if (allSidesAreProportional(firstTriangle.sides, secondTriangle.sides)) {
+    theorems.push('SSS');
+  }
+
+  if (hasMatchingAnglePair(firstTriangle.angles, secondTriangle.angles)) {
+    theorems.push('AA');
+  }
+
+  if (hasSasSimilarity(firstTriangle, secondTriangle)) {
+    theorems.push('SAS');
+  }
+
+  return {
+    isSimilar: theorems.length > 0,
+    theorems,
+  };
+}
+
+const similarTriangles = programToCheckSimilarityOfGivenTwoTriangles(
+  [3, 4, 5],
+  [36.86989764584401, 53.13010235415598, 90],
+  [6, 10, 8],
+  [90, 36.86989764584401, 53.13010235415598],
+);
+console.assert(similarTriangles.isSimilar, 'scaled 3-4-5 triangles should be similar');
+console.assert(
+  similarTriangles.theorems.join(',') === 'SSS,AA,SAS',
+  'scaled 3-4-5 triangles should satisfy SSS, AA, and SAS'
+);
+
+const differentTriangles = programToCheckSimilarityOfGivenTwoTriangles(
+  [3, 4, 5],
+  [36.86989764584401, 53.13010235415598, 90],
+  [5, 5, 6],
+  [53.13010235415598, 53.13010235415598, 73.73979529168804],
+);
+console.assert(
+  !differentTriangles.isSimilar && differentTriangles.theorems.length === 0,
+  'non-matching triangles should not be marked similar'
+);
+```
+
+```ts
+type SimilarityTheorem = 'SSS' | 'AA' | 'SAS';
+
+type SimilarityResult = {
+  isSimilar: boolean;
+  theorems: SimilarityTheorem[];
+};
+
+function approximatelyEqual(left: number, right: number, epsilon = 1e-9): boolean {
+  const scale = Math.max(1, Math.abs(left), Math.abs(right));
+  return Math.abs(left - right) <= epsilon * scale;
+}
+
+function normalizeTriangle(
+  sides: number[],
+  angles: number[],
+  label: string,
+): { sides: number[]; angles: number[] } {
+  if (sides.length !== 3) {
+    throw new RangeError(label + ' sides must contain exactly 3 numbers');
+  }
+
+  if (angles.length !== 3) {
+    throw new RangeError(label + ' angles must contain exactly 3 numbers');
+  }
+
+  if (!sides.every((value) => Number.isFinite(value) && value > 0)) {
+    throw new TypeError(label + ' sides must be positive finite numbers');
+  }
+
+  if (!angles.every((value) => Number.isFinite(value) && value > 0)) {
+    throw new TypeError(label + ' angles must be positive finite numbers');
+  }
+
+  const normalizedSides = [...sides].sort((left, right) => left - right);
+  const normalizedAngles = [...angles].sort((left, right) => left - right);
+
+  if (normalizedSides[0] + normalizedSides[1] <= normalizedSides[2]) {
+    throw new RangeError(label + ' sides must satisfy the triangle inequality');
+  }
+
+  const angleSum = normalizedAngles[0] + normalizedAngles[1] + normalizedAngles[2];
+  if (!approximatelyEqual(angleSum, 180, 1e-7)) {
+    throw new RangeError(label + ' angles must sum to 180 degrees');
+  }
+
+  return { sides: normalizedSides, angles: normalizedAngles };
+}
+
+function allSidesAreProportional(firstSides: number[], secondSides: number[]): boolean {
+  const scale = secondSides[0] / firstSides[0];
+  return firstSides.every((side, index) => approximatelyEqual(side * scale, secondSides[index], 1e-7));
+}
+
+function hasMatchingAnglePair(firstAngles: number[], secondAngles: number[]): boolean {
+  return (
+    (approximatelyEqual(firstAngles[0], secondAngles[0], 1e-7) &&
+      approximatelyEqual(firstAngles[1], secondAngles[1], 1e-7)) ||
+    (approximatelyEqual(firstAngles[0], secondAngles[0], 1e-7) &&
+      approximatelyEqual(firstAngles[2], secondAngles[2], 1e-7)) ||
+    (approximatelyEqual(firstAngles[1], secondAngles[1], 1e-7) &&
+      approximatelyEqual(firstAngles[2], secondAngles[2], 1e-7))
+  );
+}
+
+function hasSasSimilarity(
+  firstTriangle: { sides: number[]; angles: number[] },
+  secondTriangle: { sides: number[]; angles: number[] },
+): boolean {
+  const patterns = [
+    { sideIndexes: [0, 1] as const, angleIndex: 2 },
+    { sideIndexes: [0, 2] as const, angleIndex: 1 },
+    { sideIndexes: [1, 2] as const, angleIndex: 0 },
+  ];
+
+  return patterns.some(({ sideIndexes, angleIndex }) => {
+    const [leftIndex, rightIndex] = sideIndexes;
+    const scale = secondTriangle.sides[leftIndex] / firstTriangle.sides[leftIndex];
+
+    return (
+      approximatelyEqual(
+        firstTriangle.sides[rightIndex] * scale,
+        secondTriangle.sides[rightIndex],
+        1e-7,
+      ) &&
+      approximatelyEqual(firstTriangle.angles[angleIndex], secondTriangle.angles[angleIndex], 1e-7)
+    );
+  });
+}
+
+export function programToCheckSimilarityOfGivenTwoTriangles(
+  firstSides: number[],
+  firstAngles: number[],
+  secondSides: number[],
+  secondAngles: number[],
+): SimilarityResult {
+  const firstTriangle = normalizeTriangle(firstSides, firstAngles, 'first triangle');
+  const secondTriangle = normalizeTriangle(secondSides, secondAngles, 'second triangle');
+  const theorems: SimilarityTheorem[] = [];
+
+  if (allSidesAreProportional(firstTriangle.sides, secondTriangle.sides)) {
+    theorems.push('SSS');
+  }
+
+  if (hasMatchingAnglePair(firstTriangle.angles, secondTriangle.angles)) {
+    theorems.push('AA');
+  }
+
+  if (hasSasSimilarity(firstTriangle, secondTriangle)) {
+    theorems.push('SAS');
+  }
+
+  return {
+    isSimilar: theorems.length > 0,
+    theorems,
+  };
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you adapt the routine if the input arrived as point coordinates instead of side and angle lists?
+- Why does sorting fixed-size measurement triples simplify theorem detection here?
+- Which theorem would you prefer if the prompt only gave angles or only gave side lengths?
+
+## Common Pitfalls
+
+- Comparing sides in the given order instead of normalizing them first.
+- Using raw equality on floating-point ratios or angles.
+- Forgetting that this formulation assumes each triangle input is already valid before theorem checks run.
