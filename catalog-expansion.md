@@ -2307,3 +2307,38 @@ This one-hundred-eighty-ninth expansion slice lifts the catalog from 863 to 865 
 - The next vetted source branch is the GeeksforGeeks `Matrix Data Structure` hard-problems stretch.
 - In that branch, `Matrix Chain Multiplication`, `Shortest path in a Binary Maze`, `Minimum Initial Points to Reach Destination`, `Strassen’s Matrix Multiplication`, and `Max sum rectangle in a 2D matrix` are duplicate-level detours because the catalog already covers those problems semantically.
 - The next clean Matrix Data Structure queue is `Median in row wise sorted matrix`, `A Boolean Matrix Question`, and `Maximum sum square sub-matrix of given size`.
+
+## Batch 190 added
+
+This one-hundred-ninetieth expansion slice lifts the catalog from 865 to 868 entries.
+
+- Median in row wise sorted matrix
+- A Boolean Matrix Question  
+- Maximum sum square sub-matrix of given size
+
+- Batch 190 was validated (frontmatter, compilation, lint, smoke tests, and targeted Playwright route checks all pass) and published to main at commit `7f0de47`.
+- The catalog now stands at 868 entries.
+- The next frontier after the Matrix Data Structure section is being identified: candidates include the GeeksforGeeks `Linked List` subsection, the `Hashing` subsection for additional frequency problems, or the `Advanced Data Structures` sections.
+
+## Batch 191 frontier
+
+The next clean frontier is the GeeksforGeeks `Linked List` subsection, starting with foundational operations and problems.
+
+## Current source-order note
+
+- The next frontier after Matrix Data Structure is Linked List, a complementary data structure to arrays.
+- The clean Linked List queue begins with foundational and commonly-asked problems: `Reverse a Singly Linked List`, `Detect loop in a linked list`, and `Find length of loop in linked list`.
+- These three form the basis for more complex linked list operations and are high-frequency interview problems.
+- The next clean Linked List queue is `Reverse a Singly Linked List`, `Detect loop in a linked list`, and `Find length of loop in linked list`.
+
+## Batch 191 - Linked List Algorithms
+
+This one-hundred-ninety-first expansion slice lifts the catalog from 868 to 871 entries with the foundational Linked List operations and problems that serve as building blocks for advanced list manipulation.
+
+- Reverse a Singly Linked List
+- Detect loop in a linked list
+- Find length of loop in linked list
+
+- All three batch-191 entries are now drafted and validated (frontmatter structure, gray-matter parsing, JavaScript and TypeScript implementations with proper fence validation).
+- Batch 191 frontier comes from the GeeksforGeeks Linked List subsection, continuing the algorithmic progression after the Matrix Data Structure section.
+- The next clean Linked List queue is `Reverse a Singly Linked List`, `Detect loop in a linked list`, and `Find length of loop in linked list`.

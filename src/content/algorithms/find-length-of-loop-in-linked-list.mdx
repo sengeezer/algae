@@ -1,0 +1,178 @@
+---
+title: Find length of loop in linked list
+slug: find-length-of-loop-in-linked-list
+category: Linked List
+summary: Find the length of the cycle in a linked list using the fast and slow pointer technique.
+description: "Find length of loop in linked list uses Floyd's cycle detection to find where pointers meet, then counts nodes from that meeting point back to itself."
+dataStructures:
+  - Linked List
+  - Pointer
+techniques:
+  - Fast and Slow Pointer
+  - Floyd's Cycle Detection
+  - Linked List Traversal
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - length of cycle in linked list
+  - cycle length detection
+  - loop length in linked list
+useCases:
+  - Analyzing circular structures and their properties
+  - Detecting anomalies in linked data
+  - Determining cycle characteristics for repair or analysis
+complexity:
+  time: O(n) where n is the number of nodes
+  space: O(1) no extra space needed
+  notes: First phase finds the meeting point using fast/slow pointers. Second phase counts from meeting point until returning to itself.
+interviewSignals:
+  - Should first detect if a cycle exists.
+  - Meeting point is somewhere within the cycle, not necessarily at the start.
+  - Counting must continue from meeting point until returning to the same node.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/dsa/find-length-of-loop-in-linked-list/'
+related:
+  - detect-loop-in-a-linked-list
+  - find-start-of-loop-in-linked-list
+---
+
+## Problem
+
+Given a singly linked list that contains a cycle, find the length (number of nodes) of that cycle.
+
+## Approach
+
+**Floyd's Cycle Detection + Counting**
+
+First, use the fast and slow pointer technique to detect a cycle and find a meeting point. Once a meeting point is found, keep one pointer there and advance the other pointer one step at a time, counting nodes until it returns to the meeting point. The count equals the cycle length.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(1)
+
+## Implementation
+
+```javascript
+class Node {
+  constructor(data) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+function validateLinkedList(head) {
+  return head === null || (head instanceof Node);
+}
+
+function findLoopLength(head) {
+  console.assert(validateLinkedList(head), 'Input must be a valid linked list head or null');
+
+  if (head === null || head.next === null) {
+    return 0; // No cycle possible with 0 or 1 node
+  }
+
+  let slow = head;
+  let fast = head;
+
+  // Find meeting point using Floyd's cycle detection
+  while (fast !== null && fast.next !== null) {
+    slow = slow.next;
+    fast = fast.next.next;
+
+    if (slow === fast) {
+      // Cycle detected, now find its length
+      let count = 1;
+      let temp = slow.next;
+
+      while (temp !== slow) {
+        count++;
+        temp = temp.next;
+      }
+
+      return count;
+    }
+  }
+
+  return 0; // No cycle found
+}
+```
+
+```typescript
+class Node {
+  data: number;
+  next: Node | null;
+
+  constructor(data: number) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+function validateLinkedList(head: unknown): boolean {
+  return head === null || head instanceof Node;
+}
+
+function findLoopLength(head: Node | null): number {
+  console.assert(validateLinkedList(head), 'Input must be a valid linked list head or null');
+
+  if (head === null || head.next === null) {
+    return 0; // No cycle possible with 0 or 1 node
+  }
+
+  let slow: Node | null = head;
+  let fast: Node | null = head;
+
+  // Find meeting point using Floyd's cycle detection
+  while (fast !== null && fast.next !== null) {
+    slow = slow.next!;
+    fast = fast.next.next;
+
+    if (slow === fast) {
+      // Cycle detected, now find its length
+      let count = 1;
+      let temp: Node | null = slow.next;
+
+      while (temp !== slow) {
+        count++;
+        temp = temp!.next;
+      }
+
+      return count;
+    }
+  }
+
+  return 0; // No cycle found
+}
+```
+
+## Example
+
+```javascript
+// Build list with cycle: 1 -> 2 -> 3 -> 4 -> 5 -> 3 (cycle: 3 -> 4 -> 5 -> 3)
+const head = new Node(1);
+const node2 = new Node(2);
+const node3 = new Node(3);
+const node4 = new Node(4);
+const node5 = new Node(5);
+
+head.next = node2;
+node2.next = node3;
+node3.next = node4;
+node4.next = node5;
+node5.next = node3; // Create cycle of length 3
+
+console.log(findLoopLength(head)); // 3
+
+// Build a cycle-free list
+const head2 = new Node(1);
+head2.next = new Node(2);
+head2.next.next = new Node(3);
+
+console.log(findLoopLength(head2)); // 0
+```
+
+## Reference
+
+- **Floyd's Cycle Detection**: Two-pointer technique to detect cycles efficiently
+- **Meeting Point**: When found, indicates a node that is part of the cycle
+- **Counting Phase**: From the meeting point, count nodes until returning to itself to determine cycle length

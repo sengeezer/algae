@@ -1,0 +1,143 @@
+---
+title: Reverse a Singly Linked List
+slug: reverse-a-singly-linked-list
+category: Linked List
+summary: Reverse the direction of all pointers in a singly linked list using iterative or recursive approaches.
+description: "Reverse a Singly Linked List reverses the chain of pointers so the last node becomes the head. The iterative approach maintains three pointers (prev, current, next) to unlink and relink each node."
+dataStructures:
+  - Linked List
+  - Pointer
+techniques:
+  - Linked List Traversal
+  - Pointer Manipulation
+  - Iterative Approach
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - reverse linked list
+  - reverse singly linked list
+  - invert linked list
+useCases:
+  - Palindrome checking in linked lists
+  - Merging sorted lists in descending order
+  - Implementing undo/redo operations
+complexity:
+  time: O(n) where n is the number of nodes
+  space: O(1) for iterative approach, O(n) for recursive (call stack)
+  notes: The iterative approach modifies the list in-place with constant extra space. Recursion is elegant but uses O(n) stack space.
+interviewSignals:
+  - Must handle the head pointer correctly after reversal.
+  - Be careful with pointer updates to avoid losing references.
+  - Both iterative and recursive solutions are commonly expected.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/dsa/reverse-a-linked-list/'
+related:
+  - reverse-a-doubly-linked-list
+  - palindrome-check-singly-linked-list
+---
+
+## Problem
+
+Reverse a singly linked list so that the last node becomes the head and pointers all point in the opposite direction.
+
+## Approach
+
+**Iterative Pointer Reversal**
+
+Maintain three pointers: `prev` (initially null), `current` (initially head), and `next` (to save the next node before overwriting). Traverse the list once, at each node reverse the pointer by setting `current.next = prev`, then advance `prev` and `current` one step. At the end, `prev` points to the new head.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(1)
+
+## Implementation
+
+```javascript
+class Node {
+  constructor(data) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+function validateLinkedList(head) {
+  return head === null || (head instanceof Node);
+}
+
+function reverseLinkedList(head) {
+  console.assert(validateLinkedList(head), 'Input must be a valid linked list head or null');
+
+  let prev = null;
+  let current = head;
+
+  while (current !== null) {
+    // Save next node before modifying current.next
+    const next = current.next;
+
+    // Reverse the link
+    current.next = prev;
+
+    // Move prev and current one step forward
+    prev = current;
+    current = next;
+  }
+
+  return prev; // New head
+}
+```
+
+```typescript
+class Node {
+  data: number;
+  next: Node | null;
+
+  constructor(data: number) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+function validateLinkedList(head: unknown): boolean {
+  return head === null || head instanceof Node;
+}
+
+function reverseLinkedList(head: Node | null): Node | null {
+  console.assert(validateLinkedList(head), 'Input must be a valid linked list head or null');
+
+  let prev: Node | null = null;
+  let current: Node | null = head;
+
+  while (current !== null) {
+    // Save next node before modifying current.next
+    const next = current.next;
+
+    // Reverse the link
+    current.next = prev;
+
+    // Move prev and current one step forward
+    prev = current;
+    current = next;
+  }
+
+  return prev; // New head
+}
+```
+
+## Example
+
+```javascript
+// Build list: 1 -> 2 -> 3 -> 4 -> null
+const head = new Node(1);
+head.next = new Node(2);
+head.next.next = new Node(3);
+head.next.next.next = new Node(4);
+
+const reversed = reverseLinkedList(head);
+// Result: 4 -> 3 -> 2 -> 1 -> null
+```
+
+## Reference
+
+- **Pointer Reversal**: Changing the direction of links in a linked list
+- **In-place Reversal**: Modifying the list without using extra space for new nodes
+- **Three-pointer Technique**: Tracking previous, current, and next to safely traverse and modify

@@ -1,0 +1,158 @@
+---
+title: Detect loop in a linked list
+slug: detect-loop-in-a-linked-list
+category: Linked List
+summary: Detect the presence of a cycle in a singly linked list using the fast and slow pointer technique.
+description: "Detect loop in a linked list uses Floyd's cycle detection algorithm with two pointers moving at different speeds. If there's a cycle, they will eventually meet."
+dataStructures:
+  - Linked List
+  - Pointer
+techniques:
+  - Fast and Slow Pointer
+  - Floyd's Cycle Detection
+  - Linked List Traversal
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - detect cycle in linked list
+  - floyd's cycle detection
+  - linked list cycle detection
+useCases:
+  - Memory leak detection in data structures
+  - Finding problematic cycles in graphs and linked structures
+  - Validating linked list integrity
+complexity:
+  time: O(n) where n is the number of nodes
+  space: O(1) no extra space needed
+  notes: Fast pointer moves 2 steps, slow pointer moves 1 step. They meet if a cycle exists, and meet at a node inside the cycle.
+interviewSignals:
+  - Cannot use a hash set (constant space requirement).
+  - Two-pointer approach is the expected optimal solution.
+  - Meeting point provides additional information about cycle location.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/dsa/detect-loop-in-a-linked-list/'
+related:
+  - find-length-of-loop-in-linked-list
+  - find-start-of-loop-in-linked-list
+---
+
+## Problem
+
+Given a singly linked list, determine if it contains a cycle (loop). A cycle occurs when a node's `next` pointer eventually links back to a previously visited node.
+
+## Approach
+
+**Floyd's Cycle Detection (Tortoise and Hare)**
+
+Use two pointers: `slow` moves one step at a time, `fast` moves two steps at a time. If there's no cycle, `fast` will reach the end (null). If there's a cycle, `fast` and `slow` will eventually point to the same node.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(1)
+
+## Implementation
+
+```javascript
+class Node {
+  constructor(data) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+function validateLinkedList(head) {
+  return head === null || (head instanceof Node);
+}
+
+function detectLoop(head) {
+  console.assert(validateLinkedList(head), 'Input must be a valid linked list head or null');
+
+  if (head === null || head.next === null) {
+    return false; // No cycle possible with 0 or 1 node
+  }
+
+  let slow = head;
+  let fast = head;
+
+  while (fast !== null && fast.next !== null) {
+    slow = slow.next;        // Move slow 1 step
+    fast = fast.next.next;   // Move fast 2 steps
+
+    // If they meet, there's a cycle
+    if (slow === fast) {
+      return true;
+    }
+  }
+
+  return false; // No cycle found
+}
+```
+
+```typescript
+class Node {
+  data: number;
+  next: Node | null;
+
+  constructor(data: number) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+function validateLinkedList(head: unknown): boolean {
+  return head === null || head instanceof Node;
+}
+
+function detectLoop(head: Node | null): boolean {
+  console.assert(validateLinkedList(head), 'Input must be a valid linked list head or null');
+
+  if (head === null || head.next === null) {
+    return false; // No cycle possible with 0 or 1 node
+  }
+
+  let slow: Node | null = head;
+  let fast: Node | null = head;
+
+  while (fast !== null && fast.next !== null) {
+    slow = slow.next;        // Move slow 1 step
+    fast = fast.next.next;   // Move fast 2 steps
+
+    // If they meet, there's a cycle
+    if (slow === fast) {
+      return true;
+    }
+  }
+
+  return false; // No cycle found
+}
+```
+
+## Example
+
+```javascript
+// Build list with cycle: 1 -> 2 -> 3 -> 4 -> 2 (cycle back to 2)
+const head = new Node(1);
+const node2 = new Node(2);
+const node3 = new Node(3);
+const node4 = new Node(4);
+
+head.next = node2;
+node2.next = node3;
+node3.next = node4;
+node4.next = node2; // Create cycle
+
+console.log(detectLoop(head)); // true
+
+// Build a cycle-free list: 1 -> 2 -> 3 -> null
+const head2 = new Node(1);
+head2.next = new Node(2);
+head2.next.next = new Node(3);
+
+console.log(detectLoop(head2)); // false
+```
+
+## Reference
+
+- **Floyd's Cycle Detection**: Two pointers at different speeds to detect cycles
+- **Tortoise and Hare**: Metaphor for the slow and fast pointer approach
+- **Meeting Point**: Indicates the presence of a cycle; exact meeting location depends on cycle structure
