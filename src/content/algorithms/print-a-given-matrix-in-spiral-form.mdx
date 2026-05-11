@@ -1,0 +1,198 @@
+---
+title: Print a given matrix in spiral form
+slug: print-a-given-matrix-in-spiral-form
+category: Matrix
+summary: Walk every cell of a matrix in full spiral order by shrinking four boundaries inward.
+description: "Print a given matrix in spiral form is the complete spiral traversal that emits the outer boundary, tightens the rectangle, and repeats until the matrix is exhausted."
+dataStructures:
+  - Matrix
+  - Array
+techniques:
+  - Spiral Traversal
+  - Boundary Traversal
+  - Matrix Traversal
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - spiral traversal of matrix
+  - print matrix in spiral form
+  - spirally traverse matrix
+useCases:
+  - Listing every matrix cell in spiral order for interview-style traversal questions
+  - Extending perimeter logic into a full inward sweep
+  - Supporting grid visualizations that peel layers one ring at a time
+complexity:
+  time: O(rows * cols)
+  space: O(rows * cols)
+  notes: The boundary pointers move inward monotonically, and the returned traversal stores every visited cell exactly once.
+interviewSignals:
+  - The prompt asks for all cells, not only the outer ring.
+  - Traversal order repeatedly turns right, down, left, and up while moving inward.
+  - A shrinking-boundary approach is expected instead of a visited-grid simulation.
+relatedSlugs:
+  - boundary-elements-of-a-matrix
+  - rotate-matrix-clockwise-by-1
+  - diagonal-traversal-of-a-matrix-i
+provenance:
+  - title: "GeeksforGeeks - Print a given matrix in spiral form"
+    href: https://www.geeksforgeeks.org/dsa/print-a-given-matrix-in-spiral-form/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+Spiral traversal is the natural follow-up to perimeter traversal. It tests whether you can manage four moving boundaries carefully enough to emit each ring exactly once and stop cleanly when the boundaries cross.
+
+## Worked Example
+
+For `[[1, 2, 3], [4, 5, 6], [7, 8, 9]]`, the first ring gives `[1, 2, 3, 6, 9, 8, 7, 4]`. After shrinking the boundaries, only the center `5` remains, so the full spiral order is `[1, 2, 3, 6, 9, 8, 7, 4, 5]`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function validateNumericMatrix(matrix) {
+  if (!Array.isArray(matrix) || matrix.length === 0 || !matrix.every((row) => Array.isArray(row))) {
+    throw new TypeError('matrix must be a non-empty 2D array');
+  }
+
+  const width = matrix[0].length;
+  if (width === 0) {
+    throw new TypeError('matrix rows must not be empty');
+  }
+
+  if (!matrix.every((row) => row.length === width && row.every((value) => Number.isFinite(value)))) {
+    throw new TypeError('matrix rows must have equal length and contain only finite numbers');
+  }
+}
+
+function printAGivenMatrixInSpiralForm(matrix) {
+  validateNumericMatrix(matrix);
+
+  const result = [];
+  let top = 0;
+  let bottom = matrix.length - 1;
+  let left = 0;
+  let right = matrix[0].length - 1;
+
+  while (top <= bottom && left <= right) {
+    for (let col = left; col <= right; col += 1) {
+      result.push(matrix[top][col]);
+    }
+    top += 1;
+
+    for (let row = top; row <= bottom; row += 1) {
+      result.push(matrix[row][right]);
+    }
+    right -= 1;
+
+    if (top <= bottom) {
+      for (let col = right; col >= left; col -= 1) {
+        result.push(matrix[bottom][col]);
+      }
+      bottom -= 1;
+    }
+
+    if (left <= right) {
+      for (let row = bottom; row >= top; row -= 1) {
+        result.push(matrix[row][left]);
+      }
+      left += 1;
+    }
+  }
+
+  return result;
+}
+
+console.assert(
+  JSON.stringify(
+    printAGivenMatrixInSpiralForm([
+      [1, 2, 3],
+      [4, 5, 6],
+      [7, 8, 9],
+    ]),
+  ) === JSON.stringify([1, 2, 3, 6, 9, 8, 7, 4, 5]),
+  '3x3 matrix should spiral inward around the center cell',
+);
+
+console.assert(
+  JSON.stringify(
+    printAGivenMatrixInSpiralForm([
+      [1, 2, 3, 4],
+      [5, 6, 7, 8],
+      [9, 10, 11, 12],
+    ]),
+  ) === JSON.stringify([1, 2, 3, 4, 8, 12, 11, 10, 9, 5, 6, 7]),
+  'rectangular matrix should still spiral correctly',
+);
+```
+
+```ts
+function validateNumericMatrix(matrix: number[][]): void {
+  if (!Array.isArray(matrix) || matrix.length === 0 || !matrix.every((row) => Array.isArray(row))) {
+    throw new TypeError('matrix must be a non-empty 2D array');
+  }
+
+  const width = matrix[0].length;
+  if (width === 0) {
+    throw new TypeError('matrix rows must not be empty');
+  }
+
+  if (!matrix.every((row) => row.length === width && row.every((value) => Number.isFinite(value)))) {
+    throw new TypeError('matrix rows must have equal length and contain only finite numbers');
+  }
+}
+
+export function printAGivenMatrixInSpiralForm(matrix: number[][]): number[] {
+  validateNumericMatrix(matrix);
+
+  const result: number[] = [];
+  let top = 0;
+  let bottom = matrix.length - 1;
+  let left = 0;
+  let right = matrix[0].length - 1;
+
+  while (top <= bottom && left <= right) {
+    for (let col = left; col <= right; col += 1) {
+      result.push(matrix[top][col]);
+    }
+    top += 1;
+
+    for (let row = top; row <= bottom; row += 1) {
+      result.push(matrix[row][right]);
+    }
+    right -= 1;
+
+    if (top <= bottom) {
+      for (let col = right; col >= left; col -= 1) {
+        result.push(matrix[bottom][col]);
+      }
+      bottom -= 1;
+    }
+
+    if (left <= right) {
+      for (let row = bottom; row >= top; row -= 1) {
+        result.push(matrix[row][left]);
+      }
+      left += 1;
+    }
+  }
+
+  return result;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How does this differ from visiting only the boundary once?
+- How would you implement the same traversal with a visited matrix instead?
+- How would you return the coordinates of the spiral instead of only the values?
+
+## Common Pitfalls
+
+- Forgetting the boundary-crossing checks before traversing the bottom row or left column.
+- Repeating cells when the remaining submatrix collapses to a single row or column.
+- Confusing spiral traversal with a one-step ring rotation.

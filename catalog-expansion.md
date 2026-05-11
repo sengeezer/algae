@@ -2283,12 +2283,20 @@ This one-hundred-eighty-seventh expansion slice lifts the catalog from 857 to 86
 - Boundary Elements of a Matrix
 - Toeplitz Matrix or Not
 
+## Batch 188 added
+
+This one-hundred-eighty-eighth expansion slice lifts the catalog from 860 to 863 entries.
+
+- Diagonal Traversal of a Matrix I
+- Print a given matrix in spiral form
+- Search in a row wise and column wise sorted matrix
+
 ## Current source-order note
 
-- `Find the row with maximum number of 1s` stays distinct because it uses the sorted-binary-row staircase scan to return the best row index rather than traversing or transforming the whole matrix.
-- `Boundary Elements of a Matrix` stays distinct because it extracts only the clockwise perimeter, not a full spiral or ring rotation.
-- The source queue label `Check if a matrix is a Toeplitz Matrix` resolves to the live destination title `Toeplitz Matrix or Not`, and the drafted entry uses that destination title.
-- Focused JavaScript-fence validation, `npm run db:catalog:seed`, `npm run lint`, `npx tsc --noEmit`, `npm run smoke:ui`, and targeted Playwright route checks all passed for batch 187 before publish; `npm run db:catalog:seed` synced 860 algorithms.
-- In the GeeksforGeeks `Matrices for Programmers` subsection, the immediate `Print a given matrix in spiral form` label after Toeplitz still points to the already-used boundary-elements article, so it remains a duplicate-level detour to skip.
-- Destination-title cleanup in the next Matrices for Programmers queue is `Zigzag (or diagonal) traversal of Matrix` -> `Diagonal Traversal of a Matrix I`, `Spiral Traversal of Matrix` -> `Print a given matrix in spiral form`, and `Search in a Row-wise and Column-wise Sorted Matrix` -> `Search in a row wise and column wise sorted matrix`.
-- The next clean Matrices for Programmers queue is `Diagonal Traversal of a Matrix I`, `Print a given matrix in spiral form`, and `Search in a row wise and column wise sorted matrix`.
+- `Diagonal Traversal of a Matrix I` stays distinct because it emits bottom-left to top-right diagonals in order instead of rotating, spiraling, or aggregating diagonal values.
+- `Print a given matrix in spiral form` stays distinct because it consumes the full matrix ring by ring, extending beyond the already-published perimeter-only `Boundary Elements of a Matrix` entry.
+- `Search in a row wise and column wise sorted matrix` stays distinct because it is the linear top-right staircase search, not the already-published divide-and-conquer sorted-matrix variant.
+- Focused JavaScript-fence validation, `npm run db:catalog:seed`, `npm run lint`, `npx tsc --noEmit`, `npm run smoke:ui`, and targeted Playwright route checks all passed for batch 188 before publish; `npm run db:catalog:seed` synced 863 algorithms.
+- In the GeeksforGeeks `Matrices for Programmers` subsection, `Find the number of islands`, `Maximum sum rectangular submatrix in a given matrix`, and `Matrix Chain Multiplication` are duplicate-level detours because the catalog already covers `Number of Islands`, `Maximum sum rectangle in a 2D matrix`, and `Matrix Chain Multiplication`.
+- The next clean Matrices for Programmers queue is `Minimum Initial Points to Reach Destination` and `Count number of paths with at-most k turns`.
+- That narrowed two-item queue is the remaining clean frontier in `Matrices for Programmers`; after it, the source branch is exhausted in local source order.

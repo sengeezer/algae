@@ -1,0 +1,173 @@
+---
+title: Search in a row wise and column wise sorted matrix
+slug: search-in-a-row-wise-and-column-wise-sorted-matrix
+category: Searching
+summary: Search a matrix with sorted rows and columns in linear boundary time by walking from the top-right corner.
+description: "Search in a row wise and column wise sorted matrix is the staircase search that discards one whole row or column after each comparison from the top-right corner."
+dataStructures:
+  - Matrix
+  - Array
+techniques:
+  - Matrix Search
+  - Staircase Search
+  - Monotonic Pruning
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - staircase search in sorted matrix
+  - search in a row and column wise sorted matrix
+  - monotonic matrix search
+useCases:
+  - Searching 2D data where each row and each column is already sorted
+  - Demonstrating how local ordering lets you prune one dimension per comparison
+  - Explaining the iterative alternative to divide-and-conquer matrix search
+complexity:
+  time: O(rows + cols)
+  space: O(1)
+  notes: Starting at the top-right corner ensures each failed comparison removes either the current row or the current column from consideration.
+interviewSignals:
+  - Every row and every column is sorted in increasing order.
+  - The expected solution is iterative and linear in the matrix dimensions.
+  - Each comparison should eliminate an entire row or column.
+relatedSlugs:
+  - search-in-a-row-wise-and-column-wise-sorted-2d-array-using-divide-and-conquer-algorithm
+  - binary-search
+  - find-the-row-with-maximum-number-of-1s
+provenance:
+  - title: "GeeksforGeeks - Search in a row wise and column wise sorted matrix"
+    href: https://www.geeksforgeeks.org/dsa/search-in-row-wise-and-column-wise-sorted-matrix/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is the standard interview solution for a matrix whose rows and columns both increase. The top-right corner is the perfect pivot: if the target is smaller, the whole current column is too large; if the target is larger, the whole current row is too small.
+
+## Worked Example
+
+For `target = 35` in `[[3, 30, 38], [20, 52, 54], [35, 60, 69]]`, start at `38` in the top-right corner. Since `35 < 38`, move left to `30`. Since `35 > 30`, move down to `52`, then left to `20`, then down to `35`, where the search succeeds.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function validateSortedMatrix(matrix) {
+  if (!Array.isArray(matrix) || matrix.length === 0 || !matrix.every((row) => Array.isArray(row))) {
+    throw new TypeError('matrix must be a non-empty 2D array');
+  }
+
+  const width = matrix[0].length;
+  if (width === 0) {
+    throw new TypeError('matrix rows must not be empty');
+  }
+
+  if (!matrix.every((row) => row.length === width && row.every((value) => Number.isFinite(value)))) {
+    throw new TypeError('matrix rows must have equal length and contain only finite numbers');
+  }
+}
+
+function searchInARowWiseAndColumnWiseSortedMatrix(matrix, target) {
+  validateSortedMatrix(matrix);
+
+  let row = 0;
+  let col = matrix[0].length - 1;
+
+  while (row < matrix.length && col >= 0) {
+    const current = matrix[row][col];
+
+    if (current === target) {
+      return true;
+    }
+
+    if (target < current) {
+      col -= 1;
+    } else {
+      row += 1;
+    }
+  }
+
+  return false;
+}
+
+console.assert(
+  searchInARowWiseAndColumnWiseSortedMatrix(
+    [
+      [3, 30, 38],
+      [20, 52, 54],
+      [35, 60, 69],
+    ],
+    35,
+  ) === true,
+  'target present in the matrix should be found',
+);
+
+console.assert(
+  searchInARowWiseAndColumnWiseSortedMatrix(
+    [
+      [3, 30, 38],
+      [20, 52, 54],
+      [35, 60, 69],
+    ],
+    62,
+  ) === false,
+  'target absent from the matrix should return false',
+);
+```
+
+```ts
+function validateSortedMatrix(matrix: number[][]): void {
+  if (!Array.isArray(matrix) || matrix.length === 0 || !matrix.every((row) => Array.isArray(row))) {
+    throw new TypeError('matrix must be a non-empty 2D array');
+  }
+
+  const width = matrix[0].length;
+  if (width === 0) {
+    throw new TypeError('matrix rows must not be empty');
+  }
+
+  if (!matrix.every((row) => row.length === width && row.every((value) => Number.isFinite(value)))) {
+    throw new TypeError('matrix rows must have equal length and contain only finite numbers');
+  }
+}
+
+export function searchInARowWiseAndColumnWiseSortedMatrix(
+  matrix: number[][],
+  target: number,
+): boolean {
+  validateSortedMatrix(matrix);
+
+  let row = 0;
+  let col = matrix[0].length - 1;
+
+  while (row < matrix.length && col >= 0) {
+    const current = matrix[row][col];
+
+    if (current === target) {
+      return true;
+    }
+
+    if (target < current) {
+      col -= 1;
+    } else {
+      row += 1;
+    }
+  }
+
+  return false;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- Why does the top-right corner work better than an arbitrary start position?
+- How does this compare with the divide-and-conquer version already in the catalog?
+- How would you return the coordinates instead of a boolean answer?
+
+## Common Pitfalls
+
+- Falling back to row-by-row binary search when the linear staircase walk is simpler here.
+- Starting from the wrong corner and losing the one-row-or-one-column elimination rule.
+- Confusing this problem with the stricter fully row-major sorted matrix variant.

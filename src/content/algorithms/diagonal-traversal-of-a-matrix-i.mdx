@@ -1,0 +1,186 @@
+---
+title: Diagonal Traversal of a Matrix I
+slug: diagonal-traversal-of-a-matrix-i
+category: Matrix
+summary: Traverse a matrix one up-right diagonal at a time, starting from the first column and then the bottom row.
+description: "Diagonal Traversal of a Matrix I is the ordered diagonal scan that emits each bottom-left to top-right diagonal as one contiguous run."
+dataStructures:
+  - Matrix
+  - Array
+techniques:
+  - Diagonal Traversal
+  - Matrix Traversal
+  - Coordinate Simulation
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - zigzag or diagonal traversal of matrix
+  - diagonal traversal of a matrix
+  - print matrix diagonally
+useCases:
+  - Emitting matrix values in diagonal bands instead of row-major order
+  - Reframing grid problems around coordinate movement patterns
+  - Preparing interview follow-ups around anti-diagonal and zigzag variants
+complexity:
+  time: O(rows * cols)
+  space: O(rows * cols)
+  notes: The traversal touches every cell once, and the returned order stores all matrix values in sequence.
+interviewSignals:
+  - The output order groups cells by diagonals rather than rows or columns.
+  - Movement within each diagonal goes upward and to the right.
+  - The prompt asks for traversal order, not for diagonal sums or diagonal validity.
+relatedSlugs:
+  - print-a-given-matrix-in-spiral-form
+  - boundary-elements-of-a-matrix
+  - matrix-operations
+provenance:
+  - title: "GeeksforGeeks - Diagonal Traversal of a Matrix I"
+    href: https://www.geeksforgeeks.org/dsa/zigzag-or-diagonal-traversal-of-matrix/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This problem checks whether you can move across a matrix in a less familiar order than rows, columns, or spirals. The key observation is that every bottom-left to top-right diagonal can be identified by its starting point, and those starts come from the first column followed by the bottom row.
+
+## Worked Example
+
+For `[[1, 2, 3], [4, 5, 6], [7, 8, 9]]`, the traversal starts at `[0, 0]` and yields `1`, then at `[1, 0]` and yields `4, 2`, then `[2, 0]` for `7, 5, 3`, and finally the remaining bottom-row starts `[2, 1]` and `[2, 2]` for `8, 6` and `9`. The full diagonal order is `[1, 4, 2, 7, 5, 3, 8, 6, 9]`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function validateNumericMatrix(matrix) {
+  if (!Array.isArray(matrix) || matrix.length === 0 || !matrix.every((row) => Array.isArray(row))) {
+    throw new TypeError('matrix must be a non-empty 2D array');
+  }
+
+  const width = matrix[0].length;
+  if (width === 0) {
+    throw new TypeError('matrix rows must not be empty');
+  }
+
+  if (!matrix.every((row) => row.length === width && row.every((value) => Number.isFinite(value)))) {
+    throw new TypeError('matrix rows must have equal length and contain only finite numbers');
+  }
+}
+
+function diagonalTraversalOfAMatrixI(matrix) {
+  validateNumericMatrix(matrix);
+
+  const rows = matrix.length;
+  const cols = matrix[0].length;
+  const result = [];
+
+  for (let startRow = 0; startRow < rows; startRow += 1) {
+    let row = startRow;
+    let col = 0;
+
+    while (row >= 0 && col < cols) {
+      result.push(matrix[row][col]);
+      row -= 1;
+      col += 1;
+    }
+  }
+
+  for (let startCol = 1; startCol < cols; startCol += 1) {
+    let row = rows - 1;
+    let col = startCol;
+
+    while (row >= 0 && col < cols) {
+      result.push(matrix[row][col]);
+      row -= 1;
+      col += 1;
+    }
+  }
+
+  return result;
+}
+
+console.assert(
+  JSON.stringify(
+    diagonalTraversalOfAMatrixI([
+      [1, 2, 3],
+      [4, 5, 6],
+      [7, 8, 9],
+    ]),
+  ) === JSON.stringify([1, 4, 2, 7, 5, 3, 8, 6, 9]),
+  '3x3 matrix should be emitted in bottom-left to top-right diagonal order',
+);
+
+console.assert(
+  JSON.stringify(
+    diagonalTraversalOfAMatrixI([
+      [1, 2, 3, 4],
+      [5, 6, 7, 8],
+      [9, 10, 11, 12],
+    ]),
+  ) === JSON.stringify([1, 5, 2, 9, 6, 3, 10, 7, 4, 11, 8, 12]),
+  'rectangular matrix should preserve the same diagonal ordering rule',
+);
+```
+
+```ts
+function validateNumericMatrix(matrix: number[][]): void {
+  if (!Array.isArray(matrix) || matrix.length === 0 || !matrix.every((row) => Array.isArray(row))) {
+    throw new TypeError('matrix must be a non-empty 2D array');
+  }
+
+  const width = matrix[0].length;
+  if (width === 0) {
+    throw new TypeError('matrix rows must not be empty');
+  }
+
+  if (!matrix.every((row) => row.length === width && row.every((value) => Number.isFinite(value)))) {
+    throw new TypeError('matrix rows must have equal length and contain only finite numbers');
+  }
+}
+
+export function diagonalTraversalOfAMatrixI(matrix: number[][]): number[] {
+  validateNumericMatrix(matrix);
+
+  const rows = matrix.length;
+  const cols = matrix[0].length;
+  const result: number[] = [];
+
+  for (let startRow = 0; startRow < rows; startRow += 1) {
+    let row = startRow;
+    let col = 0;
+
+    while (row >= 0 && col < cols) {
+      result.push(matrix[row][col]);
+      row -= 1;
+      col += 1;
+    }
+  }
+
+  for (let startCol = 1; startCol < cols; startCol += 1) {
+    let row = rows - 1;
+    let col = startCol;
+
+    while (row >= 0 && col < cols) {
+      result.push(matrix[row][col]);
+      row -= 1;
+      col += 1;
+    }
+  }
+
+  return result;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you alternate diagonal direction to produce a true zigzag traversal?
+- What changes if you want top-left to bottom-right anti-diagonals instead?
+- How would you return one array per diagonal instead of one flattened traversal?
+
+## Common Pitfalls
+
+- Starting the second phase from the first bottom-row column and duplicating the bottom-left diagonal.
+- Moving down-right instead of up-right within each diagonal.
+- Assuming the matrix is square when the traversal works for rectangular inputs too.
