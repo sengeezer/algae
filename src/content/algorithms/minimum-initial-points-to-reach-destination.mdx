@@ -1,0 +1,159 @@
+---
+title: Minimum Initial Points to Reach Destination
+slug: minimum-initial-points-to-reach-destination
+category: Dynamic Programming
+summary: Compute the minimum starting health needed to cross a gain-and-loss grid while remaining strictly positive at every step.
+description: "Minimum Initial Points to Reach Destination is the reverse grid-DP problem where each cell stores the least health you must enter with so that some right-and-down path keeps you alive to the destination."
+dataStructures:
+  - Matrix
+  - Array
+techniques:
+  - Dynamic Programming
+  - Grid Traversal
+  - Reverse DP
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - dungeon game
+  - minimum health to reach destination
+  - minimum positive points to reach destination
+useCases:
+  - Planning the smallest safe resource budget through a weighted grid
+  - Reversing a path DP when survival constraints depend on future cells
+  - Modeling games or simulations where health must stay positive at all times
+complexity:
+  time: O(rows * cols)
+  space: O(cols)
+  notes: The state is the minimum health needed when entering a cell, and a single row works because each update only depends on the current right neighbor and the row below.
+interviewSignals:
+  - The path may only move right or down.
+  - Health can increase or decrease at each cell, but it must always stay above zero.
+  - The answer is the smallest feasible starting value, not the best path sum.
+relatedSlugs:
+  - minimum-cost-path
+  - unique-paths
+  - unique-paths-ii
+provenance:
+  - title: "GeeksforGeeks - Minimum Initial Points to Reach Destination"
+    href: https://www.geeksforgeeks.org/dsa/minimum-positive-points-to-reach-destination/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This problem looks like a shortest-path question at first, but the real state is survival budget. A greedy choice fails because a locally good cell can still force an impossible future, so the clean solution works backward from the destination and asks how much health each cell must hand to its exit.
+
+## Worked Example
+
+For `[[-2, -3, 3], [-5, -10, 1], [10, 30, -5]]`, the destination cell `-5` requires at least `6` health on entry so that you leave it with `1`. Working backward, the best route is to enter the start cell with `7`, follow the top row to the right, then move down twice, and remain positive throughout.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function validatePointsGrid(points) {
+  if (!Array.isArray(points) || points.length === 0 || !points.every((row) => Array.isArray(row))) {
+    throw new TypeError('points must be a non-empty 2D array');
+  }
+
+  const width = points[0].length;
+  if (width === 0) {
+    throw new TypeError('points rows must not be empty');
+  }
+
+  if (!points.every((row) => row.length === width && row.every((value) => Number.isFinite(value)))) {
+    throw new TypeError('points rows must have equal length and contain only finite numbers');
+  }
+}
+
+function minimumInitialPointsToReachDestination(points) {
+  validatePointsGrid(points);
+
+  const rows = points.length;
+  const cols = points[0].length;
+  const dp = new Array(cols + 1).fill(Number.POSITIVE_INFINITY);
+  dp[cols - 1] = 1;
+
+  for (let row = rows - 1; row >= 0; row -= 1) {
+    for (let col = cols - 1; col >= 0; col -= 1) {
+      const requiredExitHealth = Math.min(dp[col], dp[col + 1]);
+      dp[col] = Math.max(requiredExitHealth - points[row][col], 1);
+    }
+  }
+
+  return dp[0];
+}
+
+console.assert(
+  minimumInitialPointsToReachDestination([
+    [-2, -3, 3],
+    [-5, -10, 1],
+    [10, 30, -5],
+  ]) === 7,
+  'classic dungeon-style example should require 7 starting points',
+);
+
+console.assert(
+  minimumInitialPointsToReachDestination([
+    [2, 3],
+    [5, 10],
+    [10, 30],
+  ]) === 1,
+  'all-positive grid should only require one initial point',
+);
+
+console.assert(
+  minimumInitialPointsToReachDestination([[-5]]) === 6,
+  'single negative destination should require enough health to leave with one point',
+);
+```
+
+```ts
+function validatePointsGrid(points: number[][]): void {
+  if (!Array.isArray(points) || points.length === 0 || !points.every((row) => Array.isArray(row))) {
+    throw new TypeError('points must be a non-empty 2D array');
+  }
+
+  const width = points[0].length;
+  if (width === 0) {
+    throw new TypeError('points rows must not be empty');
+  }
+
+  if (!points.every((row) => row.length === width && row.every((value) => Number.isFinite(value)))) {
+    throw new TypeError('points rows must have equal length and contain only finite numbers');
+  }
+}
+
+export function minimumInitialPointsToReachDestination(points: number[][]): number {
+  validatePointsGrid(points);
+
+  const rows = points.length;
+  const cols = points[0].length;
+  const dp = new Array<number>(cols + 1).fill(Number.POSITIVE_INFINITY);
+  dp[cols - 1] = 1;
+
+  for (let row = rows - 1; row >= 0; row -= 1) {
+    for (let col = cols - 1; col >= 0; col -= 1) {
+      const requiredExitHealth = Math.min(dp[col], dp[col + 1]);
+      dp[col] = Math.max(requiredExitHealth - points[row][col], 1);
+    }
+  }
+
+  return dp[0];
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you reconstruct one optimal safe path after computing the minimum starting health?
+- Why is a forward greedy strategy unreliable even when a cell gives a large health bonus?
+- How would the recurrence change if diagonal moves were also allowed?
+
+## Common Pitfalls
+
+- Treating the problem like minimum path sum instead of minimum safe starting budget.
+- Forgetting that health must stay strictly positive, so zero is not a valid state.
+- Building the recurrence forward when each cell actually depends on future exits.

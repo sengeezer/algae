@@ -1,0 +1,205 @@
+---
+title: Count number of paths with at-most k turns
+slug: count-number-of-paths-with-at-most-k-turns
+category: Dynamic Programming
+summary: Count right-and-down grid paths while limiting how many times the direction may change.
+description: "Count number of paths with at-most k turns is the direction-aware grid DP where the state tracks position, remaining turns, and the direction of the last move."
+dataStructures:
+  - Matrix
+  - Array
+techniques:
+  - Dynamic Programming
+  - Memoization
+  - Grid Traversal
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - count paths with k turns
+  - path counting with limited turns
+  - grid paths with turn budget
+useCases:
+  - Counting monotonic routes under movement-shape constraints
+  - Extending standard grid-path DP with one extra directional state
+  - Modeling robots or packets that may change direction only a limited number of times
+complexity:
+  time: O(rows * cols * maxTurns)
+  space: O(rows * cols * maxTurns)
+  notes: The memoized state space is one entry per cell, remaining-turn budget, and last-move direction.
+interviewSignals:
+  - Movement is still limited to right and down, but direction changes are restricted.
+  - The turn count depends on the previous move, so position alone is not enough state.
+  - The question asks for a count, not a shortest path or one valid route.
+relatedSlugs:
+  - unique-paths
+  - unique-paths-ii
+  - minimum-initial-points-to-reach-destination
+provenance:
+  - title: "GeeksforGeeks - Count number of paths with at-most k turns"
+    href: https://www.geeksforgeeks.org/dsa/count-number-of-paths-with-k-turns/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This is a useful follow-up to plain path counting because the usual two-dimensional recurrence is no longer enough. Whether you can spend the next move depends on the direction you used to get here, so the DP state must remember the last move as well as the remaining turn budget.
+
+## Worked Example
+
+In a `3 x 3` grid with at most `2` turns, the valid paths are `RRDD`, `RDDR`, `DRRD`, and `DDRR`, so the answer is `4`. The alternating paths `RDRD` and `DRDR` each use `3` turns and are excluded.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function validateGridArguments(rows, cols, maxTurns) {
+  if (!Number.isInteger(rows) || rows <= 0) {
+    throw new TypeError('rows must be a positive integer');
+  }
+
+  if (!Number.isInteger(cols) || cols <= 0) {
+    throw new TypeError('cols must be a positive integer');
+  }
+
+  if (!Number.isInteger(maxTurns) || maxTurns < 0) {
+    throw new TypeError('maxTurns must be a non-negative integer');
+  }
+}
+
+function countNumberOfPathsWithAtMostKTurns(rows, cols, maxTurns) {
+  validateGridArguments(rows, cols, maxTurns);
+
+  const START = 'start';
+  const RIGHT = 'right';
+  const DOWN = 'down';
+  const memo = new Map();
+
+  function search(row, col, remainingTurns, direction) {
+    if (row === rows - 1 && col === cols - 1) {
+      return 1;
+    }
+
+    const key = `${row},${col},${remainingTurns},${direction}`;
+    if (memo.has(key)) {
+      return memo.get(key);
+    }
+
+    let total = 0;
+
+    if (col + 1 < cols) {
+      const nextTurns = direction === DOWN ? remainingTurns - 1 : remainingTurns;
+      if (nextTurns >= 0) {
+        total += search(row, col + 1, nextTurns, RIGHT);
+      }
+    }
+
+    if (row + 1 < rows) {
+      const nextTurns = direction === RIGHT ? remainingTurns - 1 : remainingTurns;
+      if (nextTurns >= 0) {
+        total += search(row + 1, col, nextTurns, DOWN);
+      }
+    }
+
+    memo.set(key, total);
+    return total;
+  }
+
+  return search(0, 0, maxTurns, START);
+}
+
+console.assert(
+  countNumberOfPathsWithAtMostKTurns(3, 3, 2) === 4,
+  '3x3 grid with at most 2 turns should have 4 valid paths',
+);
+
+console.assert(
+  countNumberOfPathsWithAtMostKTurns(3, 3, 1) === 2,
+  '3x3 grid with at most 1 turn should keep only the straight-then-turn paths',
+);
+
+console.assert(
+  countNumberOfPathsWithAtMostKTurns(1, 4, 0) === 1,
+  'single-row grid should need no turns',
+);
+```
+
+```ts
+function validateGridArguments(rows: number, cols: number, maxTurns: number): void {
+  if (!Number.isInteger(rows) || rows <= 0) {
+    throw new TypeError('rows must be a positive integer');
+  }
+
+  if (!Number.isInteger(cols) || cols <= 0) {
+    throw new TypeError('cols must be a positive integer');
+  }
+
+  if (!Number.isInteger(maxTurns) || maxTurns < 0) {
+    throw new TypeError('maxTurns must be a non-negative integer');
+  }
+}
+
+export function countNumberOfPathsWithAtMostKTurns(
+  rows: number,
+  cols: number,
+  maxTurns: number,
+): number {
+  validateGridArguments(rows, cols, maxTurns);
+
+  const START = 'start';
+  const RIGHT = 'right';
+  const DOWN = 'down';
+  const memo = new Map<string, number>();
+
+  const search = (
+    row: number,
+    col: number,
+    remainingTurns: number,
+    direction: typeof START | typeof RIGHT | typeof DOWN,
+  ): number => {
+    if (row === rows - 1 && col === cols - 1) {
+      return 1;
+    }
+
+    const key = `${row},${col},${remainingTurns},${direction}`;
+    const cached = memo.get(key);
+    if (cached !== undefined) {
+      return cached;
+    }
+
+    let total = 0;
+
+    if (col + 1 < cols) {
+      const nextTurns = direction === DOWN ? remainingTurns - 1 : remainingTurns;
+      if (nextTurns >= 0) {
+        total += search(row, col + 1, nextTurns, RIGHT);
+      }
+    }
+
+    if (row + 1 < rows) {
+      const nextTurns = direction === RIGHT ? remainingTurns - 1 : remainingTurns;
+      if (nextTurns >= 0) {
+        total += search(row + 1, col, nextTurns, DOWN);
+      }
+    }
+
+    memo.set(key, total);
+    return total;
+  };
+
+  return search(0, 0, maxTurns, START);
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you change the state if the path needed exactly k turns instead of at most k?
+- Why does ordinary Unique Paths fail to capture this constraint without a direction dimension?
+- How would you extend the model to allow diagonal moves or blocked cells?
+
+## Common Pitfalls
+
+- Counting turns from the start cell before any direction has been chosen.
+- Using only row and column as state even though the next move cost depends on the last direction.
+- Forgetting that single-row and single-column grids can have valid zero-turn paths.

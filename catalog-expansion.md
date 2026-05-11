@@ -2291,12 +2291,19 @@ This one-hundred-eighty-eighth expansion slice lifts the catalog from 860 to 863
 - Print a given matrix in spiral form
 - Search in a row wise and column wise sorted matrix
 
+## Batch 189 added
+
+This one-hundred-eighty-ninth expansion slice lifts the catalog from 863 to 865 entries.
+
+- Minimum Initial Points to Reach Destination
+- Count number of paths with at-most k turns
+
 ## Current source-order note
 
-- `Diagonal Traversal of a Matrix I` stays distinct because it emits bottom-left to top-right diagonals in order instead of rotating, spiraling, or aggregating diagonal values.
-- `Print a given matrix in spiral form` stays distinct because it consumes the full matrix ring by ring, extending beyond the already-published perimeter-only `Boundary Elements of a Matrix` entry.
-- `Search in a row wise and column wise sorted matrix` stays distinct because it is the linear top-right staircase search, not the already-published divide-and-conquer sorted-matrix variant.
-- Focused JavaScript-fence validation, `npm run db:catalog:seed`, `npm run lint`, `npx tsc --noEmit`, `npm run smoke:ui`, and targeted Playwright route checks all passed for batch 188 before publish; `npm run db:catalog:seed` synced 863 algorithms.
-- In the GeeksforGeeks `Matrices for Programmers` subsection, `Find the number of islands`, `Maximum sum rectangular submatrix in a given matrix`, and `Matrix Chain Multiplication` are duplicate-level detours because the catalog already covers `Number of Islands`, `Maximum sum rectangle in a 2D matrix`, and `Matrix Chain Multiplication`.
-- The next clean Matrices for Programmers queue is `Minimum Initial Points to Reach Destination` and `Count number of paths with at-most k turns`.
-- That narrowed two-item queue is the remaining clean frontier in `Matrices for Programmers`; after it, the source branch is exhausted in local source order.
+- `Minimum Initial Points to Reach Destination` stays distinct because it computes the minimum starting health needed to remain strictly positive throughout the route, not the cheapest path sum or the number of routes.
+- `Count number of paths with at-most k turns` stays distinct because the state tracks both remaining turns and the previous move direction, which goes beyond the existing plain grid-path counting entries.
+- Focused JavaScript-fence validation passed for batch 189 immediately after drafting.
+- The GeeksforGeeks `Matrices for Programmers` subsection is exhausted in local source order after `Count number of paths with at-most k turns`.
+- The next vetted source branch is the GeeksforGeeks `Matrix Data Structure` hard-problems stretch.
+- In that branch, `Matrix Chain Multiplication`, `Shortest path in a Binary Maze`, `Minimum Initial Points to Reach Destination`, `Strassen’s Matrix Multiplication`, and `Max sum rectangle in a 2D matrix` are duplicate-level detours because the catalog already covers those problems semantically.
+- The next clean Matrix Data Structure queue is `Median in row wise sorted matrix`, `A Boolean Matrix Question`, and `Maximum sum square sub-matrix of given size`.
