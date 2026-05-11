@@ -1,0 +1,146 @@
+---
+title: Toeplitz Matrix or Not
+slug: toeplitz-matrix-or-not
+category: Matrix
+summary: Check whether every descending diagonal in a matrix keeps the same value from top-left to bottom-right.
+description: "Toeplitz Matrix or Not is the diagonal-constant matrix check that compares each cell with its top-left neighbor to verify every descending diagonal is uniform."
+dataStructures:
+  - Matrix
+  - Array
+techniques:
+  - Diagonal Traversal
+  - Matrix Validation
+  - Pattern Checking
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - check if a matrix is a toeplitz matrix
+  - diagonal constant matrix
+  - toeplitz matrix check
+useCases:
+  - Verifying diagonal-constant structure in numeric grids
+  - Practicing local matrix invariants that imply a global property
+  - Validating input before Toeplitz-specific transforms or compression
+complexity:
+  time: O(rows * cols)
+  space: O(1)
+  notes: Comparing each cell against only its top-left neighbor is enough because that local invariant propagates along every descending diagonal.
+interviewSignals:
+  - Every top-left to bottom-right diagonal should contain identical values.
+  - The solution can check local neighbors instead of storing whole diagonals.
+  - The prompt asks for a yes-or-no matrix property test.
+relatedSlugs:
+  - boundary-elements-of-a-matrix
+  - matrix-operations
+  - row-echelon
+provenance:
+  - title: "GeeksforGeeks - Toeplitz Matrix or Not"
+    href: https://www.geeksforgeeks.org/dsa/find-if-given-matrix-is-toeplitz-or-not/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+Toeplitz questions are a compact way to test whether you can identify a local invariant that proves a global matrix property. Once you see that every cell only needs to match the value diagonally above-left, the check becomes a simple scan.
+
+## Worked Example
+
+The matrix `[[6, 7, 8], [4, 6, 7], [1, 4, 6]]` is Toeplitz because each descending diagonal stays constant: `[6, 6, 6]`, `[7, 7]`, `[8]`, `[4, 4]`, and `[1]`. A mismatch like `9` in the center would immediately break the property.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function validateMatrix(matrix) {
+  if (!Array.isArray(matrix) || matrix.length === 0 || !matrix.every((row) => Array.isArray(row))) {
+    throw new TypeError('matrix must be a non-empty 2D array');
+  }
+
+  const width = matrix[0].length;
+  if (width === 0) {
+    throw new TypeError('matrix rows must not be empty');
+  }
+
+  if (!matrix.every((row) => row.length === width && row.every((value) => Number.isFinite(value)))) {
+    throw new TypeError('matrix rows must have equal length and contain only finite numbers');
+  }
+}
+
+function toeplitzMatrixOrNot(matrix) {
+  validateMatrix(matrix);
+
+  for (let row = 1; row < matrix.length; row += 1) {
+    for (let col = 1; col < matrix[0].length; col += 1) {
+      if (matrix[row][col] !== matrix[row - 1][col - 1]) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+console.assert(
+  toeplitzMatrixOrNot([
+    [6, 7, 8],
+    [4, 6, 7],
+    [1, 4, 6],
+  ]) === true,
+  'matching descending diagonals should be Toeplitz',
+);
+
+console.assert(
+  toeplitzMatrixOrNot([
+    [6, 3, 8],
+    [4, 9, 7],
+    [1, 4, 6],
+  ]) === false,
+  'diagonal mismatch should fail the Toeplitz check',
+);
+```
+
+```ts
+function validateMatrix(matrix: number[][]): void {
+  if (!Array.isArray(matrix) || matrix.length === 0 || !matrix.every((row) => Array.isArray(row))) {
+    throw new TypeError('matrix must be a non-empty 2D array');
+  }
+
+  const width = matrix[0].length;
+  if (width === 0) {
+    throw new TypeError('matrix rows must not be empty');
+  }
+
+  if (!matrix.every((row) => row.length === width && row.every((value) => Number.isFinite(value)))) {
+    throw new TypeError('matrix rows must have equal length and contain only finite numbers');
+  }
+}
+
+export function toeplitzMatrixOrNot(matrix: number[][]): boolean {
+  validateMatrix(matrix);
+
+  for (let row = 1; row < matrix.length; row += 1) {
+    for (let col = 1; col < matrix[0].length; col += 1) {
+      if (matrix[row][col] !== matrix[row - 1][col - 1]) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you report the first diagonal that breaks the Toeplitz property?
+- Why is comparing to the top-left neighbor enough to prove the full diagonal rule?
+- How could you stream the same check row by row if the matrix were too large to store fully?
+
+## Common Pitfalls
+
+- Checking only the main diagonal instead of every descending diagonal.
+- Assuming the property only makes sense for square matrices when the same invariant works for any rectangular matrix.
+- Building explicit diagonal arrays when a constant-space neighbor check is enough.

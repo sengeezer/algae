@@ -1,0 +1,171 @@
+---
+title: Find the row with maximum number of 1s
+slug: find-the-row-with-maximum-number-of-1s
+category: Matrix
+summary: Use the sorted-row structure of a binary matrix to find the row with the most 1s without counting every cell.
+description: "Find the row with maximum number of 1s is the monotonic matrix scan that walks from the top-right corner and updates the best row each time it moves left over a 1."
+dataStructures:
+  - Matrix
+  - Array
+techniques:
+  - Matrix Traversal
+  - Monotonic Search
+  - Binary Matrix
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - row with maximum number of 1s
+  - maximum ones row in sorted binary matrix
+  - row with most ones
+useCases:
+  - Exploiting row-wise sorted binary data instead of recounting every row
+  - Turning a matrix problem into a monotonic pointer walk
+  - Returning the best row index for dense true-or-false grid data
+complexity:
+  time: O(rows + cols)
+  space: O(1)
+  notes: Starting from the top-right cell guarantees that each step moves either left or down, so no cell boundary is crossed twice.
+interviewSignals:
+  - Every row of the binary matrix is sorted.
+  - The answer is a row index, not the total count of 1s.
+  - The intended improvement beats a full row-by-row recount.
+relatedSlugs:
+  - matrix-operations
+  - search-in-a-row-wise-and-column-wise-sorted-2d-array-using-divide-and-conquer-algorithm
+  - sort-the-given-matrix
+provenance:
+  - title: "GeeksforGeeks - Find the row with maximum number of 1s"
+    href: https://www.geeksforgeeks.org/dsa/find-the-row-with-maximum-number-1s/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+This problem is a good test of whether you recognize useful matrix monotonicity. Since each row is sorted, the top-right corner acts like a staircase: a `1` means the current row is at least as good as every row above it, while a `0` means the current row cannot beat any row that already reached farther left.
+
+## Worked Example
+
+For `[[0, 0, 1, 1], [0, 1, 1, 1], [0, 0, 0, 1]]`, start at the top-right `1`. That already makes row `0` the current best, so move left. When a `0` blocks further progress on that row, move down. Repeating that walk reaches row `1` and three trailing `1`s, so the answer is index `1`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function validateSortedBinaryMatrix(matrix) {
+  if (!Array.isArray(matrix) || matrix.length === 0 || !matrix.every((row) => Array.isArray(row))) {
+    throw new TypeError('matrix must be a non-empty 2D array');
+  }
+
+  const width = matrix[0].length;
+  if (width === 0) {
+    throw new TypeError('matrix rows must not be empty');
+  }
+
+  for (const row of matrix) {
+    if (row.length !== width || !row.every((value) => value === 0 || value === 1)) {
+      throw new TypeError('matrix must contain rows of equal length with only 0 and 1 values');
+    }
+
+    for (let index = 1; index < row.length; index += 1) {
+      if (row[index] < row[index - 1]) {
+        throw new TypeError('each row must be sorted in nondecreasing order');
+      }
+    }
+  }
+}
+
+function findTheRowWithMaximumNumberOf1s(matrix) {
+  validateSortedBinaryMatrix(matrix);
+
+  let bestRow = -1;
+  let row = 0;
+  let col = matrix[0].length - 1;
+
+  while (row < matrix.length && col >= 0) {
+    if (matrix[row][col] === 1) {
+      bestRow = row;
+      col -= 1;
+    } else {
+      row += 1;
+    }
+  }
+
+  return bestRow;
+}
+
+console.assert(
+  findTheRowWithMaximumNumberOf1s([
+    [0, 0, 1, 1],
+    [0, 1, 1, 1],
+    [0, 0, 0, 1],
+  ]) === 1,
+  'second row should contain the maximum number of 1s',
+);
+
+console.assert(
+  findTheRowWithMaximumNumberOf1s([
+    [0, 0, 0],
+    [0, 0, 0],
+  ]) === -1,
+  'matrix with no 1s should return -1',
+);
+```
+
+```ts
+function validateSortedBinaryMatrix(matrix: number[][]): void {
+  if (!Array.isArray(matrix) || matrix.length === 0 || !matrix.every((row) => Array.isArray(row))) {
+    throw new TypeError('matrix must be a non-empty 2D array');
+  }
+
+  const width = matrix[0].length;
+  if (width === 0) {
+    throw new TypeError('matrix rows must not be empty');
+  }
+
+  for (const row of matrix) {
+    if (row.length !== width || !row.every((value) => value === 0 || value === 1)) {
+      throw new TypeError('matrix must contain rows of equal length with only 0 and 1 values');
+    }
+
+    for (let index = 1; index < row.length; index += 1) {
+      if (row[index] < row[index - 1]) {
+        throw new TypeError('each row must be sorted in nondecreasing order');
+      }
+    }
+  }
+}
+
+export function findTheRowWithMaximumNumberOf1s(matrix: number[][]): number {
+  validateSortedBinaryMatrix(matrix);
+
+  let bestRow = -1;
+  let row = 0;
+  let col = matrix[0].length - 1;
+
+  while (row < matrix.length && col >= 0) {
+    if (matrix[row][col] === 1) {
+      bestRow = row;
+      col -= 1;
+    } else {
+      row += 1;
+    }
+  }
+
+  return bestRow;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would the solution change if the rows were not sorted?
+- Why does the top-right start dominate the binary-search-per-row variant?
+- How would you return both the row index and the count of 1s?
+
+## Common Pitfalls
+
+- Counting every row fully even though the matrix order lets you do better.
+- Forgetting that `-1` is the natural answer when no row contains a `1`.
+- Applying the staircase walk to rows that are not actually sorted.

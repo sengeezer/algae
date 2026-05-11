@@ -2275,13 +2275,20 @@ This one-hundred-eighty-sixth expansion slice lifts the catalog from 854 to 857 
 - Rotate Matrix Clockwise by 1
 - Sort the given matrix
 
+## Batch 187 added
+
+This one-hundred-eighty-seventh expansion slice lifts the catalog from 857 to 860 entries.
+
+- Find the row with maximum number of 1s
+- Boundary Elements of a Matrix
+- Toeplitz Matrix or Not
+
 ## Current source-order note
 
-- `Matrix Operations` stays distinct from the local matrix catalog because it simulates a direction-changing walk over binary cells and returns the final in-bounds exit coordinate rather than computing an algebraic matrix transform.
-- `Rotate Matrix Clockwise by 1` stays distinct because it performs a one-step ring rotation, not a 90-degree rotation or multiplication-based transform.
-- `Sort the given matrix` stays distinct because it globally rebuilds matrix values in strict row-major order instead of searching, multiplying, or optimizing over an already structured grid.
-- Focused JavaScript-fence validation, `npm run db:catalog:seed`, `npm run lint`, `npx tsc --noEmit`, `npm run smoke:ui`, and targeted Playwright route checks all passed for batch 186 before publish; `npm run db:catalog:seed` synced 857 algorithms.
-- Within the GeeksforGeeks `Matrices for Programmers` subsection, `Program to multiply two matrices` remains a duplicate-level detour because the local catalog already has `Matrix Multiplication`.
-- Destination-title cleanup in the next Matrices for Programmers queue is `Find the row with the maximum number of 1s` -> `Find the row with maximum number of 1s` and `Boundary elements of a Matrix` -> `Boundary Elements of a Matrix`; `Check if a matrix is a Toeplitz Matrix` already matches its live destination title.
-- The next clean Matrices for Programmers queue is `Find the row with maximum number of 1s`, `Boundary Elements of a Matrix`, and `Check if a matrix is a Toeplitz Matrix`.
-- The later `Print a given matrix in spiral form` label currently points at the same boundary-elements destination URL, so it remains a duplicate-level follow-up to skip when the frontier reaches it.
+- `Find the row with maximum number of 1s` stays distinct because it uses the sorted-binary-row staircase scan to return the best row index rather than traversing or transforming the whole matrix.
+- `Boundary Elements of a Matrix` stays distinct because it extracts only the clockwise perimeter, not a full spiral or ring rotation.
+- The source queue label `Check if a matrix is a Toeplitz Matrix` resolves to the live destination title `Toeplitz Matrix or Not`, and the drafted entry uses that destination title.
+- Focused JavaScript-fence validation, `npm run db:catalog:seed`, `npm run lint`, `npx tsc --noEmit`, `npm run smoke:ui`, and targeted Playwright route checks all passed for batch 187 before publish; `npm run db:catalog:seed` synced 860 algorithms.
+- In the GeeksforGeeks `Matrices for Programmers` subsection, the immediate `Print a given matrix in spiral form` label after Toeplitz still points to the already-used boundary-elements article, so it remains a duplicate-level detour to skip.
+- Destination-title cleanup in the next Matrices for Programmers queue is `Zigzag (or diagonal) traversal of Matrix` -> `Diagonal Traversal of a Matrix I`, `Spiral Traversal of Matrix` -> `Print a given matrix in spiral form`, and `Search in a Row-wise and Column-wise Sorted Matrix` -> `Search in a row wise and column wise sorted matrix`.
+- The next clean Matrices for Programmers queue is `Diagonal Traversal of a Matrix I`, `Print a given matrix in spiral form`, and `Search in a row wise and column wise sorted matrix`.

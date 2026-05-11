@@ -1,0 +1,186 @@
+---
+title: Boundary Elements of a Matrix
+slug: boundary-elements-of-a-matrix
+category: Matrix
+summary: Traverse only the outer ring of a matrix in clockwise order without repeating corner cells.
+description: "Boundary Elements of a Matrix is the perimeter traversal routine that walks the top row, right edge, bottom row, and left edge in clockwise order."
+dataStructures:
+  - Matrix
+  - Array
+techniques:
+  - Boundary Traversal
+  - Matrix Traversal
+  - Simulation
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - boundary traversal of matrix
+  - matrix perimeter traversal
+  - outer ring traversal
+useCases:
+  - Extracting perimeter values for image, grid, or simulation problems
+  - Practicing careful edge handling on rectangular matrices
+  - Reusing boundary order before a more complex spiral traversal
+complexity:
+  time: O(rows + cols)
+  space: O(rows + cols)
+  notes: The returned traversal itself has boundary length size, so the output buffer grows with the matrix perimeter.
+interviewSignals:
+  - Only the outermost cells belong in the answer.
+  - The traversal order is clockwise from the top-left corner.
+  - Single-row and single-column matrices must avoid duplicate corner output.
+relatedSlugs:
+  - rotate-matrix-clockwise-by-1
+  - sort-the-given-matrix
+  - matrix-operations
+provenance:
+  - title: "GeeksforGeeks - Boundary Elements of a Matrix"
+    href: https://www.geeksforgeeks.org/dsa/boundary-elements-matrix/
+    kind: Implementation
+---
+
+## Why It Surfaces
+
+Boundary traversal is the simplest version of spiral-style matrix walking. It tests whether you can reason about edges and corners precisely enough to visit every perimeter cell once and only once.
+
+## Worked Example
+
+For `[[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]]`, the clockwise perimeter is top row `[1, 2, 3, 4]`, right edge `[8, 12]`, bottom row in reverse `[11, 10, 9]`, and left edge upward `[5]`, giving `[1, 2, 3, 4, 8, 12, 11, 10, 9, 5]`.
+
+## Reference Implementations
+
+<ExamplePair>
+
+```js
+function validateNumericMatrix(matrix) {
+  if (!Array.isArray(matrix) || matrix.length === 0 || !matrix.every((row) => Array.isArray(row))) {
+    throw new TypeError('matrix must be a non-empty 2D array');
+  }
+
+  const width = matrix[0].length;
+  if (width === 0) {
+    throw new TypeError('matrix rows must not be empty');
+  }
+
+  if (!matrix.every((row) => row.length === width && row.every((value) => Number.isFinite(value)))) {
+    throw new TypeError('matrix rows must have equal length and contain only finite numbers');
+  }
+}
+
+function boundaryElementsOfAMatrix(matrix) {
+  validateNumericMatrix(matrix);
+
+  const rows = matrix.length;
+  const cols = matrix[0].length;
+
+  if (rows === 1) {
+    return matrix[0].slice();
+  }
+
+  if (cols === 1) {
+    return matrix.map((row) => row[0]);
+  }
+
+  const result = [];
+
+  for (let col = 0; col < cols; col += 1) {
+    result.push(matrix[0][col]);
+  }
+
+  for (let row = 1; row < rows; row += 1) {
+    result.push(matrix[row][cols - 1]);
+  }
+
+  for (let col = cols - 2; col >= 0; col -= 1) {
+    result.push(matrix[rows - 1][col]);
+  }
+
+  for (let row = rows - 2; row >= 1; row -= 1) {
+    result.push(matrix[row][0]);
+  }
+
+  return result;
+}
+
+console.assert(
+  JSON.stringify(
+    boundaryElementsOfAMatrix([
+      [1, 2, 3, 4],
+      [5, 6, 7, 8],
+      [9, 10, 11, 12],
+    ]),
+  ) === JSON.stringify([1, 2, 3, 4, 8, 12, 11, 10, 9, 5]),
+  '3x4 matrix should return its boundary in clockwise order',
+);
+
+console.assert(
+  JSON.stringify(boundaryElementsOfAMatrix([[1, 2], [3, 4]])) === JSON.stringify([1, 2, 4, 3]),
+  '2x2 matrix should visit each corner once',
+);
+```
+
+```ts
+function validateNumericMatrix(matrix: number[][]): void {
+  if (!Array.isArray(matrix) || matrix.length === 0 || !matrix.every((row) => Array.isArray(row))) {
+    throw new TypeError('matrix must be a non-empty 2D array');
+  }
+
+  const width = matrix[0].length;
+  if (width === 0) {
+    throw new TypeError('matrix rows must not be empty');
+  }
+
+  if (!matrix.every((row) => row.length === width && row.every((value) => Number.isFinite(value)))) {
+    throw new TypeError('matrix rows must have equal length and contain only finite numbers');
+  }
+}
+
+export function boundaryElementsOfAMatrix(matrix: number[][]): number[] {
+  validateNumericMatrix(matrix);
+
+  const rows = matrix.length;
+  const cols = matrix[0].length;
+
+  if (rows === 1) {
+    return matrix[0].slice();
+  }
+
+  if (cols === 1) {
+    return matrix.map((row) => row[0]);
+  }
+
+  const result: number[] = [];
+
+  for (let col = 0; col < cols; col += 1) {
+    result.push(matrix[0][col]);
+  }
+
+  for (let row = 1; row < rows; row += 1) {
+    result.push(matrix[row][cols - 1]);
+  }
+
+  for (let col = cols - 2; col >= 0; col -= 1) {
+    result.push(matrix[rows - 1][col]);
+  }
+
+  for (let row = rows - 2; row >= 1; row -= 1) {
+    result.push(matrix[row][0]);
+  }
+
+  return result;
+}
+```
+
+</ExamplePair>
+
+## Follow-up Questions
+
+- How would you extend this into a full spiral traversal?
+- Why do single-row and single-column matrices need separate handling?
+- How would you print the boundary in counterclockwise order instead?
+
+## Common Pitfalls
+
+- Repeating the corner elements when changing from one edge to the next.
+- Forgetting the degenerate single-row or single-column cases.
+- Traversing the full matrix instead of only the perimeter.
