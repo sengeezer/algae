@@ -2342,3 +2342,7 @@ This one-hundred-ninety-first expansion slice lifts the catalog from 868 to 871 
 - All three batch-191 entries are now drafted and validated (frontmatter structure, gray-matter parsing, JavaScript and TypeScript implementations with proper fence validation).
 - Batch 191 frontier comes from the GeeksforGeeks Linked List subsection, continuing the algorithmic progression after the Matrix Data Structure section.
 - The next clean Linked List queue is `Reverse a Singly Linked List`, `Detect loop in a linked list`, and `Find length of loop in linked list`.
+
+- Batch 191 was validated (frontmatter, compilation, lint, tsc, smoke tests, and targeted Playwright route checks all pass) and published to main at commit `9377ffa`.
+- The catalog now stands at 871 entries.
+- The next frontier is the continuation of the Linked List subsection with intermediate and advanced problems (Merge two sorted lists, Remove duplicates, Partition a list, Swap pairs, etc.).
