@@ -1,0 +1,173 @@
+---
+title: Median in row wise sorted matrix
+slug: median-in-row-wise-sorted-matrix
+category: Matrix
+summary: Find the median of all elements in a matrix where each row is sorted using binary search on value range.
+description: "Median in row wise sorted matrix uses binary search to find the median value by counting how many elements are less than or equal to each candidate value across all rows."
+dataStructures:
+  - Matrix
+  - Array
+techniques:
+  - Binary Search
+  - Counting Technique
+  - Matrix Traversal
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - median of row-wise sorted matrix
+  - find median in sorted matrix rows
+useCases:
+  - Finding statistical measures in 2D datasets where rows are pre-sorted
+  - Counting problems that benefit from binary search over matrix values
+complexity:
+  time: O(m × n × log(max_value))
+  space: O(1)
+  notes: Binary search on value range combined with O(n) counting per candidate in each row.
+interviewSignals:
+  - Each row is independently sorted.
+  - Total number of elements is always odd.
+  - The median is always an actual value in the matrix.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/median-in-row-wise-sorted-matrix/'
+related:
+  - find-the-row-with-maximum-number-of-1s
+  - search-in-a-row-wise-and-column-wise-sorted-matrix
+---
+
+## Problem
+
+Given an m × n matrix where each row is sorted in ascending order, find the median of all elements in the matrix. The total number of elements is always odd.
+
+## Approach
+
+**Binary Search on Value Range**
+
+The key insight is to binary search on the range of possible median values (from the smallest to largest element in the matrix). For each candidate value, count how many elements are less than or equal to it. If this count is at least `(m * n + 1) / 2`, the median is at most this value; otherwise, it's greater.
+
+**Time Complexity**: O(m × n × log(max_value))
+**Space Complexity**: O(1)
+
+## Implementation
+
+```javascript
+function validateNumericMatrix(matrix) {
+  if (!Array.isArray(matrix) || matrix.length === 0) return false;
+  return matrix.every((row) => Array.isArray(row) && row.every((val) => typeof val === 'number'));
+}
+
+function medianInRowWiseSortedMatrix(matrix) {
+  console.assert(validateNumericMatrix(matrix), 'Input must be a valid numeric matrix');
+
+  const m = matrix.length;
+  const n = matrix[0].length;
+  const totalElements = m * n;
+  const target = Math.floor((totalElements + 1) / 2);
+
+  let left = matrix[0][0];
+  let right = matrix[m - 1][n - 1];
+
+  while (left < right) {
+    const mid = Math.floor((left + right) / 2);
+    let count = 0;
+
+    // Count elements <= mid in all rows
+    for (let i = 0; i < m; i++) {
+      // Binary search within each sorted row
+      let lo = 0,
+        hi = n - 1;
+      while (lo <= hi) {
+        const midCol = Math.floor((lo + hi) / 2);
+        if (matrix[i][midCol] <= mid) {
+          lo = midCol + 1;
+        } else {
+          hi = midCol - 1;
+        }
+      }
+      count += lo;
+    }
+
+    if (count < target) {
+      left = mid + 1;
+    } else {
+      right = mid;
+    }
+  }
+
+  return left;
+}
+```
+
+```typescript
+function validateNumericMatrix(matrix: unknown): boolean {
+  if (!Array.isArray(matrix) || matrix.length === 0) return false;
+  return matrix.every(
+    (row) => Array.isArray(row) && row.every((val) => typeof val === 'number'),
+  );
+}
+
+function medianInRowWiseSortedMatrix(matrix: number[][]): number {
+  console.assert(validateNumericMatrix(matrix), 'Input must be a valid numeric matrix');
+
+  const m = matrix.length;
+  const n = matrix[0].length;
+  const totalElements = m * n;
+  const target = Math.floor((totalElements + 1) / 2);
+
+  let left = matrix[0][0];
+  let right = matrix[m - 1][n - 1];
+
+  while (left < right) {
+    const mid = Math.floor((left + right) / 2);
+    let count = 0;
+
+    // Count elements <= mid in all rows
+    for (let i = 0; i < m; i++) {
+      // Binary search within each sorted row
+      let lo = 0,
+        hi = n - 1;
+      while (lo <= hi) {
+        const midCol = Math.floor((lo + hi) / 2);
+        if (matrix[i][midCol] <= mid) {
+          lo = midCol + 1;
+        } else {
+          hi = midCol - 1;
+        }
+      }
+      count += lo;
+    }
+
+    if (count < target) {
+      left = mid + 1;
+    } else {
+      right = mid;
+    }
+  }
+
+  return left;
+}
+```
+
+## Example
+
+```javascript
+const matrix1 = [
+  [1, 2, 3],
+  [4, 5, 6],
+  [7, 8, 9],
+];
+console.log(medianInRowWiseSortedMatrix(matrix1)); // 5
+
+const matrix2 = [
+  [1, 3, 5],
+  [2, 4, 6],
+  [8, 9, 10],
+];
+console.log(medianInRowWiseSortedMatrix(matrix2)); // 5
+```
+
+## Reference
+
+- **Binary Search**: Searching by narrowing the range of possible answers
+- **Row-wise Sorted**: Each row is independently sorted; rows are not globally sorted relative to each other
+- **Median**: The middle value when all elements are sorted in order

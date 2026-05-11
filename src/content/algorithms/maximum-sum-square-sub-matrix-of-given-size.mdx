@@ -1,0 +1,179 @@
+---
+title: Maximum sum square sub-matrix of given size
+slug: maximum-sum-square-sub-matrix-of-given-size
+category: Matrix
+summary: Find the maximum sum of any k × k square sub-matrix in an n × m matrix using prefix sums.
+description: "Maximum sum square sub-matrix of given size uses 2D prefix sums to answer O(1) rectangle sum queries, then scans all k × k positions to find the maximum."
+dataStructures:
+  - Matrix
+  - Array
+techniques:
+  - Prefix Sum
+  - Range Query
+  - Matrix Traversal
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - maximum sum in k x k submatrix
+  - max sum square submatrix
+  - find maximum square submatrix sum
+useCases:
+  - Finding the best rectangular region in a 2D grid (e.g., profit maximization)
+  - Prefix sum techniques for efficient range queries in matrices
+  - Sliding window problems on 2D grids
+complexity:
+  time: O(n × m) for prefix computation + O((n-k+1) × (m-k+1)) for finding max
+  space: O(n × m) for the 2D prefix array
+  notes: 2D prefix sum allows any rectangle sum in O(1) via inclusion-exclusion principle.
+interviewSignals:
+  - The sub-matrix must be square with fixed size k.
+  - All elements within the maximum sum region must be contiguous.
+  - Preprocessing with prefix sums is essential for acceptable time complexity.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/maximum-sum-square-sub-matrix-of-given-size/'
+related:
+  - maximum-sum-rectangle-in-a-2d-matrix-using-prefix-sum
+  - print-a-given-matrix-in-spiral-form
+---
+
+## Problem
+
+Given an n × m matrix and an integer k, find the maximum sum of any k × k square sub-matrix within the given matrix.
+
+## Approach
+
+**Prefix Sum for 2D Range Queries**
+
+Compute a 2D prefix sum array where `prefix[i][j]` = sum of all elements in the rectangle from `(0, 0)` to `(i, j)`. Using this precomputed array, the sum of any rectangle can be computed in O(1) time. Then, iterate through all possible k × k sub-matrices and find the one with maximum sum.
+
+**Time Complexity**: O(n × m) for prefix sum computation, O((n-k+1) × (m-k+1)) for finding max
+**Space Complexity**: O(n × m) for the prefix sum array
+
+## Implementation
+
+```javascript
+function validateNumericMatrix(matrix) {
+  if (!Array.isArray(matrix) || matrix.length === 0) return false;
+  return matrix.every((row) => Array.isArray(row) && row.every((val) => typeof val === 'number'));
+}
+
+function maximumSumSquareSubmatrix(matrix, k) {
+  console.assert(validateNumericMatrix(matrix), 'Matrix must be numeric');
+  console.assert(typeof k === 'number' && k > 0, 'k must be a positive integer');
+
+  const n = matrix.length;
+  const m = matrix[0].length;
+  console.assert(k <= n && k <= m, 'k cannot exceed matrix dimensions');
+
+  // Build 2D prefix sum
+  const prefix = Array(n + 1)
+    .fill(0)
+    .map(() => Array(m + 1).fill(0));
+
+  for (let i = 1; i <= n; i++) {
+    for (let j = 1; j <= m; j++) {
+      prefix[i][j] =
+        matrix[i - 1][j - 1] + prefix[i - 1][j] + prefix[i][j - 1] - prefix[i - 1][j - 1];
+    }
+  }
+
+  // Function to get rectangle sum from (r1, c1) to (r2, c2) inclusive
+  function getRectSum(r1, c1, r2, c2) {
+    return (
+      prefix[r2 + 1][c2 + 1] -
+      prefix[r1][c2 + 1] -
+      prefix[r2 + 1][c1] +
+      prefix[r1][c1]
+    );
+  }
+
+  let maxSum = Number.NEGATIVE_INFINITY;
+
+  // Check all k x k sub-matrices
+  for (let i = 0; i <= n - k; i++) {
+    for (let j = 0; j <= m - k; j++) {
+      const sum = getRectSum(i, j, i + k - 1, j + k - 1);
+      maxSum = Math.max(maxSum, sum);
+    }
+  }
+
+  return maxSum;
+}
+```
+
+```typescript
+function validateNumericMatrix(matrix: unknown): boolean {
+  if (!Array.isArray(matrix) || matrix.length === 0) return false;
+  return matrix.every(
+    (row) => Array.isArray(row) && row.every((val) => typeof val === 'number'),
+  );
+}
+
+function maximumSumSquareSubmatrix(matrix: number[][], k: number): number {
+  console.assert(validateNumericMatrix(matrix), 'Matrix must be numeric');
+  console.assert(typeof k === 'number' && k > 0, 'k must be a positive integer');
+
+  const n = matrix.length;
+  const m = matrix[0].length;
+  console.assert(k <= n && k <= m, 'k cannot exceed matrix dimensions');
+
+  // Build 2D prefix sum
+  const prefix: number[][] = Array(n + 1)
+    .fill(0)
+    .map(() => Array(m + 1).fill(0));
+
+  for (let i = 1; i <= n; i++) {
+    for (let j = 1; j <= m; j++) {
+      prefix[i][j] =
+        matrix[i - 1][j - 1] + prefix[i - 1][j] + prefix[i][j - 1] - prefix[i - 1][j - 1];
+    }
+  }
+
+  // Function to get rectangle sum from (r1, c1) to (r2, c2) inclusive
+  function getRectSum(r1: number, c1: number, r2: number, c2: number): number {
+    return (
+      prefix[r2 + 1][c2 + 1] -
+      prefix[r1][c2 + 1] -
+      prefix[r2 + 1][c1] +
+      prefix[r1][c1]
+    );
+  }
+
+  let maxSum = Number.NEGATIVE_INFINITY;
+
+  // Check all k x k sub-matrices
+  for (let i = 0; i <= n - k; i++) {
+    for (let j = 0; j <= m - k; j++) {
+      const sum = getRectSum(i, j, i + k - 1, j + k - 1);
+      maxSum = Math.max(maxSum, sum);
+    }
+  }
+
+  return maxSum;
+}
+```
+
+## Example
+
+```javascript
+const matrix1 = [
+  [1, 2, 3],
+  [4, 5, 6],
+  [7, 8, 9],
+];
+console.log(maximumSumSquareSubmatrix(matrix1, 2)); // 30 (sub-matrix [[5, 6], [8, 9]])
+
+const matrix2 = [
+  [2, 1, 5],
+  [3, 2, 1],
+  [1, 1, 2],
+];
+console.log(maximumSumSquareSubmatrix(matrix2, 2)); // 10 (sub-matrix [[3, 2], [1, 1]] or [[2, 1], [1, 1]])
+```
+
+## Reference
+
+- **Prefix Sum**: Precomputing cumulative sums to answer range queries in O(1)
+- **2D Prefix Sum**: Extending the 1D concept to work with rectangular regions
+- **Rectangle Area Query**: Using inclusion-exclusion principle to compute sums efficiently

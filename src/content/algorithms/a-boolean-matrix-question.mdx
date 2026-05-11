@@ -1,0 +1,163 @@
+---
+title: A Boolean Matrix Question
+slug: a-boolean-matrix-question
+category: Matrix
+summary: Modify a matrix so that if a cell is 1, all cells in its row and column become 1, using O(1) space.
+description: "A Boolean Matrix Question solves the mark-and-update problem in-place by using the first row and column as markers, with a separate variable to handle the overlap at matrix[0][0]."
+dataStructures:
+  - Matrix
+  - Array
+techniques:
+  - In-place Algorithm
+  - Matrix Marking
+  - Reverse Traversal
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - boolean matrix problem
+  - mark row and column in matrix
+  - set matrix row and column to 1
+useCases:
+  - Marking dependent cells in a grid where one cell affects an entire row and column
+  - In-place matrix modifications with space-constrained environments
+  - Teaching space optimization and reverse traversal patterns
+complexity:
+  time: O(m × n) for two passes through the matrix
+  space: O(1) excluding output
+  notes: First pass marks rows and columns, second pass in reverse updates without overwriting markers.
+interviewSignals:
+  - Must modify matrix in-place or with O(1) extra space.
+  - A cell value of 1 affects the entire row and column.
+  - Cannot use separate row and column arrays.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/a-boolean-matrix-question/'
+related:
+  - print-a-given-matrix-in-spiral-form
+  - diagonal-traversal-of-a-matrix-i
+---
+
+## Problem
+
+Given a boolean matrix, modify it such that if a matrix cell `matrix[i][j]` is 1, then all the cells in its ith row and jth column are set to 1.
+
+## Approach
+
+**Space-Optimized In-place Marking**
+
+Instead of using extra space for tracking rows and columns, use the first row and first column of the matrix as markers. Handle the overlap at `matrix[0][0]` by using a separate variable `col0` to track whether column 0 needs to be marked. Traverse in reverse order when updating to avoid overwriting markers.
+
+**Time Complexity**: O(m × n)
+**Space Complexity**: O(1) (excluding output)
+
+## Implementation
+
+```javascript
+function validateBooleanMatrix(matrix) {
+  if (!Array.isArray(matrix) || matrix.length === 0) return false;
+  return matrix.every(
+    (row) =>
+      Array.isArray(row) && row.every((val) => val === 0 || val === 1),
+  );
+}
+
+function booleanMatrix(matrix) {
+  console.assert(validateBooleanMatrix(matrix), 'Input must be a valid boolean matrix');
+
+  const rows = matrix.length;
+  const cols = matrix[0].length;
+  let col0 = 0;
+
+  // Step 1: Mark first row and column if there is a 1 in the matrix
+  for (let i = 0; i < rows; i++) {
+    if (matrix[i][0] === 1) col0 = 1;
+    for (let j = 1; j < cols; j++) {
+      if (matrix[i][j] === 1) {
+        matrix[i][0] = 1;
+        matrix[0][j] = 1;
+      }
+    }
+  }
+
+  // Step 2: Traverse in reverse and update matrix
+  for (let i = rows - 1; i >= 0; i--) {
+    for (let j = cols - 1; j >= 1; j--) {
+      if (matrix[i][0] === 1 || matrix[0][j] === 1) {
+        matrix[i][j] = 1;
+      }
+    }
+    if (col0 === 1) {
+      matrix[i][0] = 1;
+    }
+  }
+}
+```
+
+```typescript
+function validateBooleanMatrix(matrix: unknown): boolean {
+  if (!Array.isArray(matrix) || matrix.length === 0) return false;
+  return matrix.every(
+    (row) =>
+      Array.isArray(row) && row.every((val) => val === 0 || val === 1),
+  );
+}
+
+function booleanMatrix(matrix: number[][]): void {
+  console.assert(
+    validateBooleanMatrix(matrix),
+    'Input must be a valid boolean matrix',
+  );
+
+  const rows = matrix.length;
+  const cols = matrix[0].length;
+  let col0 = 0;
+
+  // Step 1: Mark first row and column if there is a 1 in the matrix
+  for (let i = 0; i < rows; i++) {
+    if (matrix[i][0] === 1) col0 = 1;
+    for (let j = 1; j < cols; j++) {
+      if (matrix[i][j] === 1) {
+        matrix[i][0] = 1;
+        matrix[0][j] = 1;
+      }
+    }
+  }
+
+  // Step 2: Traverse in reverse and update matrix
+  for (let i = rows - 1; i >= 0; i--) {
+    for (let j = cols - 1; j >= 1; j--) {
+      if (matrix[i][0] === 1 || matrix[0][j] === 1) {
+        matrix[i][j] = 1;
+      }
+    }
+    if (col0 === 1) {
+      matrix[i][0] = 1;
+    }
+  }
+}
+```
+
+## Example
+
+```javascript
+const matrix1 = [
+  [1, 0],
+  [0, 0],
+];
+booleanMatrix(matrix1);
+console.log(matrix1); // [[1, 1], [1, 0]]
+
+const matrix2 = [
+  [1, 0, 0, 1],
+  [0, 0, 1, 0],
+  [0, 0, 0, 0],
+];
+booleanMatrix(matrix2);
+console.log(matrix2); // [[1, 1, 1, 1], [1, 1, 1, 1], [1, 0, 1, 1]]
+```
+
+## Reference
+
+- **In-place Algorithm**: Modifying the input directly without significant extra space
+- **Marker Technique**: Using the matrix itself to track which rows and columns need updates
+- **Reverse Traversal**: Ensuring markers are not overwritten during the update phase
