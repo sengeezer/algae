@@ -1,0 +1,140 @@
+---
+title: Mergable Stack
+slug: mergable-stack
+category: Stack
+summary: Support stack merge in O(1) by storing stack as a linked structure with tail tracking.
+description: "Represent stacks as linked lists so one stack can be appended to another by pointer rewiring."
+dataStructures:
+  - Stack
+  - Linked List
+techniques:
+  - Structural Merge
+  - Tail Pointer Maintenance
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - mergeable stack
+  - stack with merge operation
+useCases:
+  - Functional stack pipelines
+  - Batch push composition
+complexity:
+  time: O(1) merge, O(1) push/pop
+  space: O(n)
+  notes: "Merge joins node chains directly without copying elements."
+interviewSignals:
+  - Define whether source stack becomes empty after merge.
+  - Maintain both head and tail for constant-time append.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/merging-two-stacks/'
+related:
+  - stack
+  - k-stacks-in-an-array
+---
+
+## Problem
+
+Design a stack that supports `merge(otherStack)` efficiently.
+
+## Approach
+
+Use a singly linked stack with `head` and `tail`:
+- `push` inserts at head,
+- `merge` attaches one list tail to the other head in O(1).
+
+**Time Complexity**: O(1) merge, O(1) push/pop
+**Space Complexity**: O(n)
+
+## Implementation
+
+```javascript
+class Node {
+  constructor(value) {
+    this.value = value;
+    this.next = null;
+  }
+}
+
+class MergableStack {
+  constructor() {
+    this.head = null;
+    this.tail = null;
+  }
+
+  push(value) {
+    const node = new Node(value);
+    node.next = this.head;
+    this.head = node;
+    if (this.tail === null) this.tail = node;
+  }
+
+  pop() {
+    if (this.head === null) return null;
+    const value = this.head.value;
+    this.head = this.head.next;
+    if (this.head === null) this.tail = null;
+    return value;
+  }
+
+  merge(other) {
+    if (other.head === null) return;
+    if (this.head === null) {
+      this.head = other.head;
+      this.tail = other.tail;
+    } else {
+      other.tail.next = this.head;
+      this.head = other.head;
+    }
+    other.head = null;
+    other.tail = null;
+  }
+}
+```
+
+```typescript
+class Node {
+  value: number;
+  next: Node | null;
+
+  constructor(value: number) {
+    this.value = value;
+    this.next = null;
+  }
+}
+
+class MergableStack {
+  private head: Node | null = null;
+  private tail: Node | null = null;
+
+  push(value: number): void {
+    const node = new Node(value);
+    node.next = this.head;
+    this.head = node;
+    if (this.tail === null) this.tail = node;
+  }
+
+  pop(): number | null {
+    if (this.head === null) return null;
+    const value = this.head.value;
+    this.head = this.head.next;
+    if (this.head === null) this.tail = null;
+    return value;
+  }
+
+  merge(other: MergableStack): void {
+    if (other.head === null) return;
+
+    if (this.head === null) {
+      this.head = other.head;
+      this.tail = other.tail;
+    } else {
+      other.tail!.next = this.head;
+      this.head = other.head;
+    }
+
+    other.head = null;
+    other.tail = null;
+  }
+}
+```

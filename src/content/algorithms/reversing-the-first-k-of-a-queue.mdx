@@ -1,0 +1,95 @@
+---
+title: Reversing the first K of a Queue
+slug: reversing-the-first-k-of-a-queue
+category: Queue
+summary: Reverse the first k elements of a queue while preserving order of the remaining elements.
+description: "Move first k queue elements to a stack to reverse them, then rotate untouched elements back to preserve relative order."
+dataStructures:
+  - Queue
+  - Stack
+techniques:
+  - Partial Reversal
+  - Rotation
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - reverse first k queue elements
+  - queue prefix reversal
+useCases:
+  - Window reordering
+  - Stream preprocessing
+complexity:
+  time: O(n)
+  space: O(k)
+  notes: "Each element is enqueued/dequeued a constant number of times."
+interviewSignals:
+  - Handle k <= 0 and k > size edge cases.
+  - Preserve order of elements after index k.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/reversing-first-k-elements-queue/'
+related:
+  - queue
+  - stack
+---
+
+## Problem
+
+Given a queue and integer `k`, reverse only the first `k` elements and keep the rest in original order.
+
+## Approach
+
+1. Dequeue first `k` elements into a stack.
+2. Pop stack back into queue (reversed segment).
+3. Rotate remaining `n - k` elements to back.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(k)
+
+## Implementation
+
+```javascript
+function reverseFirstK(queue, k) {
+  const n = queue.length;
+  if (k <= 0 || k > n) return queue;
+
+  const stack = [];
+
+  for (let i = 0; i < k; i++) {
+    stack.push(queue.shift());
+  }
+
+  while (stack.length) {
+    queue.push(stack.pop());
+  }
+
+  for (let i = 0; i < n - k; i++) {
+    queue.push(queue.shift());
+  }
+
+  return queue;
+}
+```
+
+```typescript
+function reverseFirstK(queue: number[], k: number): number[] {
+  const n = queue.length;
+  if (k <= 0 || k > n) return queue;
+
+  const stack: number[] = [];
+
+  for (let i = 0; i < k; i++) {
+    stack.push(queue.shift()!);
+  }
+
+  while (stack.length > 0) {
+    queue.push(stack.pop()!);
+  }
+
+  for (let i = 0; i < n - k; i++) {
+    queue.push(queue.shift()!);
+  }
+
+  return queue;
+}
+```

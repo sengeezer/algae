@@ -1,0 +1,93 @@
+---
+title: Evaluation of Postfix Expression
+slug: evaluation-of-postfix-expression
+category: Stack
+summary: Evaluate a postfix expression by pushing operands and applying operators to stack tops.
+description: "Process postfix tokens left to right, reducing operators by popping two operands and pushing the result."
+dataStructures:
+  - Stack
+  - String
+techniques:
+  - Postfix Evaluation
+  - Stack Reduction
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - evaluate postfix
+  - reverse polish notation evaluation
+useCases:
+  - Calculator engines
+  - Expression runtime evaluation
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: "Each token is consumed once; operators trigger constant-time arithmetic."
+interviewSignals:
+  - Operand order matters for subtraction and division.
+  - Integer division behavior should be stated explicitly.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/evaluation-of-postfix-expression/'
+related:
+  - infix-to-postfix
+  - postfix-to-infix
+---
+
+## Problem
+
+Evaluate a valid postfix expression containing integer operands and operators `+`, `-`, `*`, `/`.
+
+## Approach
+
+Push operands to stack. On operator, pop `right` then `left`, compute `left op right`, and push result.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(n)
+
+## Implementation
+
+```javascript
+function evalPostfix(tokens) {
+  const stack = [];
+
+  for (const token of tokens) {
+    if (/^-?\d+$/.test(token)) {
+      stack.push(Number(token));
+      continue;
+    }
+
+    const right = stack.pop();
+    const left = stack.pop();
+
+    if (token === '+') stack.push(left + right);
+    else if (token === '-') stack.push(left - right);
+    else if (token === '*') stack.push(left * right);
+    else if (token === '/') stack.push(Math.trunc(left / right));
+  }
+
+  return stack.pop();
+}
+```
+
+```typescript
+function evalPostfix(tokens: string[]): number {
+  const stack: number[] = [];
+
+  for (const token of tokens) {
+    if (/^-?\d+$/.test(token)) {
+      stack.push(Number(token));
+      continue;
+    }
+
+    const right = stack.pop()!;
+    const left = stack.pop()!;
+
+    if (token === '+') stack.push(left + right);
+    else if (token === '-') stack.push(left - right);
+    else if (token === '*') stack.push(left * right);
+    else if (token === '/') stack.push(Math.trunc(left / right));
+  }
+
+  return stack.pop()!;
+}
+```

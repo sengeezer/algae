@@ -1,0 +1,109 @@
+---
+title: A DS with O(1) Operations
+slug: a-ds-with-o1-operations
+category: Stack
+summary: Design a stack-like data structure supporting push, pop, top, and getMin in constant time.
+description: "Track minimum values alongside elements so min queries remain O(1) without rescanning the stack."
+dataStructures:
+  - Stack
+  - Array
+techniques:
+  - Auxiliary Min Stack
+  - Constant-time Aggregation
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - stack with getMin
+  - min stack
+useCases:
+  - Low-latency query stacks
+  - Sliding minimum components
+complexity:
+  time: O(1) per operation
+  space: O(n)
+  notes: "Auxiliary stack stores current min after each push depth."
+interviewSignals:
+  - Keep min synchronized on push/pop.
+  - Define behavior for empty stack operations.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/design-a-stack-that-supports-getmin-in-o1-time-and-o1-extra-space/'
+related:
+  - stack
+  - two-stacks-in-an-array
+---
+
+## Problem
+
+Design a data structure that supports `push`, `pop`, `top`, and `getMin` in O(1) time.
+
+## Approach
+
+Use two stacks:
+- `values` holds all elements.
+- `mins` holds current minimum at each depth.
+
+**Time Complexity**: O(1) per operation
+**Space Complexity**: O(n)
+
+## Implementation
+
+```javascript
+class MinStack {
+  constructor() {
+    this.values = [];
+    this.mins = [];
+  }
+
+  push(x) {
+    this.values.push(x);
+    if (this.mins.length === 0) this.mins.push(x);
+    else this.mins.push(Math.min(x, this.mins[this.mins.length - 1]));
+  }
+
+  pop() {
+    if (this.values.length === 0) return null;
+    this.mins.pop();
+    return this.values.pop();
+  }
+
+  top() {
+    if (this.values.length === 0) return null;
+    return this.values[this.values.length - 1];
+  }
+
+  getMin() {
+    if (this.mins.length === 0) return null;
+    return this.mins[this.mins.length - 1];
+  }
+}
+```
+
+```typescript
+class MinStack {
+  private values: number[] = [];
+  private mins: number[] = [];
+
+  push(x: number): void {
+    this.values.push(x);
+    if (this.mins.length === 0) this.mins.push(x);
+    else this.mins.push(Math.min(x, this.mins[this.mins.length - 1]));
+  }
+
+  pop(): number | null {
+    if (this.values.length === 0) return null;
+    this.mins.pop();
+    return this.values.pop()!;
+  }
+
+  top(): number | null {
+    if (this.values.length === 0) return null;
+    return this.values[this.values.length - 1];
+  }
+
+  getMin(): number | null {
+    if (this.mins.length === 0) return null;
+    return this.mins[this.mins.length - 1];
+  }
+}
+```

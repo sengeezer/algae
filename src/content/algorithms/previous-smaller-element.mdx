@@ -1,0 +1,83 @@
+---
+title: Previous Smaller Element
+slug: previous-smaller-element
+category: Stack
+summary: For each array element, find the nearest smaller element to its left.
+description: "Maintain a monotonic increasing stack of candidates while scanning left to right."
+dataStructures:
+  - Stack
+  - Array
+techniques:
+  - Monotonic Stack
+  - Nearest Neighbor Query
+difficulty: Easy
+interviewFrequency: High
+aliases:
+  - previous less element
+  - nearest smaller on left
+useCases:
+  - Histogram and span preprocessors
+  - Monotonic query pipelines
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: "Each element is pushed and popped at most once."
+interviewSignals:
+  - Pop while top >= current to keep strictly smaller semantics.
+  - Empty stack means answer is sentinel (for example, -1).
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/find-the-nearest-smaller-numbers-on-left-side-in-an-array/'
+related:
+  - monotonic-stack
+  - next-greater-element
+---
+
+## Problem
+
+For every element in an array, output the previous element that is smaller than it; if none, output `-1`.
+
+## Approach
+
+Keep a monotonic increasing stack of previous candidates.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(n)
+
+## Implementation
+
+```javascript
+function previousSmallerElement(arr) {
+  const stack = [];
+  const result = [];
+
+  for (const x of arr) {
+    while (stack.length > 0 && stack[stack.length - 1] >= x) {
+      stack.pop();
+    }
+
+    result.push(stack.length === 0 ? -1 : stack[stack.length - 1]);
+    stack.push(x);
+  }
+
+  return result;
+}
+```
+
+```typescript
+function previousSmallerElement(arr: number[]): number[] {
+  const stack: number[] = [];
+  const result: number[] = [];
+
+  for (const x of arr) {
+    while (stack.length > 0 && stack[stack.length - 1] >= x) {
+      stack.pop();
+    }
+
+    result.push(stack.length === 0 ? -1 : stack[stack.length - 1]);
+    stack.push(x);
+  }
+
+  return result;
+}
+```

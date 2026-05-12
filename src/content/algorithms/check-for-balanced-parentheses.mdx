@@ -1,0 +1,93 @@
+---
+title: Check for balanced parentheses
+slug: check-for-balanced-parentheses
+category: Stack
+summary: Validate whether an expression has balanced brackets using a stack of opening symbols.
+description: "Scan the expression once, pushing opening brackets and matching each closing bracket against the latest opener."
+dataStructures:
+  - Stack
+  - String
+techniques:
+  - Delimiter Matching
+  - Stack Validation
+difficulty: Easy
+interviewFrequency: High
+aliases:
+  - valid parentheses check
+  - balanced brackets check
+useCases:
+  - Parser pre-validation
+  - Expression syntax checks
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: "Worst-case stack depth equals number of unmatched opening brackets."
+interviewSignals:
+  - Early failure on mismatched closing bracket.
+  - Final stack emptiness is required for success.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/check-for-balanced-parentheses-in-an-expression/'
+related:
+  - longest-valid-parentheses
+  - stack
+---
+
+## Problem
+
+Given a string containing brackets `()`, `{}`, and `[]`, determine whether the brackets are balanced.
+
+## Approach
+
+Push opening brackets. For every closing bracket, check whether the stack top is the corresponding opener.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(n)
+
+## Implementation
+
+```javascript
+function isBalanced(expr) {
+  const stack = [];
+  const pairs = {
+    ')': '(',
+    ']': '[',
+    '}': '{'
+  };
+
+  for (const ch of expr) {
+    if (ch === '(' || ch === '[' || ch === '{') {
+      stack.push(ch);
+    } else if (ch === ')' || ch === ']' || ch === '}') {
+      if (stack.length === 0 || stack.pop() !== pairs[ch]) {
+        return false;
+      }
+    }
+  }
+
+  return stack.length === 0;
+}
+```
+
+```typescript
+function isBalanced(expr: string): boolean {
+  const stack: string[] = [];
+  const pairs: Record<string, string> = {
+    ')': '(',
+    ']': '[',
+    '}': '{'
+  };
+
+  for (const ch of expr) {
+    if (ch === '(' || ch === '[' || ch === '{') {
+      stack.push(ch);
+    } else if (ch === ')' || ch === ']' || ch === '}') {
+      if (stack.length === 0 || stack.pop() !== pairs[ch]) {
+        return false;
+      }
+    }
+  }
+
+  return stack.length === 0;
+}
+```

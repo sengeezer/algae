@@ -1,0 +1,91 @@
+---
+title: Reverse a stack using recursion
+slug: reverse-a-stack-using-recursion
+category: Stack
+summary: Reverse stack order recursively without using extra data structures.
+description: "Pop elements recursively, then insert each popped value at the bottom during unwind to reverse the stack."
+dataStructures:
+  - Stack
+  - Recursion
+techniques:
+  - Recursive Decomposition
+  - Bottom Insertion
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - recursive stack reverse
+  - reverse stack without extra space
+useCases:
+  - Recursion reasoning practice
+  - Stack transform utilities
+complexity:
+  time: O(n^2)
+  space: O(n) recursion stack
+  notes: "Bottom insertion is O(n) and is called n times."
+interviewSignals:
+  - Base case correctness is critical.
+  - Distinguish auxiliary stack vs recursion-stack memory.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/reverse-a-stack-using-recursion/'
+related:
+  - stack
+  - reverse-a-singly-linked-list
+---
+
+## Problem
+
+Reverse a stack using recursion only, without using another explicit stack.
+
+## Approach
+
+Use two recursive helpers:
+1. `reverse` pops top until empty.
+2. `insertAtBottom` inserts saved elements at stack bottom during unwind.
+
+**Time Complexity**: O(n^2)
+**Space Complexity**: O(n)
+
+## Implementation
+
+```javascript
+function insertAtBottom(stack, value) {
+  if (stack.length === 0) {
+    stack.push(value);
+    return;
+  }
+
+  const top = stack.pop();
+  insertAtBottom(stack, value);
+  stack.push(top);
+}
+
+function reverseStack(stack) {
+  if (stack.length === 0) return;
+
+  const top = stack.pop();
+  reverseStack(stack);
+  insertAtBottom(stack, top);
+}
+```
+
+```typescript
+function insertAtBottom(stack: number[], value: number): void {
+  if (stack.length === 0) {
+    stack.push(value);
+    return;
+  }
+
+  const top = stack.pop()!;
+  insertAtBottom(stack, value);
+  stack.push(top);
+}
+
+function reverseStack(stack: number[]): void {
+  if (stack.length === 0) return;
+
+  const top = stack.pop()!;
+  reverseStack(stack);
+  insertAtBottom(stack, top);
+}
+```

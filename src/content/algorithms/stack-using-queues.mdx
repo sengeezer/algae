@@ -1,0 +1,99 @@
+---
+title: Stack using Queues
+slug: stack-using-queues
+category: Stack
+summary: Implement stack operations using two queues while preserving LIFO behavior.
+description: "Reorder queue elements during push or pop so the newest element is always retrieved first."
+dataStructures:
+  - Stack
+  - Queue
+techniques:
+  - Queue Reordering
+  - Data-Structure Simulation
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - implement stack with queues
+  - queue based stack
+useCases:
+  - ADT emulation
+  - API constraint adaptation
+complexity:
+  time: O(n) push or pop depending on variant
+  space: O(n)
+  notes: "Two-queue approach trades operation cost symmetry for implementation clarity."
+interviewSignals:
+  - Clarify whether push-heavy or pop-heavy optimization is chosen.
+  - Ensure top operation matches chosen invariant.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/implement-stack-using-queue/'
+related:
+  - queue-using-two-stacks
+  - stack
+---
+
+## Problem
+
+Implement stack (`push`, `pop`, `top`) using only queue operations.
+
+## Approach
+
+For `push`, enqueue new element to `q2`, move all from `q1` to `q2`, then swap queues. This keeps stack top at `q1.front()`.
+
+**Time Complexity**: Push O(n), Pop O(1), Top O(1)
+**Space Complexity**: O(n)
+
+## Implementation
+
+```javascript
+class StackUsingQueues {
+  constructor() {
+    this.q1 = [];
+    this.q2 = [];
+  }
+
+  push(x) {
+    this.q2.push(x);
+    while (this.q1.length > 0) {
+      this.q2.push(this.q1.shift());
+    }
+    [this.q1, this.q2] = [this.q2, this.q1];
+  }
+
+  pop() {
+    if (this.q1.length === 0) return null;
+    return this.q1.shift();
+  }
+
+  top() {
+    if (this.q1.length === 0) return null;
+    return this.q1[0];
+  }
+}
+```
+
+```typescript
+class StackUsingQueues {
+  private q1: number[] = [];
+  private q2: number[] = [];
+
+  push(x: number): void {
+    this.q2.push(x);
+    while (this.q1.length > 0) {
+      this.q2.push(this.q1.shift()!);
+    }
+    [this.q1, this.q2] = [this.q2, this.q1];
+  }
+
+  pop(): number | null {
+    if (this.q1.length === 0) return null;
+    return this.q1.shift()!;
+  }
+
+  top(): number | null {
+    if (this.q1.length === 0) return null;
+    return this.q1[0];
+  }
+}
+```

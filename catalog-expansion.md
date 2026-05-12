@@ -2552,3 +2552,32 @@ This two-hundredth expansion slice lifts the catalog from 895 to 905 entries.
 - Batch 200 was validated (frontmatter, compilation, lint, tsc, smoke tests, and targeted Playwright route checks all pass) and published to main in this changeset.
 - The catalog now stands at 905 entries.
 - The next frontier moves deeper into remaining Stack problem entries after expression conversion coverage.
+
+## Batch 201 frontier
+
+The next clean frontier stays on GeeksforGeeks `Stack` and continues through validation/evaluation utilities, recursive stack transforms, multi-stack storage layouts, and monotonic-neighbor primitives.
+
+## Current source-order note
+
+- After expression-conversion coverage, the next clean Stack continuation reaches `Check for balanced parentheses`, `Evaluation of Postfix Expression`, `Reverse a stack using recursion`, `Reversing the first K of a Queue`, `A DS with O(1) Operations`, `k Stacks in an Array`, `Mergable Stack`, `Stack using Queues`, `Previous Smaller Element`, and `Next Greater Element`.
+- `Queue using Stacks` remains duplicate-level coverage of the published `queue-using-two-stacks` entry and is skipped to keep this queue clean.
+- The next clean Stack queue is `Check for balanced parentheses`, `Evaluation of Postfix Expression`, `Reverse a stack using recursion`, `Reversing the first K of a Queue`, `A DS with O(1) Operations`, `k Stacks in an Array`, `Mergable Stack`, `Stack using Queues`, `Previous Smaller Element`, and `Next Greater Element`.
+
+## Batch 201 added
+
+This two-hundred-first expansion slice lifts the catalog from 905 to 915 entries.
+
+- Check for balanced parentheses
+- Evaluation of Postfix Expression
+- Reverse a stack using recursion
+- Reversing the first K of a Queue
+- A DS with O(1) Operations
+- k Stacks in an Array
+- Mergable Stack
+- Stack using Queues
+- Previous Smaller Element
+- Next Greater Element
+
+- Batch 201 was validated (frontmatter, compilation, lint, tsc, smoke tests, and targeted Playwright route checks all pass) and published to main in this changeset.
+- The catalog now stands at 915 entries.
+- The next frontier in Stack continues through remaining monotonic and evaluation-oriented problem sets.
