@@ -1,0 +1,125 @@
+---
+title: Sublist Search
+slug: sublist-search
+category: Linked List
+summary: Determine whether one linked list appears as a contiguous sublist inside another linked list.
+description: "Sublist Search scans a main linked list for a contiguous run of nodes matching a pattern linked list, similar to substring matching on node sequences."
+dataStructures:
+  - Linked List
+  - Pointer
+techniques:
+  - Two-pointer Scan
+  - Pattern Matching
+  - Restart-on-Mismatch
+difficulty: Hard
+interviewFrequency: High
+aliases:
+  - linked list substring search
+  - pattern list in linked list
+  - check sublist in linked list
+useCases:
+  - Stream signature detection
+  - Event sequence matching
+  - Contiguous linked-data validation
+complexity:
+  time: O(N * M) worst case where N is main list length and M is pattern length
+  space: O(1) auxiliary
+  notes: Straight scan restarts comparison at each main-list position.
+interviewSignals:
+  - Empty pattern list should be treated as present.
+  - Matching must be contiguous, not subsequence-based.
+  - Pointer reset logic after mismatch is a common bug source.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/dsa/linked-list/'
+related:
+  - intersection-point-of-two-linked-lists
+  - reverse-a-singly-linked-list-in-groups
+---
+
+## Problem
+
+Given two singly linked lists, determine whether the second list appears as a contiguous sublist inside the first list.
+
+## Approach
+
+1. If pattern list is empty, return `true`.
+2. For each node in the main list, attempt to match the entire pattern list.
+3. On mismatch, restart matching from the next main-list node.
+4. If all pattern nodes match contiguously, return `true`; otherwise `false`.
+
+**Time Complexity**: O(N * M)
+**Space Complexity**: O(1)
+
+## Implementation
+
+```javascript
+class Node {
+  constructor(data) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+function isSublist(mainHead, patternHead) {
+  if (patternHead === null) return true;
+  if (mainHead === null) return false;
+
+  let currentMain = mainHead;
+
+  while (currentMain !== null) {
+    let pMain = currentMain;
+    let pPattern = patternHead;
+
+    while (pMain !== null && pPattern !== null && pMain.data === pPattern.data) {
+      pMain = pMain.next;
+      pPattern = pPattern.next;
+    }
+
+    if (pPattern === null) {
+      return true;
+    }
+
+    currentMain = currentMain.next;
+  }
+
+  return false;
+}
+```
+
+```typescript
+class Node {
+  data: number;
+  next: Node | null;
+
+  constructor(data: number) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+function isSublist(mainHead: Node | null, patternHead: Node | null): boolean {
+  if (patternHead === null) return true;
+  if (mainHead === null) return false;
+
+  let currentMain: Node | null = mainHead;
+
+  while (currentMain !== null) {
+    let pMain: Node | null = currentMain;
+    let pPattern: Node | null = patternHead;
+
+    while (pMain !== null && pPattern !== null && pMain.data === pPattern.data) {
+      pMain = pMain.next;
+      pPattern = pPattern.next;
+    }
+
+    if (pPattern === null) {
+      return true;
+    }
+
+    currentMain = currentMain.next;
+  }
+
+  return false;
+}
+```

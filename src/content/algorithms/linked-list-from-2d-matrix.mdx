@@ -1,0 +1,131 @@
+---
+title: Linked list from 2D matrix
+slug: linked-list-from-2d-matrix
+category: Linked List
+summary: Build a multi-level linked list representation from a 2D matrix by linking rows and columns.
+description: "Linked list from 2D matrix transforms matrix cells into linked nodes where right and down pointers preserve grid adjacency."
+dataStructures:
+  - Linked List
+  - Matrix
+  - Pointer
+techniques:
+  - Grid-to-Node Mapping
+  - Multi-level Linking
+  - Structured Construction
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - convert 2d matrix to linked list
+  - matrix to multilevel linked list
+  - 2d linked structure
+useCases:
+  - Sparse-grid traversal models
+  - Custom graph-like grid serialization
+  - Pointer-based matrix navigation
+complexity:
+  time: O(R * C) where R is rows and C is columns
+  space: O(R * C) for created nodes
+  notes: Each matrix cell becomes one node with deterministic right/down links.
+interviewSignals:
+  - Right/down pointer wiring must preserve exact matrix adjacency.
+  - Edge rows and columns require null pointer handling.
+  - Construction order should avoid losing references.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/dsa/linked-list/'
+related:
+  - binary-tree-to-doubly-linked-list
+  - clone-a-linked-list-with-random-pointer
+---
+
+## Problem
+
+Given a 2D matrix, construct a linked representation where each cell is converted into a node containing:
+- `right` pointer to the next column cell
+- `down` pointer to the next row cell
+
+## Approach
+
+1. Create a node for each matrix cell.
+2. Store created nodes in a 2D helper array.
+3. Link each node's `right` and `down` pointers to valid neighbors.
+4. Return the node at the top-left as the head of the structure.
+
+**Time Complexity**: O(R * C)
+**Space Complexity**: O(R * C)
+
+## Implementation
+
+```javascript
+class MatrixNode {
+  constructor(data) {
+    this.data = data;
+    this.right = null;
+    this.down = null;
+  }
+}
+
+function buildLinkedMatrix(matrix) {
+  const rows = matrix.length;
+  if (rows === 0) return null;
+
+  const cols = matrix[0].length;
+  if (cols === 0) return null;
+
+  const nodes = Array.from({ length: rows }, () => Array(cols).fill(null));
+
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      nodes[r][c] = new MatrixNode(matrix[r][c]);
+    }
+  }
+
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      nodes[r][c].right = c + 1 < cols ? nodes[r][c + 1] : null;
+      nodes[r][c].down = r + 1 < rows ? nodes[r + 1][c] : null;
+    }
+  }
+
+  return nodes[0][0];
+}
+```
+
+```typescript
+class MatrixNode {
+  data: number;
+  right: MatrixNode | null;
+  down: MatrixNode | null;
+
+  constructor(data: number) {
+    this.data = data;
+    this.right = null;
+    this.down = null;
+  }
+}
+
+function buildLinkedMatrix(matrix: number[][]): MatrixNode | null {
+  const rows = matrix.length;
+  if (rows === 0) return null;
+
+  const cols = matrix[0].length;
+  if (cols === 0) return null;
+
+  const nodes: MatrixNode[][] = Array.from({ length: rows }, () => Array(cols));
+
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      nodes[r][c] = new MatrixNode(matrix[r][c]);
+    }
+  }
+
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      nodes[r][c].right = c + 1 < cols ? nodes[r][c + 1] : null;
+      nodes[r][c].down = r + 1 < rows ? nodes[r + 1][c] : null;
+    }
+  }
+
+  return nodes[0][0];
+}
+```

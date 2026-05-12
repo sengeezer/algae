@@ -2488,3 +2488,37 @@ The next clean frontier in GeeksforGeeks `Linked List` continues through tree-to
 - After the clone-with-random-pointer hard problem, the next clean source-order continuation reaches `Binary Tree to Doubly Linked List`, `Reverse a Singly Linked List in Groups`, and `Reverse a Doubly Linked List in Groups`.
 - These three are not present in the local catalog and form a coherent advanced-operations set bridging tree/list conversion and group-wise structural transformations.
 - The next clean Linked List queue is `Binary Tree to Doubly Linked List`, `Reverse a Singly Linked List in Groups`, and `Reverse a Doubly Linked List in Groups`.
+
+## Batch 198 added
+
+This one-hundred-ninety-eighth expansion slice lifts the catalog from 889 to 892 entries.
+
+- Binary Tree to Doubly Linked List
+- Reverse a Singly Linked List in Groups
+- Reverse a Doubly Linked List in Groups
+
+- Batch 198 was validated (frontmatter, compilation, lint, tsc, smoke tests, and targeted Playwright route checks all pass) and published to main in this changeset.
+- The catalog now stands at 892 entries.
+- The next frontier in Linked List continues through remaining hard-problem variants from the same source branch.
+
+## Batch 199 frontier
+
+The next clean frontier in GeeksforGeeks `Linked List` continues into hard-problem pattern matching and structural block operations.
+
+## Current source-order note
+
+- After the group-wise reversal slice, the next clean source-order continuation reaches `Sublist Search`, `Linked list from 2D matrix`, and `Rotate Linked List block wise`.
+- These three are not present in the local catalog and form a coherent hard-operations set covering contiguous matching, matrix-linked construction, and segmented rotations.
+- The next clean Linked List queue is `Sublist Search`, `Linked list from 2D matrix`, and `Rotate Linked List block wise`.
+
+## Batch 199 added
+
+This one-hundred-ninety-ninth expansion slice lifts the catalog from 892 to 895 entries.
+
+- Sublist Search
+- Linked list from 2D matrix
+- Rotate Linked List block wise
+
+- Batch 199 was validated (frontmatter, compilation, lint, tsc, smoke tests, and targeted Playwright route checks all pass) and published to main in this changeset.
+- The catalog now stands at 895 entries.
+- The next frontier in Linked List continues with the remaining hard-problem entries from the same source branch.

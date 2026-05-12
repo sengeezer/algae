@@ -1,0 +1,165 @@
+---
+title: Rotate Linked List block wise
+slug: rotate-linked-list-block-wise
+category: Linked List
+summary: Rotate every contiguous block of size k in a linked list by d positions while preserving block boundaries.
+description: "Rotate Linked List block wise applies local rotations to each k-sized segment independently, then reconnects segments into one list."
+dataStructures:
+  - Linked List
+  - Pointer
+techniques:
+  - Block Decomposition
+  - Segment Rotation
+  - Pointer Rewiring
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - block-wise linked list rotation
+  - rotate linked list in blocks
+  - k-block list rotation
+useCases:
+  - Chunk-wise data transformation
+  - Stream packet reordering
+  - Segment-level list normalization
+complexity:
+  time: O(n)
+  space: O(1) auxiliary
+  notes: Each node is visited a constant number of times across split, rotate, and reconnect steps.
+interviewSignals:
+  - Rotation should stay inside each block, not across whole list.
+  - Final short block behavior must be explicitly handled.
+  - Off-by-one bugs are common when reconnecting rotated blocks.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/dsa/linked-list/'
+related:
+  - rotate-a-linked-list
+  - reverse-a-singly-linked-list-in-groups
+---
+
+## Problem
+
+Given a linked list, block size `k`, and rotation count `d`, rotate each block of `k` nodes by `d` positions (left rotation), while leaving block boundaries intact.
+
+## Approach
+
+1. Split the list into blocks of size `k`.
+2. For each block:
+   - compute effective rotation `d % blockLength`
+   - find new head after local rotation
+   - reconnect rotated block to output
+3. Continue for all blocks and stitch them together.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(1)
+
+## Implementation
+
+```javascript
+class Node {
+  constructor(data) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+function rotateBlockWise(head, k, d) {
+  if (head === null || k <= 1 || d === 0) return head;
+
+  const dummy = new Node(0);
+  let outputTail = dummy;
+  let current = head;
+
+  while (current !== null) {
+    let blockHead = current;
+    let blockTail = current;
+    let length = 1;
+
+    while (length < k && blockTail.next !== null) {
+      blockTail = blockTail.next;
+      length++;
+    }
+
+    const nextBlock = blockTail.next;
+    blockTail.next = null;
+
+    const shift = d % length;
+    if (shift > 0) {
+      let splitPrev = blockHead;
+      for (let i = 1; i < shift; i++) {
+        splitPrev = splitPrev.next;
+      }
+
+      const newHead = splitPrev.next;
+      splitPrev.next = null;
+      blockTail.next = blockHead;
+      blockHead = newHead;
+    }
+
+    outputTail.next = blockHead;
+    while (outputTail.next !== null) {
+      outputTail = outputTail.next;
+    }
+
+    current = nextBlock;
+  }
+
+  return dummy.next;
+}
+```
+
+```typescript
+class Node {
+  data: number;
+  next: Node | null;
+
+  constructor(data: number) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+function rotateBlockWise(head: Node | null, k: number, d: number): Node | null {
+  if (head === null || k <= 1 || d === 0) return head;
+
+  const dummy = new Node(0);
+  let outputTail: Node = dummy;
+  let current: Node | null = head;
+
+  while (current !== null) {
+    let blockHead: Node = current;
+    let blockTail: Node = current;
+    let length = 1;
+
+    while (length < k && blockTail.next !== null) {
+      blockTail = blockTail.next;
+      length++;
+    }
+
+    const nextBlock: Node | null = blockTail.next;
+    blockTail.next = null;
+
+    const shift = d % length;
+    if (shift > 0) {
+      let splitPrev: Node = blockHead;
+      for (let i = 1; i < shift; i++) {
+        splitPrev = splitPrev.next!;
+      }
+
+      const newHead = splitPrev.next!;
+      splitPrev.next = null;
+      blockTail.next = blockHead;
+      blockHead = newHead;
+    }
+
+    outputTail.next = blockHead;
+    while (outputTail.next !== null) {
+      outputTail = outputTail.next;
+    }
+
+    current = nextBlock;
+  }
+
+  return dummy.next;
+}
+```
