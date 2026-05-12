@@ -2368,3 +2368,25 @@ This one-hundred-ninety-second expansion slice lifts the catalog from 871 to 874
 - Batch 192 was validated (frontmatter, compilation, lint, tsc, smoke tests, and targeted Playwright route checks all pass) and published to main in this changeset.
 - The catalog now stands at 874 entries.
 - The next frontier in Linked List continues with intersection and partition family problems after duplicate removal.
+
+## Batch 193 frontier
+
+The next clean frontier stays within the GeeksforGeeks `Linked List` subsection and moves into set-style comparison, stable partitioning, and list-specific sorting.
+
+## Current source-order note
+
+- After the duplicate-removal run, the next clean Linked List continuation reaches value intersection and partitioning topics before moving deeper into circular-list variants.
+- `Merge Two Sorted Linked Lists` remains an existing local entry, so the clean source-order continuation skips that duplicate and continues through the next uncovered titles.
+- The next clean Linked List queue is `Intersection of two Sorted Linked Lists`, `Partition a List`, and `QuickSort on Singly Linked List`.
+
+## Batch 193 added
+
+This one-hundred-ninety-third expansion slice lifts the catalog from 874 to 877 entries.
+
+- Intersection of two Sorted Linked Lists
+- Partition a List
+- QuickSort on Singly Linked List
+
+- Batch 193 was validated (frontmatter, compilation, lint, tsc, smoke tests, and targeted Playwright route checks all pass) and published to main in this changeset.
+- The catalog now stands at 877 entries.
+- The next frontier in Linked List continues into circular-list splitting/rotation variants and additional advanced manipulations.

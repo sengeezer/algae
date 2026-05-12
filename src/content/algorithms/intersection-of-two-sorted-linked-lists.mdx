@@ -1,0 +1,118 @@
+---
+title: Intersection of two Sorted Linked Lists
+slug: intersection-of-two-sorted-linked-lists
+category: Linked List
+summary: Build the common-value intersection of two sorted linked lists by advancing through both lists in order.
+description: "Intersection of two Sorted Linked Lists uses a two-pointer merge-style traversal to collect values that appear in both sorted lists while skipping non-matching nodes."
+dataStructures:
+  - Linked List
+  - Pointer
+techniques:
+  - Two Pointer Comparison
+  - Merge Technique
+  - Sorted Traversal
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - common elements of sorted linked lists
+  - linked list intersection by value
+  - intersect two sorted lists
+useCases:
+  - Comparing sorted record streams
+  - Building common-result linked lists
+  - Set-style operations on ordered data
+complexity:
+  time: O(m + n) where m and n are the list lengths
+  space: O(k) for the output list where k is the intersection size
+  notes: Sorted order allows a single linear pass instead of nested scanning.
+interviewSignals:
+  - Distinguish value intersection from shared-node intersection.
+  - Sorted inputs justify the linear two-pointer solution.
+  - Creating a new result list is usually simpler than mutating inputs.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/dsa/intersection-of-two-sorted-linked-lists/'
+related:
+  - merge-two-sorted-linked-lists
+  - linked-list
+---
+
+## Problem
+
+Given two sorted singly linked lists, return a new linked list containing only the values that appear in both lists, in sorted order.
+
+## Approach
+
+Traverse both lists together. If the current values match, append that value to the result and advance both pointers. Otherwise advance the pointer with the smaller value.
+
+**Time Complexity**: O(m + n)
+**Space Complexity**: O(k)
+
+## Implementation
+
+```javascript
+class Node {
+  constructor(data) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+function intersectionOfTwoSortedLinkedLists(head1, head2) {
+  const dummy = new Node(0);
+  let tail = dummy;
+
+  let left = head1;
+  let right = head2;
+
+  while (left !== null && right !== null) {
+    if (left.data === right.data) {
+      tail.next = new Node(left.data);
+      tail = tail.next;
+      left = left.next;
+      right = right.next;
+    } else if (left.data < right.data) {
+      left = left.next;
+    } else {
+      right = right.next;
+    }
+  }
+
+  return dummy.next;
+}
+```
+
+```typescript
+class Node {
+  data: number;
+  next: Node | null;
+
+  constructor(data: number) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+function intersectionOfTwoSortedLinkedLists(head1: Node | null, head2: Node | null): Node | null {
+  const dummy = new Node(0);
+  let tail: Node = dummy;
+
+  let left = head1;
+  let right = head2;
+
+  while (left !== null && right !== null) {
+    if (left.data === right.data) {
+      tail.next = new Node(left.data);
+      tail = tail.next;
+      left = left.next;
+      right = right.next;
+    } else if (left.data < right.data) {
+      left = left.next;
+    } else {
+      right = right.next;
+    }
+  }
+
+  return dummy.next;
+}
+```

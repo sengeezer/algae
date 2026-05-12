@@ -1,0 +1,126 @@
+---
+title: Partition a List
+slug: partition-a-list
+category: Linked List
+summary: Reorder a linked list around a pivot value while preserving the original relative order within each partition.
+description: "Partition a List splits nodes into smaller-than and greater-or-equal partitions using two running tails, then joins the partitions at the end."
+dataStructures:
+  - Linked List
+  - Pointer
+techniques:
+  - Stable Partitioning
+  - Dummy Node
+  - Pointer Manipulation
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - linked list partition
+  - partition linked list around x
+  - stable partition linked list
+useCases:
+  - Reordering records by threshold
+  - Preprocessing before list-based grouping
+  - Stable partitioning interviews
+complexity:
+  time: O(n) where n is the number of nodes
+  space: O(1) extra nodes aside from dummy heads
+  notes: Relative order is preserved by appending to two tails in encounter order.
+interviewSignals:
+  - Stable ordering is the key behavioral constraint.
+  - Two-list construction is cleaner than repeated in-place insertion.
+  - Remember to terminate the greater-or-equal list before stitching.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/dsa/partitioning-a-linked-list-around-a-given-value-and-keeping-the-original-order/'
+related:
+  - swap-nodes-in-pairs
+  - merge-two-sorted-linked-lists
+---
+
+## Problem
+
+Given a singly linked list and a pivot value `x`, rearrange the list so nodes with values smaller than `x` come before nodes with values greater than or equal to `x`, while preserving original relative order inside each group.
+
+## Approach
+
+Maintain two temporary lists: one for nodes `< x` and one for nodes `>= x`. Traverse once, append each node to the correct tail, then join the two lists.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(1)
+
+## Implementation
+
+```javascript
+class Node {
+  constructor(data) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+function partitionList(head, pivot) {
+  const smallerDummy = new Node(0);
+  const greaterDummy = new Node(0);
+
+  let smallerTail = smallerDummy;
+  let greaterTail = greaterDummy;
+  let current = head;
+
+  while (current !== null) {
+    const next = current.next;
+    current.next = null;
+
+    if (current.data < pivot) {
+      smallerTail.next = current;
+      smallerTail = current;
+    } else {
+      greaterTail.next = current;
+      greaterTail = current;
+    }
+
+    current = next;
+  }
+
+  smallerTail.next = greaterDummy.next;
+  return smallerDummy.next;
+}
+```
+
+```typescript
+class Node {
+  data: number;
+  next: Node | null;
+
+  constructor(data: number) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+function partitionList(head: Node | null, pivot: number): Node | null {
+  const smallerDummy = new Node(0);
+  const greaterDummy = new Node(0);
+
+  let smallerTail: Node = smallerDummy;
+  let greaterTail: Node = greaterDummy;
+  let current = head;
+
+  while (current !== null) {
+    const next = current.next;
+    current.next = null;
+
+    if (current.data < pivot) {
+      smallerTail.next = current;
+      smallerTail = current;
+    } else {
+      greaterTail.next = current;
+      greaterTail = current;
+    }
+
+    current = next;
+  }
+
+  smallerTail.next = greaterDummy.next;
+  return smallerDummy.next;
+}
+```
