@@ -1,0 +1,185 @@
+---
+title: Merge Sort for Doubly Linked List
+slug: merge-sort-for-doubly-linked-list
+category: Linked List
+summary: Sort a doubly linked list using merge sort by splitting at midpoint and merging sorted halves.
+description: "Merge Sort for Doubly Linked List recursively splits the list into halves and merges them while maintaining both next and prev pointers."
+dataStructures:
+  - Doubly Linked List
+  - Linked List
+  - Pointer
+techniques:
+  - Merge Sort
+  - Fast and Slow Pointer
+  - Recursive Divide and Conquer
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - doubly linked list merge sort
+  - sort doubly linked list
+  - merge sort DLL
+useCases:
+  - Stable sorting over pointer-based structures
+  - In-place list sorting without array conversion
+  - Systems programming data structure utilities
+complexity:
+  time: O(n log n)
+  space: O(log n) recursion stack
+  notes: Merge sort is preferred for linked lists due to efficient split and merge without random access.
+interviewSignals:
+  - Correctly maintain prev pointers during merge.
+  - Midpoint splitting with fast/slow pointer is expected.
+  - Merge sort is usually favored over quicksort for linked lists.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/dsa/merge-sort-for-doubly-linked-list/'
+related:
+  - merge-sort
+  - quicksort-on-singly-linked-list
+---
+
+## Problem
+
+Sort a doubly linked list in ascending order.
+
+## Approach
+
+Use merge sort:
+
+1. Find midpoint with slow/fast pointers.
+2. Split into left and right halves.
+3. Recursively sort each half.
+4. Merge sorted halves while setting both `next` and `prev` pointers.
+
+**Time Complexity**: O(n log n)
+**Space Complexity**: O(log n)
+
+## Implementation
+
+```javascript
+class Node {
+  constructor(data) {
+    this.data = data;
+    this.prev = null;
+    this.next = null;
+  }
+}
+
+function split(head) {
+  let slow = head;
+  let fast = head;
+
+  while (fast.next !== null && fast.next.next !== null) {
+    slow = slow.next;
+    fast = fast.next.next;
+  }
+
+  const second = slow.next;
+  slow.next = null;
+  if (second !== null) {
+    second.prev = null;
+  }
+
+  return second;
+}
+
+function merge(left, right) {
+  if (left === null) return right;
+  if (right === null) return left;
+
+  if (left.data <= right.data) {
+    left.next = merge(left.next, right);
+    if (left.next !== null) {
+      left.next.prev = left;
+    }
+    left.prev = null;
+    return left;
+  }
+
+  right.next = merge(left, right.next);
+  if (right.next !== null) {
+    right.next.prev = right;
+  }
+  right.prev = null;
+  return right;
+}
+
+function mergeSortDoublyLinkedList(head) {
+  if (head === null || head.next === null) {
+    return head;
+  }
+
+  const second = split(head);
+
+  const left = mergeSortDoublyLinkedList(head);
+  const right = mergeSortDoublyLinkedList(second);
+
+  return merge(left, right);
+}
+```
+
+```typescript
+class Node {
+  data: number;
+  prev: Node | null;
+  next: Node | null;
+
+  constructor(data: number) {
+    this.data = data;
+    this.prev = null;
+    this.next = null;
+  }
+}
+
+function split(head: Node): Node | null {
+  let slow: Node = head;
+  let fast: Node = head;
+
+  while (fast.next !== null && fast.next.next !== null) {
+    slow = slow.next!;
+    fast = fast.next.next;
+  }
+
+  const second = slow.next;
+  slow.next = null;
+  if (second !== null) {
+    second.prev = null;
+  }
+
+  return second;
+}
+
+function merge(left: Node | null, right: Node | null): Node | null {
+  if (left === null) return right;
+  if (right === null) return left;
+
+  if (left.data <= right.data) {
+    left.next = merge(left.next, right);
+    if (left.next !== null) {
+      left.next.prev = left;
+    }
+    left.prev = null;
+    return left;
+  }
+
+  right.next = merge(left, right.next);
+  if (right.next !== null) {
+    right.next.prev = right;
+  }
+  right.prev = null;
+  return right;
+}
+
+function mergeSortDoublyLinkedList(head: Node | null): Node | null {
+  if (head === null || head.next === null) {
+    return head;
+  }
+
+  const second = split(head);
+
+  const left = mergeSortDoublyLinkedList(head);
+  const right = mergeSortDoublyLinkedList(second);
+
+  return merge(left, right);
+}
+```

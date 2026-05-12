@@ -1,0 +1,138 @@
+---
+title: Split a Circular Linked List into two halves
+slug: split-a-circular-linked-list-into-two-halves
+category: Linked List
+summary: Split a circular singly linked list into two circular halves using fast and slow pointers.
+description: "Split a Circular Linked List into two halves uses tortoise-hare traversal to find the midpoint, then rewires the circular links so each half becomes its own circular list."
+dataStructures:
+  - Circular Linked List
+  - Linked List
+  - Pointer
+techniques:
+  - Fast and Slow Pointer
+  - Pointer Manipulation
+  - Circular List Handling
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - split circular linked list
+  - divide circular list into halves
+  - circular list midpoint split
+useCases:
+  - Circular buffer partitioning
+  - Workload splitting for round-robin structures
+  - Interview pointer manipulation practice
+complexity:
+  time: O(n) where n is the number of nodes
+  space: O(1)
+  notes: Fast pointer moves two steps and slow pointer moves one step to locate the midpoint in one traversal.
+interviewSignals:
+  - Correct handling of odd and even node counts is required.
+  - Maintain circular structure in both output halves.
+  - Edge cases include empty and single-node lists.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/dsa/split-a-circular-linked-list-into-two-halves/'
+related:
+  - check-if-a-linked-list-is-circular-linked-list
+  - count-nodes-circular-linked-list
+---
+
+## Problem
+
+Given a circular singly linked list, split it into two circular linked lists where sizes differ by at most one node.
+
+## Approach
+
+Use slow and fast pointers from head. Move fast by two nodes and slow by one node until fast reaches the end of the circle. Slow will be at midpoint. Rewire links:
+
+- First half head: original `head`
+- Second half head: `slow.next`
+- End of first half points to first head
+- End of second half points to second head
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(1)
+
+## Implementation
+
+```javascript
+class Node {
+  constructor(data) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+function splitCircularLinkedList(head) {
+  if (head === null) {
+    return [null, null];
+  }
+
+  if (head.next === head) {
+    return [head, null];
+  }
+
+  let slow = head;
+  let fast = head;
+
+  while (fast.next !== head && fast.next.next !== head) {
+    slow = slow.next;
+    fast = fast.next.next;
+  }
+
+  if (fast.next.next === head) {
+    fast = fast.next;
+  }
+
+  const head1 = head;
+  const head2 = slow.next;
+
+  slow.next = head1;
+  fast.next = head2;
+
+  return [head1, head2];
+}
+```
+
+```typescript
+class Node {
+  data: number;
+  next: Node | null;
+
+  constructor(data: number) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+function splitCircularLinkedList(head: Node | null): [Node | null, Node | null] {
+  if (head === null) {
+    return [null, null];
+  }
+
+  if (head.next === head) {
+    return [head, null];
+  }
+
+  let slow: Node = head;
+  let fast: Node = head;
+
+  while (fast.next !== head && fast.next!.next !== head) {
+    slow = slow.next!;
+    fast = fast.next!.next!;
+  }
+
+  if (fast.next!.next === head) {
+    fast = fast.next!;
+  }
+
+  const head1: Node = head;
+  const head2: Node = slow.next!;
+
+  slow.next = head1;
+  fast.next = head2;
+
+  return [head1, head2];
+}
+```

@@ -2390,3 +2390,25 @@ This one-hundred-ninety-third expansion slice lifts the catalog from 874 to 877 
 - Batch 193 was validated (frontmatter, compilation, lint, tsc, smoke tests, and targeted Playwright route checks all pass) and published to main in this changeset.
 - The catalog now stands at 877 entries.
 - The next frontier in Linked List continues into circular-list splitting/rotation variants and additional advanced manipulations.
+
+## Batch 194 frontier
+
+The next clean frontier remains in the GeeksforGeeks `Linked List` subsection and advances through circular splitting and set/sort operations on linked-list variants.
+
+## Current source-order note
+
+- After `QuickSort on Singly Linked List`, the next source-order branch reaches `Split a Circular Linked List into two halves`, then continues through `Merge Two Sorted Linked Lists` (already present) into `Union and Intersection` and `Merge Sort for Doubly Linked List`.
+- The existing local entry for `Merge Two Sorted Linked Lists` is a duplicate branch point, so the clean queue skips it and resumes at the next uncovered titles.
+- The next clean Linked List queue is `Split a Circular Linked List into two halves`, `Union and Intersection of two Linked Lists`, and `Merge Sort for Doubly Linked List`.
+
+## Batch 194 added
+
+This one-hundred-ninety-fourth expansion slice lifts the catalog from 877 to 880 entries.
+
+- Split a Circular Linked List into two halves
+- Union and Intersection of two Linked Lists
+- Merge Sort for Doubly Linked List
+
+- Batch 194 was validated (frontmatter, compilation, lint, tsc, smoke tests, and targeted Playwright route checks all pass) and published to main in this changeset.
+- The catalog now stands at 880 entries.
+- The next frontier in Linked List continues through rotation and additional advanced list-structure operations.

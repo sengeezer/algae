@@ -1,0 +1,185 @@
+---
+title: Union and Intersection of two Linked Lists
+slug: union-and-intersection-of-two-linked-lists
+category: Linked List
+summary: Compute the union and intersection of two linked lists using hash-based membership checks.
+description: "Union and Intersection of two Linked Lists traverses both lists to build the unique combined set and common set, preserving first-seen order with auxiliary hashing."
+dataStructures:
+  - Linked List
+  - Hash Set
+techniques:
+  - Hashing
+  - Set Operations
+  - Linked List Traversal
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - union intersection linked lists
+  - set operations on linked lists
+  - common and combined nodes linked list
+useCases:
+  - Combining and comparing list-backed datasets
+  - Deduplicating two streams into one output
+  - Membership analysis over linked structures
+complexity:
+  time: O(m + n) average
+  space: O(m + n)
+  notes: Hash sets provide constant average-time membership checks during traversal.
+interviewSignals:
+  - Clarify whether duplicates should appear once or multiple times.
+  - Hashing is usually expected for linear-time set operations.
+  - Keep output behavior explicit (value-based sets vs node identity).
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/dsa/union-and-intersection-of-two-linked-lists/'
+related:
+  - intersection-of-two-sorted-linked-lists
+  - remove-duplicates-from-an-unsorted-linked-list
+---
+
+## Problem
+
+Given two linked lists, return:
+
+- Union list: unique values present in either list
+- Intersection list: unique values present in both lists
+
+## Approach
+
+Traverse the first list and record values in a set while building union candidates. Traverse the second list:
+
+- Add unseen values to union
+- Add values present in first-set to intersection (once)
+
+Build result linked lists from these value sequences.
+
+**Time Complexity**: O(m + n)
+**Space Complexity**: O(m + n)
+
+## Implementation
+
+```javascript
+class Node {
+  constructor(data) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+function buildList(values) {
+  const dummy = new Node(0);
+  let tail = dummy;
+
+  for (const value of values) {
+    tail.next = new Node(value);
+    tail = tail.next;
+  }
+
+  return dummy.next;
+}
+
+function unionAndIntersection(head1, head2) {
+  const seenUnion = new Set();
+  const seenFirst = new Set();
+  const seenIntersection = new Set();
+
+  const unionValues = [];
+  const intersectionValues = [];
+
+  let current = head1;
+  while (current !== null) {
+    seenFirst.add(current.data);
+    if (!seenUnion.has(current.data)) {
+      seenUnion.add(current.data);
+      unionValues.push(current.data);
+    }
+    current = current.next;
+  }
+
+  current = head2;
+  while (current !== null) {
+    if (!seenUnion.has(current.data)) {
+      seenUnion.add(current.data);
+      unionValues.push(current.data);
+    }
+
+    if (seenFirst.has(current.data) && !seenIntersection.has(current.data)) {
+      seenIntersection.add(current.data);
+      intersectionValues.push(current.data);
+    }
+
+    current = current.next;
+  }
+
+  return {
+    unionHead: buildList(unionValues),
+    intersectionHead: buildList(intersectionValues),
+  };
+}
+```
+
+```typescript
+class Node {
+  data: number;
+  next: Node | null;
+
+  constructor(data: number) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+function buildList(values: number[]): Node | null {
+  const dummy = new Node(0);
+  let tail: Node = dummy;
+
+  for (const value of values) {
+    tail.next = new Node(value);
+    tail = tail.next;
+  }
+
+  return dummy.next;
+}
+
+function unionAndIntersection(head1: Node | null, head2: Node | null): {
+  unionHead: Node | null;
+  intersectionHead: Node | null;
+} {
+  const seenUnion = new Set<number>();
+  const seenFirst = new Set<number>();
+  const seenIntersection = new Set<number>();
+
+  const unionValues: number[] = [];
+  const intersectionValues: number[] = [];
+
+  let current = head1;
+  while (current !== null) {
+    seenFirst.add(current.data);
+    if (!seenUnion.has(current.data)) {
+      seenUnion.add(current.data);
+      unionValues.push(current.data);
+    }
+    current = current.next;
+  }
+
+  current = head2;
+  while (current !== null) {
+    if (!seenUnion.has(current.data)) {
+      seenUnion.add(current.data);
+      unionValues.push(current.data);
+    }
+
+    if (seenFirst.has(current.data) && !seenIntersection.has(current.data)) {
+      seenIntersection.add(current.data);
+      intersectionValues.push(current.data);
+    }
+
+    current = current.next;
+  }
+
+  return {
+    unionHead: buildList(unionValues),
+    intersectionHead: buildList(intersectionValues),
+  };
+}
+```
