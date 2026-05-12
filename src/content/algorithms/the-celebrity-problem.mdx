@@ -1,0 +1,101 @@
+---
+title: The Celebrity Problem
+slug: the-celebrity-problem
+category: Stack
+summary: Find the celebrity in a party using elimination with a stack-like two-pointer strategy.
+description: "Eliminate non-celebrities pairwise, then verify the remaining candidate against all people."
+dataStructures:
+  - Array
+  - Stack
+techniques:
+  - Candidate Elimination
+  - Verification Pass
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - find celebrity
+  - party celebrity
+useCases:
+  - Constraint-based candidate filtering
+  - Relation matrix reasoning
+complexity:
+  time: O(n)
+  space: O(1) auxiliary
+  notes: "One elimination pass and one verification pass."
+interviewSignals:
+  - Candidate must be known by everyone and know nobody.
+  - Elimination alone is insufficient without final verification.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/the-celebrity-problem/'
+related:
+  - universal-sink-in-directed-graph
+  - two-stacks-in-an-array
+---
+
+## Problem
+
+Given a relation matrix `knows[a][b]`, find the celebrity index, where a celebrity knows nobody and everyone knows the celebrity.
+
+## Approach
+
+Use two pointers to eliminate impossible candidates. Then verify the final candidate.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(1)
+
+## Implementation
+
+```javascript
+function findCelebrity(knows) {
+  const n = knows.length;
+  let a = 0;
+  let b = n - 1;
+
+  while (a < b) {
+    if (knows[a][b] === 1) {
+      a++;
+    } else {
+      b--;
+    }
+  }
+
+  const candidate = a;
+
+  for (let i = 0; i < n; i++) {
+    if (i === candidate) continue;
+    if (knows[candidate][i] === 1 || knows[i][candidate] === 0) {
+      return -1;
+    }
+  }
+
+  return candidate;
+}
+```
+
+```typescript
+function findCelebrity(knows: number[][]): number {
+  const n = knows.length;
+  let a = 0;
+  let b = n - 1;
+
+  while (a < b) {
+    if (knows[a][b] === 1) {
+      a++;
+    } else {
+      b--;
+    }
+  }
+
+  const candidate = a;
+
+  for (let i = 0; i < n; i++) {
+    if (i === candidate) continue;
+    if (knows[candidate][i] === 1 || knows[i][candidate] === 0) {
+      return -1;
+    }
+  }
+
+  return candidate;
+}
+```

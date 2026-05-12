@@ -2522,3 +2522,33 @@ This one-hundred-ninety-ninth expansion slice lifts the catalog from 892 to 895 
 - Batch 199 was validated (frontmatter, compilation, lint, tsc, smoke tests, and targeted Playwright route checks all pass) and published to main in this changeset.
 - The catalog now stands at 895 entries.
 - The next frontier in Linked List continues with the remaining hard-problem entries from the same source branch.
+
+## Batch 200 frontier
+
+The next clean frontier completes the Linked List hard-problem tail, then continues into practical Stack expression/array problems to satisfy larger-batch expansion.
+
+## Current source-order note
+
+- After `Rotate Linked List block wise`, the remaining clean Linked List hard-problem tail is `Multiply two numbers as Lists` and `Delete N nodes after M nodes`.
+- With that tail exhausted, the next vetted source-order branch is GeeksforGeeks `Stack`; `Queue using Stacks` is already covered by `queue-using-two-stacks`, so the next clean Stack run continues at concrete easy-problem entries.
+- The next clean Linked List queue is `Multiply two numbers as Lists` and `Delete N nodes after M nodes`.
+- The next clean Stack queue is `The Celebrity Problem`, `Two stacks in an array`, `Infix to Postfix`, `Prefix to Infix`, `Prefix to Postfix`, `Postfix to Prefix`, `Postfix to Infix`, and `Infix To Prefix`.
+
+## Batch 200 added
+
+This two-hundredth expansion slice lifts the catalog from 895 to 905 entries.
+
+- Multiply two numbers as Lists
+- Delete N nodes after M nodes
+- The Celebrity Problem
+- Two stacks in an array
+- Infix to Postfix
+- Prefix to Infix
+- Prefix to Postfix
+- Postfix to Prefix
+- Postfix to Infix
+- Infix To Prefix
+
+- Batch 200 was validated (frontmatter, compilation, lint, tsc, smoke tests, and targeted Playwright route checks all pass) and published to main in this changeset.
+- The catalog now stands at 905 entries.
+- The next frontier moves deeper into remaining Stack problem entries after expression conversion coverage.

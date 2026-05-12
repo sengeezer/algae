@@ -1,0 +1,90 @@
+---
+title: Postfix to Infix
+slug: postfix-to-infix
+category: Stack
+summary: Convert postfix expressions to infix expressions by stacking partial infix segments.
+description: "For each operator, combine two stacked operands into a parenthesized infix expression and push back."
+dataStructures:
+  - Stack
+  - String
+techniques:
+  - Expression Parsing
+  - Parenthesized Reconstruction
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - postfix infix conversion
+useCases:
+  - Parser debugging
+  - Expression visualization
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: "Every token is processed once with stack combine operations."
+interviewSignals:
+  - Right operand is popped before left operand.
+  - Parentheses avoid ambiguity in converted output.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/postfix-to-infix/'
+related:
+  - infix-to-postfix
+  - postfix-to-prefix
+---
+
+## Problem
+
+Convert a valid postfix expression to infix expression.
+
+## Approach
+
+Push operands. On each operator, pop `right` and `left`, create `(left op right)`, then push it back.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(n)
+
+## Implementation
+
+```javascript
+function isOperator(ch) {
+  return ['+', '-', '*', '/', '^'].includes(ch);
+}
+
+function postfixToInfix(expr) {
+  const stack = [];
+
+  for (const ch of expr) {
+    if (/[a-zA-Z0-9]/.test(ch)) {
+      stack.push(ch);
+    } else if (isOperator(ch)) {
+      const right = stack.pop();
+      const left = stack.pop();
+      stack.push(`(${left}${ch}${right})`);
+    }
+  }
+
+  return stack.pop() || '';
+}
+```
+
+```typescript
+function isOperator(ch: string): boolean {
+  return ['+', '-', '*', '/', '^'].includes(ch);
+}
+
+function postfixToInfix(expr: string): string {
+  const stack: string[] = [];
+
+  for (const ch of expr) {
+    if (/[a-zA-Z0-9]/.test(ch)) {
+      stack.push(ch);
+    } else if (isOperator(ch)) {
+      const right = stack.pop()!;
+      const left = stack.pop()!;
+      stack.push(`(${left}${ch}${right})`);
+    }
+  }
+
+  return stack.pop() ?? '';
+}
+```

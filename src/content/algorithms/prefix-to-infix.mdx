@@ -1,0 +1,94 @@
+---
+title: Prefix to Infix
+slug: prefix-to-infix
+category: Stack
+summary: Convert a prefix expression to infix form using a stack scanned from right to left.
+description: "Read prefix tokens in reverse, combine top two operands whenever an operator is found, and push back parenthesized infix chunks."
+dataStructures:
+  - Stack
+  - String
+techniques:
+  - Reverse Scan
+  - Expression Reconstruction
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - prefix infix conversion
+useCases:
+  - Compiler tooling
+  - Expression translation pipelines
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: "Each token participates in one push and one pop sequence."
+interviewSignals:
+  - Operand order must be preserved as left then right.
+  - Parenthesization should keep operator precedence explicit.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/prefix-infix-conversion/'
+related:
+  - prefix-to-postfix
+  - infix-to-prefix
+---
+
+## Problem
+
+Convert a valid prefix expression into infix expression.
+
+## Approach
+
+Scan right to left. Push operands. For each operator, pop two operands `a` and `b`, form `(a op b)`, and push back.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(n)
+
+## Implementation
+
+```javascript
+function isOperator(ch) {
+  return ['+', '-', '*', '/', '^'].includes(ch);
+}
+
+function prefixToInfix(expr) {
+  const stack = [];
+
+  for (let i = expr.length - 1; i >= 0; i--) {
+    const ch = expr[i];
+
+    if (/[a-zA-Z0-9]/.test(ch)) {
+      stack.push(ch);
+    } else if (isOperator(ch)) {
+      const a = stack.pop();
+      const b = stack.pop();
+      stack.push(`(${a}${ch}${b})`);
+    }
+  }
+
+  return stack.pop() || '';
+}
+```
+
+```typescript
+function isOperator(ch: string): boolean {
+  return ['+', '-', '*', '/', '^'].includes(ch);
+}
+
+function prefixToInfix(expr: string): string {
+  const stack: string[] = [];
+
+  for (let i = expr.length - 1; i >= 0; i--) {
+    const ch = expr[i];
+
+    if (/[a-zA-Z0-9]/.test(ch)) {
+      stack.push(ch);
+    } else if (isOperator(ch)) {
+      const a = stack.pop()!;
+      const b = stack.pop()!;
+      stack.push(`(${a}${ch}${b})`);
+    }
+  }
+
+  return stack.pop() ?? '';
+}
+```

@@ -1,0 +1,90 @@
+---
+title: Postfix to Prefix
+slug: postfix-to-prefix
+category: Stack
+summary: Convert postfix notation to prefix notation using stack-based grouping.
+description: "Read postfix left to right, combine top two operands under each operator as operator + left + right."
+dataStructures:
+  - Stack
+  - String
+techniques:
+  - Forward Scan
+  - Expression Reconstruction
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - postfix prefix conversion
+useCases:
+  - Notation conversion
+  - Compiler expression transforms
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: "Linear scan with bounded stack operations per token."
+interviewSignals:
+  - Pop right operand first, then left operand.
+  - Prefix output should preserve original evaluation order.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/postfix-prefix-conversion/'
+related:
+  - postfix-to-infix
+  - prefix-to-postfix
+---
+
+## Problem
+
+Convert a valid postfix expression into prefix expression.
+
+## Approach
+
+Scan left to right. Push operands. On operator, pop `right` then `left`, and push `operator + left + right`.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(n)
+
+## Implementation
+
+```javascript
+function isOperator(ch) {
+  return ['+', '-', '*', '/', '^'].includes(ch);
+}
+
+function postfixToPrefix(expr) {
+  const stack = [];
+
+  for (const ch of expr) {
+    if (/[a-zA-Z0-9]/.test(ch)) {
+      stack.push(ch);
+    } else if (isOperator(ch)) {
+      const right = stack.pop();
+      const left = stack.pop();
+      stack.push(ch + left + right);
+    }
+  }
+
+  return stack.pop() || '';
+}
+```
+
+```typescript
+function isOperator(ch: string): boolean {
+  return ['+', '-', '*', '/', '^'].includes(ch);
+}
+
+function postfixToPrefix(expr: string): string {
+  const stack: string[] = [];
+
+  for (const ch of expr) {
+    if (/[a-zA-Z0-9]/.test(ch)) {
+      stack.push(ch);
+    } else if (isOperator(ch)) {
+      const right = stack.pop()!;
+      const left = stack.pop()!;
+      stack.push(ch + left + right);
+    }
+  }
+
+  return stack.pop() ?? '';
+}
+```

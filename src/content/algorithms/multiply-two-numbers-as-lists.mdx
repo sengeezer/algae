@@ -1,0 +1,108 @@
+---
+title: Multiply two numbers as Lists
+slug: multiply-two-numbers-as-lists
+category: Linked List
+summary: Multiply two non-negative integers where each integer is represented by a linked list of digits.
+description: "Convert linked-list digit streams to numeric values under modulo arithmetic and multiply safely."
+dataStructures:
+  - Linked List
+  - Number
+techniques:
+  - Digit Aggregation
+  - Modular Arithmetic
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - multiply linked list numbers
+  - product of two numbers represented by linked lists
+useCases:
+  - Large-number digit pipelines
+  - Linked representation arithmetic
+complexity:
+  time: O(n + m)
+  space: O(1) auxiliary
+  notes: "Each list is scanned once to build modular values before multiplication."
+interviewSignals:
+  - Handle leading zeros and long inputs.
+  - Use modulo to avoid overflow for very large values.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/dsa/linked-list/'
+related:
+  - add-two-numbers
+  - sublist-search
+---
+
+## Problem
+
+Given two linked lists where each node contains one digit, multiply the two represented numbers and return the result under modulo `1e9 + 7`.
+
+## Approach
+
+Traverse each list and build its value as `value = (value * 10 + digit) % MOD`. Then return `(value1 * value2) % MOD`.
+
+**Time Complexity**: O(n + m)
+**Space Complexity**: O(1)
+
+## Implementation
+
+```javascript
+const MOD = 1000000007n;
+
+class Node {
+  constructor(data) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+function listToNumberMod(head) {
+  let value = 0n;
+  let current = head;
+
+  while (current !== null) {
+    value = (value * 10n + BigInt(current.data)) % MOD;
+    current = current.next;
+  }
+
+  return value;
+}
+
+function multiplyTwoNumbersAsLists(head1, head2) {
+  const a = listToNumberMod(head1);
+  const b = listToNumberMod(head2);
+  return Number((a * b) % MOD);
+}
+```
+
+```typescript
+const MOD = 1000000007n;
+
+class Node {
+  data: number;
+  next: Node | null;
+
+  constructor(data: number) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+function listToNumberMod(head: Node | null): bigint {
+  let value = 0n;
+  let current = head;
+
+  while (current !== null) {
+    value = (value * 10n + BigInt(current.data)) % MOD;
+    current = current.next;
+  }
+
+  return value;
+}
+
+function multiplyTwoNumbersAsLists(head1: Node | null, head2: Node | null): number {
+  const a = listToNumberMod(head1);
+  const b = listToNumberMod(head2);
+  return Number((a * b) % MOD);
+}
+```

@@ -1,0 +1,111 @@
+---
+title: Two stacks in an array
+slug: two-stacks-in-an-array
+category: Stack
+summary: Implement two independent stacks in one array using opposite growth directions.
+description: "Keep one stack from left to right and the other from right to left to share capacity safely."
+dataStructures:
+  - Stack
+  - Array
+techniques:
+  - In-place Dual Stack
+  - Boundary Checking
+difficulty: Easy
+interviewFrequency: High
+aliases:
+  - dual stack array
+  - two stack implementation
+useCases:
+  - Memory-efficient stack sharing
+  - Bounded storage systems
+complexity:
+  time: O(1) per operation
+  space: O(capacity)
+  notes: "Both push and pop are constant-time index operations."
+interviewSignals:
+  - Overflow occurs only when top pointers cross.
+  - Ensure underflow checks per stack.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/implement-two-stacks-in-an-array/'
+related:
+  - stack
+  - queue-using-two-stacks
+---
+
+## Problem
+
+Design a data structure that supports two stacks in a single array with `push1`, `push2`, `pop1`, and `pop2`.
+
+## Approach
+
+Use `top1` starting at `-1` and `top2` starting at `capacity`. Pushes move inward; pops move outward.
+
+**Time Complexity**: O(1) per operation
+**Space Complexity**: O(capacity)
+
+## Implementation
+
+```javascript
+class TwoStacks {
+  constructor(capacity) {
+    this.arr = new Array(capacity);
+    this.top1 = -1;
+    this.top2 = capacity;
+  }
+
+  push1(value) {
+    if (this.top1 + 1 === this.top2) throw new Error('Overflow');
+    this.arr[++this.top1] = value;
+  }
+
+  push2(value) {
+    if (this.top1 + 1 === this.top2) throw new Error('Overflow');
+    this.arr[--this.top2] = value;
+  }
+
+  pop1() {
+    if (this.top1 < 0) throw new Error('Underflow');
+    return this.arr[this.top1--];
+  }
+
+  pop2() {
+    if (this.top2 >= this.arr.length) throw new Error('Underflow');
+    return this.arr[this.top2++];
+  }
+}
+```
+
+```typescript
+class TwoStacks<T> {
+  private arr: T[];
+  private top1: number;
+  private top2: number;
+
+  constructor(capacity: number) {
+    this.arr = new Array(capacity);
+    this.top1 = -1;
+    this.top2 = capacity;
+  }
+
+  push1(value: T): void {
+    if (this.top1 + 1 === this.top2) throw new Error('Overflow');
+    this.arr[++this.top1] = value;
+  }
+
+  push2(value: T): void {
+    if (this.top1 + 1 === this.top2) throw new Error('Overflow');
+    this.arr[--this.top2] = value;
+  }
+
+  pop1(): T {
+    if (this.top1 < 0) throw new Error('Underflow');
+    return this.arr[this.top1--];
+  }
+
+  pop2(): T {
+    if (this.top2 >= this.arr.length) throw new Error('Underflow');
+    return this.arr[this.top2++];
+  }
+}
+```

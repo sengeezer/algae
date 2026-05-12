@@ -1,0 +1,116 @@
+---
+title: Delete N nodes after M nodes
+slug: delete-n-nodes-after-m-nodes
+category: Linked List
+summary: Repeatedly keep M nodes and delete the next N nodes in a linked list.
+description: "Walk the list in chunks: preserve M nodes, skip and unlink N nodes, and continue to the end."
+dataStructures:
+  - Linked List
+  - Pointer
+techniques:
+  - Chunk Traversal
+  - Pointer Rewiring
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - retain m delete n linked list
+  - skip m delete n nodes
+useCases:
+  - Sampling periodic records
+  - Stream thinning pipelines
+complexity:
+  time: O(L)
+  space: O(1) auxiliary
+  notes: "Each node is visited at most once."
+interviewSignals:
+  - Properly handle short tails.
+  - Ensure unlinking starts after exactly M kept nodes.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/dsa/linked-list/'
+related:
+  - remove-duplicates-from-an-unsorted-linked-list
+  - rotate-a-linked-list
+---
+
+## Problem
+
+Given a linked list and integers `M` and `N`, retain `M` nodes, delete the next `N` nodes, and repeat until the list ends.
+
+## Approach
+
+Use one pointer to move `M - 1` steps, then another loop to skip `N` nodes and reconnect.
+
+**Time Complexity**: O(L)
+**Space Complexity**: O(1)
+
+## Implementation
+
+```javascript
+class Node {
+  constructor(data) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+function deleteNAfterM(head, m, n) {
+  if (head === null || m <= 0) return null;
+
+  let current = head;
+
+  while (current !== null) {
+    for (let i = 1; i < m && current !== null; i++) {
+      current = current.next;
+    }
+
+    if (current === null) break;
+
+    let toDelete = current.next;
+    for (let i = 0; i < n && toDelete !== null; i++) {
+      toDelete = toDelete.next;
+    }
+
+    current.next = toDelete;
+    current = toDelete;
+  }
+
+  return head;
+}
+```
+
+```typescript
+class Node {
+  data: number;
+  next: Node | null;
+
+  constructor(data: number) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+function deleteNAfterM(head: Node | null, m: number, n: number): Node | null {
+  if (head === null || m <= 0) return null;
+
+  let current: Node | null = head;
+
+  while (current !== null) {
+    for (let i = 1; i < m && current !== null; i++) {
+      current = current.next;
+    }
+
+    if (current === null) break;
+
+    let toDelete: Node | null = current.next;
+    for (let i = 0; i < n && toDelete !== null; i++) {
+      toDelete = toDelete.next;
+    }
+
+    current.next = toDelete;
+    current = toDelete;
+  }
+
+  return head;
+}
+```

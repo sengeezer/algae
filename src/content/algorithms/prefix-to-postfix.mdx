@@ -1,0 +1,96 @@
+---
+title: Prefix to Postfix
+slug: prefix-to-postfix
+category: Stack
+summary: Convert prefix notation to postfix notation using stack-based reconstruction.
+description: "Traverse prefix expression from right to left and combine two operands with each operator to build postfix chunks."
+dataStructures:
+  - Stack
+  - String
+techniques:
+  - Reverse Scan
+  - Expression Transformation
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - prefix postfix conversion
+useCases:
+  - Expression normalization
+  - Evaluation pipeline preprocessing
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: "Single pass with stack of intermediate expression fragments."
+interviewSignals:
+  - The output order is operand1 operand2 operator.
+  - Incorrect pop ordering breaks expression semantics.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/prefix-postfix-conversion/'
+related:
+  - prefix-to-infix
+  - postfix-to-prefix
+---
+
+## Problem
+
+Convert a valid prefix expression into postfix expression.
+
+## Approach
+
+Scan from right to left:
+- push operands,
+- on operator, pop `a` and `b`, push `a + b + operator`.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(n)
+
+## Implementation
+
+```javascript
+function isOperator(ch) {
+  return ['+', '-', '*', '/', '^'].includes(ch);
+}
+
+function prefixToPostfix(expr) {
+  const stack = [];
+
+  for (let i = expr.length - 1; i >= 0; i--) {
+    const ch = expr[i];
+
+    if (/[a-zA-Z0-9]/.test(ch)) {
+      stack.push(ch);
+    } else if (isOperator(ch)) {
+      const a = stack.pop();
+      const b = stack.pop();
+      stack.push(a + b + ch);
+    }
+  }
+
+  return stack.pop() || '';
+}
+```
+
+```typescript
+function isOperator(ch: string): boolean {
+  return ['+', '-', '*', '/', '^'].includes(ch);
+}
+
+function prefixToPostfix(expr: string): string {
+  const stack: string[] = [];
+
+  for (let i = expr.length - 1; i >= 0; i--) {
+    const ch = expr[i];
+
+    if (/[a-zA-Z0-9]/.test(ch)) {
+      stack.push(ch);
+    } else if (isOperator(ch)) {
+      const a = stack.pop()!;
+      const b = stack.pop()!;
+      stack.push(a + b + ch);
+    }
+  }
+
+  return stack.pop() ?? '';
+}
+```

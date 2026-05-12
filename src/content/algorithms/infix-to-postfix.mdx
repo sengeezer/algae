@@ -1,0 +1,124 @@
+---
+title: Infix to Postfix
+slug: infix-to-postfix
+category: Stack
+summary: Convert infix expressions to postfix form using operator precedence and a stack.
+description: "Process operands directly and use a stack to reorder operators according to precedence and associativity."
+dataStructures:
+  - Stack
+  - String
+techniques:
+  - Shunting-yard Style Parsing
+  - Precedence Handling
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - infix postfix conversion
+  - reverse polish conversion
+useCases:
+  - Expression evaluation pipelines
+  - Compiler front-end parsing
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: "Each token is pushed and popped at most once."
+interviewSignals:
+  - Parentheses handling is a common failure point.
+  - Correctly apply associativity for operators like `^`.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/infix-to-postfix-using-different-precedence-values-for-in-stack-and-out-stack/'
+related:
+  - infix-to-prefix
+  - postfix-to-infix
+---
+
+## Problem
+
+Convert an infix expression to postfix expression.
+
+## Approach
+
+Scan characters left to right:
+- append operands directly,
+- push `(`,
+- on `)` pop until `(`,
+- for operators, pop while stack top has higher or equal precedence.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(n)
+
+## Implementation
+
+```javascript
+function precedence(op) {
+  if (op === '^') return 3;
+  if (op === '*' || op === '/') return 2;
+  if (op === '+' || op === '-') return 1;
+  return 0;
+}
+
+function infixToPostfix(expr) {
+  const stack = [];
+  let out = '';
+
+  for (const ch of expr) {
+    if (/[a-zA-Z0-9]/.test(ch)) {
+      out += ch;
+    } else if (ch === '(') {
+      stack.push(ch);
+    } else if (ch === ')') {
+      while (stack.length && stack[stack.length - 1] !== '(') {
+        out += stack.pop();
+      }
+      stack.pop();
+    } else {
+      while (
+        stack.length &&
+        precedence(stack[stack.length - 1]) >= precedence(ch)
+      ) {
+        out += stack.pop();
+      }
+      stack.push(ch);
+    }
+  }
+
+  while (stack.length) out += stack.pop();
+  return out;
+}
+```
+
+```typescript
+function precedence(op: string): number {
+  if (op === '^') return 3;
+  if (op === '*' || op === '/') return 2;
+  if (op === '+' || op === '-') return 1;
+  return 0;
+}
+
+function infixToPostfix(expr: string): string {
+  const stack: string[] = [];
+  let out = '';
+
+  for (const ch of expr) {
+    if (/[a-zA-Z0-9]/.test(ch)) {
+      out += ch;
+    } else if (ch === '(') {
+      stack.push(ch);
+    } else if (ch === ')') {
+      while (stack.length && stack[stack.length - 1] !== '(') {
+        out += stack.pop();
+      }
+      stack.pop();
+    } else {
+      while (stack.length && precedence(stack[stack.length - 1]) >= precedence(ch)) {
+        out += stack.pop()!;
+      }
+      stack.push(ch);
+    }
+  }
+
+  while (stack.length) out += stack.pop()!;
+  return out;
+}
+```

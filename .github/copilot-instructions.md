@@ -1,5 +1,3 @@
-- [x] Verify that the copilot-instructions.md file in the .github directory is created.
-
 - [x] Clarify Project Requirements
   Project: Algae. Framework: Next.js App Router. Language: TypeScript application with JavaScript and TypeScript algorithm examples only. Deployment target: Vercel.
 
@@ -33,6 +31,7 @@
 - Work through each checklist item systematically.
 - Keep communication concise and focused.
 - Follow development best practices.
+- Prefer large batch size over speed when expanding the catalog, but optimise for token usage as second priority.
 
 ## Tools and Resources
 - Next.js Documentation: https://nextjs.org/docs
