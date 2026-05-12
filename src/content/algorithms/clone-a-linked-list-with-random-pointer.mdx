@@ -1,0 +1,141 @@
+---
+title: Clone a linked list with random pointer
+slug: clone-a-linked-list-with-random-pointer
+category: Linked List
+summary: Deep-copy a linked list where each node has next and random pointers using interleaving in O(1) extra space.
+description: "Clone a linked list with random pointer interleaves copied nodes with original nodes, assigns random links via neighbor mapping, then separates the two lists."
+dataStructures:
+  - Linked List
+  - Pointer
+techniques:
+  - In-place Interleaving
+  - Deep Copy
+  - Pointer Mapping Without Hash Map
+difficulty: Hard
+interviewFrequency: High
+aliases:
+  - copy list with random pointer
+  - deep copy random linked list
+  - clone arbitrary pointer linked list
+useCases:
+  - Graph-like pointer structure duplication
+  - Snapshotting linked object models
+  - Copying complex relational chains
+complexity:
+  time: O(n)
+  space: O(1) auxiliary
+  notes: Interleaving avoids external hash maps while preserving full deep-copy correctness.
+interviewSignals:
+  - Deep copy must not share nodes with original list.
+  - Random pointers should map to copied targets.
+  - Restoring original list after separation is essential.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/dsa/a-linked-list-with-next-and-arbit-pointer/'
+related:
+  - delete-a-node-with-only-its-pointer-given
+  - merge-k-sorted-linked-lists
+---
+
+## Problem
+
+Given a linked list where each node has `next` and `random` pointers, create a deep copy of the list.
+
+## Approach
+
+1. Insert copied node after each original node.
+2. Set copied random pointers: `copy.random = original.random.next`.
+3. Detach interleaved structure into original and copied lists.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(1) auxiliary
+
+## Implementation
+
+```javascript
+class Node {
+  constructor(data) {
+    this.data = data;
+    this.next = null;
+    this.random = null;
+  }
+}
+
+function cloneLinkedListWithRandomPointer(head) {
+  if (head === null) return null;
+
+  let current = head;
+  while (current !== null) {
+    const copy = new Node(current.data);
+    copy.next = current.next;
+    current.next = copy;
+    current = copy.next;
+  }
+
+  current = head;
+  while (current !== null) {
+    if (current.random !== null) {
+      current.next.random = current.random.next;
+    }
+    current = current.next.next;
+  }
+
+  const copyHead = head.next;
+  current = head;
+
+  while (current !== null) {
+    const copy = current.next;
+    current.next = copy.next;
+    copy.next = copy.next !== null ? copy.next.next : null;
+    current = current.next;
+  }
+
+  return copyHead;
+}
+```
+
+```typescript
+class Node {
+  data: number;
+  next: Node | null;
+  random: Node | null;
+
+  constructor(data: number) {
+    this.data = data;
+    this.next = null;
+    this.random = null;
+  }
+}
+
+function cloneLinkedListWithRandomPointer(head: Node | null): Node | null {
+  if (head === null) return null;
+
+  let current: Node | null = head;
+  while (current !== null) {
+    const copy = new Node(current.data);
+    copy.next = current.next;
+    current.next = copy;
+    current = copy.next;
+  }
+
+  current = head;
+  while (current !== null) {
+    if (current.random !== null) {
+      current.next!.random = current.random.next;
+    }
+    current = current.next!.next;
+  }
+
+  const copyHead = head.next;
+  current = head;
+
+  while (current !== null) {
+    const copy = current.next!;
+    current.next = copy.next;
+    copy.next = copy.next !== null ? copy.next.next : null;
+    current = current.next;
+  }
+
+  return copyHead;
+}
+```

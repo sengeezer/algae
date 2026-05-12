@@ -2456,3 +2456,25 @@ This one-hundred-ninety-sixth expansion slice lifts the catalog from 883 to 886 
 - Batch 196 was validated (frontmatter, compilation, lint, tsc, smoke tests, and targeted Playwright route checks all pass) and published to main in this changeset.
 - The catalog now stands at 886 entries.
 - The next frontier in Linked List continues through remaining medium and hard operations in the GeeksforGeeks source order.
+
+## Batch 197 frontier
+
+The next clean frontier in GeeksforGeeks `Linked List` advances into core hard-problem entries with shared-structure intersection and random-pointer cloning.
+
+## Current source-order note
+
+- After the rotation and pointer-only deletion slice, the next clean continuation reaches `Merge K Sorted Lists`, `Intersection point of two Linked Lists`, and `Clone a linked list with random pointer`.
+- `Implement LRU Cache` is already covered in the catalog, so this run keeps the adjacent clean hard-problem sequence without re-adding cached coverage.
+- The next clean Linked List queue is `Merge K Sorted Lists`, `Intersection point of two Linked Lists`, and `Clone a linked list with random pointer`.
+
+## Batch 197 added
+
+This one-hundred-ninety-seventh expansion slice lifts the catalog from 886 to 889 entries.
+
+- Merge K Sorted Lists
+- Intersection point of two Linked Lists
+- Clone a linked list with random pointer
+
+- Batch 197 was validated (frontmatter, compilation, lint, tsc, smoke tests, and targeted Playwright route checks all pass) and published to main in this changeset.
+- The catalog now stands at 889 entries.
+- The next frontier in Linked List continues with remaining high-value hard operations from the same source branch.

@@ -1,0 +1,96 @@
+---
+title: Intersection point of two Linked Lists
+slug: intersection-point-of-two-linked-lists
+category: Linked List
+summary: Find the node where two singly linked lists intersect using pointer switching.
+description: "Intersection point of two Linked Lists uses two pointers that switch heads after reaching null, aligning traversal lengths without explicit length calculation."
+dataStructures:
+  - Linked List
+  - Pointer
+techniques:
+  - Two Pointer Traversal
+  - Head Switching
+  - Length Alignment
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - find intersection of two linked lists
+  - linked list intersection node
+  - common node of two linked lists
+useCases:
+  - Shared-tail structure detection
+  - Memory graph overlap checks
+  - Alias path convergence analysis
+complexity:
+  time: O(m + n)
+  space: O(1)
+  notes: Pointer switching equalizes total path length traversed by both pointers.
+interviewSignals:
+  - Distinguish node-identity intersection from value intersection.
+  - Constant-space pointer switching is preferred.
+  - Ensure termination when no intersection exists.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/dsa/write-a-function-to-get-the-intersection-point-of-two-linked-lists/'
+related:
+  - intersection-of-two-sorted-linked-lists
+  - detect-loop-in-a-linked-list
+---
+
+## Problem
+
+Given heads of two singly linked lists, return the node where they intersect by reference, or `null` if they do not intersect.
+
+## Approach
+
+Use pointers `a` and `b` starting at each head. Advance both by one. When one reaches null, redirect it to the other head. They meet at intersection or both become null.
+
+**Time Complexity**: O(m + n)
+**Space Complexity**: O(1)
+
+## Implementation
+
+```javascript
+class Node {
+  constructor(data) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+function intersectionPointOfTwoLinkedLists(headA, headB) {
+  let a = headA;
+  let b = headB;
+
+  while (a !== b) {
+    a = a === null ? headB : a.next;
+    b = b === null ? headA : b.next;
+  }
+
+  return a;
+}
+```
+
+```typescript
+class Node {
+  data: number;
+  next: Node | null;
+
+  constructor(data: number) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+function intersectionPointOfTwoLinkedLists(headA: Node | null, headB: Node | null): Node | null {
+  let a: Node | null = headA;
+  let b: Node | null = headB;
+
+  while (a !== b) {
+    a = a === null ? headB : a.next;
+    b = b === null ? headA : b.next;
+  }
+
+  return a;
+}
+```

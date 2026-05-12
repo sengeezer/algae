@@ -1,0 +1,234 @@
+---
+title: Merge K Sorted Lists
+slug: merge-k-sorted-linked-lists
+category: Linked List
+summary: Merge k sorted linked lists into one sorted list using a min-heap over current list heads.
+description: "Merge K Sorted Lists keeps the smallest available head in a priority queue, repeatedly extracting the minimum and pushing the next node from that list."
+dataStructures:
+  - Linked List
+  - Heap
+  - Priority Queue
+techniques:
+  - Heap-based Merge
+  - K-way Merge
+  - Pointer Traversal
+difficulty: Hard
+interviewFrequency: High
+aliases:
+  - merge k sorted linked lists
+  - k-way merge linked list
+  - combine sorted linked lists
+useCases:
+  - Multi-stream sorted merge
+  - External merge workflows
+  - Aggregating ordered feeds
+complexity:
+  time: O(N log k) where N is total nodes and k is number of lists
+  space: O(k) for the heap
+  notes: Heap size is bounded by number of active lists.
+interviewSignals:
+  - Brute-force concatenation and sort is suboptimal.
+  - Compare divide-and-conquer merge vs heap approach.
+  - Carefully preserve node links while building output.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/dsa/merge-k-sorted-linked-lists/'
+related:
+  - merge-two-sorted-linked-lists
+  - intersection-of-two-sorted-linked-lists
+---
+
+## Problem
+
+Given `k` sorted linked lists, merge them into a single sorted linked list.
+
+## Approach
+
+Push each non-null list head into a min-heap keyed by node value. Repeatedly pop the smallest node, append it to output, then push its successor.
+
+**Time Complexity**: O(N log k)
+**Space Complexity**: O(k)
+
+## Implementation
+
+```javascript
+class Node {
+  constructor(data) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+class MinHeap {
+  constructor() {
+    this.values = [];
+  }
+
+  size() {
+    return this.values.length;
+  }
+
+  push(node) {
+    this.values.push(node);
+    this.bubbleUp(this.values.length - 1);
+  }
+
+  pop() {
+    if (this.values.length === 0) return null;
+    const top = this.values[0];
+    const last = this.values.pop();
+
+    if (this.values.length > 0) {
+      this.values[0] = last;
+      this.bubbleDown(0);
+    }
+
+    return top;
+  }
+
+  bubbleUp(index) {
+    while (index > 0) {
+      const parent = Math.floor((index - 1) / 2);
+      if (this.values[parent].data <= this.values[index].data) break;
+      [this.values[parent], this.values[index]] = [this.values[index], this.values[parent]];
+      index = parent;
+    }
+  }
+
+  bubbleDown(index) {
+    const n = this.values.length;
+    while (true) {
+      let smallest = index;
+      const left = 2 * index + 1;
+      const right = 2 * index + 2;
+
+      if (left < n && this.values[left].data < this.values[smallest].data) {
+        smallest = left;
+      }
+
+      if (right < n && this.values[right].data < this.values[smallest].data) {
+        smallest = right;
+      }
+
+      if (smallest === index) break;
+      [this.values[index], this.values[smallest]] = [this.values[smallest], this.values[index]];
+      index = smallest;
+    }
+  }
+}
+
+function mergeKSortedLists(lists) {
+  const heap = new MinHeap();
+
+  for (const head of lists) {
+    if (head !== null) heap.push(head);
+  }
+
+  const dummy = new Node(0);
+  let tail = dummy;
+
+  while (heap.size() > 0) {
+    const node = heap.pop();
+    tail.next = node;
+    tail = node;
+
+    if (node.next !== null) {
+      heap.push(node.next);
+    }
+  }
+
+  return dummy.next;
+}
+```
+
+```typescript
+class Node {
+  data: number;
+  next: Node | null;
+
+  constructor(data: number) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+class MinHeap {
+  private values: Node[] = [];
+
+  size(): number {
+    return this.values.length;
+  }
+
+  push(node: Node): void {
+    this.values.push(node);
+    this.bubbleUp(this.values.length - 1);
+  }
+
+  pop(): Node | null {
+    if (this.values.length === 0) return null;
+    const top = this.values[0];
+    const last = this.values.pop()!;
+
+    if (this.values.length > 0) {
+      this.values[0] = last;
+      this.bubbleDown(0);
+    }
+
+    return top;
+  }
+
+  private bubbleUp(index: number): void {
+    while (index > 0) {
+      const parent = Math.floor((index - 1) / 2);
+      if (this.values[parent].data <= this.values[index].data) break;
+      [this.values[parent], this.values[index]] = [this.values[index], this.values[parent]];
+      index = parent;
+    }
+  }
+
+  private bubbleDown(index: number): void {
+    const n = this.values.length;
+
+    while (true) {
+      let smallest = index;
+      const left = 2 * index + 1;
+      const right = 2 * index + 2;
+
+      if (left < n && this.values[left].data < this.values[smallest].data) {
+        smallest = left;
+      }
+
+      if (right < n && this.values[right].data < this.values[smallest].data) {
+        smallest = right;
+      }
+
+      if (smallest === index) break;
+      [this.values[index], this.values[smallest]] = [this.values[smallest], this.values[index]];
+      index = smallest;
+    }
+  }
+}
+
+function mergeKSortedLists(lists: Array<Node | null>): Node | null {
+  const heap = new MinHeap();
+
+  for (const head of lists) {
+    if (head !== null) heap.push(head);
+  }
+
+  const dummy = new Node(0);
+  let tail: Node = dummy;
+
+  while (heap.size() > 0) {
+    const node = heap.pop()!;
+    tail.next = node;
+    tail = node;
+
+    if (node.next !== null) {
+      heap.push(node.next);
+    }
+  }
+
+  return dummy.next;
+}
+```
