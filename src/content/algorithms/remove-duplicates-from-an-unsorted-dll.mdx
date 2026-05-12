@@ -1,0 +1,138 @@
+---
+title: Remove duplicates from an unsorted DLL
+slug: remove-duplicates-from-an-unsorted-dll
+category: Linked List
+summary: Remove duplicate values from an unsorted doubly linked list using hashing and pointer rewiring.
+description: "Remove duplicates from an unsorted DLL keeps first occurrences and removes later duplicates by tracking seen values in a set and updating both prev and next links."
+dataStructures:
+  - Doubly Linked List
+  - Hash Set
+techniques:
+  - Hashing
+  - In-place Deduplication
+  - Pointer Manipulation
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - deduplicate unsorted doubly linked list
+  - remove duplicate nodes in DLL
+  - unique unsorted doubly list
+useCases:
+  - Data cleanup for doubly-linked records
+  - Preserving first-seen order while deduplicating
+  - Memory-efficient linked-list normalization
+complexity:
+  time: O(n) average
+  space: O(n)
+  notes: Hash set yields linear-time deduplication; without it, nested traversal becomes O(n^2).
+interviewSignals:
+  - Maintain both prev and next pointers on deletions.
+  - Clarify whether first or last duplicate should be retained.
+  - Explain trade-off between extra memory and runtime.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/dsa/remove-duplicates-unsorted-doubly-linked-list/'
+related:
+  - remove-duplicates-from-an-unsorted-linked-list
+  - insert-in-sorted-way-in-doubly-linked-list
+---
+
+## Problem
+
+Given an unsorted doubly linked list, remove duplicate values so each value appears only once.
+
+## Approach
+
+Traverse list while tracking seen values in a set. For each duplicate node, unlink it by rewiring:
+
+- `current.prev.next = current.next`
+- `current.next.prev = current.prev`
+
+Retain the first occurrence of each value.
+
+**Time Complexity**: O(n) average
+**Space Complexity**: O(n)
+
+## Implementation
+
+```javascript
+class Node {
+  constructor(data) {
+    this.data = data;
+    this.prev = null;
+    this.next = null;
+  }
+}
+
+function removeDuplicatesFromUnsortedDLL(head) {
+  if (head === null) {
+    return null;
+  }
+
+  const seen = new Set();
+  let current = head;
+
+  while (current !== null) {
+    const next = current.next;
+
+    if (seen.has(current.data)) {
+      if (current.prev !== null) {
+        current.prev.next = current.next;
+      }
+
+      if (current.next !== null) {
+        current.next.prev = current.prev;
+      }
+    } else {
+      seen.add(current.data);
+    }
+
+    current = next;
+  }
+
+  return head;
+}
+```
+
+```typescript
+class Node {
+  data: number;
+  prev: Node | null;
+  next: Node | null;
+
+  constructor(data: number) {
+    this.data = data;
+    this.prev = null;
+    this.next = null;
+  }
+}
+
+function removeDuplicatesFromUnsortedDLL(head: Node | null): Node | null {
+  if (head === null) {
+    return null;
+  }
+
+  const seen = new Set<number>();
+  let current: Node | null = head;
+
+  while (current !== null) {
+    const next = current.next;
+
+    if (seen.has(current.data)) {
+      if (current.prev !== null) {
+        current.prev.next = current.next;
+      }
+
+      if (current.next !== null) {
+        current.next.prev = current.prev;
+      }
+    } else {
+      seen.add(current.data);
+    }
+
+    current = next;
+  }
+
+  return head;
+}
+```

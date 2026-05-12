@@ -1,0 +1,142 @@
+---
+title: Pairs with Sum in doubly linked list
+slug: pairs-with-sum-in-doubly-linked-list
+category: Linked List
+summary: Find all value pairs in a sorted doubly linked list whose sum equals a target using two pointers.
+description: "Pairs with Sum in doubly linked list uses a left-right pointer sweep from both ends of a sorted doubly linked list to find target-sum pairs in linear time."
+dataStructures:
+  - Doubly Linked List
+  - Pointer
+techniques:
+  - Two Pointer Comparison
+  - Sorted Traversal
+  - Bidirectional Scan
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - pair sum in doubly linked list
+  - find pairs with given sum in DLL
+  - two sum doubly linked list
+useCases:
+  - Pair matching on sorted linked data
+  - Constraint filtering with bidirectional iterators
+  - Interview practice for doubly list traversal
+complexity:
+  time: O(n)
+  space: O(1) auxiliary (excluding output)
+  notes: The doubly linked list enables inward movement from both ends without extra indexing.
+interviewSignals:
+  - Sorted precondition is essential for linear-time two-pointer traversal.
+  - Move both pointers inward when a pair is found to avoid duplicates.
+  - Distinguish from hash-based unsorted approaches.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/dsa/find-pairs-given-sum-doubly-linked-list/'
+related:
+  - merge-sort-for-doubly-linked-list
+  - union-and-intersection-of-two-linked-lists
+---
+
+## Problem
+
+Given a sorted doubly linked list and an integer target, return all unique pairs of node values that sum to target.
+
+## Approach
+
+Use two pointers:
+
+- `left` starts at head
+- `right` starts at tail
+
+If `left.data + right.data` is smaller than target, move `left` forward. If larger, move `right` backward. If equal, record pair and move both inward.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(1) auxiliary
+
+## Implementation
+
+```javascript
+class Node {
+  constructor(data) {
+    this.data = data;
+    this.prev = null;
+    this.next = null;
+  }
+}
+
+function pairsWithSumInDoublyLinkedList(head, target) {
+  const pairs = [];
+
+  if (head === null) {
+    return pairs;
+  }
+
+  let left = head;
+  let right = head;
+
+  while (right.next !== null) {
+    right = right.next;
+  }
+
+  while (left !== null && right !== null && left !== right && left.prev !== right) {
+    const sum = left.data + right.data;
+
+    if (sum === target) {
+      pairs.push([left.data, right.data]);
+      left = left.next;
+      right = right.prev;
+    } else if (sum < target) {
+      left = left.next;
+    } else {
+      right = right.prev;
+    }
+  }
+
+  return pairs;
+}
+```
+
+```typescript
+class Node {
+  data: number;
+  prev: Node | null;
+  next: Node | null;
+
+  constructor(data: number) {
+    this.data = data;
+    this.prev = null;
+    this.next = null;
+  }
+}
+
+function pairsWithSumInDoublyLinkedList(head: Node | null, target: number): Array<[number, number]> {
+  const pairs: Array<[number, number]> = [];
+
+  if (head === null) {
+    return pairs;
+  }
+
+  let left: Node | null = head;
+  let right: Node | null = head;
+
+  while (right.next !== null) {
+    right = right.next;
+  }
+
+  while (left !== null && right !== null && left !== right && left.prev !== right) {
+    const sum = left.data + right.data;
+
+    if (sum === target) {
+      pairs.push([left.data, right.data]);
+      left = left.next;
+      right = right.prev;
+    } else if (sum < target) {
+      left = left.next;
+    } else {
+      right = right.prev;
+    }
+  }
+
+  return pairs;
+}
+```

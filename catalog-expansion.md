@@ -2412,3 +2412,25 @@ This one-hundred-ninety-fourth expansion slice lifts the catalog from 877 to 880
 - Batch 194 was validated (frontmatter, compilation, lint, tsc, smoke tests, and targeted Playwright route checks all pass) and published to main in this changeset.
 - The catalog now stands at 880 entries.
 - The next frontier in Linked List continues through rotation and additional advanced list-structure operations.
+
+## Batch 195 frontier
+
+The next clean frontier in GeeksforGeeks `Linked List` continues through doubly-linked-list utility operations before rotation and pointer-only deletion variants.
+
+## Current source-order note
+
+- After `Merge Sort for Doubly Linked List`, the next source-order run reaches `Pairs with Sum in doubly linked list`, then `Insert in sorted way in doubly linked list`, followed by `Remove duplicates from an unsorted DLL`.
+- These three are currently uncovered in the local catalog and form a coherent DLL-focused slice.
+- The next clean Linked List queue is `Pairs with Sum in doubly linked list`, `Insert in sorted way in doubly linked list`, and `Remove duplicates from an unsorted DLL`.
+
+## Batch 195 added
+
+This one-hundred-ninety-fifth expansion slice lifts the catalog from 880 to 883 entries.
+
+- Pairs with Sum in doubly linked list
+- Insert in sorted way in doubly linked list
+- Remove duplicates from an unsorted DLL
+
+- Batch 195 was validated (frontmatter, compilation, lint, tsc, smoke tests, and targeted Playwright route checks all pass) and published to main in this changeset.
+- The catalog now stands at 883 entries.
+- The next frontier in Linked List continues into rotation-focused and pointer-only deletion operations.

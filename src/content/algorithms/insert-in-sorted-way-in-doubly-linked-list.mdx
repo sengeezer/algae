@@ -1,0 +1,133 @@
+---
+title: Insert in sorted way in doubly linked list
+slug: insert-in-sorted-way-in-doubly-linked-list
+category: Linked List
+summary: Insert a new value into its correct position in a sorted doubly linked list.
+description: "Insert in sorted way in doubly linked list traverses to the insertion position and rewires prev/next pointers to keep the list sorted after insertion."
+dataStructures:
+  - Doubly Linked List
+  - Pointer
+techniques:
+  - Sorted Insertion
+  - Pointer Rewiring
+  - Traversal
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - sorted insert doubly linked list
+  - insert into sorted DLL
+  - maintain sorted doubly list
+useCases:
+  - Maintaining ordered linked collections
+  - Streaming inserts in sorted structures
+  - Building balanced input lists for further processing
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: Insertion at head or tail remains O(1) once the location is identified.
+interviewSignals:
+  - Handle head insertion and tail insertion correctly.
+  - Update both next and prev pointers for neighboring nodes.
+  - Keep sorted order invariant after insertion.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/dsa/insert-value-sorted-way-sorted-doubly-linked-list/'
+related:
+  - merge-sort-for-doubly-linked-list
+  - pairs-with-sum-in-doubly-linked-list
+---
+
+## Problem
+
+Insert a value into a sorted doubly linked list so that the list remains sorted.
+
+## Approach
+
+Traverse until the first node with value greater than or equal to `value`. Insert before it. If no such node exists, append at tail.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(1)
+
+## Implementation
+
+```javascript
+class Node {
+  constructor(data) {
+    this.data = data;
+    this.prev = null;
+    this.next = null;
+  }
+}
+
+function insertInSortedWayInDoublyLinkedList(head, value) {
+  const node = new Node(value);
+
+  if (head === null) {
+    return node;
+  }
+
+  if (value <= head.data) {
+    node.next = head;
+    head.prev = node;
+    return node;
+  }
+
+  let current = head;
+  while (current.next !== null && current.next.data < value) {
+    current = current.next;
+  }
+
+  node.next = current.next;
+  node.prev = current;
+  current.next = node;
+
+  if (node.next !== null) {
+    node.next.prev = node;
+  }
+
+  return head;
+}
+```
+
+```typescript
+class Node {
+  data: number;
+  prev: Node | null;
+  next: Node | null;
+
+  constructor(data: number) {
+    this.data = data;
+    this.prev = null;
+    this.next = null;
+  }
+}
+
+function insertInSortedWayInDoublyLinkedList(head: Node | null, value: number): Node {
+  const node = new Node(value);
+
+  if (head === null) {
+    return node;
+  }
+
+  if (value <= head.data) {
+    node.next = head;
+    head.prev = node;
+    return node;
+  }
+
+  let current: Node = head;
+  while (current.next !== null && current.next.data < value) {
+    current = current.next;
+  }
+
+  node.next = current.next;
+  node.prev = current;
+  current.next = node;
+
+  if (node.next !== null) {
+    node.next.prev = node;
+  }
+
+  return head;
+}
+```
