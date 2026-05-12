@@ -2434,3 +2434,25 @@ This one-hundred-ninety-fifth expansion slice lifts the catalog from 880 to 883 
 - Batch 195 was validated (frontmatter, compilation, lint, tsc, smoke tests, and targeted Playwright route checks all pass) and published to main in this changeset.
 - The catalog now stands at 883 entries.
 - The next frontier in Linked List continues into rotation-focused and pointer-only deletion operations.
+
+## Batch 196 frontier
+
+The next clean frontier in GeeksforGeeks `Linked List` continues through rotation and pointer-constrained deletion operations.
+
+## Current source-order note
+
+- After the DLL-focused deduplication slice, the next source-order continuation reaches `Rotate a Linked List`, `Rotate Doubly linked list by N nodes`, and `Delete a node with only its pointer given`.
+- These three are not present in the local catalog and form a coherent linked-list manipulation set.
+- The next clean Linked List queue is `Rotate a Linked List`, `Rotate Doubly linked list by N nodes`, and `Delete a node with only its pointer given`.
+
+## Batch 196 added
+
+This one-hundred-ninety-sixth expansion slice lifts the catalog from 883 to 886 entries.
+
+- Rotate a Linked List
+- Rotate Doubly linked list by N nodes
+- Delete a node with only its pointer given
+
+- Batch 196 was validated (frontmatter, compilation, lint, tsc, smoke tests, and targeted Playwright route checks all pass) and published to main in this changeset.
+- The catalog now stands at 886 entries.
+- The next frontier in Linked List continues through remaining medium and hard operations in the GeeksforGeeks source order.

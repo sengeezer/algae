@@ -1,0 +1,141 @@
+---
+title: Rotate Doubly linked list by N nodes
+slug: rotate-doubly-linked-list-by-n-nodes
+category: Linked List
+summary: Rotate a doubly linked list left by N nodes by splitting and reconnecting with prev/next maintenance.
+description: "Rotate Doubly linked list by N nodes moves the first N nodes to the end by rewiring both next and prev links across the split boundary."
+dataStructures:
+  - Doubly Linked List
+  - Pointer
+techniques:
+  - Pointer Rewiring
+  - Split and Reconnect
+  - Bidirectional Link Maintenance
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - rotate dll by n
+  - left rotate doubly linked list
+  - doubly list rotation
+useCases:
+  - Ordered cache-window shifting
+  - Sequence re-indexing in linked structures
+  - Doubly list pointer practice
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: The key difference from singly rotation is correctly updating both prev and next pointers at cut and join points.
+interviewSignals:
+  - Keep new head.prev as null.
+  - Update old head.prev to old tail after joining.
+  - Normalize N against list length.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/dsa/rotate-doubly-linked-list-n-nodes/'
+related:
+  - rotate-a-linked-list
+  - merge-sort-for-doubly-linked-list
+---
+
+## Problem
+
+Given a doubly linked list and integer `n`, rotate the list left by `n` nodes.
+
+## Approach
+
+Normalize `n` by list length. Traverse to the n-th node, split list after it, then append the original first segment at the end of the second segment while preserving both `next` and `prev` pointers.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(1)
+
+## Implementation
+
+```javascript
+class Node {
+  constructor(data) {
+    this.data = data;
+    this.prev = null;
+    this.next = null;
+  }
+}
+
+function rotateDoublyLinkedListByNNodes(head, n) {
+  if (head === null || head.next === null || n === 0) {
+    return head;
+  }
+
+  let length = 1;
+  let tail = head;
+
+  while (tail.next !== null) {
+    tail = tail.next;
+    length++;
+  }
+
+  n = n % length;
+  if (n === 0) {
+    return head;
+  }
+
+  let split = head;
+  for (let i = 1; i < n; i++) {
+    split = split.next;
+  }
+
+  const newHead = split.next;
+  split.next = null;
+  newHead.prev = null;
+
+  tail.next = head;
+  head.prev = tail;
+
+  return newHead;
+}
+```
+
+```typescript
+class Node {
+  data: number;
+  prev: Node | null;
+  next: Node | null;
+
+  constructor(data: number) {
+    this.data = data;
+    this.prev = null;
+    this.next = null;
+  }
+}
+
+function rotateDoublyLinkedListByNNodes(head: Node | null, n: number): Node | null {
+  if (head === null || head.next === null || n === 0) {
+    return head;
+  }
+
+  let length = 1;
+  let tail: Node = head;
+
+  while (tail.next !== null) {
+    tail = tail.next;
+    length++;
+  }
+
+  n = n % length;
+  if (n === 0) {
+    return head;
+  }
+
+  let split: Node = head;
+  for (let i = 1; i < n; i++) {
+    split = split.next!;
+  }
+
+  const newHead = split.next!;
+  split.next = null;
+  newHead.prev = null;
+
+  tail.next = head;
+  head.prev = tail;
+
+  return newHead;
+}
+```

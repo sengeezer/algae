@@ -1,0 +1,92 @@
+---
+title: Delete a node with only its pointer given
+slug: delete-a-node-with-only-its-pointer-given
+category: Linked List
+summary: Delete a non-tail node in O(1) time when only a pointer to that node is available.
+description: "Delete a node with only its pointer given copies data from the next node into the current node and bypasses the next node, effectively deleting the target in constant time."
+dataStructures:
+  - Linked List
+  - Pointer
+techniques:
+  - In-place Overwrite
+  - Pointer Bypass
+  - Constant-time Deletion
+difficulty: Easy
+interviewFrequency: High
+aliases:
+  - delete node without head pointer
+  - delete node given pointer only
+  - linked list O(1) delete trick
+useCases:
+  - Interview fundamentals for linked-list internals
+  - In-place node removal under pointer constraints
+  - Understanding pointer/data tradeoffs
+complexity:
+  time: O(1)
+  space: O(1)
+  notes: This approach cannot delete the tail node because there is no successor to copy from.
+interviewSignals:
+  - Explicitly call out tail-node limitation.
+  - Overwriting data is the key idea, not true physical deletion of the pointed node.
+  - Validate input node and node.next.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/dsa/given-only-a-pointer-to-a-node-to-be-deleted-in-a-singly-linked-list-how-do-you-delete-it/'
+related:
+  - remove-duplicates-from-an-unsorted-linked-list
+  - rotate-a-linked-list
+---
+
+## Problem
+
+Delete a node from a singly linked list when only a pointer/reference to that node is provided and head is unavailable.
+
+## Approach
+
+Copy data from `node.next` into `node`, then bypass `node.next`.
+
+This effectively removes the successor while making the target node appear deleted.
+
+**Time Complexity**: O(1)
+**Space Complexity**: O(1)
+
+## Implementation
+
+```javascript
+class Node {
+  constructor(data) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+function deleteNodeWithOnlyPointerGiven(node) {
+  if (node === null || node.next === null) {
+    throw new Error("Cannot delete tail or null node using this method");
+  }
+
+  node.data = node.next.data;
+  node.next = node.next.next;
+}
+```
+
+```typescript
+class Node {
+  data: number;
+  next: Node | null;
+
+  constructor(data: number) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+function deleteNodeWithOnlyPointerGiven(node: Node | null): void {
+  if (node === null || node.next === null) {
+    throw new Error("Cannot delete tail or null node using this method");
+  }
+
+  node.data = node.next.data;
+  node.next = node.next.next;
+}
+```

@@ -1,0 +1,132 @@
+---
+title: Rotate a Linked List
+slug: rotate-a-linked-list
+category: Linked List
+summary: Rotate a singly linked list counterclockwise by k nodes by reconnecting list segments.
+description: "Rotate a Linked List moves the first k nodes to the end by finding the k-th node, breaking the list, and linking old tail to old head."
+dataStructures:
+  - Linked List
+  - Pointer
+techniques:
+  - Pointer Manipulation
+  - Two Pointer Traversal
+  - List Re-linking
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - rotate linked list by k
+  - left rotate linked list
+  - shift linked list
+useCases:
+  - Cyclic scheduling structures
+  - List-based round-robin simulation
+  - Reordering without node recreation
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: One pass locates the split point and tail, then constant-time rewiring completes the rotation.
+interviewSignals:
+  - Handle k equal to 0 or multiples of list length.
+  - Do not allocate new nodes for rotation.
+  - Keep tail termination correct to avoid cycles.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/dsa/rotate-a-linked-list/'
+related:
+  - partition-a-list
+  - reverse-a-singly-linked-list
+---
+
+## Problem
+
+Given a singly linked list and integer `k`, rotate the list counterclockwise by `k` nodes.
+
+## Approach
+
+Find list length and normalize `k = k % length`. If `k` is 0, return head. Otherwise, find the `k`-th node, break after it, and connect old tail to old head.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(1)
+
+## Implementation
+
+```javascript
+class Node {
+  constructor(data) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+function rotateLinkedList(head, k) {
+  if (head === null || head.next === null || k === 0) {
+    return head;
+  }
+
+  let length = 1;
+  let tail = head;
+
+  while (tail.next !== null) {
+    tail = tail.next;
+    length++;
+  }
+
+  k = k % length;
+  if (k === 0) {
+    return head;
+  }
+
+  let current = head;
+  for (let i = 1; i < k; i++) {
+    current = current.next;
+  }
+
+  const newHead = current.next;
+  current.next = null;
+  tail.next = head;
+
+  return newHead;
+}
+```
+
+```typescript
+class Node {
+  data: number;
+  next: Node | null;
+
+  constructor(data: number) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+function rotateLinkedList(head: Node | null, k: number): Node | null {
+  if (head === null || head.next === null || k === 0) {
+    return head;
+  }
+
+  let length = 1;
+  let tail: Node = head;
+
+  while (tail.next !== null) {
+    tail = tail.next;
+    length++;
+  }
+
+  k = k % length;
+  if (k === 0) {
+    return head;
+  }
+
+  let current: Node = head;
+  for (let i = 1; i < k; i++) {
+    current = current.next!;
+  }
+
+  const newHead = current.next;
+  current.next = null;
+  tail.next = head;
+
+  return newHead;
+}
+```
