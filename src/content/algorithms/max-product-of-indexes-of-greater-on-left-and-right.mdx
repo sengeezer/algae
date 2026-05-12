@@ -1,0 +1,107 @@
+---
+title: Max product of indexes of greater on left and right
+slug: max-product-of-indexes-of-greater-on-left-and-right
+category: Stack
+summary: Compute maximum product of nearest greater element indices on left and right for each position.
+description: "Find nearest-greater indices on both sides via monotonic stacks, then maximize their index product."
+dataStructures:
+  - Stack
+  - Array
+techniques:
+  - Monotonic Stack
+  - Bidirectional Neighbor Indexing
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - max index product
+  - nearest greater index product
+useCases:
+  - Structural array scoring
+  - Neighbor-index optimization
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: "Left and right greater-index arrays are each built in linear time."
+interviewSignals:
+  - Clarify index base (1-based vs 0-based) before product.
+  - Absent neighbor contributes 0 index.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/maximum-product-of-indexes-of-next-greater-on-left-and-right/'
+related:
+  - next-greater-element
+  - stock-span-problem
+---
+
+## Problem
+
+For each element, find nearest greater index on left and right. Return the maximum product of those indices.
+
+## Approach
+
+Use monotonic stacks to compute left and right nearest-greater indices, then scan for max product.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(n)
+
+## Implementation
+
+```javascript
+function maxIndexProduct(arr) {
+  const n = arr.length;
+  const left = new Array(n).fill(0);
+  const right = new Array(n).fill(0);
+  const stack = [];
+
+  for (let i = 0; i < n; i++) {
+    while (stack.length && arr[stack[stack.length - 1]] <= arr[i]) stack.pop();
+    left[i] = stack.length ? stack[stack.length - 1] + 1 : 0;
+    stack.push(i);
+  }
+
+  stack.length = 0;
+
+  for (let i = n - 1; i >= 0; i--) {
+    while (stack.length && arr[stack[stack.length - 1]] <= arr[i]) stack.pop();
+    right[i] = stack.length ? stack[stack.length - 1] + 1 : 0;
+    stack.push(i);
+  }
+
+  let best = 0;
+  for (let i = 0; i < n; i++) {
+    best = Math.max(best, left[i] * right[i]);
+  }
+
+  return best;
+}
+```
+
+```typescript
+function maxIndexProduct(arr: number[]): number {
+  const n = arr.length;
+  const left: number[] = new Array(n).fill(0);
+  const right: number[] = new Array(n).fill(0);
+  const stack: number[] = [];
+
+  for (let i = 0; i < n; i++) {
+    while (stack.length > 0 && arr[stack[stack.length - 1]] <= arr[i]) stack.pop();
+    left[i] = stack.length > 0 ? stack[stack.length - 1] + 1 : 0;
+    stack.push(i);
+  }
+
+  stack.length = 0;
+
+  for (let i = n - 1; i >= 0; i--) {
+    while (stack.length > 0 && arr[stack[stack.length - 1]] <= arr[i]) stack.pop();
+    right[i] = stack.length > 0 ? stack[stack.length - 1] + 1 : 0;
+    stack.push(i);
+  }
+
+  let best = 0;
+  for (let i = 0; i < n; i++) {
+    best = Math.max(best, left[i] * right[i]);
+  }
+
+  return best;
+}
+```

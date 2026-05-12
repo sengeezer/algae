@@ -2581,3 +2581,32 @@ This two-hundred-first expansion slice lifts the catalog from 905 to 915 entries
 - Batch 201 was validated (frontmatter, compilation, lint, tsc, smoke tests, and targeted Playwright route checks all pass) and published to main in this changeset.
 - The catalog now stands at 915 entries.
 - The next frontier in Stack continues through remaining monotonic and evaluation-oriented problem sets.
+
+## Batch 202 frontier
+
+The next clean frontier in GeeksforGeeks `Stack` continues through span/visibility, frequency-aware monotonic neighbors, iterative Hanoi, and bracket-index queries.
+
+## Current source-order note
+
+- After `Next Greater Element`, the next clean source-order continuation reaches `Stock Span Problem`, `Buildings Facing Sun`, `Next Smaller of next Greater`, `Next Greater Frequency`, `Max product of indexes of greater on left and right`, `Iterative Tower of Hanoi`, `Sort a Stack`, `Delete middle of a stack`, `Check for queue sortable`, and `Index of closing bracket for a given opening bracket`.
+- This queue keeps practical and implementation-oriented entries and avoids re-adding earlier expression-conversion or basic stack/queue duplicates.
+- The next clean Stack queue is `Stock Span Problem`, `Buildings Facing Sun`, `Next Smaller of next Greater`, `Next Greater Frequency`, `Max product of indexes of greater on left and right`, `Iterative Tower of Hanoi`, `Sort a Stack`, `Delete middle of a stack`, `Check for queue sortable`, and `Index of closing bracket for a given opening bracket`.
+
+## Batch 202 added
+
+This two-hundred-second expansion slice lifts the catalog from 915 to 925 entries.
+
+- Stock Span Problem
+- Buildings Facing Sun
+- Next Smaller of next Greater
+- Next Greater Frequency
+- Max product of indexes of greater on left and right
+- Iterative Tower of Hanoi
+- Sort a Stack
+- Delete middle of a stack
+- Check for queue sortable
+- Index of closing bracket for a given opening bracket
+
+- Batch 202 was validated (frontmatter, compilation, lint, tsc, smoke tests, and targeted Playwright route checks all pass) and published to main in this changeset.
+- The catalog now stands at 925 entries.
+- The next frontier in Stack continues toward remaining advanced stack/queue transform problems.

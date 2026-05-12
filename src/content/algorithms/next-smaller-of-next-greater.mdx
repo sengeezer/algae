@@ -1,0 +1,113 @@
+---
+title: Next Smaller of next Greater
+slug: next-smaller-of-next-greater
+category: Stack
+summary: For each element, find the next smaller element of its next greater element.
+description: "Chain two neighbor queries: compute next greater first, then query next smaller from that index."
+dataStructures:
+  - Stack
+  - Array
+techniques:
+  - Monotonic Stack
+  - Query Chaining
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - nsg of nge
+  - next smaller of next greater
+useCases:
+  - Multi-hop neighbor analytics
+  - Layered monotonic preprocessing
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: "Precompute next greater and next smaller indices with two monotonic passes."
+interviewSignals:
+  - Distinguish value arrays from index arrays.
+  - If next greater is absent, answer is -1 directly.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/next-smaller-element-next-greater-element/'
+related:
+  - next-greater-element
+  - previous-smaller-element
+---
+
+## Problem
+
+For each array element, find the next greater element (to the right), then from that position find its next smaller element (to the right). Return that value or `-1`.
+
+## Approach
+
+1. Compute `ngeIndex[i]` with a decreasing stack.
+2. Compute `nseIndex[i]` with an increasing stack.
+3. Answer for `i` is `arr[nseIndex[ngeIndex[i]]]` when both indices exist.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(n)
+
+## Implementation
+
+```javascript
+function nextSmallerOfNextGreater(arr) {
+  const n = arr.length;
+  const nge = new Array(n).fill(-1);
+  const nse = new Array(n).fill(-1);
+  const dec = [];
+  const inc = [];
+
+  for (let i = n - 1; i >= 0; i--) {
+    while (dec.length && arr[dec[dec.length - 1]] <= arr[i]) dec.pop();
+    nge[i] = dec.length ? dec[dec.length - 1] : -1;
+    dec.push(i);
+  }
+
+  for (let i = n - 1; i >= 0; i--) {
+    while (inc.length && arr[inc[inc.length - 1]] >= arr[i]) inc.pop();
+    nse[i] = inc.length ? inc[inc.length - 1] : -1;
+    inc.push(i);
+  }
+
+  const ans = new Array(n).fill(-1);
+  for (let i = 0; i < n; i++) {
+    const g = nge[i];
+    if (g === -1) continue;
+    const s = nse[g];
+    ans[i] = s === -1 ? -1 : arr[s];
+  }
+
+  return ans;
+}
+```
+
+```typescript
+function nextSmallerOfNextGreater(arr: number[]): number[] {
+  const n = arr.length;
+  const nge: number[] = new Array(n).fill(-1);
+  const nse: number[] = new Array(n).fill(-1);
+  const dec: number[] = [];
+  const inc: number[] = [];
+
+  for (let i = n - 1; i >= 0; i--) {
+    while (dec.length && arr[dec[dec.length - 1]] <= arr[i]) dec.pop();
+    nge[i] = dec.length ? dec[dec.length - 1] : -1;
+    dec.push(i);
+  }
+
+  for (let i = n - 1; i >= 0; i--) {
+    while (inc.length && arr[inc[inc.length - 1]] >= arr[i]) inc.pop();
+    nse[i] = inc.length ? inc[inc.length - 1] : -1;
+    inc.push(i);
+  }
+
+  const ans: number[] = new Array(n).fill(-1);
+  for (let i = 0; i < n; i++) {
+    const g = nge[i];
+    if (g === -1) continue;
+    const s = nse[g];
+    ans[i] = s === -1 ? -1 : arr[s];
+  }
+
+  return ans;
+}
+```

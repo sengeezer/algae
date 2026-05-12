@@ -1,0 +1,85 @@
+---
+title: Stock Span Problem
+slug: stock-span-problem
+category: Stack
+summary: Compute for each day how many consecutive previous days had price less than or equal to today.
+description: "Use a monotonic decreasing stack of indices to find the nearest previous greater price for each day."
+dataStructures:
+  - Stack
+  - Array
+techniques:
+  - Monotonic Stack
+  - Previous Greater Index
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - stock span
+  - online stock span
+useCases:
+  - Financial trend windows
+  - Consecutive-condition spans
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: "Each index is pushed and popped at most once."
+interviewSignals:
+  - Span is `i - prevGreaterIndex`.
+  - Empty stack means span extends to start.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/the-stock-span-problem/'
+related:
+  - previous-smaller-element
+  - next-greater-element
+---
+
+## Problem
+
+Given daily stock prices, return the span for each day where span is the count of consecutive days (ending today) with price less than or equal to today's price.
+
+## Approach
+
+Maintain a stack of indices with strictly greater prices than upcoming elements.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(n)
+
+## Implementation
+
+```javascript
+function stockSpan(prices) {
+  const n = prices.length;
+  const span = new Array(n).fill(1);
+  const stack = [];
+
+  for (let i = 0; i < n; i++) {
+    while (stack.length > 0 && prices[stack[stack.length - 1]] <= prices[i]) {
+      stack.pop();
+    }
+
+    span[i] = stack.length === 0 ? i + 1 : i - stack[stack.length - 1];
+    stack.push(i);
+  }
+
+  return span;
+}
+```
+
+```typescript
+function stockSpan(prices: number[]): number[] {
+  const n = prices.length;
+  const span: number[] = new Array(n).fill(1);
+  const stack: number[] = [];
+
+  for (let i = 0; i < n; i++) {
+    while (stack.length > 0 && prices[stack[stack.length - 1]] <= prices[i]) {
+      stack.pop();
+    }
+
+    span[i] = stack.length === 0 ? i + 1 : i - stack[stack.length - 1];
+    stack.push(i);
+  }
+
+  return span;
+}
+```

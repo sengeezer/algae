@@ -1,0 +1,102 @@
+---
+title: Check for queue sortable
+slug: check-for-queue-sortable
+category: Stack
+summary: Determine whether a sequence can be sorted using a queue output with one auxiliary stack.
+description: "Simulate queue-to-output processing with an intermediate stack and verify whether sorted order is achievable."
+dataStructures:
+  - Queue
+  - Stack
+  - Array
+techniques:
+  - Simulation
+  - Constraint-based Sorting
+difficulty: Medium
+interviewFrequency: Low
+aliases:
+  - queue sortable permutation
+  - check queue sortability
+useCases:
+  - Permutation validation
+  - Data-structure constraint reasoning
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: "Each element moves through queue/stack at most once."
+interviewSignals:
+  - Expected output order is strictly increasing 1..n.
+  - Stack top must be flushed whenever it matches needed output.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/check-if-given-permutation-is-a-queue-permutation/'
+related:
+  - stack-sortable-permutations
+  - stack-using-queues
+---
+
+## Problem
+
+Given a permutation of `1..n`, check whether it is queue-sortable using one auxiliary stack.
+
+## Approach
+
+Simulate reading values in order and producing sorted output while temporarily storing obstructing values in stack.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(n)
+
+## Implementation
+
+```javascript
+function isQueueSortable(arr) {
+  const stack = [];
+  let need = 1;
+
+  for (const x of arr) {
+    while (stack.length > 0 && stack[stack.length - 1] === need) {
+      stack.pop();
+      need++;
+    }
+
+    if (x === need) {
+      need++;
+    } else {
+      stack.push(x);
+    }
+  }
+
+  while (stack.length > 0 && stack[stack.length - 1] === need) {
+    stack.pop();
+    need++;
+  }
+
+  return need === arr.length + 1;
+}
+```
+
+```typescript
+function isQueueSortable(arr: number[]): boolean {
+  const stack: number[] = [];
+  let need = 1;
+
+  for (const x of arr) {
+    while (stack.length > 0 && stack[stack.length - 1] === need) {
+      stack.pop();
+      need++;
+    }
+
+    if (x === need) {
+      need++;
+    } else {
+      stack.push(x);
+    }
+  }
+
+  while (stack.length > 0 && stack[stack.length - 1] === need) {
+    stack.pop();
+    need++;
+  }
+
+  return need === arr.length + 1;
+}
+```

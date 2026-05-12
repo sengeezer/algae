@@ -1,0 +1,141 @@
+---
+title: Iterative Tower of Hanoi
+slug: iterative-tower-of-hanoi
+category: Stack
+summary: Solve Tower of Hanoi without recursion using stack-like rod state and legal move sequencing.
+description: "Generate the same optimal move sequence iteratively by cycling legal moves between rods based on disk count parity."
+dataStructures:
+  - Stack
+  - Array
+techniques:
+  - Iterative Simulation
+  - Legal Move Scheduling
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - non-recursive tower of hanoi
+  - iterative hanoi
+useCases:
+  - Recursion elimination
+  - State-machine simulation
+complexity:
+  time: O(2^n)
+  space: O(n)
+  notes: "Move count is fixed at 2^n - 1 even in iterative form."
+interviewSignals:
+  - For even disk count, destination and auxiliary roles swap.
+  - Each step must choose the only legal move between a rod pair.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/iterative-tower-of-hanoi/'
+related:
+  - tower-of-hanoi
+  - stack
+---
+
+## Problem
+
+Print the optimal sequence of moves to solve Tower of Hanoi iteratively for `n` disks.
+
+## Approach
+
+Use three rods as stacks and perform `2^n - 1` moves. At each step, choose move between specific rod pairs in cyclic order.
+
+**Time Complexity**: O(2^n)
+**Space Complexity**: O(n)
+
+## Implementation
+
+```javascript
+function moveDisk(from, to, fromName, toName, moves) {
+  const fromTop = from.length ? from[from.length - 1] : Infinity;
+  const toTop = to.length ? to[to.length - 1] : Infinity;
+
+  if (fromTop < toTop) {
+    const disk = from.pop();
+    to.push(disk);
+    moves.push(`Move disk ${disk} from ${fromName} to ${toName}`);
+  } else {
+    const disk = to.pop();
+    from.push(disk);
+    moves.push(`Move disk ${disk} from ${toName} to ${fromName}`);
+  }
+}
+
+function iterativeTowerOfHanoi(n) {
+  const src = [];
+  const aux = [];
+  const dst = [];
+  const moves = [];
+
+  for (let d = n; d >= 1; d--) src.push(d);
+
+  let sName = 'A';
+  let aName = 'B';
+  let dName = 'C';
+
+  if (n % 2 === 0) {
+    [aName, dName] = [dName, aName];
+  }
+
+  const totalMoves = Math.pow(2, n) - 1;
+
+  for (let i = 1; i <= totalMoves; i++) {
+    if (i % 3 === 1) moveDisk(src, dst, sName, dName, moves);
+    else if (i % 3 === 2) moveDisk(src, aux, sName, aName, moves);
+    else moveDisk(aux, dst, aName, dName, moves);
+  }
+
+  return moves;
+}
+```
+
+```typescript
+function moveDisk(
+  from: number[],
+  to: number[],
+  fromName: string,
+  toName: string,
+  moves: string[],
+): void {
+  const fromTop = from.length ? from[from.length - 1] : Infinity;
+  const toTop = to.length ? to[to.length - 1] : Infinity;
+
+  if (fromTop < toTop) {
+    const disk = from.pop()!;
+    to.push(disk);
+    moves.push(`Move disk ${disk} from ${fromName} to ${toName}`);
+  } else {
+    const disk = to.pop()!;
+    from.push(disk);
+    moves.push(`Move disk ${disk} from ${toName} to ${fromName}`);
+  }
+}
+
+function iterativeTowerOfHanoi(n: number): string[] {
+  const src: number[] = [];
+  const aux: number[] = [];
+  const dst: number[] = [];
+  const moves: string[] = [];
+
+  for (let d = n; d >= 1; d--) src.push(d);
+
+  const sName = 'A';
+  let aName = 'B';
+  let dName = 'C';
+
+  if (n % 2 === 0) {
+    [aName, dName] = [dName, aName];
+  }
+
+  const totalMoves = Math.pow(2, n) - 1;
+
+  for (let i = 1; i <= totalMoves; i++) {
+    if (i % 3 === 1) moveDisk(src, dst, sName, dName, moves);
+    else if (i % 3 === 2) moveDisk(src, aux, sName, aName, moves);
+    else moveDisk(aux, dst, aName, dName, moves);
+  }
+
+  return moves;
+}
+```

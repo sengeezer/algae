@@ -1,0 +1,80 @@
+---
+title: Buildings Facing Sun
+slug: buildings-facing-sun
+category: Stack
+summary: Count buildings that can see the sunset when scanning heights from one side.
+description: "A building sees the sun if it is taller than all buildings before it from the viewing direction."
+dataStructures:
+  - Array
+techniques:
+  - Prefix Maximum
+  - Visibility Scan
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - count visible buildings
+  - sunset view buildings
+useCases:
+  - Skyline visibility checks
+  - Prefix dominance counting
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: "Single scan with running maximum height."
+interviewSignals:
+  - Equal height does not increase visible count.
+  - Viewing direction must be clearly defined.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/count-buildings-facing-sun/'
+related:
+  - stock-span-problem
+  - next-greater-element
+---
+
+## Problem
+
+Given building heights from left to right, count how many buildings can see the sun from the left side.
+
+## Approach
+
+Track the maximum height seen so far. A building is visible if its height is greater than this maximum.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(1)
+
+## Implementation
+
+```javascript
+function countBuildingsFacingSun(heights) {
+  if (heights.length === 0) return 0;
+
+  let visible = 0;
+  let maxHeight = -Infinity;
+
+  for (const h of heights) {
+    if (h > maxHeight) {
+      visible++;
+      maxHeight = h;
+    }
+  }
+
+  return visible;
+}
+```
+
+```typescript
+function countBuildingsFacingSun(heights: number[]): number {
+  let visible = 0;
+  let maxHeight = -Infinity;
+
+  for (const h of heights) {
+    if (h > maxHeight) {
+      visible++;
+      maxHeight = h;
+    }
+  }
+
+  return visible;
+}
+```

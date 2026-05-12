@@ -1,0 +1,89 @@
+---
+title: Sort a Stack
+slug: sort-a-stack
+category: Stack
+summary: Sort stack elements so the greatest element stays on top using recursion.
+description: "Recursively pop all elements and insert each item back into its sorted position."
+dataStructures:
+  - Stack
+  - Recursion
+techniques:
+  - Recursive Insertion
+  - In-place Stack Sorting
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - recursive stack sort
+  - sort stack without extra stack
+useCases:
+  - Stack ordering utilities
+  - Recursion practice problems
+complexity:
+  time: O(n^2)
+  space: O(n) recursion stack
+  notes: "Each insertion may scan through current sorted prefix recursively."
+interviewSignals:
+  - Maintain invariant that partial stack remains sorted.
+  - Insertion helper drives correctness.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/sort-a-stack-using-recursion/'
+related:
+  - reverse-a-stack-using-recursion
+  - stack
+---
+
+## Problem
+
+Sort a stack using recursion and stack operations only.
+
+## Approach
+
+Pop one element, sort remaining stack recursively, then insert popped element in sorted order.
+
+**Time Complexity**: O(n^2)
+**Space Complexity**: O(n)
+
+## Implementation
+
+```javascript
+function sortedInsert(stack, value) {
+  if (stack.length === 0 || stack[stack.length - 1] <= value) {
+    stack.push(value);
+    return;
+  }
+
+  const top = stack.pop();
+  sortedInsert(stack, value);
+  stack.push(top);
+}
+
+function sortStack(stack) {
+  if (stack.length === 0) return;
+
+  const top = stack.pop();
+  sortStack(stack);
+  sortedInsert(stack, top);
+}
+```
+
+```typescript
+function sortedInsert(stack: number[], value: number): void {
+  if (stack.length === 0 || stack[stack.length - 1] <= value) {
+    stack.push(value);
+    return;
+  }
+
+  const top = stack.pop()!;
+  sortedInsert(stack, value);
+  stack.push(top);
+}
+
+function sortStack(stack: number[]): void {
+  if (stack.length === 0) return;
+
+  const top = stack.pop()!;
+  sortStack(stack);
+  sortedInsert(stack, top);
+}
+```

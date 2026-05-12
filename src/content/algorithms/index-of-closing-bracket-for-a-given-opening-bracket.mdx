@@ -1,0 +1,102 @@
+---
+title: Index of closing bracket for a given opening bracket
+slug: index-of-closing-bracket-for-a-given-opening-bracket
+category: Stack
+summary: Find the matching closing bracket index for a specified opening bracket index.
+description: "Track bracket indices in a stack and map each opening index to its matching closing index."
+dataStructures:
+  - Stack
+  - String
+  - Hash Map
+techniques:
+  - Bracket Matching
+  - Index Mapping
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - matching bracket index
+  - closing bracket index query
+useCases:
+  - Parser tooling
+  - Nested expression indexing
+complexity:
+  time: O(n) preprocessing, O(1) query
+  space: O(n)
+  notes: "One pass builds opening-to-closing index map."
+interviewSignals:
+  - Opening index validity must be checked.
+  - Nested brackets require LIFO matching.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/find-index-closing-bracket-given-opening-bracket-expression/'
+related:
+  - check-for-balanced-parentheses
+  - infix-to-postfix
+---
+
+## Problem
+
+Given an expression and an index of an opening parenthesis `'('`, return the index of its matching closing parenthesis `')'`.
+
+## Approach
+
+Scan expression with a stack of opening indices. On closing bracket, pair with stack top and store mapping.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(n)
+
+## Implementation
+
+```javascript
+function buildClosingIndexMap(expr) {
+  const stack = [];
+  const closeOfOpen = new Map();
+
+  for (let i = 0; i < expr.length; i++) {
+    if (expr[i] === '(') {
+      stack.push(i);
+    } else if (expr[i] === ')') {
+      const open = stack.pop();
+      closeOfOpen.set(open, i);
+    }
+  }
+
+  return closeOfOpen;
+}
+
+function closingIndexForOpen(expr, openIndex) {
+  if (openIndex < 0 || openIndex >= expr.length || expr[openIndex] !== '(') {
+    return -1;
+  }
+
+  const map = buildClosingIndexMap(expr);
+  return map.has(openIndex) ? map.get(openIndex) : -1;
+}
+```
+
+```typescript
+function buildClosingIndexMap(expr: string): Map<number, number> {
+  const stack: number[] = [];
+  const closeOfOpen = new Map<number, number>();
+
+  for (let i = 0; i < expr.length; i++) {
+    if (expr[i] === '(') {
+      stack.push(i);
+    } else if (expr[i] === ')') {
+      const open = stack.pop()!;
+      closeOfOpen.set(open, i);
+    }
+  }
+
+  return closeOfOpen;
+}
+
+function closingIndexForOpen(expr: string, openIndex: number): number {
+  if (openIndex < 0 || openIndex >= expr.length || expr[openIndex] !== '(') {
+    return -1;
+  }
+
+  const map = buildClosingIndexMap(expr);
+  return map.get(openIndex) ?? -1;
+}
+```

@@ -1,0 +1,90 @@
+---
+title: Next Greater Frequency
+slug: next-greater-frequency
+category: Stack
+summary: For each element, find the next element to the right with strictly higher frequency.
+description: "Use a frequency map and a monotonic stack based on frequency rather than raw value."
+dataStructures:
+  - Stack
+  - Hash Map
+  - Array
+techniques:
+  - Frequency Map
+  - Monotonic Stack
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - NGF
+  - next greater frequency element
+useCases:
+  - Frequency-aware neighbor search
+  - Sequence anomaly analysis
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: "One map build and one right-to-left monotonic pass."
+interviewSignals:
+  - Compare frequencies, not element values.
+  - Pop while top frequency <= current frequency.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/next-greater-frequency-element/'
+related:
+  - next-greater-element
+  - previous-smaller-element
+---
+
+## Problem
+
+For each element, return the next element to its right that has a greater frequency in the array; otherwise `-1`.
+
+## Approach
+
+Build frequency map. Traverse right to left with a stack storing values that remain candidates by descending frequency.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(n)
+
+## Implementation
+
+```javascript
+function nextGreaterFrequency(arr) {
+  const freq = new Map();
+  for (const x of arr) freq.set(x, (freq.get(x) || 0) + 1);
+
+  const stack = [];
+  const ans = new Array(arr.length).fill(-1);
+
+  for (let i = arr.length - 1; i >= 0; i--) {
+    while (stack.length > 0 && freq.get(stack[stack.length - 1]) <= freq.get(arr[i])) {
+      stack.pop();
+    }
+
+    ans[i] = stack.length === 0 ? -1 : stack[stack.length - 1];
+    stack.push(arr[i]);
+  }
+
+  return ans;
+}
+```
+
+```typescript
+function nextGreaterFrequency(arr: number[]): number[] {
+  const freq = new Map<number, number>();
+  for (const x of arr) freq.set(x, (freq.get(x) ?? 0) + 1);
+
+  const stack: number[] = [];
+  const ans: number[] = new Array(arr.length).fill(-1);
+
+  for (let i = arr.length - 1; i >= 0; i--) {
+    while (stack.length > 0 && (freq.get(stack[stack.length - 1]) ?? 0) <= (freq.get(arr[i]) ?? 0)) {
+      stack.pop();
+    }
+
+    ans[i] = stack.length === 0 ? -1 : stack[stack.length - 1];
+    stack.push(arr[i]);
+  }
+
+  return ans;
+}
+```

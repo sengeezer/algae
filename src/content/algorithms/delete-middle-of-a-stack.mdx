@@ -1,0 +1,85 @@
+---
+title: Delete middle of a stack
+slug: delete-middle-of-a-stack
+category: Stack
+summary: Remove the middle element of a stack using recursion without auxiliary data structures.
+description: "Pop recursively until middle depth is reached, skip that element, then rebuild the stack during unwind."
+dataStructures:
+  - Stack
+  - Recursion
+techniques:
+  - Depth-based Recursion
+  - Conditional Rebuild
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - delete middle element stack
+  - remove center of stack
+useCases:
+  - Position-based stack transforms
+  - Recursion depth control exercises
+complexity:
+  time: O(n)
+  space: O(n) recursion stack
+  notes: "Single depth-first traversal with one skipped position."
+interviewSignals:
+  - Correct middle definition for even size should be stated.
+  - Rebuild all non-middle elements in original order.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/delete-middle-element-stack/'
+related:
+  - reverse-a-stack-using-recursion
+  - sort-a-stack
+---
+
+## Problem
+
+Delete the middle element from a stack of size `n` using recursion.
+
+## Approach
+
+Recursively pop elements until reaching index `floor(n / 2)` from top recursion order, skip that item, then push back others.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(n)
+
+## Implementation
+
+```javascript
+function deleteMiddle(stack) {
+  const target = Math.floor(stack.length / 2);
+
+  function helper(depth) {
+    if (stack.length === 0) return;
+
+    const top = stack.pop();
+    helper(depth + 1);
+
+    if (depth !== target) {
+      stack.push(top);
+    }
+  }
+
+  helper(0);
+}
+```
+
+```typescript
+function deleteMiddle(stack: number[]): void {
+  const target = Math.floor(stack.length / 2);
+
+  function helper(depth: number): void {
+    if (stack.length === 0) return;
+
+    const top = stack.pop()!;
+    helper(depth + 1);
+
+    if (depth !== target) {
+      stack.push(top);
+    }
+  }
+
+  helper(0);
+}
+```
