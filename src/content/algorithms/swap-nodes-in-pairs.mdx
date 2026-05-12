@@ -1,0 +1,128 @@
+---
+title: Swap Nodes in Pairs
+slug: swap-nodes-in-pairs
+category: Linked List
+summary: Swap adjacent nodes in a singly linked list by rewiring pointers pair by pair.
+description: "Swap Nodes in Pairs traverses the linked list two nodes at a time and swaps their order by pointer rewiring without changing node values."
+dataStructures:
+  - Linked List
+  - Pointer
+techniques:
+  - Pointer Manipulation
+  - Iterative Traversal
+  - Dummy Node
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - pairwise swap linked list
+  - swap pairs in linked list
+  - swap adjacent nodes in linked list
+useCases:
+  - In-place node reordering
+  - Linked list transformation pipelines
+  - Pointer manipulation interview practice
+complexity:
+  time: O(n) where n is the number of nodes
+  space: O(1) extra space
+  notes: A dummy head simplifies swapping at the start of the list and keeps rewiring uniform.
+interviewSignals:
+  - Prefer rewiring nodes over swapping values.
+  - Handle odd-length lists where the final node remains in place.
+  - A dummy node usually avoids head-edge-case bugs.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/dsa/pairwise-swap-elements-of-a-given-linked-list/'
+related:
+  - reverse-a-singly-linked-list
+  - detect-loop-in-a-linked-list
+---
+
+## Problem
+
+Given the head of a singly linked list, swap every two adjacent nodes and return the new head.
+
+## Approach
+
+Use a dummy node before the head. While two nodes are available, rewire pointers from:
+
+`prev -> first -> second -> nextPair`
+
+to:
+
+`prev -> second -> first -> nextPair`
+
+Advance `prev` to `first` and continue.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(1)
+
+## Implementation
+
+```javascript
+class Node {
+  constructor(data) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+function swapNodesInPairs(head) {
+  if (head === null || head.next === null) {
+    return head;
+  }
+
+  const dummy = new Node(0);
+  dummy.next = head;
+
+  let prev = dummy;
+
+  while (prev.next !== null && prev.next.next !== null) {
+    const first = prev.next;
+    const second = first.next;
+
+    first.next = second.next;
+    second.next = first;
+    prev.next = second;
+
+    prev = first;
+  }
+
+  return dummy.next;
+}
+```
+
+```typescript
+class Node {
+  data: number;
+  next: Node | null;
+
+  constructor(data: number) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+function swapNodesInPairs(head: Node | null): Node | null {
+  if (head === null || head.next === null) {
+    return head;
+  }
+
+  const dummy = new Node(0);
+  dummy.next = head;
+
+  let prev: Node = dummy;
+
+  while (prev.next !== null && prev.next.next !== null) {
+    const first = prev.next;
+    const second = first.next!;
+
+    first.next = second.next;
+    second.next = first;
+    prev.next = second;
+
+    prev = first;
+  }
+
+  return dummy.next;
+}
+```

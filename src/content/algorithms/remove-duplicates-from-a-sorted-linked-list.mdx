@@ -1,0 +1,98 @@
+---
+title: Remove duplicates from a sorted linked list
+slug: remove-duplicates-from-a-sorted-linked-list
+category: Linked List
+summary: Remove duplicate values from a sorted linked list so each value appears once.
+description: "Remove duplicates from a sorted linked list scans once and removes consecutive nodes with the same value by bypassing duplicates."
+dataStructures:
+  - Linked List
+techniques:
+  - Two Pointer Traversal
+  - In-place Deduplication
+difficulty: Easy
+interviewFrequency: High
+aliases:
+  - deduplicate sorted linked list
+  - delete duplicates in sorted linked list
+  - unique sorted linked list
+useCases:
+  - Cleaning sorted streams
+  - Preparing canonical linked-list datasets
+  - In-place list normalization
+complexity:
+  time: O(n) where n is the number of nodes
+  space: O(1)
+  notes: Sorted order ensures duplicates are contiguous, enabling one-pass removal.
+interviewSignals:
+  - Sorted property is key to O(n) in-place solution.
+  - Remove nodes by pointer bypass, not array conversion.
+  - Keep one representative node per run of equal values.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/dsa/remove-duplicates-from-a-sorted-linked-list/'
+related:
+  - remove-duplicates-from-an-unsorted-linked-list
+  - linked-list
+---
+
+## Problem
+
+Given a sorted singly linked list, remove all duplicates so each value appears exactly once.
+
+## Approach
+
+Traverse with a `current` pointer. If `current.data === current.next.data`, skip `current.next`; otherwise move `current` forward.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(1)
+
+## Implementation
+
+```javascript
+class Node {
+  constructor(data) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+function removeDuplicatesFromSortedLinkedList(head) {
+  let current = head;
+
+  while (current !== null && current.next !== null) {
+    if (current.data === current.next.data) {
+      current.next = current.next.next;
+    } else {
+      current = current.next;
+    }
+  }
+
+  return head;
+}
+```
+
+```typescript
+class Node {
+  data: number;
+  next: Node | null;
+
+  constructor(data: number) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+function removeDuplicatesFromSortedLinkedList(head: Node | null): Node | null {
+  let current = head;
+
+  while (current !== null && current.next !== null) {
+    if (current.data === current.next.data) {
+      current.next = current.next.next;
+    } else {
+      current = current.next;
+    }
+  }
+
+  return head;
+}
+```

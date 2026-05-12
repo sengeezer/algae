@@ -2346,3 +2346,25 @@ This one-hundred-ninety-first expansion slice lifts the catalog from 868 to 871 
 - Batch 191 was validated (frontmatter, compilation, lint, tsc, smoke tests, and targeted Playwright route checks all pass) and published to main at commit `9377ffa`.
 - The catalog now stands at 871 entries.
 - The next frontier is the continuation of the Linked List subsection with intermediate and advanced problems (Merge two sorted lists, Remove duplicates, Partition a list, Swap pairs, etc.).
+
+## Batch 192 frontier
+
+The next clean frontier continues in the GeeksforGeeks `Linked List` subsection with medium-difficulty manipulation and deduplication problems.
+
+## Current source-order note
+
+- After the foundational loop and reversal set, the next clean Linked List run proceeds through pairwise rewiring and duplicate-removal variants that are not yet covered by the current catalog.
+- `Merge Two Sorted Linked Lists` is already present locally, so the clean continuation skips that duplicate and takes the next three uncovered titles in source order.
+- The next clean Linked List queue is `Swap Nodes in Pairs`, `Remove duplicates from a sorted linked list`, and `Remove Duplicates from an Unsorted Linked List`.
+
+## Batch 192 added
+
+This one-hundred-ninety-second expansion slice lifts the catalog from 871 to 874 entries.
+
+- Swap Nodes in Pairs
+- Remove duplicates from a sorted linked list
+- Remove Duplicates from an Unsorted Linked List
+
+- Batch 192 was validated (frontmatter, compilation, lint, tsc, smoke tests, and targeted Playwright route checks all pass) and published to main in this changeset.
+- The catalog now stands at 874 entries.
+- The next frontier in Linked List continues with intersection and partition family problems after duplicate removal.

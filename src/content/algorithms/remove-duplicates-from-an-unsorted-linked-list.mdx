@@ -1,0 +1,118 @@
+---
+title: Remove Duplicates from an Unsorted Linked List
+slug: remove-duplicates-from-an-unsorted-linked-list
+category: Linked List
+summary: Remove duplicate nodes from an unsorted linked list while preserving first occurrences.
+description: "Remove Duplicates from an Unsorted Linked List tracks seen values in a set and removes later duplicate nodes in one traversal."
+dataStructures:
+  - Linked List
+  - Hash Set
+techniques:
+  - Hashing
+  - In-place Traversal
+  - Two Pointer Traversal
+difficulty: Medium
+interviewFrequency: High
+aliases:
+  - deduplicate unsorted linked list
+  - remove repeated nodes linked list
+  - unique unsorted linked list
+useCases:
+  - Data cleanup in stream buffers
+  - Preserving insertion order while deduplicating
+  - Preprocessing linked records
+complexity:
+  time: O(n) average
+  space: O(n) for the hash set
+  notes: Without extra space, a nested traversal approach takes O(n^2) time.
+interviewSignals:
+  - Clarify whether extra memory is allowed.
+  - Hash-set solution is expected for optimal time.
+  - Preserve first occurrence order while removing later duplicates.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/dsa/remove-duplicates-from-an-unsorted-linked-list/'
+related:
+  - remove-duplicates-from-a-sorted-linked-list
+  - linked-list
+---
+
+## Problem
+
+Given an unsorted singly linked list, remove duplicate values so only the first occurrence of each value remains.
+
+## Approach
+
+Use a `Set` of seen values. Traverse with `current` and `prev`. If `current.data` is already in the set, bypass `current`; otherwise add it to the set and advance `prev`.
+
+**Time Complexity**: O(n) average
+**Space Complexity**: O(n)
+
+## Implementation
+
+```javascript
+class Node {
+  constructor(data) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+function removeDuplicatesFromUnsortedLinkedList(head) {
+  if (head === null) {
+    return null;
+  }
+
+  const seen = new Set();
+  let current = head;
+  let prev = null;
+
+  while (current !== null) {
+    if (seen.has(current.data)) {
+      prev.next = current.next;
+    } else {
+      seen.add(current.data);
+      prev = current;
+    }
+
+    current = current.next;
+  }
+
+  return head;
+}
+```
+
+```typescript
+class Node {
+  data: number;
+  next: Node | null;
+
+  constructor(data: number) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+function removeDuplicatesFromUnsortedLinkedList(head: Node | null): Node | null {
+  if (head === null) {
+    return null;
+  }
+
+  const seen = new Set<number>();
+  let current: Node | null = head;
+  let prev: Node | null = null;
+
+  while (current !== null) {
+    if (seen.has(current.data)) {
+      prev!.next = current.next;
+    } else {
+      seen.add(current.data);
+      prev = current;
+    }
+
+    current = current.next;
+  }
+
+  return head;
+}
+```
