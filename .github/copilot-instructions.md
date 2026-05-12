@@ -33,3 +33,15 @@
 - Work through each checklist item systematically.
 - Keep communication concise and focused.
 - Follow development best practices.
+
+## Tools and Resources
+- Next.js Documentation: https://nextjs.org/docs
+- TypeScript Documentation: https://www.typescriptlang.org/docs/
+- Tailwind CSS Documentation: https://tailwindcss.com/docs
+- ESLint Documentation: https://eslint.org/docs/user-guide/getting-started
+- Vercel Documentation: https://vercel.com/docs
+- MDX Documentation: https://mdxjs.com/docs/
+
+### Tools
+- Do not use the built-in browser tools in VS Code for this project. Use Playwright-based browser validation instead.
+- Use wget or curl for resource fetching content
