@@ -1,0 +1,165 @@
+---
+title: Reverse a Doubly Linked List in Groups
+slug: reverse-a-doubly-linked-list-in-groups
+category: Linked List
+summary: Reverse a doubly linked list in k-node groups, maintaining prev/next pointer correctness.
+description: "Group-wise reversal of a DLL where every k consecutive nodes are reversed while preserving doubly-linked structure."
+dataStructures:
+  - Doubly Linked List
+  - Pointer
+techniques:
+  - Group-wise Reversal
+  - Bidirectional Pointer Manipulation
+  - DLL-specific Pointer Handling
+difficulty: Hard
+interviewFrequency: High
+aliases:
+  - reverse k nodes doubly linked list
+  - k-group-reverse-doubly-linked-list
+  - reverse dll in groups
+useCases:
+  - Block-level DLL transformations
+  - Pattern-based bidirectional list restructuring
+  - Maintaining backward navigation after reversals
+complexity:
+  time: O(n)
+  space: O(1) auxiliary
+  notes: Single pass reversal with careful bidirectional pointer management for DLL structure.
+interviewSignals:
+  - Both prev and next pointers must be correctly updated after reversal.
+  - Group boundaries must be properly handled with correct inter-group links.
+  - Bidirectional traversal must work correctly after the operation.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/dsa/linked-list/'
+related:
+  - binary-tree-to-doubly-linked-list
+  - reverse-a-singly-linked-list-in-groups
+---
+
+## Problem
+
+Given a doubly linked list and an integer k, reverse every k consecutive nodes in the DLL and return the modified list. Nodes not forming a complete group of k remain unchanged.
+
+## Approach
+
+1. Find the k-th node (end of first group) and check if it exists.
+2. Reverse the first k nodes in place using both prev and next pointers.
+3. Recursively handle the remaining groups.
+4. For each group, swap prev and next pointers of all k nodes.
+5. Properly link reversed groups to maintain the DLL structure.
+
+**Time Complexity**: O(n) for single complete traversal with reversals
+**Space Complexity**: O(1) auxiliary space
+
+## Implementation
+
+```javascript
+class DLLNode {
+  constructor(data) {
+    this.data = data;
+    this.prev = null;
+    this.next = null;
+  }
+}
+
+function reverseKGroupDLL(head, k) {
+  // Check if k nodes exist
+  let current = head;
+  for (let i = 0; i < k && current !== null; i++) {
+    current = current.next;
+  }
+
+  // If fewer than k nodes remain, return head unchanged
+  if (current === null && head !== null) {
+    let count = 0;
+    let temp = head;
+    while (temp !== null) {
+      count++;
+      temp = temp.next;
+    }
+    if (count < k) {
+      return head;
+    }
+  }
+
+  // Reverse first k nodes
+  let prev = null;
+  current = head;
+  for (let i = 0; i < k && current !== null; i++) {
+    const next = current.next;
+    current.next = prev;
+    if (prev !== null) {
+      prev.prev = current;
+    }
+    current.prev = next;
+    prev = current;
+    current = next;
+  }
+
+  // Recursively reverse remaining groups
+  head.next = reverseKGroupDLL(current, k);
+  if (head.next !== null) {
+    head.next.prev = head;
+  }
+  return prev;
+}
+```
+
+```typescript
+class DLLNode {
+  data: number;
+  prev: DLLNode | null;
+  next: DLLNode | null;
+
+  constructor(data: number) {
+    this.data = data;
+    this.prev = null;
+    this.next = null;
+  }
+}
+
+function reverseKGroupDLL(head: DLLNode | null, k: number): DLLNode | null {
+  // Check if k nodes exist
+  let current = head;
+  for (let i = 0; i < k && current !== null; i++) {
+    current = current.next;
+  }
+
+  // If fewer than k nodes remain, return head unchanged
+  if (current === null && head !== null) {
+    let count = 0;
+    let temp = head;
+    while (temp !== null) {
+      count++;
+      temp = temp.next;
+    }
+    if (count < k) {
+      return head;
+    }
+  }
+
+  // Reverse first k nodes
+  let prev: DLLNode | null = null;
+  current = head;
+  for (let i = 0; i < k && current !== null; i++) {
+    const next = current.next;
+    current.next = prev;
+    if (prev !== null) {
+      prev.prev = current;
+    }
+    current.prev = next;
+    prev = current;
+    current = next;
+  }
+
+  // Recursively reverse remaining groups
+  if (head !== null) {
+    head.next = reverseKGroupDLL(current, k);
+    if (head.next !== null) {
+      head.next.prev = head;
+    }
+  }
+  return prev;
+}
+```

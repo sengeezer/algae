@@ -1,0 +1,132 @@
+---
+title: Binary Tree to Doubly Linked List
+slug: binary-tree-to-doubly-linked-list
+category: Linked List
+summary: Convert a Binary Search Tree to a Doubly Linked List using in-order traversal with threading.
+description: "Transform a BST into a sorted doubly linked list by rerouting tree pointers: left child becomes previous, right child becomes next."
+dataStructures:
+  - Binary Tree
+  - Doubly Linked List
+  - Pointer
+techniques:
+  - In-order Traversal
+  - Pointer Rerouting
+  - Tree-to-List Conversion
+difficulty: Hard
+interviewFrequency: High
+aliases:
+  - convert binary search tree to doubly linked list
+  - bst to doubly linked list
+  - tree to list conversion
+useCases:
+  - Range query optimization
+  - Sorted sequential access from tree structure
+  - Memory-efficient space utilization
+complexity:
+  time: O(n)
+  space: O(h) where h is height (recursion stack)
+  notes: Single pass in-order traversal converts BST pointers to DLL links without auxiliary structures.
+interviewSignals:
+  - The DLL must be properly doubly-linked with all prev/next pointers correct.
+  - The list must represent sorted in-order traversal of the tree.
+  - Space complexity should ideally use O(h) or O(1) rather than O(n) auxiliary space.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/dsa/linked-list/'
+related:
+  - reverse-a-singly-linked-list-in-groups
+  - reverse-a-doubly-linked-list-in-groups
+---
+
+## Problem
+
+Given a Binary Search Tree (BST), convert it into a Doubly Linked List where:
+- The left pointer of a tree node becomes the previous pointer of a DLL node.
+- The right pointer of a tree node becomes the next pointer of a DLL node.
+- The result is a doubly linked list in sorted (in-order) order.
+
+## Approach
+
+1. Perform in-order traversal of the BST.
+2. During traversal, maintain a pointer to the last processed node.
+3. Link the current node's left to the previous node and right to the next node.
+4. Terminate when reaching the leftmost node (head) and rightmost node (tail).
+
+**Time Complexity**: O(n) for single in-order pass
+**Space Complexity**: O(h) for recursion stack
+
+## Implementation
+
+```javascript
+class TreeNode {
+  constructor(data) {
+    this.data = data;
+    this.left = null;
+    this.right = null;
+  }
+}
+
+function bstToDoublyLinkedList(root) {
+  let head = null;
+  let prev = null;
+
+  function inOrder(node) {
+    if (node === null) return;
+
+    inOrder(node.left);
+
+    // Convert tree node to DLL node
+    if (prev === null) {
+      head = node;
+    } else {
+      prev.right = node;
+      node.left = prev;
+    }
+    prev = node;
+
+    inOrder(node.right);
+  }
+
+  inOrder(root);
+  return head;
+}
+```
+
+```typescript
+class TreeNode {
+  data: number;
+  left: TreeNode | null;
+  right: TreeNode | null;
+
+  constructor(data: number) {
+    this.data = data;
+    this.left = null;
+    this.right = null;
+  }
+}
+
+function bstToDoublyLinkedList(root: TreeNode | null): TreeNode | null {
+  let head: TreeNode | null = null;
+  let prev: TreeNode | null = null;
+
+  function inOrder(node: TreeNode | null): void {
+    if (node === null) return;
+
+    inOrder(node.left);
+
+    // Convert tree node to DLL node
+    if (prev === null) {
+      head = node;
+    } else {
+      prev.right = node;
+      node.left = prev;
+    }
+    prev = node;
+
+    inOrder(node.right);
+  }
+
+  inOrder(root);
+  return head;
+}
+```

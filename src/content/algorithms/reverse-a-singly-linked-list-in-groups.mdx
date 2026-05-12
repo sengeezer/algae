@@ -1,0 +1,148 @@
+---
+title: Reverse a Singly Linked List in Groups
+slug: reverse-a-singly-linked-list-in-groups
+category: Linked List
+summary: Reverse nodes of a linked list k at a time using iterative group-wise manipulation.
+description: "Given a linked list, reverse every k nodes and return the modified list with group reversals preserving outer structure."
+dataStructures:
+  - Linked List
+  - Pointer
+techniques:
+  - Group-wise Reversal
+  - Pointer Manipulation
+  - Iterative Reversal
+difficulty: Hard
+interviewFrequency: High
+aliases:
+  - reverse k nodes linked list
+  - k-group-reverse-linked-list
+  - reverse in groups
+useCases:
+  - Block-level list transformations
+  - Pattern-based list restructuring
+  - Memory-efficient in-place reversals
+complexity:
+  time: O(n)
+  space: O(1) auxiliary
+  notes: Single pass with constant-space pointer adjustments reverses k-node groups iteratively.
+interviewSignals:
+  - Proper handling of group boundaries and the final incomplete group.
+  - Correct pointer linking between reversed groups.
+  - The head pointer must be updated correctly when the first group is reversed.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/dsa/linked-list/'
+related:
+  - binary-tree-to-doubly-linked-list
+  - reverse-a-doubly-linked-list-in-groups
+---
+
+## Problem
+
+Given a linked list and an integer k, reverse every k nodes in the linked list and return the modified list. If the number of nodes is not a multiple of k, the remaining nodes should remain in their original order.
+
+## Approach
+
+1. Divide the linked list into groups of k nodes.
+2. Reverse each group in place using pointer manipulation.
+3. Connect the reversed groups by adjusting tail pointers.
+4. Handle the final partial group (if any) by leaving it unchanged.
+
+**Time Complexity**: O(n) for single pass with reversals
+**Space Complexity**: O(1) auxiliary space
+
+## Implementation
+
+```javascript
+class ListNode {
+  constructor(data) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+function reverseKGroup(head, k) {
+  // Check if k nodes are available
+  let current = head;
+  for (let i = 0; i < k && current !== null; i++) {
+    current = current.next;
+  }
+
+  // If fewer than k nodes remain, return head as-is
+  if (current === null && head !== null) {
+    // Count remaining nodes
+    let count = 0;
+    let temp = head;
+    while (temp !== null) {
+      count++;
+      temp = temp.next;
+    }
+    if (count < k) {
+      return head;
+    }
+  }
+
+  // Reverse first k nodes
+  let prev = null;
+  current = head;
+  for (let i = 0; i < k && current !== null; i++) {
+    const next = current.next;
+    current.next = prev;
+    prev = current;
+    current = next;
+  }
+
+  // Recursively reverse remaining groups
+  head.next = reverseKGroup(current, k);
+  return prev;
+}
+```
+
+```typescript
+class ListNode {
+  data: number;
+  next: ListNode | null;
+
+  constructor(data: number) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+function reverseKGroup(head: ListNode | null, k: number): ListNode | null {
+  // Check if k nodes are available
+  let current = head;
+  for (let i = 0; i < k && current !== null; i++) {
+    current = current.next;
+  }
+
+  // If fewer than k nodes remain, return head as-is
+  if (current === null && head !== null) {
+    let count = 0;
+    let temp = head;
+    while (temp !== null) {
+      count++;
+      temp = temp.next;
+    }
+    if (count < k) {
+      return head;
+    }
+  }
+
+  // Reverse first k nodes
+  let prev: ListNode | null = null;
+  current = head;
+  for (let i = 0; i < k && current !== null; i++) {
+    const next = current.next;
+    current.next = prev;
+    prev = current;
+    current = next;
+  }
+
+  // Recursively reverse remaining groups
+  if (head !== null) {
+    head.next = reverseKGroup(current, k);
+  }
+  return prev;
+}
+```

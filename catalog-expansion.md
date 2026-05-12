@@ -2478,3 +2478,13 @@ This one-hundred-ninety-seventh expansion slice lifts the catalog from 886 to 88
 - Batch 197 was validated (frontmatter, compilation, lint, tsc, smoke tests, and targeted Playwright route checks all pass) and published to main in this changeset.
 - The catalog now stands at 889 entries.
 - The next frontier in Linked List continues with remaining high-value hard operations from the same source branch.
+
+## Batch 198 frontier
+
+The next clean frontier in GeeksforGeeks `Linked List` continues through tree-to-list conversion and advanced group-wise reversal patterns.
+
+## Current source-order note
+
+- After the clone-with-random-pointer hard problem, the next clean source-order continuation reaches `Binary Tree to Doubly Linked List`, `Reverse a Singly Linked List in Groups`, and `Reverse a Doubly Linked List in Groups`.
+- These three are not present in the local catalog and form a coherent advanced-operations set bridging tree/list conversion and group-wise structural transformations.
+- The next clean Linked List queue is `Binary Tree to Doubly Linked List`, `Reverse a Singly Linked List in Groups`, and `Reverse a Doubly Linked List in Groups`.
