@@ -1,0 +1,116 @@
+---
+title: Stack with max frequency
+slug: stack-with-max-frequency
+category: Stack
+summary: Support push and pop-by-highest-frequency using grouped stacks keyed by frequency counts.
+description: "Maintain per-value frequencies and per-frequency stacks so pop always returns the most frequent, most recent value."
+dataStructures:
+  - Stack
+  - Hash Map
+techniques:
+  - Frequency Bucketing
+  - Stack of Stacks
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - frequency stack
+  - max frequency stack
+useCases:
+  - Priority-by-recency retrieval
+  - Event ranking with recency tie-breaks
+complexity:
+  time: O(1) average push/pop
+  space: O(n)
+  notes: "Each frequency level owns a stack of values that reached that level."
+interviewSignals:
+  - Ties are broken by recency, not value.
+  - Track current maximum frequency explicitly.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/design-a-stack-which-can-give-maximum-frequency-element/'
+related:
+  - a-ds-with-o1-operations
+  - stack
+---
+
+## Problem
+
+Design a stack-like data structure where `pop` removes the most frequent element; ties are resolved by recency.
+
+## Approach
+
+Track:
+- `freq[value]`
+- `groups[f]` as stack of values whose current frequency became `f`
+- `maxFreq`
+
+**Time Complexity**: O(1) average push/pop
+**Space Complexity**: O(n)
+
+## Implementation
+
+```javascript
+class FreqStack {
+  constructor() {
+    this.freq = new Map();
+    this.groups = new Map();
+    this.maxFreq = 0;
+  }
+
+  push(value) {
+    const nextFreq = (this.freq.get(value) || 0) + 1;
+    this.freq.set(value, nextFreq);
+
+    if (!this.groups.has(nextFreq)) this.groups.set(nextFreq, []);
+    this.groups.get(nextFreq).push(value);
+    this.maxFreq = Math.max(this.maxFreq, nextFreq);
+  }
+
+  pop() {
+    if (this.maxFreq === 0) return null;
+
+    const group = this.groups.get(this.maxFreq);
+    const value = group.pop();
+    this.freq.set(value, this.freq.get(value) - 1);
+
+    if (group.length === 0) {
+      this.groups.delete(this.maxFreq);
+      this.maxFreq--;
+    }
+
+    return value;
+  }
+}
+```
+
+```typescript
+class FreqStack {
+  private freq = new Map<number, number>();
+  private groups = new Map<number, number[]>();
+  private maxFreq = 0;
+
+  push(value: number): void {
+    const nextFreq = (this.freq.get(value) ?? 0) + 1;
+    this.freq.set(value, nextFreq);
+
+    if (!this.groups.has(nextFreq)) this.groups.set(nextFreq, []);
+    this.groups.get(nextFreq)!.push(value);
+    this.maxFreq = Math.max(this.maxFreq, nextFreq);
+  }
+
+  pop(): number | null {
+    if (this.maxFreq === 0) return null;
+
+    const group = this.groups.get(this.maxFreq)!;
+    const value = group.pop()!;
+    this.freq.set(value, (this.freq.get(value) ?? 1) - 1);
+
+    if (group.length === 0) {
+      this.groups.delete(this.maxFreq);
+      this.maxFreq--;
+    }
+
+    return value;
+  }
+}
+```

@@ -1,0 +1,115 @@
+---
+title: Remove brackets containing + and - operators
+slug: remove-brackets-containing-plus-and-minus-operators
+category: Stack
+summary: Simplify an algebraic expression by removing parentheses while preserving signs.
+description: "Track sign context through nested brackets so terms can be rewritten without changing the resulting expression."
+dataStructures:
+  - Stack
+  - String
+techniques:
+  - Sign Propagation
+  - Expression Simplification
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - remove brackets with plus minus
+  - eliminate parentheses from expression
+useCases:
+  - Symbolic simplification
+  - Compiler normalization
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: "One stack keeps effective sign context across nesting."
+interviewSignals:
+  - Outer minus flips signs inside following parentheses.
+  - Keep variable order unchanged while adjusting operators.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/remove-brackets-algebraic-string-containing-operators/'
+related:
+  - check-redundant-bracket
+  - infix-to-postfix
+---
+
+## Problem
+
+Given an expression with `+`, `-`, variables, and parentheses, remove brackets without changing the expression value.
+
+## Approach
+
+Maintain a stack of sign contexts. When entering a parenthesized block, combine current sign with outer context to determine effective signs of inner terms.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(n)
+
+## Implementation
+
+```javascript
+function removeBrackets(expr) {
+  const signStack = [1];
+  let currentSign = 1;
+  let result = '';
+
+  for (let i = 0; i < expr.length; i++) {
+    const ch = expr[i];
+
+    if (ch === '+') {
+      currentSign = 1;
+    } else if (ch === '-') {
+      currentSign = -1;
+    } else if (ch === '(') {
+      const previous = i > 0 && expr[i - 1] === '-' ? -1 : 1;
+      signStack.push(signStack[signStack.length - 1] * previous);
+    } else if (ch === ')') {
+      signStack.pop();
+    } else if (/[a-zA-Z]/.test(ch)) {
+      const effective = currentSign * signStack[signStack.length - 1];
+      if (result.length > 0) {
+        result += effective === 1 ? '+' : '-';
+      } else if (effective === -1) {
+        result += '-';
+      }
+      result += ch;
+      currentSign = 1;
+    }
+  }
+
+  return result;
+}
+```
+
+```typescript
+function removeBrackets(expr: string): string {
+  const signStack: number[] = [1];
+  let currentSign = 1;
+  let result = '';
+
+  for (let i = 0; i < expr.length; i++) {
+    const ch = expr[i];
+
+    if (ch === '+') {
+      currentSign = 1;
+    } else if (ch === '-') {
+      currentSign = -1;
+    } else if (ch === '(') {
+      const previous = i > 0 && expr[i - 1] === '-' ? -1 : 1;
+      signStack.push(signStack[signStack.length - 1] * previous);
+    } else if (ch === ')') {
+      signStack.pop();
+    } else if (/[a-zA-Z]/.test(ch)) {
+      const effective = currentSign * signStack[signStack.length - 1];
+      if (result.length > 0) {
+        result += effective === 1 ? '+' : '-';
+      } else if (effective === -1) {
+        result += '-';
+      }
+      result += ch;
+      currentSign = 1;
+    }
+  }
+
+  return result;
+}
+```

@@ -1,0 +1,97 @@
+---
+title: Check Redundant Bracket
+slug: check-redundant-bracket
+category: Stack
+summary: Detect whether an expression contains unnecessary parentheses around a simple term.
+description: "When a closing parenthesis is reached, inspect the enclosed content and flag brackets that wrap no operator work."
+dataStructures:
+  - Stack
+  - String
+techniques:
+  - Expression Validation
+  - Stack Parsing
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - redundant parentheses
+  - duplicate brackets check
+useCases:
+  - Expression simplification
+  - Parser linting
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: "Each character enters and leaves the stack once."
+interviewSignals:
+  - Redundant brackets enclose no operator.
+  - Only operator presence inside a pair matters for this check.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/expression-contains-redundant-bracket-not/'
+related:
+  - check-for-balanced-parentheses
+  - index-of-closing-bracket-for-a-given-opening-bracket
+---
+
+## Problem
+
+Given an arithmetic expression, determine whether it contains redundant brackets.
+
+## Approach
+
+Push characters to a stack. On `)`, pop until `(` and check whether at least one operator was inside.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(n)
+
+## Implementation
+
+```javascript
+function hasRedundantBracket(expr) {
+  const stack = [];
+  const operators = new Set(['+', '-', '*', '/']);
+
+  for (const ch of expr) {
+    if (ch === ')') {
+      let hasOperator = false;
+
+      while (stack.length && stack[stack.length - 1] !== '(') {
+        const top = stack.pop();
+        if (operators.has(top)) hasOperator = true;
+      }
+
+      stack.pop();
+      if (!hasOperator) return true;
+    } else {
+      stack.push(ch);
+    }
+  }
+
+  return false;
+}
+```
+
+```typescript
+function hasRedundantBracket(expr: string): boolean {
+  const stack: string[] = [];
+  const operators = new Set(['+', '-', '*', '/']);
+
+  for (const ch of expr) {
+    if (ch === ')') {
+      let hasOperator = false;
+
+      while (stack.length > 0 && stack[stack.length - 1] !== '(') {
+        const top = stack.pop()!;
+        if (operators.has(top)) hasOperator = true;
+      }
+
+      stack.pop();
+      if (!hasOperator) return true;
+    } else {
+      stack.push(ch);
+    }
+  }
+
+  return false;
+}
+```

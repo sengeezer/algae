@@ -1,0 +1,87 @@
+---
+title: Largest Rectangle in a Histogram
+slug: largest-rectangle-in-a-histogram
+category: Stack
+summary: Find the maximum-area rectangle in a histogram using a monotonic increasing stack of indices.
+description: "When a bar breaks increasing order, resolve all rectangles that use taller bars as their limiting height."
+dataStructures:
+  - Stack
+  - Array
+techniques:
+  - Monotonic Stack
+  - Range Width Calculation
+difficulty: Hard
+interviewFrequency: High
+aliases:
+  - histogram max rectangle
+  - largest rectangle histogram
+useCases:
+  - Skyline area optimization
+  - Rectangular packing analysis
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: "Each bar index is pushed and popped at most once."
+interviewSignals:
+  - Width depends on previous smaller and current smaller boundaries.
+  - Sentinel cleanup at the end avoids missed bars.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/largest-rectangular-area-in-a-histogram-using-stack/'
+related:
+  - monotonic-stack
+  - max-of-mins-of-every-window-size
+---
+
+## Problem
+
+Given bar heights of a histogram, return the area of the largest rectangle that can be formed.
+
+## Approach
+
+Maintain an increasing stack of indices. When a lower bar appears, pop taller bars and compute the rectangle where each popped bar is the limiting height.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(n)
+
+## Implementation
+
+```javascript
+function largestRectangleArea(heights) {
+  const extended = [...heights, 0];
+  const stack = [];
+  let best = 0;
+
+  for (let i = 0; i < extended.length; i++) {
+    while (stack.length && extended[stack[stack.length - 1]] > extended[i]) {
+      const height = extended[stack.pop()];
+      const left = stack.length ? stack[stack.length - 1] : -1;
+      const width = i - left - 1;
+      best = Math.max(best, height * width);
+    }
+    stack.push(i);
+  }
+
+  return best;
+}
+```
+
+```typescript
+function largestRectangleArea(heights: number[]): number {
+  const extended = [...heights, 0];
+  const stack: number[] = [];
+  let best = 0;
+
+  for (let i = 0; i < extended.length; i++) {
+    while (stack.length > 0 && extended[stack[stack.length - 1]] > extended[i]) {
+      const height = extended[stack.pop()!];
+      const left = stack.length > 0 ? stack[stack.length - 1] : -1;
+      const width = i - left - 1;
+      best = Math.max(best, height * width);
+    }
+    stack.push(i);
+  }
+
+  return best;
+}
+```

@@ -1,0 +1,117 @@
+---
+title: Max of Mins of every window size
+slug: max-of-mins-of-every-window-size
+category: Stack
+summary: For every window size, compute the maximum among all minimum values of windows of that size.
+description: "Each element acts as the minimum for a maximal window span; use those spans to populate answers by window length."
+dataStructures:
+  - Stack
+  - Array
+techniques:
+  - Monotonic Stack
+  - Span Contribution
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - maximum of minimum for every window
+  - max of mins
+useCases:
+  - Sliding window optimization summaries
+  - Dominance range analysis
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: "Previous and next smaller boundaries determine the largest window where each element is minimum."
+interviewSignals:
+  - Fill missing window sizes by propagating answers downward.
+  - Window length is derived from boundary indices, not guessed.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/find-the-maximum-of-minimums-for-every-window-size-in-a-given-array/'
+related:
+  - largest-rectangle-in-a-histogram
+  - previous-smaller-element
+---
+
+## Problem
+
+For each window size from `1` to `n`, compute the maximum among the minimum values of all subarrays of that size.
+
+## Approach
+
+Find the largest window where each element is minimum using previous/next smaller indices. Use that window length to update answers, then backfill missing sizes from the right.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(n)
+
+## Implementation
+
+```javascript
+function maxOfMins(arr) {
+  const n = arr.length;
+  const left = new Array(n);
+  const right = new Array(n);
+  const ans = new Array(n + 1).fill(-Infinity);
+  const stack = [];
+
+  for (let i = 0; i < n; i++) {
+    while (stack.length && arr[stack[stack.length - 1]] >= arr[i]) stack.pop();
+    left[i] = stack.length ? stack[stack.length - 1] : -1;
+    stack.push(i);
+  }
+
+  stack.length = 0;
+
+  for (let i = n - 1; i >= 0; i--) {
+    while (stack.length && arr[stack[stack.length - 1]] >= arr[i]) stack.pop();
+    right[i] = stack.length ? stack[stack.length - 1] : n;
+    stack.push(i);
+  }
+
+  for (let i = 0; i < n; i++) {
+    const len = right[i] - left[i] - 1;
+    ans[len] = Math.max(ans[len], arr[i]);
+  }
+
+  for (let len = n - 1; len >= 1; len--) {
+    ans[len] = Math.max(ans[len], ans[len + 1]);
+  }
+
+  return ans.slice(1);
+}
+```
+
+```typescript
+function maxOfMins(arr: number[]): number[] {
+  const n = arr.length;
+  const left: number[] = new Array(n);
+  const right: number[] = new Array(n);
+  const ans: number[] = new Array(n + 1).fill(-Infinity);
+  const stack: number[] = [];
+
+  for (let i = 0; i < n; i++) {
+    while (stack.length > 0 && arr[stack[stack.length - 1]] >= arr[i]) stack.pop();
+    left[i] = stack.length > 0 ? stack[stack.length - 1] : -1;
+    stack.push(i);
+  }
+
+  stack.length = 0;
+
+  for (let i = n - 1; i >= 0; i--) {
+    while (stack.length > 0 && arr[stack[stack.length - 1]] >= arr[i]) stack.pop();
+    right[i] = stack.length > 0 ? stack[stack.length - 1] : n;
+    stack.push(i);
+  }
+
+  for (let i = 0; i < n; i++) {
+    const len = right[i] - left[i] - 1;
+    ans[len] = Math.max(ans[len], arr[i]);
+  }
+
+  for (let len = n - 1; len >= 1; len--) {
+    ans[len] = Math.max(ans[len], ans[len + 1]);
+  }
+
+  return ans.slice(1);
+}
+```

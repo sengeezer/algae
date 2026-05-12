@@ -1,0 +1,84 @@
+---
+title: Stack Permutations
+slug: stack-permutations
+category: Stack
+summary: Verify whether one permutation can be produced from another using one auxiliary stack.
+description: "Simulate push/pop behavior to test if a target output order is reachable from the input stream through a single stack."
+dataStructures:
+  - Stack
+  - Queue
+  - Array
+techniques:
+  - Simulation
+  - Permutation Validation
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - validate stack permutation
+  - stack permutation check
+useCases:
+  - Stream transformation validation
+  - Constrained permutation checks
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: "Each value is pushed once and popped at most once."
+interviewSignals:
+  - This checks reachability of one target permutation, not Catalan counting.
+  - Flush stack whenever top matches next target item.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/stack-permutations-check-if-an-array-is-stack-permutation-of-other/'
+related:
+  - stack-sortable-permutations
+  - check-for-queue-sortable
+---
+
+## Problem
+
+Given input sequence and target output sequence, determine whether the target can be produced using one auxiliary stack.
+
+## Approach
+
+Push input items one by one. After each push, pop while stack top matches the next needed target element.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(n)
+
+## Implementation
+
+```javascript
+function isStackPermutation(input, target) {
+  const stack = [];
+  let j = 0;
+
+  for (const value of input) {
+    stack.push(value);
+
+    while (stack.length > 0 && j < target.length && stack[stack.length - 1] === target[j]) {
+      stack.pop();
+      j++;
+    }
+  }
+
+  return j === target.length;
+}
+```
+
+```typescript
+function isStackPermutation(input: number[], target: number[]): boolean {
+  const stack: number[] = [];
+  let j = 0;
+
+  for (const value of input) {
+    stack.push(value);
+
+    while (stack.length > 0 && j < target.length && stack[stack.length - 1] === target[j]) {
+      stack.pop();
+      j++;
+    }
+  }
+
+  return j === target.length;
+}
+```

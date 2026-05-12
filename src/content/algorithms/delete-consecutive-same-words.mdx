@@ -1,0 +1,80 @@
+---
+title: Delete consecutive same words
+slug: delete-consecutive-same-words
+category: Stack
+summary: Remove consecutive duplicate words from a sequence using stack-style cancellation.
+description: "Push words unless they match the current top; matching neighbors cancel out immediately."
+dataStructures:
+  - Stack
+  - Array
+  - String
+techniques:
+  - Adjacent Cancellation
+  - Stack Compression
+difficulty: Easy
+interviewFrequency: Low
+aliases:
+  - remove adjacent duplicate words
+  - cancel consecutive words
+useCases:
+  - Log compression
+  - Token stream cleanup
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: "Each word is pushed once and may be popped once."
+interviewSignals:
+  - Only consecutive equal words cancel.
+  - Final stack order should be preserved in output.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/delete-consecutive-words-sequence/'
+related:
+  - stack
+  - check-for-balanced-parentheses
+---
+
+## Problem
+
+Given a sequence of words, repeatedly delete adjacent equal words until no such pair remains.
+
+## Approach
+
+Traverse words and use a stack: if the top equals the current word, pop it; otherwise push the current word.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(n)
+
+## Implementation
+
+```javascript
+function deleteConsecutiveSameWords(words) {
+  const stack = [];
+
+  for (const word of words) {
+    if (stack.length > 0 && stack[stack.length - 1] === word) {
+      stack.pop();
+    } else {
+      stack.push(word);
+    }
+  }
+
+  return stack;
+}
+```
+
+```typescript
+function deleteConsecutiveSameWords(words: string[]): string[] {
+  const stack: string[] = [];
+
+  for (const word of words) {
+    if (stack.length > 0 && stack[stack.length - 1] === word) {
+      stack.pop();
+    } else {
+      stack.push(word);
+    }
+  }
+
+  return stack;
+}
+```

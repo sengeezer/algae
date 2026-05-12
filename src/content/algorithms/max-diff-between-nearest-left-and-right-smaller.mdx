@@ -1,0 +1,105 @@
+---
+title: Max Diff between nearest left and right smaller
+slug: max-diff-between-nearest-left-and-right-smaller
+category: Stack
+summary: Compute the maximum absolute difference between nearest smaller elements on the left and right for every array position.
+description: "Build nearest smaller values on both sides with monotonic stacks, then maximize their absolute difference."
+dataStructures:
+  - Stack
+  - Array
+techniques:
+  - Monotonic Stack
+  - Bidirectional Neighbor Scan
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - max diff nearest smaller
+  - left right smaller difference
+useCases:
+  - Neighbor-contrast scoring
+  - Array feature extraction
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: "Each side is computed in one linear monotonic pass."
+interviewSignals:
+  - Missing smaller neighbors contribute zero.
+  - Store values or indices consistently across both passes.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/find-maximum-difference-between-nearest-left-and-right-smaller-elements/'
+related:
+  - previous-smaller-element
+  - next-smaller-of-next-greater
+---
+
+## Problem
+
+For every array element, find the nearest smaller element on the left and the nearest smaller element on the right, then return the maximum absolute difference across all positions.
+
+## Approach
+
+Use increasing stacks to compute nearest smaller values on both sides, then scan once for the maximum absolute difference.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(n)
+
+## Implementation
+
+```javascript
+function maxDiffNearestSmaller(arr) {
+  const n = arr.length;
+  const left = new Array(n).fill(0);
+  const right = new Array(n).fill(0);
+  const stack = [];
+
+  for (let i = 0; i < n; i++) {
+    while (stack.length && stack[stack.length - 1] >= arr[i]) stack.pop();
+    left[i] = stack.length ? stack[stack.length - 1] : 0;
+    stack.push(arr[i]);
+  }
+
+  stack.length = 0;
+
+  for (let i = n - 1; i >= 0; i--) {
+    while (stack.length && stack[stack.length - 1] >= arr[i]) stack.pop();
+    right[i] = stack.length ? stack[stack.length - 1] : 0;
+    stack.push(arr[i]);
+  }
+
+  let best = 0;
+  for (let i = 0; i < n; i++) {
+    best = Math.max(best, Math.abs(left[i] - right[i]));
+  }
+  return best;
+}
+```
+
+```typescript
+function maxDiffNearestSmaller(arr: number[]): number {
+  const n = arr.length;
+  const left: number[] = new Array(n).fill(0);
+  const right: number[] = new Array(n).fill(0);
+  const stack: number[] = [];
+
+  for (let i = 0; i < n; i++) {
+    while (stack.length > 0 && stack[stack.length - 1] >= arr[i]) stack.pop();
+    left[i] = stack.length > 0 ? stack[stack.length - 1] : 0;
+    stack.push(arr[i]);
+  }
+
+  stack.length = 0;
+
+  for (let i = n - 1; i >= 0; i--) {
+    while (stack.length > 0 && stack[stack.length - 1] >= arr[i]) stack.pop();
+    right[i] = stack.length > 0 ? stack[stack.length - 1] : 0;
+    stack.push(arr[i]);
+  }
+
+  let best = 0;
+  for (let i = 0; i < n; i++) {
+    best = Math.max(best, Math.abs(left[i] - right[i]));
+  }
+  return best;
+}
+```

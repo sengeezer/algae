@@ -1,0 +1,107 @@
+---
+title: Sum of Max of all Subarrays
+slug: sum-of-max-of-all-subarrays
+category: Stack
+summary: Sum the maximum element of every subarray by counting each element's contribution span.
+description: "Use monotonic boundaries to count how many subarrays choose each value as their unique maximum contribution."
+dataStructures:
+  - Stack
+  - Array
+techniques:
+  - Contribution Counting
+  - Monotonic Stack
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - sum of subarray maximums
+  - total of max of all windows
+useCases:
+  - Aggregate subarray analytics
+  - Contribution-based optimization
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: "Each value contributes to leftSpan * rightSpan subarrays."
+interviewSignals:
+  - Tie-breaking direction matters to avoid double counting.
+  - Convert global subarray total into per-element contribution.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/sum-of-maximum-elements-of-all-possible-sub-arrays-of-an-array/'
+related:
+  - max-of-mins-of-every-window-size
+  - largest-rectangle-in-a-histogram
+---
+
+## Problem
+
+Return the sum of the maximum values over all subarrays of an array.
+
+## Approach
+
+For each element, compute how many subarrays use it as maximum by finding previous greater and next greater-or-equal boundaries.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(n)
+
+## Implementation
+
+```javascript
+function sumOfMaxOfAllSubarrays(arr) {
+  const n = arr.length;
+  const left = new Array(n);
+  const right = new Array(n);
+  const stack = [];
+
+  for (let i = 0; i < n; i++) {
+    while (stack.length && arr[stack[stack.length - 1]] < arr[i]) stack.pop();
+    left[i] = stack.length ? i - stack[stack.length - 1] : i + 1;
+    stack.push(i);
+  }
+
+  stack.length = 0;
+
+  for (let i = n - 1; i >= 0; i--) {
+    while (stack.length && arr[stack[stack.length - 1]] <= arr[i]) stack.pop();
+    right[i] = stack.length ? stack[stack.length - 1] - i : n - i;
+    stack.push(i);
+  }
+
+  let total = 0;
+  for (let i = 0; i < n; i++) {
+    total += arr[i] * left[i] * right[i];
+  }
+
+  return total;
+}
+```
+
+```typescript
+function sumOfMaxOfAllSubarrays(arr: number[]): number {
+  const n = arr.length;
+  const left: number[] = new Array(n);
+  const right: number[] = new Array(n);
+  const stack: number[] = [];
+
+  for (let i = 0; i < n; i++) {
+    while (stack.length > 0 && arr[stack[stack.length - 1]] < arr[i]) stack.pop();
+    left[i] = stack.length > 0 ? i - stack[stack.length - 1] : i + 1;
+    stack.push(i);
+  }
+
+  stack.length = 0;
+
+  for (let i = n - 1; i >= 0; i--) {
+    while (stack.length > 0 && arr[stack[stack.length - 1]] <= arr[i]) stack.pop();
+    right[i] = stack.length > 0 ? stack[stack.length - 1] - i : n - i;
+    stack.push(i);
+  }
+
+  let total = 0;
+  for (let i = 0; i < n; i++) {
+    total += arr[i] * left[i] * right[i];
+  }
+
+  return total;
+}
+```
