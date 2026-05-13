@@ -1,0 +1,105 @@
+---
+title: Level Order Traversal (Breadth First Search) of Binary Tree
+slug: level-order-traversal-breadth-first-search-of-binary-tree
+category: Trees
+summary: Traverse a binary tree level by level using a queue so each depth is emitted before the next.
+description: "Level order traversal is the queue-backed tree traversal that visits nodes breadth first, one layer at a time."
+dataStructures:
+  - Tree
+  - Queue
+techniques:
+  - Breadth-First Search
+  - Layered Traversal
+difficulty: Easy
+interviewFrequency: High
+aliases:
+  - level order traversal of binary tree
+  - binary tree bfs traversal
+useCases:
+  - Tree serialization by depth
+  - Printing nodes level by level
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: "The queue holds at most one tree level plus the next frontier."
+interviewSignals:
+  - Queue size cleanly separates one level from the next.
+  - The traversal order is breadth first, not depth first.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/dsa/level-order-tree-traversal/'
+related:
+  - breadth-first-search
+  - queue
+---
+
+## Problem
+
+Return the values of a binary tree in level order, visiting every node on one level before moving to the next.
+
+## Approach
+
+Push the root into a queue. Repeatedly pop the front node, record it, and enqueue its children until the queue is empty.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(n)
+
+## Implementation
+
+```javascript
+function levelOrderTraversal(root) {
+  if (!root) return [];
+
+  const queue = [root];
+  const result = [];
+  let index = 0;
+
+  while (index < queue.length) {
+    const levelSize = queue.length - index;
+    const level = [];
+
+    for (let i = 0; i < levelSize; i++) {
+      const node = queue[index++];
+      level.push(node.data);
+      if (node.left) queue.push(node.left);
+      if (node.right) queue.push(node.right);
+    }
+
+    result.push(level);
+  }
+
+  return result;
+}
+```
+
+```typescript
+type BinaryTreeNode = {
+  data: number;
+  left: BinaryTreeNode | null;
+  right: BinaryTreeNode | null;
+};
+
+function levelOrderTraversal(root: BinaryTreeNode | null): number[][] {
+  if (!root) return [];
+
+  const queue: BinaryTreeNode[] = [root];
+  const result: number[][] = [];
+  let index = 0;
+
+  while (index < queue.length) {
+    const levelSize = queue.length - index;
+    const level: number[] = [];
+
+    for (let i = 0; i < levelSize; i++) {
+      const node = queue[index++];
+      level.push(node.data);
+      if (node.left) queue.push(node.left);
+      if (node.right) queue.push(node.right);
+    }
+
+    result.push(level);
+  }
+
+  return result;
+}
+```

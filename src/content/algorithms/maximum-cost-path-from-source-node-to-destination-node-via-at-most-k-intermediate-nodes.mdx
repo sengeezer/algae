@@ -1,0 +1,116 @@
+---
+title: Maximum cost path from source node to destination node via at most K intermediate nodes
+slug: maximum-cost-path-from-source-node-to-destination-node-via-at-most-k-intermediate-nodes
+category: Graphs
+summary: Find the heaviest path from source to destination while limiting the number of intermediate vertices allowed.
+description: "Use breadth-first expansion over path states so each queue layer tracks one more allowed intermediate vertex."
+dataStructures:
+  - Graph
+  - Queue
+  - Array
+techniques:
+  - Breadth-First Search
+  - Layered Relaxation
+  - Path Scoring
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - maximum cost path with k intermediate nodes
+  - max cost path source to destination
+useCases:
+  - Bounded-hop route optimization
+  - Cost-aware graph search with depth constraints
+complexity:
+  time: O(V + E)
+  space: O(V + E)
+  notes: "The queue stores node-distance pairs and expands only through paths that respect the hop bound."
+interviewSignals:
+  - The objective is maximizing path weight, not minimizing it.
+  - The hop constraint is on intermediate nodes, so the source and destination do not count against K.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/dsa/maximum-cost-path-from-source-node-to-destination-node-via-at-most-k-intermediate-nodes/'
+related:
+  - breadth-first-search
+  - bellman-ford
+---
+
+## Problem
+
+Given a weighted directed graph, a source, a destination, and a limit on intermediate nodes, return the maximum path cost that respects the limit.
+
+## Approach
+
+Build an adjacency list and run BFS-like layered expansion from the source. Each queue entry carries the current node and accumulated cost, and each layer increases the number of intermediates by one.
+
+**Time Complexity**: O(V + E)
+**Space Complexity**: O(V + E)
+
+## Implementation
+
+```javascript
+function maximumCostPath(graph, source, destination, maxIntermediates) {
+  const queue = [[source, 0]];
+  let head = 0;
+  let level = 0;
+  let best = Number.NEGATIVE_INFINITY;
+
+  while (head < queue.length && level <= maxIntermediates + 1) {
+    const levelSize = queue.length - head;
+
+    for (let i = 0; i < levelSize; i++) {
+      const [node, cost] = queue[head++];
+
+      if (node === destination) {
+        best = Math.max(best, cost);
+      }
+
+      for (const [nextNode, weight] of graph[node] ?? []) {
+        queue.push([nextNode, cost + weight]);
+      }
+    }
+
+    level += 1;
+  }
+
+  return best === Number.NEGATIVE_INFINITY ? -1 : best;
+}
+```
+
+```typescript
+type WeightedEdge = [number, number];
+
+type WeightedGraph = Array<WeightedEdge[]>;
+
+function maximumCostPath(
+  graph: WeightedGraph,
+  source: number,
+  destination: number,
+  maxIntermediates: number,
+): number {
+  const queue: Array<[number, number]> = [[source, 0]];
+  let head = 0;
+  let level = 0;
+  let best = Number.NEGATIVE_INFINITY;
+
+  while (head < queue.length && level <= maxIntermediates + 1) {
+    const levelSize = queue.length - head;
+
+    for (let i = 0; i < levelSize; i++) {
+      const [node, cost] = queue[head++];
+
+      if (node === destination) {
+        best = Math.max(best, cost);
+      }
+
+      for (const [nextNode, weight] of graph[node] ?? []) {
+        queue.push([nextNode, cost + weight]);
+      }
+    }
+
+    level += 1;
+  }
+
+  return best === Number.NEGATIVE_INFINITY ? -1 : best;
+}
+```

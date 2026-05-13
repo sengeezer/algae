@@ -2627,3 +2627,13 @@ The next clean frontier stays on GeeksforGeeks `Stack` and collects the remainin
 - Batch 203 was validated with catalog sync, lint, TypeScript, one clean dev-server smoke pass, and targeted Playwright route checks for all nine new algorithm routes.
 - The catalog now stands at 934 entries.
 - The GeeksforGeeks Stack page is effectively exhausted locally after this terminal clean slice; remaining nearby titles are duplicate-level overlaps rather than net-new catalog coverage.
+
+## Batch 204 frontier
+
+The next clean frontier moves to GeeksforGeeks `Queue` now that `Stack` is exhausted locally.
+
+## Current source-order note
+
+- After the easy Queue material and the duplicate-level skips for `Queue using Stacks`, `BFS for a Graph`, and `Reverse a Queue`, the clean source-order run is `Level Order Traversal (Breadth First Search) of Binary Tree`, `FIFO Page Replacement Algorithm`, `Implement k Queues in a single array`, `First Non Repeating Character`, `Minimum steps to reach target by a Knight | Set 1`, `Generate Binary Representations from 1 to n`, `Maximum cost path from source node to destination node via at most K intermediate nodes`, and `Minimum Cost Path in a directed graph via given set of intermediate nodes`.
+- `Queue using Stacks` and `Reverse a Queue` are already covered locally, `BFS for a Graph` is duplicate-level coverage of the published BFS graph entry, `Shortest path in a Binary Maze` and `Snake and Ladder Problem` are already covered locally, `All possible walks with K edges` is already covered locally, and `Minimum Cost Path` is already covered locally, so the Queue branch still yields an 8-item clean batch.
+- The next clean Queue queue is `Level Order Traversal (Breadth First Search) of Binary Tree`, `FIFO Page Replacement Algorithm`, `Implement k Queues in a single array`, `First Non Repeating Character`, `Minimum steps to reach target by a Knight | Set 1`, `Generate Binary Representations from 1 to n`, `Maximum cost path from source node to destination node via at most K intermediate nodes`, and `Minimum Cost Path in a directed graph via given set of intermediate nodes`.

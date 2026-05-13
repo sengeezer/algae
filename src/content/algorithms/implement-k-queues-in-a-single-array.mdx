@@ -1,0 +1,149 @@
+---
+title: Implement k Queues in a single array
+slug: implement-k-queues-in-a-single-array
+category: Queue
+summary: Store multiple queues in one shared array by managing front, rear, next, and a free-list pointer.
+description: "Split the array logically across queues with a free-list so any unused slot can be reused by any queue."
+dataStructures:
+  - Queue
+  - Array
+techniques:
+  - Free List Allocation
+  - Multi-Queue Simulation
+difficulty: Hard
+interviewFrequency: Medium
+aliases:
+  - k queues in a single array
+  - multiple queues in one array
+useCases:
+  - Fixed-memory embedded queue pools
+  - Shared buffer allocation across several streams
+complexity:
+  time: O(1) enqueue/dequeue
+  space: O(n + k)
+  notes: "front, rear, and next arrays coordinate queue membership while a free-index list tracks unused slots."
+interviewSignals:
+  - Empty queues use `-1` for both front and rear.
+  - A free list avoids wasting capacity on sparsely used queues.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/dsa/efficiently-implement-k-queues-single-array/'
+related:
+  - queue
+  - stack-using-queues
+---
+
+## Problem
+
+Implement `k` separate queues inside one backing array while supporting enqueue, dequeue, and emptiness checks.
+
+## Approach
+
+Use one array for values, one `next` array to link either queue nodes or free slots, plus `front`, `rear`, and `freeIndex` bookkeeping.
+
+**Time Complexity**: O(1) enqueue/dequeue
+**Space Complexity**: O(n + k)
+
+## Implementation
+
+```javascript
+class KQueues {
+  constructor(size, queueCount) {
+    this.size = size;
+    this.queueCount = queueCount;
+    this.values = new Array(size);
+    this.front = new Array(queueCount).fill(-1);
+    this.rear = new Array(queueCount).fill(-1);
+    this.next = new Array(size);
+
+    for (let i = 0; i < size - 1; i += 1) {
+      this.next[i] = i + 1;
+    }
+    this.next[size - 1] = -1;
+    this.freeIndex = 0;
+  }
+
+  enqueue(queueIndex, value) {
+    if (this.freeIndex === -1) return false;
+
+    const slot = this.freeIndex;
+    this.freeIndex = this.next[slot];
+    this.values[slot] = value;
+    this.next[slot] = -1;
+
+    if (this.front[queueIndex] === -1) {
+      this.front[queueIndex] = slot;
+    } else {
+      this.next[this.rear[queueIndex]] = slot;
+    }
+
+    this.rear[queueIndex] = slot;
+    return true;
+  }
+
+  dequeue(queueIndex) {
+    const frontIndex = this.front[queueIndex];
+    if (frontIndex === -1) return null;
+
+    this.front[queueIndex] = this.next[frontIndex];
+    if (this.front[queueIndex] === -1) this.rear[queueIndex] = -1;
+
+    this.next[frontIndex] = this.freeIndex;
+    this.freeIndex = frontIndex;
+    return this.values[frontIndex];
+  }
+}
+```
+
+```typescript
+class KQueues {
+  private values: number[];
+  private front: number[];
+  private rear: number[];
+  private next: number[];
+  private freeIndex: number;
+
+  constructor(private size: number, private queueCount: number) {
+    this.values = new Array<number>(size);
+    this.front = new Array(queueCount).fill(-1);
+    this.rear = new Array(queueCount).fill(-1);
+    this.next = new Array<number>(size);
+
+    for (let i = 0; i < size - 1; i += 1) {
+      this.next[i] = i + 1;
+    }
+    this.next[size - 1] = -1;
+    this.freeIndex = 0;
+  }
+
+  enqueue(queueIndex: number, value: number): boolean {
+    if (this.freeIndex === -1) return false;
+
+    const slot = this.freeIndex;
+    this.freeIndex = this.next[slot];
+    this.values[slot] = value;
+    this.next[slot] = -1;
+
+    if (this.front[queueIndex] === -1) {
+      this.front[queueIndex] = slot;
+    } else {
+      this.next[this.rear[queueIndex]] = slot;
+    }
+
+    this.rear[queueIndex] = slot;
+    return true;
+  }
+
+  dequeue(queueIndex: number): number | null {
+    const frontIndex = this.front[queueIndex];
+    if (frontIndex === -1) return null;
+
+    this.front[queueIndex] = this.next[frontIndex];
+    if (this.front[queueIndex] === -1) this.rear[queueIndex] = -1;
+
+    this.next[frontIndex] = this.freeIndex;
+    this.freeIndex = frontIndex;
+    return this.values[frontIndex];
+  }
+}
+```

@@ -1,0 +1,97 @@
+---
+title: FIFO Page Replacement Algorithm
+slug: fifo-page-replacement-algorithm
+category: Greedy
+summary: Simulate page faults by evicting the oldest page in memory whenever a new page must enter a full frame set.
+description: "FIFO page replacement keeps pages in queue order and always removes the one that has been resident the longest."
+dataStructures:
+  - Queue
+  - Set
+  - Array
+techniques:
+  - Simulation
+  - Greedy
+  - Queue Discipline
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - fifo page replacement
+  - first in first out page replacement
+useCases:
+  - Operating-system paging simulations
+  - Comparing replacement policies against LRU and OPT
+complexity:
+  time: O(n)
+  space: O(frames)
+  notes: "A fixed-capacity frame set and a queue of page order are enough to count faults."
+interviewSignals:
+  - Hit pages stay in memory without changing FIFO order.
+  - The oldest loaded page is evicted first on every fault.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/dsa/program-page-replacement-algorithms-set-2-fifo/'
+related:
+  - optimal-page-replacement-algorithm
+  - lru-cache
+---
+
+## Problem
+
+Given a page reference string and a frame count, return the number of page faults under FIFO replacement.
+
+## Approach
+
+Track pages currently in memory with a set and their arrival order with a queue. On a miss, evict the oldest page when frames are full.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(frames)
+
+## Implementation
+
+```javascript
+function fifoPageReplacement(pages, frameCount) {
+  const frames = new Set();
+  const order = [];
+  let faults = 0;
+
+  for (const page of pages) {
+    if (frames.has(page)) continue;
+
+    faults += 1;
+
+    if (frames.size === frameCount) {
+      const oldest = order.shift();
+      frames.delete(oldest);
+    }
+
+    frames.add(page);
+    order.push(page);
+  }
+
+  return faults;
+}
+```
+
+```typescript
+function fifoPageReplacement(pages: number[], frameCount: number): number {
+  const frames = new Set<number>();
+  const order: number[] = [];
+  let faults = 0;
+
+  for (const page of pages) {
+    if (frames.has(page)) continue;
+
+    faults += 1;
+
+    if (frames.size === frameCount) {
+      const oldest = order.shift()!;
+      frames.delete(oldest);
+    }
+
+    frames.add(page);
+    order.push(page);
+  }
+
+  return faults;
+}
+```

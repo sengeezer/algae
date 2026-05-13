@@ -1,0 +1,99 @@
+---
+title: First Non Repeating Character
+slug: first-non-repeating-character
+category: Queue
+summary: Track the first character in a stream that still has frequency one after each new input symbol.
+description: "Keep a queue of candidate characters and evict repeats until the front is the first non-repeating character."
+dataStructures:
+  - Queue
+  - Array
+techniques:
+  - Frequency Counting
+  - Stream Processing
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - first non repeating in a stream
+  - first non-repeating character stream
+useCases:
+  - Real-time character stream summaries
+  - Online duplicate detection with order preservation
+complexity:
+  time: O(n)
+  space: O(1)
+  notes: "The queue stores only candidates that have not yet been ruled out."
+interviewSignals:
+  - Output `#` when no candidate remains unique.
+  - Frequency tracking and queue order both matter.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/dsa/find-first-non-repeating-character-stream-characters/'
+related:
+  - queue
+  - sliding-window
+---
+
+## Problem
+
+For each prefix of a lowercase string stream, return the first character that has appeared exactly once so far, or `#` if none exists.
+
+## Approach
+
+Maintain a frequency array and a queue of candidate characters. Push new characters once, then pop from the front while the front is repeated.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(1)
+
+## Implementation
+
+```javascript
+function firstNonRepeating(stream) {
+  const counts = new Array(26).fill(0);
+  const queue = [];
+  const result = [];
+  let head = 0;
+
+  for (const ch of stream) {
+    const index = ch.charCodeAt(0) - 97;
+    counts[index] += 1;
+
+    if (counts[index] === 1) {
+      queue.push(ch);
+    }
+
+    while (head < queue.length && counts[queue[head].charCodeAt(0) - 97] > 1) {
+      head += 1;
+    }
+
+    result.push(head < queue.length ? queue[head] : '#');
+  }
+
+  return result.join('');
+}
+```
+
+```typescript
+function firstNonRepeating(stream: string): string {
+  const counts: number[] = new Array(26).fill(0);
+  const queue: string[] = [];
+  const result: string[] = [];
+  let head = 0;
+
+  for (const ch of stream) {
+    const index = ch.charCodeAt(0) - 97;
+    counts[index] += 1;
+
+    if (counts[index] === 1) {
+      queue.push(ch);
+    }
+
+    while (head < queue.length && counts[queue[head].charCodeAt(0) - 97] > 1) {
+      head += 1;
+    }
+
+    result.push(head < queue.length ? queue[head] : '#');
+  }
+
+  return result.join('');
+}
+```

@@ -1,0 +1,127 @@
+---
+title: Minimum steps to reach target by a Knight | Set 1
+slug: minimum-steps-to-reach-target-by-a-knight-set-1
+category: Graphs
+summary: Use breadth-first search on knight moves to find the fewest steps needed to reach a target square.
+description: "Model the chessboard as an unweighted graph and let BFS expand all legal knight moves level by level."
+dataStructures:
+  - Queue
+  - Matrix
+techniques:
+  - Breadth-First Search
+  - Unweighted Shortest Path
+difficulty: Medium
+interviewFrequency: Medium
+aliases:
+  - knight minimum steps
+  - minimum knight moves to target
+useCases:
+  - Chessboard reachability
+  - Shortest-path search on a move graph
+complexity:
+  time: O(n^2)
+  space: O(n^2)
+  notes: "Every board cell can be visited at most once."
+interviewSignals:
+  - Legal knight moves are the only edges in the graph.
+  - BFS guarantees the first time the target is removed is the shortest path.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/dsa/minimum-steps-reach-target-knight/'
+related:
+  - breadth-first-search
+  - shortest-path-in-a-binary-maze
+---
+
+## Problem
+
+Given a knight position and a target square on an `n x n` board, return the minimum number of moves required.
+
+## Approach
+
+Run BFS from the knight's start position. Each queue item stores the square and the distance so far.
+
+**Time Complexity**: O(n^2)
+**Space Complexity**: O(n^2)
+
+## Implementation
+
+```javascript
+function minKnightSteps(boardSize, start, target) {
+  const moves = [
+    [-2, -1], [-2, 1], [-1, -2], [-1, 2],
+    [1, -2], [1, 2], [2, -1], [2, 1],
+  ];
+  const visited = Array.from({ length: boardSize }, () => Array(boardSize).fill(false));
+  const queue = [[start[0], start[1], 0]];
+  let head = 0;
+
+  visited[start[0]][start[1]] = true;
+
+  while (head < queue.length) {
+    const [row, col, distance] = queue[head++];
+
+    if (row === target[0] && col === target[1]) {
+      return distance;
+    }
+
+    for (const [dr, dc] of moves) {
+      const nextRow = row + dr;
+      const nextCol = col + dc;
+
+      if (
+        nextRow >= 0 && nextRow < boardSize &&
+        nextCol >= 0 && nextCol < boardSize &&
+        !visited[nextRow][nextCol]
+      ) {
+        visited[nextRow][nextCol] = true;
+        queue.push([nextRow, nextCol, distance + 1]);
+      }
+    }
+  }
+
+  return -1;
+}
+```
+
+```typescript
+function minKnightSteps(
+  boardSize: number,
+  start: [number, number],
+  target: [number, number],
+): number {
+  const moves: Array<[number, number]> = [
+    [-2, -1], [-2, 1], [-1, -2], [-1, 2],
+    [1, -2], [1, 2], [2, -1], [2, 1],
+  ];
+  const visited: boolean[][] = Array.from({ length: boardSize }, () => Array(boardSize).fill(false));
+  const queue: Array<[number, number, number]> = [[start[0], start[1], 0]];
+  let head = 0;
+
+  visited[start[0]][start[1]] = true;
+
+  while (head < queue.length) {
+    const [row, col, distance] = queue[head++];
+
+    if (row === target[0] && col === target[1]) {
+      return distance;
+    }
+
+    for (const [dr, dc] of moves) {
+      const nextRow = row + dr;
+      const nextCol = col + dc;
+
+      if (
+        nextRow >= 0 && nextRow < boardSize &&
+        nextCol >= 0 && nextCol < boardSize &&
+        !visited[nextRow][nextCol]
+      ) {
+        visited[nextRow][nextCol] = true;
+        queue.push([nextRow, nextCol, distance + 1]);
+      }
+    }
+  }
+
+  return -1;
+}
+```

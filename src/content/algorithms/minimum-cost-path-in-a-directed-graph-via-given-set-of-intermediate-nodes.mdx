@@ -1,0 +1,125 @@
+---
+title: Minimum Cost Path in a directed graph via given set of intermediate nodes
+slug: minimum-cost-path-in-a-directed-graph-via-given-set-of-intermediate-nodes
+category: Graphs
+summary: Find the cheapest path in a directed graph that must visit every required intermediate vertex before reaching the destination.
+description: "Track the set of required vertices already visited and search for the minimum-cost route that covers all of them."
+dataStructures:
+  - Graph
+  - Queue
+  - Array
+techniques:
+  - State Search
+  - Breadth-First Search
+  - Path Constraint Tracking
+difficulty: Hard
+interviewFrequency: Low
+aliases:
+  - minimum cost path via intermediate nodes
+  - path through all required nodes
+useCases:
+  - Visiting mandatory checkpoints in a weighted graph
+  - Constrained route planning with required stops
+complexity:
+  time: O(V * 2^m)
+  space: O(V * 2^m)
+  notes: "The state combines current vertex, accumulated cost, and which required vertices have been visited."
+interviewSignals:
+  - A valid path must include every required intermediate node at least once.
+  - The state space grows with the number of required vertices, not just the graph size.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/dsa/minimum-cost-path-in-a-directed-graph-via-given-set-of-intermediate-nodes/'
+related:
+  - minimum-cost-path
+  - maximum-cost-path-from-source-node-to-destination-node-via-at-most-k-intermediate-nodes
+---
+
+## Problem
+
+Given a weighted directed graph, a source, a destination, and a required set of intermediate vertices, return the cheapest route that visits every required vertex at least once.
+
+## Approach
+
+Encode the visited required vertices as a bitmask and search state space with a queue ordered by accumulated cost. When the destination is reached with all required vertices visited, keep the minimum cost.
+
+**Time Complexity**: O(V * 2^m)
+**Space Complexity**: O(V * 2^m)
+
+## Implementation
+
+```javascript
+function minimumCostPathWithRequiredNodes(graph, source, destination, requiredNodes) {
+  const indexByNode = new Map(requiredNodes.map((node, index) => [node, index]));
+  const targetMask = (1 << requiredNodes.length) - 1;
+  const queue = [[source, 0, indexByNode.has(source) ? 1 << indexByNode.get(source) : 0]];
+  const best = new Map();
+  let head = 0;
+  let answer = Number.POSITIVE_INFINITY;
+
+  while (head < queue.length) {
+    const [node, cost, mask] = queue[head++];
+    const stateKey = `${node}:${mask}`;
+
+    if (best.has(stateKey) && best.get(stateKey) <= cost) continue;
+    best.set(stateKey, cost);
+
+    if (node === destination && mask === targetMask) {
+      answer = Math.min(answer, cost);
+      continue;
+    }
+
+    for (const [nextNode, weight] of graph[node] ?? []) {
+      const nextMask = indexByNode.has(nextNode)
+        ? mask | (1 << indexByNode.get(nextNode))
+        : mask;
+      queue.push([nextNode, cost + weight, nextMask]);
+    }
+  }
+
+  return Number.isFinite(answer) ? answer : -1;
+}
+```
+
+```typescript
+type WeightedEdge = [number, number];
+
+type WeightedGraph = Array<WeightedEdge[]>;
+
+function minimumCostPathWithRequiredNodes(
+  graph: WeightedGraph,
+  source: number,
+  destination: number,
+  requiredNodes: number[],
+): number {
+  const indexByNode = new Map(requiredNodes.map((node, index) => [node, index]));
+  const targetMask = (1 << requiredNodes.length) - 1;
+  const initialMask = indexByNode.has(source) ? 1 << indexByNode.get(source)! : 0;
+  const queue: Array<[number, number, number]> = [[source, 0, initialMask]];
+  const best = new Map<string, number>();
+  let head = 0;
+  let answer = Number.POSITIVE_INFINITY;
+
+  while (head < queue.length) {
+    const [node, cost, mask] = queue[head++];
+    const stateKey = `${node}:${mask}`;
+
+    if (best.has(stateKey) && best.get(stateKey)! <= cost) continue;
+    best.set(stateKey, cost);
+
+    if (node === destination && mask === targetMask) {
+      answer = Math.min(answer, cost);
+      continue;
+    }
+
+    for (const [nextNode, weight] of graph[node] ?? []) {
+      const nextMask = indexByNode.has(nextNode)
+        ? mask | (1 << indexByNode.get(nextNode)!)
+        : mask;
+      queue.push([nextNode, cost + weight, nextMask]);
+    }
+  }
+
+  return Number.isFinite(answer) ? answer : -1;
+}
+```

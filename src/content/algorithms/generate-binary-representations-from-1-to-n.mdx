@@ -1,0 +1,81 @@
+---
+title: Generate Binary Representations from 1 to n
+slug: generate-binary-representations-from-1-to-n
+category: Queue
+summary: Generate the binary strings for 1 through n in order by expanding each prefix with 0 and 1.
+description: "Treat binary prefixes as BFS nodes and use a queue to emit numbers in increasing order."
+dataStructures:
+  - Queue
+  - String
+techniques:
+  - Breadth-First Generation
+  - BFS on Implicit Tree
+difficulty: Easy
+interviewFrequency: Medium
+aliases:
+  - generate binary numbers from 1 to n
+  - binary representations 1 to n
+useCases:
+  - Ordered binary-number generation
+  - BFS over an implicit binary tree
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: "Each generated string is enqueued once with two children candidates."
+interviewSignals:
+  - The queue expands prefixes in lexicographic and numeric order.
+  - The implicit tree root is `1` and children append `0` and `1`.
+source:
+  origin: GeeksforGeeks
+  url: 'https://www.geeksforgeeks.org/dsa/interesting-method-generate-binary-numbers-1-n/'
+related:
+  - queue
+  - breadth-first-search
+---
+
+## Problem
+
+Return the binary representations of all integers from `1` to `n` in order.
+
+## Approach
+
+Start with `1` in a queue. Repeatedly pop the front string, append it to the result, and enqueue its `0` and `1` children.
+
+**Time Complexity**: O(n)
+**Space Complexity**: O(n)
+
+## Implementation
+
+```javascript
+function generateBinaryRepresentations(n) {
+  const queue = ['1'];
+  const result = [];
+  let head = 0;
+
+  while (result.length < n) {
+    const value = queue[head++];
+    result.push(value);
+    queue.push(`${value}0`);
+    queue.push(`${value}1`);
+  }
+
+  return result;
+}
+```
+
+```typescript
+function generateBinaryRepresentations(n: number): string[] {
+  const queue: string[] = ['1'];
+  const result: string[] = [];
+  let head = 0;
+
+  while (result.length < n) {
+    const value = queue[head++];
+    result.push(value);
+    queue.push(`${value}0`);
+    queue.push(`${value}1`);
+  }
+
+  return result;
+}
+```
