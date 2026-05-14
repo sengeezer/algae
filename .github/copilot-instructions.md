@@ -31,7 +31,7 @@
 - Work through each checklist item systematically.
 - Keep communication concise and focused.
 - Follow development best practices.
-- Prefer large batch size over speed when expanding the catalog, but optimise for token usage as second priority.
+- Prefer large batch size over speed when expanding the catalog, but optimise for premium requests / token usage as second priority.
 
 ## Tools and Resources
 - Next.js Documentation: https://nextjs.org/docs
