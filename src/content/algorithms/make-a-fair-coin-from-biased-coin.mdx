@@ -1,0 +1,367 @@
+---
+title: Make a Fair Coin from a Biased Coin
+slug: make-fair-coin-from-biased-coin
+category: mathematical
+summary: Generate fair coin flips using a biased coin with probability p of heads
+description: "Given a biased coin with unknown probability p of getting heads, generate fair coin flips (50% heads, 50% tails) using only the biased coin."
+dataStructures:
+  - probability
+  - randomization
+techniques:
+  - probability-theory
+  - randomization
+difficulty: medium
+interviewFrequency: low
+complexity:
+  time: O(1) expected per fair flip, O(log n) worst case
+  space: O(1)
+  notes: Von Neumann's algorithm requires variable number of biased flips per fair flip
+interviewSignals:
+  - probability reasoning
+  - creative algorithm design
+  - random process generation
+source: geeksforgeeks
+related:
+  - pseudo-random-number-generator
+  - probability-analysis
+---
+
+## Problem
+
+Given a function `biasedCoin()` that returns 0 or 1 with probability (1-p) and p respectively (p unknown), implement `fairCoin()` that returns 0 or 1 with equal probability (0.5 each).
+
+### Examples
+
+**Example 1:**
+```
+Input: biased coin with p = 0.7 (70% chance of 1)
+Output: Fair coin returning 0 and 1 each ~50% of the time
+
+Key insight: Two consecutive flips [0,1] and [1,0] have 
+equal probability regardless of p value
+```
+
+**Example 2:**
+```
+Using Von Neumann's algorithm:
+- Flip twice
+- If [0,1] return 0
+- If [1,0] return 1
+- If [0,0] or [1,1] discard and retry
+```
+
+## Approach
+
+### Von Neumann's Method
+1. Flip the biased coin twice
+2. If results differ: return first flip
+3. If results same: discard and repeat
+
+**Why it works:**
+- P([0,1]) = (1-p) × p
+- P([1,0]) = p × (1-p)
+- These are equal regardless of p!
+
+## Solution
+
+### JavaScript
+
+```javascript
+/**
+ * Generate fair coin flip from biased coin
+ * Using Von Neumann's algorithm
+ * Expected time: O(1), Space: O(1)
+ */
+function fairCoin(biasedCoin) {
+  while (true) {
+    const flip1 = biasedCoin();
+    const flip2 = biasedCoin();
+
+    // If different, return first flip
+    if (flip1 !== flip2) {
+      return flip1;
+    }
+    // If same, discard and retry
+  }
+}
+
+/**
+ * Monte Carlo simulation to verify fairness
+ * Time: O(n), Space: O(1)
+ */
+function verifyFairness(biasedCoin, trials = 10000) {
+  let zeros = 0;
+  let ones = 0;
+
+  for (let i = 0; i < trials; i++) {
+    if (fairCoin(biasedCoin) === 0) {
+      zeros++;
+    } else {
+      ones++;
+    }
+  }
+
+  const zeroPercent = (zeros / trials) * 100;
+  const onePercent = (ones / trials) * 100;
+
+  return {
+    zeros,
+    ones,
+    zeroPercent: zeroPercent.toFixed(2),
+    onePercent: onePercent.toFixed(2),
+    fairnessMetric: Math.abs(0.5 - zeros / trials), // Should be close to 0
+  };
+}
+
+/**
+ * Biased coin implementation with known probability
+ * Time: O(1), Space: O(1)
+ */
+function createBiasedCoin(probability) {
+  return function () {
+    return Math.random() < probability ? 1 : 0;
+  };
+}
+
+/**
+ * Count flips needed for one fair flip
+ * Time: O(1) expected
+ */
+function countFlipsForFairFlip(biasedCoin) {
+  let flips = 0;
+
+  while (true) {
+    const flip1 = biasedCoin();
+    const flip2 = biasedCoin();
+    flips += 2;
+
+    if (flip1 !== flip2) {
+      return { fairFlip: flip1, flipsUsed: flips };
+    }
+  }
+}
+
+/**
+ * Batched fair coin generation
+ * Generate multiple fair coins efficiently
+ * Time: O(n) expected
+ */
+function generateFairCoins(biasedCoin, count) {
+  const results = [];
+
+  for (let i = 0; i < count; i++) {
+    let attempts = 0;
+    let flip1, flip2;
+
+    do {
+      flip1 = biasedCoin();
+      flip2 = biasedCoin();
+      attempts++;
+    } while (flip1 === flip2 && attempts < 1000); // Safety limit
+
+    if (flip1 !== flip2) {
+      results.push(flip1);
+    }
+  }
+
+  return results;
+}
+
+/**
+ * Empirical probability analysis of biased coin
+ * Time: O(n), Space: O(1)
+ */
+function analyzeBiasedCoin(biasedCoin, samples = 10000) {
+  let ones = 0;
+
+  for (let i = 0; i < samples; i++) {
+    ones += biasedCoin();
+  }
+
+  const probabilityOfOne = ones / samples;
+  return {
+    samplesUsed: samples,
+    onesCount: ones,
+    zerosCount: samples - ones,
+    estimatedP: probabilityOfOne.toFixed(4),
+  };
+}
+
+/**
+ * Alternative method: Use multiple flips to reduce bias
+ * Generate k fair bits from 2k biased flips
+ * Time: O(k), Space: O(k)
+ */
+function fairCoinAlternative(biasedCoin) {
+  // Using more flips can reduce the rejection rate
+  const flips = [];
+  for (let i = 0; i < 3; i++) {
+    flips.push(biasedCoin());
+  }
+
+  // XOR-based method: different flips likely give different results
+  if (flips[0] !== flips[1]) {
+    return flips[0];
+  } else if (flips[1] !== flips[2]) {
+    return flips[1];
+  } else {
+    // Fallback to standard method
+    return fairCoin(biasedCoin);
+  }
+}
+```
+
+### TypeScript
+
+```typescript
+interface FlipsResult {
+  fairFlip: number;
+  flipsUsed: number;
+}
+
+interface FairnessMetrics {
+  zeros: number;
+  ones: number;
+  zeroPercent: string;
+  onePercent: string;
+  fairnessMetric: number;
+}
+
+interface BiasAnalysis {
+  samplesUsed: number;
+  onesCount: number;
+  zerosCount: number;
+  estimatedP: string;
+}
+
+type CoinFlip = () => number;
+
+/**
+ * Generate fair coin flip from biased coin
+ * Von Neumann's algorithm
+ * Expected time: O(1), Space: O(1)
+ */
+function fairCoin(biasedCoin: CoinFlip): number {
+  while (true) {
+    const flip1 = biasedCoin();
+    const flip2 = biasedCoin();
+
+    if (flip1 !== flip2) {
+      return flip1;
+    }
+  }
+}
+
+/**
+ * Verify fairness through simulation
+ * Time: O(n), Space: O(1)
+ */
+function verifyFairness(biasedCoin: CoinFlip, trials: number = 10000): FairnessMetrics {
+  let zeros = 0;
+  let ones = 0;
+
+  for (let i = 0; i < trials; i++) {
+    if (fairCoin(biasedCoin) === 0) {
+      zeros++;
+    } else {
+      ones++;
+    }
+  }
+
+  const zeroPercent = ((zeros / trials) * 100).toFixed(2);
+  const onePercent = ((ones / trials) * 100).toFixed(2);
+
+  return {
+    zeros,
+    ones,
+    zeroPercent,
+    onePercent,
+    fairnessMetric: Math.abs(0.5 - zeros / trials),
+  };
+}
+
+/**
+ * Create biased coin with known probability
+ * Time: O(1), Space: O(1)
+ */
+function createBiasedCoin(probability: number): CoinFlip {
+  return function () {
+    return Math.random() < probability ? 1 : 0;
+  };
+}
+
+/**
+ * Count flips needed for one fair flip
+ * Time: O(1) expected
+ */
+function countFlipsForFairFlip(biasedCoin: CoinFlip): FlipsResult {
+  let flips = 0;
+
+  while (true) {
+    const flip1 = biasedCoin();
+    const flip2 = biasedCoin();
+    flips += 2;
+
+    if (flip1 !== flip2) {
+      return { fairFlip: flip1, flipsUsed: flips };
+    }
+  }
+}
+
+/**
+ * Generate multiple fair coins
+ * Time: O(n) expected, Space: O(n)
+ */
+function generateFairCoins(biasedCoin: CoinFlip, count: number): number[] {
+  const results: number[] = [];
+
+  for (let i = 0; i < count; i++) {
+    let attempts = 0;
+    let flip1, flip2;
+
+    do {
+      flip1 = biasedCoin();
+      flip2 = biasedCoin();
+      attempts++;
+    } while (flip1 === flip2 && attempts < 1000);
+
+    if (flip1 !== flip2) {
+      results.push(flip1);
+    }
+  }
+
+  return results;
+}
+
+/**
+ * Analyze biased coin to estimate p
+ * Time: O(n), Space: O(1)
+ */
+function analyzeBiasedCoin(biasedCoin: CoinFlip, samples: number = 10000): BiasAnalysis {
+  let ones = 0;
+
+  for (let i = 0; i < samples; i++) {
+    ones += biasedCoin();
+  }
+
+  return {
+    samplesUsed: samples,
+    onesCount: ones,
+    zerosCount: samples - ones,
+    estimatedP: (ones / samples).toFixed(4),
+  };
+}
+```
+
+## Key Properties
+
+- **Von Neumann Method:** Simple and elegant
+- **Unbiased:** Works for ANY bias probability
+- **Expected Time:** O(1) on average, unbounded worst case
+- **Rejection Rate:** Higher for extreme biases
+
+## Complexity Analysis
+
+- **Time:** O(1) expected, unbounded worst case
+- **Space:** O(1)
+- **Efficiency:** Expected 2/(1-2p(1-p)) flips per fair flip (worst at p=0.5)

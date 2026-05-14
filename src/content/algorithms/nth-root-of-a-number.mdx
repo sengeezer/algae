@@ -1,0 +1,333 @@
+---
+title: N-th Root of a Number
+slug: nth-root-of-a-number
+category: mathematical
+summary: Calculate the nth root of a number using numerical methods
+description: "Find the nth root of a given number x, i.e., find r such that r^n = x. Use numerical methods like binary search or Newton's method for accurate computation."
+dataStructures:
+  - numerical-algorithm
+techniques:
+  - binary-search
+  - newton-method
+  - numerical-approximation
+difficulty: medium
+interviewFrequency: low
+complexity:
+  time: O(log x * log n) binary search, O(log x) Newton's method
+  space: O(1)
+  notes: Newton's method typically converges faster
+interviewSignals:
+  - numerical computation
+  - mathematical problem solving
+  - precision handling
+source: geeksforgeeks
+related:
+  - square-root-of-an-integer
+  - program-for-muller-method
+---
+
+## Problem
+
+Given a number x and an integer n, find the nth root of x, i.e., find r such that r^n = x.
+
+### Examples
+
+**Example 1:**
+```
+Input: x = 27, n = 3
+Output: 3
+Explanation: 3^3 = 27
+```
+
+**Example 2:**
+```
+Input: x = 8, n = 3
+Output: 2
+Explanation: 2^3 = 8
+```
+
+**Example 3:**
+```
+Input: x = 2, n = 3
+Output: 1.2599... (≈ ∛2)
+```
+
+## Approach
+
+### Method 1: Binary Search
+1. Set range [0, x]
+2. Binary search for r where r^n = x
+
+### Method 2: Newton's Method
+1. Start with initial guess
+2. Refine using: r = ((n-1) * r + x / r^(n-1)) / n
+3. Iterate until convergence
+
+## Solution
+
+### JavaScript
+
+```javascript
+/**
+ * Find nth root using binary search
+ * Time: O(log x * log n), Space: O(1)
+ */
+function nthRootBinarySearch(x, n, precision = 1e-6) {
+  if (x === 0) return 0;
+  if (x === 1) return 1;
+
+  let left = 0;
+  let right = x;
+
+  // Optimization: nth root is at most x for x > 1
+  if (x >= 1) right = x;
+  else right = 1; // For 0 < x < 1, root is between x and 1
+
+  while (right - left > precision) {
+    const mid = (left + right) / 2;
+    const power = Math.pow(mid, n);
+
+    if (Math.abs(power - x) < precision) {
+      return mid;
+    }
+
+    if (power < x) {
+      left = mid;
+    } else {
+      right = mid;
+    }
+  }
+
+  return (left + right) / 2;
+}
+
+/**
+ * Find nth root using Newton's method
+ * Time: O(log x), Space: O(1)
+ */
+function nthRootNewton(x, n, precision = 1e-6, maxIterations = 100) {
+  if (x === 0) return 0;
+  if (x === 1) return 1;
+
+  // Initial guess
+  let r = x / n;
+
+  let iteration = 0;
+  while (iteration < maxIterations) {
+    iteration++;
+
+    // Newton's formula: r = ((n-1) * r + x / r^(n-1)) / n
+    const rPowerN1 = Math.pow(r, n - 1);
+    const newR = ((n - 1) * r + x / rPowerN1) / n;
+
+    if (Math.abs(newR - r) < precision) {
+      return newR;
+    }
+
+    r = newR;
+  }
+
+  return r;
+}
+
+/**
+ * Find integer nth root (floor)
+ * Time: O(log x), Space: O(1)
+ */
+function nthRootInteger(x, n) {
+  if (x === 0) return 0;
+  if (x === 1) return 1;
+  if (n === 1) return x;
+
+  let left = 1;
+  let right = x;
+
+  // Optimization: nth root of x is less than sqrt(x) for n > 2
+  if (n > 2) right = Math.min(x, 1 << (Math.floor(Math.log2(x) / n) + 1));
+
+  let result = 1;
+
+  while (left <= right) {
+    const mid = Math.floor((left + right) / 2);
+    const power = Math.pow(mid, n);
+
+    if (power === x) return mid;
+    if (power < x) {
+      result = mid;
+      left = mid + 1;
+    } else {
+      right = mid - 1;
+    }
+  }
+
+  return result;
+}
+
+/**
+ * Find nth root with precision control
+ * Time: O(log x * log precision), Space: O(1)
+ */
+function nthRootPrecision(x, n, decimalPlaces = 6) {
+  const precision = Math.pow(10, -decimalPlaces);
+  let r = nthRootNewton(x, n, precision);
+
+  // Round to specified decimal places
+  return Math.round(r * Math.pow(10, decimalPlaces)) / Math.pow(10, decimalPlaces);
+}
+
+/**
+ * Verify if r is the nth root of x
+ * Time: O(1), Space: O(1)
+ */
+function verifyNthRoot(x, r, n, tolerance = 1e-9) {
+  const power = Math.pow(r, n);
+  return Math.abs(power - x) < tolerance;
+}
+
+/**
+ * Find all nth roots (real and complex)
+ * Time: O(n), Space: O(n)
+ */
+function findAllNthRoots(x, n) {
+  const roots = [];
+  const magnitude = Math.pow(Math.abs(x), 1 / n);
+  const angle = Math.atan2(0, x); // Angle for real number
+
+  for (let k = 0; k < n; k++) {
+    const theta = (angle + 2 * Math.PI * k) / n;
+    const real = magnitude * Math.cos(theta);
+    const imag = magnitude * Math.sin(theta);
+
+    if (Math.abs(imag) < 1e-10) {
+      roots.push(real);
+    } else {
+      roots.push({ real, imag });
+    }
+  }
+
+  return roots;
+}
+```
+
+### TypeScript
+
+```typescript
+/**
+ * Find nth root using binary search
+ * Time: O(log x * log n), Space: O(1)
+ */
+function nthRootBinarySearch(x: number, n: number, precision: number = 1e-6): number {
+  if (x === 0) return 0;
+  if (x === 1) return 1;
+
+  let left = 0;
+  let right = x >= 1 ? x : 1;
+
+  while (right - left > precision) {
+    const mid = (left + right) / 2;
+    const power = Math.pow(mid, n);
+
+    if (Math.abs(power - x) < precision) {
+      return mid;
+    }
+
+    if (power < x) {
+      left = mid;
+    } else {
+      right = mid;
+    }
+  }
+
+  return (left + right) / 2;
+}
+
+/**
+ * Find nth root using Newton's method
+ * Time: O(log x), Space: O(1)
+ */
+function nthRootNewton(x: number, n: number, precision: number = 1e-6, maxIterations: number = 100): number {
+  if (x === 0) return 0;
+  if (x === 1) return 1;
+
+  let r = x / n;
+  let iteration = 0;
+
+  while (iteration < maxIterations) {
+    iteration++;
+
+    const rPowerN1 = Math.pow(r, n - 1);
+    const newR = ((n - 1) * r + x / rPowerN1) / n;
+
+    if (Math.abs(newR - r) < precision) {
+      return newR;
+    }
+
+    r = newR;
+  }
+
+  return r;
+}
+
+/**
+ * Find integer nth root (floor)
+ * Time: O(log x), Space: O(1)
+ */
+function nthRootInteger(x: number, n: number): number {
+  if (x === 0) return 0;
+  if (x === 1) return 1;
+  if (n === 1) return x;
+
+  let left = 1;
+  let right = x;
+  let result = 1;
+
+  while (left <= right) {
+    const mid = Math.floor((left + right) / 2);
+    const power = Math.pow(mid, n);
+
+    if (power === x) return mid;
+    if (power < x) {
+      result = mid;
+      left = mid + 1;
+    } else {
+      right = mid - 1;
+    }
+  }
+
+  return result;
+}
+
+/**
+ * Find nth root with decimal precision
+ * Time: O(log x), Space: O(1)
+ */
+function nthRootPrecision(x: number, n: number, decimalPlaces: number = 6): number {
+  const precision = Math.pow(10, -decimalPlaces);
+  let r = nthRootNewton(x, n, precision);
+
+  return Math.round(r * Math.pow(10, decimalPlaces)) / Math.pow(10, decimalPlaces);
+}
+
+/**
+ * Verify if r is the nth root of x
+ * Time: O(1), Space: O(1)
+ */
+function verifyNthRoot(x: number, r: number, n: number, tolerance: number = 1e-9): boolean {
+  const power = Math.pow(r, n);
+  return Math.abs(power - x) < tolerance;
+}
+```
+
+## Key Properties
+
+- **Newton's Method:** Faster convergence than binary search
+- **Integer Roots:** Special optimization for integer results
+- **Complex Roots:** Nth root has n complex solutions in general
+- **Precision:** Important for floating-point arithmetic
+
+## Complexity Analysis
+
+- **Time (Binary Search):** O(log x · log(1/precision))
+- **Time (Newton):** O(log x) typically converges in ~5-10 iterations
+- **Space:** O(1) for both methods
+- **Convergence:** Quadratic for Newton's method

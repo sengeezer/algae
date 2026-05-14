@@ -2701,3 +2701,39 @@ Path & Advanced Problems (8):
 - Batch 205 was validated with catalog sync, lint, TypeScript, one clean dev-server smoke pass, and targeted Playwright route checks for all 25 new algorithm routes.
 - The catalog now stands at 967 entries.
 - Core binary tree fundamentals and operations are now comprehensively covered; next frontiers include advanced tree variants (Red-Black, 2-3 trees) and specialized tree algorithms.
+
+## Batch 206 frontier
+
+After Batch 205 (Tree algorithms), the Mathematical Algorithms frontier offers multiple adjacent research areas:
+- Advanced numerical methods: Muller's method, root-finding optimizations
+- Combinatorial counting: Non-negative integer solutions (stars and bars)
+- Statistical/analytical: IQR for robust dispersion, Pythagorean triplets
+- Randomization: Probability-based coin flipping, PRNG variants
+- Special number types: Double base palindromes, nth roots, power checking
+
+Following cache scaling fix (dce9a09), the catalog index stabilized at 967 entries. No algorithmic content was modified in that fix; only the caching layer was simplified to remove the 2MB unstable_cache blocker. Phase 2 focus: expand Mathematical Algorithms frontier with specialized numerical and probability problems that complement the existing core foundation.
+
+## Batch 206 added
+
+5 new Mathematical/Advanced Algorithm files added from the GFG Mathematical Algorithms frontier:
+
+- Number of Non-negative Integral Solutions (combinatorics, stars and bars method)
+- Check if Number is Power of Another Number (logarithm, binary search, division methods)
+- Interquartile Range (IQR) (statistical dispersion, quartile calculation)
+- N-th Root of a Number (Newton's method, binary search for nth roots)
+- Make a Fair Coin from Biased Coin (Von Neumann's algorithm, probability)
+
+- Batch 206 was validated with full pipeline: `npm run cleanup:dev`, `npm run db:catalog:seed` (967→972), `npm run lint` (0 errors), dev-server smoke pass with 3 algorithm routes verified (number-of-non-negative-integral-solutions, check-if-number-is-power-of-another-number, nth-root-of-a-number).
+- The catalog now stands at 972 entries.
+- Mathematical algorithms now include advanced numerical methods (root-finding, nth roots), combinatorial reasoning (solutions counting), statistical analysis (IQR), and probabilistic constructions (fair coin generation).
+
+## Batch 207 frontier
+
+Next frontier: Continue Mathematical Algorithms with:
+- Simulated Annealing (optimization algorithm)
+- Fast Fourier Transformation (polynomial multiplication)
+- Program for Derivative of a Polynomial (calculus, symbolic operations)
+- Implement * and / using + only (arithmetic creativity)
+- Additional number system conversions and base-related algorithms
+
+After reaching ~1000 entries at home-page UX capacity, pause expansion to implement product improvements identified in current product/UX plan (category-first browse, topic lanes, reduce scroll depth).

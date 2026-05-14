@@ -1,0 +1,255 @@
+---
+title: Number of Non-negative Integral Solutions
+slug: number-of-non-negative-integral-solutions
+category: mathematical
+summary: Count solutions to linear equation a + b + c = n with non-negative integers
+description: "Find the count of non-negative integer solutions to the equation a + b + c = n. This is a classic combinatorics problem solved using the stars and bars method."
+dataStructures:
+  - mathematical-formula
+techniques:
+  - combinatorics
+  - stars-and-bars
+difficulty: easy
+interviewFrequency: medium
+complexity:
+  time: O(1) mathematical formula
+  space: O(1)
+  notes: Problem reduces to combination formula C(n+k-1, k-1) where k is number of variables
+interviewSignals:
+  - combinatorial counting
+  - mathematical problem solving
+  - formula application
+source: geeksforgeeks
+related:
+  - binomial-coefficient-dp
+  - permutation-and-combination
+---
+
+## Problem
+
+Find the number of non-negative integer solutions to the equation a + b + c = n.
+
+### Examples
+
+**Example 1:**
+```
+Input: n = 3
+
+Solutions:
+[0, 0, 3]
+[0, 1, 2]
+[0, 2, 1]
+[0, 3, 0]
+[1, 0, 2]
+[1, 1, 1]
+[1, 2, 0]
+[2, 0, 1]
+[2, 1, 0]
+[3, 0, 0]
+
+Output: 10
+```
+
+**Example 2:**
+```
+Input: n = 2
+
+Solutions:
+[0, 0, 2], [0, 1, 1], [0, 2, 0]
+[1, 0, 1], [1, 1, 0]
+[2, 0, 0]
+
+Output: 6
+```
+
+## Approach
+
+### Stars and Bars Formula
+The number of non-negative integer solutions to a + b + c = n is given by:
+**C(n + 3 - 1, 3 - 1) = C(n + 2, 2) = (n+1)(n+2) / 2**
+
+More generally, for k variables: **C(n + k - 1, k - 1)**
+
+### Dynamic Programming
+Use DP to count solutions by building up incrementally.
+
+## Solution
+
+### JavaScript
+
+```javascript
+/**
+ * Count solutions using formula (Stars and Bars)
+ * Time: O(1), Space: O(1)
+ */
+function countSolutions(n) {
+  // C(n+2, 2) = (n+2)! / (2! * n!)
+  return ((n + 1) * (n + 2)) / 2;
+}
+
+/**
+ * Count solutions using DP
+ * Time: O(n³), Space: O(n)
+ */
+function countSolutionsDP(n) {
+  const dp = Array(n + 1).fill(0);
+  dp[0] = 1; // One way: all zeros
+
+  // Add one variable at a time
+  for (let i = 0; i < 3; i++) {
+    for (let j = 1; j <= n; j++) {
+      dp[j] += dp[j - 1];
+    }
+  }
+
+  return dp[n];
+}
+
+/**
+ * Generate all solutions (backtracking)
+ * Time: O(n²), Space: O(n)
+ */
+function generateAllSolutions(n) {
+  const solutions = [];
+
+  function backtrack(a, b, c, remaining) {
+    if (remaining === 0) {
+      solutions.push([a, b, c]);
+      return;
+    }
+
+    if (remaining < 0) return;
+
+    // Try all possible values for remaining variables
+    for (let val = 0; val <= remaining; val++) {
+      if (a === -1) {
+        backtrack(val, b, c, remaining - val);
+      } else if (b === -1) {
+        backtrack(a, val, c, remaining - val);
+      } else {
+        backtrack(a, b, val, remaining - val);
+      }
+    }
+  }
+
+  // Simpler iteration approach
+  for (let a = 0; a <= n; a++) {
+    for (let b = 0; b <= n - a; b++) {
+      const c = n - a - b;
+      solutions.push([a, b, c]);
+    }
+  }
+
+  return solutions;
+}
+
+/**
+ * Count solutions for generalized case
+ * Number of solutions to x1 + x2 + ... + xk = n
+ * Time: O(1), Space: O(1)
+ */
+function countSolutionsGeneral(n, k) {
+  // C(n + k - 1, k - 1)
+  return binomialCoefficient(n + k - 1, k - 1);
+}
+
+/**
+ * Calculate binomial coefficient C(n, k)
+ * Time: O(k), Space: O(1)
+ */
+function binomialCoefficient(n, k) {
+  if (k > n - k) k = n - k; // Optimization
+
+  let result = 1;
+  for (let i = 0; i < k; i++) {
+    result *= (n - i);
+    result /= (i + 1);
+  }
+
+  return result;
+}
+```
+
+### TypeScript
+
+```typescript
+/**
+ * Count solutions using formula
+ * Time: O(1), Space: O(1)
+ */
+function countSolutions(n: number): number {
+  return ((n + 1) * (n + 2)) / 2;
+}
+
+/**
+ * Count solutions using DP
+ * Time: O(n³), Space: O(n)
+ */
+function countSolutionsDP(n: number): number {
+  const dp = Array(n + 1).fill(0);
+  dp[0] = 1;
+
+  for (let i = 0; i < 3; i++) {
+    for (let j = 1; j <= n; j++) {
+      dp[j] += dp[j - 1];
+    }
+  }
+
+  return dp[n];
+}
+
+/**
+ * Generate all solutions
+ * Time: O(n²), Space: O(n)
+ */
+function generateAllSolutions(n: number): number[][] {
+  const solutions: number[][] = [];
+
+  for (let a = 0; a <= n; a++) {
+    for (let b = 0; b <= n - a; b++) {
+      const c = n - a - b;
+      solutions.push([a, b, c]);
+    }
+  }
+
+  return solutions;
+}
+
+/**
+ * Count solutions for generalized case
+ * Time: O(1), Space: O(1)
+ */
+function countSolutionsGeneral(n: number, k: number): number {
+  return binomialCoefficient(n + k - 1, k - 1);
+}
+
+/**
+ * Calculate binomial coefficient
+ * Time: O(k), Space: O(1)
+ */
+function binomialCoefficient(n: number, k: number): number {
+  if (k > n - k) k = n - k;
+
+  let result = 1;
+  for (let i = 0; i < k; i++) {
+    result *= (n - i);
+    result /= (i + 1);
+  }
+
+  return result;
+}
+```
+
+## Key Properties
+
+- **Formula:** C(n+k-1, k-1) for k variables
+- **Stars and Bars:** Distributing n identical items into k distinct bins
+- **Symmetry:** Order doesn't matter in counting
+- **Generalization:** Works for any number of variables
+
+## Complexity Analysis
+
+- **Time (Formula):** O(1) - direct calculation
+- **Time (DP):** O(n × k) where k is number of variables
+- **Time (Generate):** O(n^(k-1)) - exponential in number of variables
+- **Space:** O(1) for formula, O(n) for generation

@@ -1,0 +1,290 @@
+---
+title: Check if Number is Power of Another Number
+slug: check-if-number-is-power-of-another-number
+category: mathematical
+summary: Determine if a given number x can be expressed as y^z for integers y and z
+description: "Given two integers x and y, determine if x can be expressed as y raised to the power of some integer z (i.e., x = y^z). This tests understanding of exponentiation and logarithms."
+dataStructures:
+  - mathematical-algorithm
+techniques:
+  - logarithm
+  - binary-search
+  - mathematical-formula
+difficulty: medium
+interviewFrequency: low
+complexity:
+  time: O(log x) using binary search, O(log log x) using logarithm
+  space: O(1)
+  notes: Logarithm approach is faster but risks floating-point precision
+interviewSignals:
+  - mathematical problem solving
+  - edge case handling
+  - number theory
+source: geeksforgeeks
+related:
+  - check-if-a-number-is-power-of-k-using-base-changing-method
+  - prime-factorization-divisors
+---
+
+## Problem
+
+Given integers x and y, check if x can be expressed as y^z for some non-negative integer z.
+
+### Examples
+
+**Example 1:**
+```
+Input: x = 8, y = 2
+Output: true
+Explanation: 8 = 2^3
+```
+
+**Example 2:**
+```
+Input: x = 27, y = 3
+Output: true
+Explanation: 27 = 3^3
+```
+
+**Example 3:**
+```
+Input: x = 10, y = 2
+Output: false
+Explanation: 10 cannot be expressed as 2^z
+```
+
+## Approach
+
+### Method 1: Logarithm
+x = y^z => log(x) = z * log(y) => z = log(x) / log(y)
+
+### Method 2: Binary Search
+Search for z in range [0, log₂(x)] using binary search
+
+### Method 3: Repeated Division
+Repeatedly divide x by y until reaching 1 or non-divisibility
+
+## Solution
+
+### JavaScript
+
+```javascript
+/**
+ * Check if x = y^z using logarithm
+ * Time: O(1), Space: O(1)
+ * Note: Subject to floating-point precision issues
+ */
+function isPowerLogarithm(x, y) {
+  if (x === 1 || y === 1) return true;
+  if (y === 0) return x === 0;
+  if (x <= 0 || y <= 0) return false;
+
+  const z = Math.log(x) / Math.log(y);
+  const zRounded = Math.round(z);
+
+  // Check both floor and ceil to handle floating-point precision
+  return Math.pow(y, zRounded) === x || Math.pow(y, zRounded - 1) === x || Math.pow(y, zRounded + 1) === x;
+}
+
+/**
+ * Check if x = y^z using binary search
+ * Time: O(log x * log y), Space: O(log x)
+ */
+function isPowerBinarySearch(x, y) {
+  if (x === 1) return true;
+  if (x <= 0 || y <= 0 || y === 1) return x === 1;
+
+  let left = 0;
+  let right = Math.floor(Math.log2(x)) + 1;
+
+  while (left <= right) {
+    const mid = Math.floor((left + right) / 2);
+    const power = Math.pow(y, mid);
+
+    if (power === x) return true;
+    if (power < x) left = mid + 1;
+    else right = mid - 1;
+  }
+
+  return false;
+}
+
+/**
+ * Check if x = y^z using repeated division
+ * Time: O(log x), Space: O(1)
+ */
+function isPowerDivision(x, y) {
+  if (x === 1) return true;
+  if (x <= 0 || y <= 0 || y === 1) return false;
+
+  while (x > 1) {
+    if (x % y !== 0) return false;
+    x = Math.floor(x / y);
+  }
+
+  return x === 1;
+}
+
+/**
+ * Find all pairs (y, z) such that x = y^z
+ * Time: O(√x * log x), Space: O(√x)
+ */
+function findAllPowers(x) {
+  const pairs = [];
+
+  // z can be at most log2(x)
+  const maxZ = Math.floor(Math.log2(x)) + 1;
+
+  for (let z = 2; z <= maxZ; z++) {
+    // Use binary search to find y
+    const y = Math.round(Math.pow(x, 1 / z));
+
+    // Check nearby values due to floating-point precision
+    for (let candidate = Math.max(1, y - 1); candidate <= y + 1; candidate++) {
+      if (Math.pow(candidate, z) === x) {
+        pairs.push([candidate, z]);
+        break;
+      }
+    }
+  }
+
+  return pairs;
+}
+
+/**
+ * Get the exponent z if x = y^z exists, else -1
+ * Time: O(log x), Space: O(1)
+ */
+function getExponent(x, y) {
+  if (x === 1) return 0;
+  if (x <= 0 || y <= 0 || y === 1) return -1;
+
+  let z = 0;
+  let temp = x;
+
+  while (temp > 1) {
+    if (temp % y !== 0) return -1;
+    temp = Math.floor(temp / y);
+    z++;
+  }
+
+  return temp === 1 ? z : -1;
+}
+```
+
+### TypeScript
+
+```typescript
+/**
+ * Check if x = y^z using logarithm
+ * Time: O(1), Space: O(1)
+ */
+function isPowerLogarithm(x: number, y: number): boolean {
+  if (x === 1 || y === 1) return true;
+  if (y === 0) return x === 0;
+  if (x <= 0 || y <= 0) return false;
+
+  const z = Math.log(x) / Math.log(y);
+  const zRounded = Math.round(z);
+
+  return (
+    Math.pow(y, zRounded) === x ||
+    Math.pow(y, zRounded - 1) === x ||
+    Math.pow(y, zRounded + 1) === x
+  );
+}
+
+/**
+ * Check if x = y^z using binary search
+ * Time: O(log x * log y), Space: O(1)
+ */
+function isPowerBinarySearch(x: number, y: number): boolean {
+  if (x === 1) return true;
+  if (x <= 0 || y <= 0 || y === 1) return x === 1;
+
+  let left = 0;
+  let right = Math.floor(Math.log2(x)) + 1;
+
+  while (left <= right) {
+    const mid = Math.floor((left + right) / 2);
+    const power = Math.pow(y, mid);
+
+    if (power === x) return true;
+    if (power < x) left = mid + 1;
+    else right = mid - 1;
+  }
+
+  return false;
+}
+
+/**
+ * Check if x = y^z using repeated division
+ * Time: O(log x), Space: O(1)
+ */
+function isPowerDivision(x: number, y: number): boolean {
+  if (x === 1) return true;
+  if (x <= 0 || y <= 0 || y === 1) return false;
+
+  while (x > 1) {
+    if (x % y !== 0) return false;
+    x = Math.floor(x / y);
+  }
+
+  return x === 1;
+}
+
+/**
+ * Find all pairs (y, z) where x = y^z
+ * Time: O(√x * log x), Space: O(√x)
+ */
+function findAllPowers(x: number): Array<[number, number]> {
+  const pairs: Array<[number, number]> = [];
+  const maxZ = Math.floor(Math.log2(x)) + 1;
+
+  for (let z = 2; z <= maxZ; z++) {
+    const y = Math.round(Math.pow(x, 1 / z));
+
+    for (let candidate = Math.max(1, y - 1); candidate <= y + 1; candidate++) {
+      if (Math.pow(candidate, z) === x) {
+        pairs.push([candidate, z]);
+        break;
+      }
+    }
+  }
+
+  return pairs;
+}
+
+/**
+ * Get exponent z if x = y^z, else -1
+ */
+function getExponent(x: number, y: number): number {
+  if (x === 1) return 0;
+  if (x <= 0 || y <= 0 || y === 1) return -1;
+
+  let z = 0;
+  let temp = x;
+
+  while (temp > 1) {
+    if (temp % y !== 0) return -1;
+    temp = Math.floor(temp / y);
+    z++;
+  }
+
+  return temp === 1 ? z : -1;
+}
+```
+
+## Key Properties
+
+- **Logarithm Approach:** Fast but risks floating-point precision
+- **Division Approach:** Exact but requires divisibility checks
+- **Binary Search:** Good balance of speed and precision
+- **Multiple Powers:** Same number can be expressed in multiple ways (e.g., 64 = 2^6 = 4^3 = 8^2)
+
+## Complexity Analysis
+
+- **Time (Logarithm):** O(1) but imprecise
+- **Time (Division):** O(log x) - most reliable
+- **Time (Binary Search):** O(log x · log y)
+- **Space:** O(1) for all methods
