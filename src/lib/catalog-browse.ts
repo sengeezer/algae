@@ -70,13 +70,9 @@ function sortAlgorithmsByTitle(algorithms: CatalogIndexRecord[]): CatalogIndexRe
   return [...algorithms].sort((left, right) => left.title.localeCompare(right.title));
 }
 
-export const getCatalogBrowseContext = cache(async (): Promise<CatalogBrowseContext> => {
-  const [algorithms, collections, learningPaths] = await Promise.all([
-    listCatalogIndexRecords(),
-    listCatalogCollections(),
-    listCatalogLearningPaths(),
-  ]);
-
+// Cache metadata separately (aggregates are small, under 100KB)
+const getCachedCatalogMetadata = cache(async () => {
+  const algorithms = await listCatalogIndexRecords();
   const categories = uniqueValues(algorithms.map((algorithm) => algorithm.category)).sort(sortText);
   const dataStructures = uniqueValues(
     algorithms.flatMap((algorithm) => algorithm.dataStructures),
@@ -89,13 +85,29 @@ export const getCatalogBrowseContext = cache(async (): Promise<CatalogBrowseCont
   );
 
   return {
-    algorithms,
     categories,
-    collections,
     dataStructures,
-    learningPaths,
     primaryTopics,
     techniques,
+  };
+});
+
+export const getCatalogBrowseContext = cache(async (): Promise<CatalogBrowseContext> => {
+  const algorithms = await listCatalogIndexRecords();
+  const [collections, learningPaths, metadata] = await Promise.all([
+    listCatalogCollections(),
+    listCatalogLearningPaths(),
+    getCachedCatalogMetadata(),
+  ]);
+
+  return {
+    algorithms,
+    categories: metadata.categories,
+    collections,
+    dataStructures: metadata.dataStructures,
+    learningPaths,
+    primaryTopics: metadata.primaryTopics,
+    techniques: metadata.techniques,
   };
 });
 

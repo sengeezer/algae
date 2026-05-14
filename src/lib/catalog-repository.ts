@@ -207,15 +207,18 @@ async function readCatalogCollectionsFromDatabase(): Promise<CatalogCollection[]
   return Array.from(collections.values());
 }
 
-const getCachedCatalogIndexFromDatabase = unstable_cache(
-  readCatalogIndexFromDatabase,
-  ["catalog-index"],
-  {
-    revalidate: 3600,
-    tags: ["catalog-index"],
-  },
-);
+// Note: Catalog index cannot use unstable_cache as full catalog (2.1MB+) exceeds 2MB limit
+// Database queries are already optimized and sufficient without caching at this scale
 
+export async function listCatalogIndexRecords(): Promise<CatalogIndexRecord[]> {
+  if (!isDatabaseConfigured()) {
+    return listAlgorithms().map(mapAlgorithmToCatalogIndexRecord);
+  }
+
+  return readCatalogIndexFromDatabase();
+}
+
+// Cache learning paths (relationships are small, under 100KB)
 const getCachedCatalogLearningPathsFromDatabase = unstable_cache(
   readCatalogLearningPathsFromDatabase,
   ["catalog-learning-paths"],
@@ -225,6 +228,7 @@ const getCachedCatalogLearningPathsFromDatabase = unstable_cache(
   },
 );
 
+// Cache collections (relationships are small, under 100KB)
 const getCachedCatalogCollectionsFromDatabase = unstable_cache(
   readCatalogCollectionsFromDatabase,
   ["catalog-collections"],
@@ -234,13 +238,10 @@ const getCachedCatalogCollectionsFromDatabase = unstable_cache(
   },
 );
 
-export async function listCatalogIndexRecords(): Promise<CatalogIndexRecord[]> {
-  if (!isDatabaseConfigured()) {
-    return listAlgorithms().map(mapAlgorithmToCatalogIndexRecord);
-  }
-
-  return getCachedCatalogIndexFromDatabase();
-}
+// Helper to get cached index records for internal use (used by learning paths/collections)
+const getCachedCatalogIndexFromDatabase = async (): Promise<CatalogIndexRecord[]> => {
+  return readCatalogIndexFromDatabase();
+};
 
 export async function getCatalogIndexRecordBySlug(
   slug: string,
