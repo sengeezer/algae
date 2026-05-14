@@ -1,0 +1,268 @@
+---
+title: Root to Leaf Paths in a Binary Tree
+slug: root-to-leaf-paths-in-a-binary-tree
+category: tree
+summary: Find all paths from root to each leaf node
+description: Finding all root-to-leaf paths is a fundamental tree traversal problem using DFS and backtracking. Useful for constraint satisfaction, path enumeration, and analyzing tree structure.
+dataStructures:
+  - binary-tree
+  - recursion
+  - backtracking
+techniques:
+  - depth-first-search
+  - path-finding
+difficulty: easy
+interviewFrequency: high
+complexity:
+  time: O(n)
+  space: O(h) recursion depth
+  notes: Backtracking collects all root-to-leaf sequences
+interviewSignals:
+  - path problems
+  - backtracking
+  - tree enumeration
+source: geeksforgeeks
+related:
+  - path-sum-in-a-binary-tree
+  - inorder-traversal-of-binary-tree
+  - tree-diameter
+---
+
+## Problem
+
+Given a binary tree, return all root-to-leaf paths. Each path should be represented as a list of node values.
+
+### Examples
+
+**Example 1:**
+```
+Input:     
+       1
+      / \
+     2   3
+
+Output: ["1->2", "1->3"]
+```
+
+**Example 2:**
+```
+Input:     
+       1
+      /
+     2
+      \
+       3
+
+Output: ["1->2->3"]
+```
+
+## Approach
+
+### DFS with Backtracking
+1. Start from root with empty path
+2. Add current node to path
+3. If leaf node, add complete path to result
+4. Recursively visit left and right subtrees
+5. Backtrack by removing current node from path
+
+## Solution
+
+### JavaScript
+
+```javascript
+// Definition for a binary tree node
+class TreeNode {
+  constructor(val = 0, left = null, right = null) {
+    this.val = val;
+    this.left = left;
+    this.right = right;
+  }
+}
+
+/**
+ * Get all root-to-leaf paths as strings
+ * Time: O(n), Space: O(h)
+ */
+function binaryTreePaths(root) {
+  const result = [];
+
+  function dfs(node, path) {
+    if (node === null) return;
+
+    // Add current node to path
+    path.push(node.val);
+
+    // Check if leaf node
+    if (node.left === null && node.right === null) {
+      result.push(path.join("->"));
+    } else {
+      dfs(node.left, path);
+      dfs(node.right, path);
+    }
+
+    // Backtrack
+    path.pop();
+  }
+
+  dfs(root, []);
+  return result;
+}
+
+/**
+ * Get all root-to-leaf paths as arrays
+ * Time: O(n), Space: O(h)
+ */
+function binaryTreePathsArray(root) {
+  const result = [];
+
+  function dfs(node, path) {
+    if (node === null) return;
+
+    path.push(node.val);
+
+    if (node.left === null && node.right === null) {
+      result.push([...path]);
+    } else {
+      dfs(node.left, path);
+      dfs(node.right, path);
+    }
+
+    path.pop();
+  }
+
+  dfs(root, []);
+  return result;
+}
+
+/**
+ * Collect paths with custom node processing
+ * Time: O(n), Space: O(h)
+ */
+function binaryTreePathsCustom(root, processNode = null) {
+  const result = [];
+
+  function dfs(node, path) {
+    if (node === null) return;
+
+    path.push(processNode ? processNode(node) : node.val);
+
+    if (node.left === null && node.right === null) {
+      result.push([...path]);
+    } else {
+      dfs(node.left, path);
+      dfs(node.right, path);
+    }
+
+    path.pop();
+  }
+
+  dfs(root, []);
+  return result;
+}
+```
+
+### TypeScript
+
+```typescript
+// Definition for a binary tree node
+class TreeNode {
+  val: number;
+  left: TreeNode | null;
+  right: TreeNode | null;
+
+  constructor(val: number = 0, left: TreeNode | null = null, right: TreeNode | null = null) {
+    this.val = val;
+    this.left = left;
+    this.right = right;
+  }
+}
+
+/**
+ * Get all root-to-leaf paths as strings
+ * Time: O(n), Space: O(h)
+ */
+function binaryTreePaths(root: TreeNode | null): string[] {
+  const result: string[] = [];
+
+  function dfs(node: TreeNode | null, path: number[]): void {
+    if (node === null) return;
+
+    path.push(node.val);
+
+    if (node.left === null && node.right === null) {
+      result.push(path.join("->"));
+    } else {
+      dfs(node.left, path);
+      dfs(node.right, path);
+    }
+
+    path.pop();
+  }
+
+  dfs(root, []);
+  return result;
+}
+
+/**
+ * Get all root-to-leaf paths as arrays
+ * Time: O(n), Space: O(h)
+ */
+function binaryTreePathsArray(root: TreeNode | null): number[][] {
+  const result: number[][] = [];
+
+  function dfs(node: TreeNode | null, path: number[]): void {
+    if (node === null) return;
+
+    path.push(node.val);
+
+    if (node.left === null && node.right === null) {
+      result.push([...path]);
+    } else {
+      dfs(node.left, path);
+      dfs(node.right, path);
+    }
+
+    path.pop();
+  }
+
+  dfs(root, []);
+  return result;
+}
+
+/**
+ * Collect paths with custom node processing
+ * Time: O(n), Space: O(h)
+ */
+function binaryTreePathsCustom(root: TreeNode | null, processNode: (node: TreeNode) => any = null): any[] {
+  const result: any[] = [];
+
+  function dfs(node: TreeNode | null, path: any[]): void {
+    if (node === null) return;
+
+    path.push(processNode ? processNode(node) : node.val);
+
+    if (node.left === null && node.right === null) {
+      result.push([...path]);
+    } else {
+      dfs(node.left, path);
+      dfs(node.right, path);
+    }
+
+    path.pop();
+  }
+
+  dfs(root, []);
+  return result;
+}
+```
+
+## Key Properties
+
+- **Leaf Definition:** Both left and right children are null
+- **Backtracking:** Critical to maintain correct path state
+- **String Format:** Can represent paths as string or array
+
+## Complexity Analysis
+
+- **Time:** O(n) - visit each node once, O(n) string construction
+- **Space:** O(h) - recursion depth, O(n) for storing all paths

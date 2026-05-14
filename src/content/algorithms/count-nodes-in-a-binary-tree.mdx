@@ -1,0 +1,243 @@
+---
+title: Count Nodes in a Binary Tree
+slug: count-nodes-in-a-binary-tree
+category: tree
+summary: Count total number of nodes in a tree
+description: Counting all nodes in a binary tree is a fundamental operation. A complete binary tree can be counted in O(log n) time using a clever height-based approach.
+dataStructures:
+  - binary-tree
+  - recursion
+techniques:
+  - tree-traversal
+  - depth-first-search
+difficulty: easy
+interviewFrequency: medium
+complexity:
+  time: O(n) general, O((log n)^2) for complete tree
+  space: O(h) recursion depth
+  notes: Complete tree property enables logarithmic optimization
+interviewSignals:
+  - tree structure analysis
+  - optimization opportunities
+  - tree properties
+source: geeksforgeeks
+related:
+  - count-leaf-nodes-in-a-binary-tree
+  - maximum-depth-or-height-of-a-binary-tree
+  - balanced-binary-search-tree
+---
+
+## Problem
+
+Given the root of a binary tree, count the total number of nodes in the tree.
+
+### Examples
+
+**Example 1:**
+```
+Input:     
+      1
+     / \
+    2   3
+
+Output: 3
+```
+
+**Example 2:**
+```
+Input:     
+        1
+       / \
+      2   3
+     / \   \
+    4   5   6
+
+Output: 6
+```
+
+**Example 3:**
+```
+Input: null
+
+Output: 0
+```
+
+## Approach
+
+### Simple DFS
+Count the current node plus all nodes from left and right subtrees.
+
+### Optimized for Complete Binary Tree
+Check if left and right subtree heights are equal:
+- If equal: left subtree is perfect, count = 2^leftHeight - 1 + 1 + countNodes(right)
+- If unequal: right subtree is perfect, count = countNodes(left) + 2^rightHeight - 1 + 1
+
+## Solution
+
+### JavaScript
+
+```javascript
+// Definition for a binary tree node
+class TreeNode {
+  constructor(val = 0, left = null, right = null) {
+    this.val = val;
+    this.left = left;
+    this.right = right;
+  }
+}
+
+/**
+ * Simple DFS approach
+ * Time: O(n), Space: O(h)
+ */
+function countNodes(root) {
+  if (root === null) {
+    return 0;
+  }
+
+  return 1 + countNodes(root.left) + countNodes(root.right);
+}
+
+/**
+ * Optimized for complete binary tree
+ * Time: O((log n)^2), Space: O(log n)
+ */
+function countNodesOptimized(root) {
+  if (root === null) return 0;
+
+  // Count left height (always go left)
+  let leftHeight = 0;
+  let left = root;
+  while (left !== null) {
+    leftHeight++;
+    left = left.left;
+  }
+
+  // Count right height (always go right)
+  let rightHeight = 0;
+  let right = root;
+  while (right !== null) {
+    rightHeight++;
+    right = right.right;
+  }
+
+  // If heights are equal, tree is perfect
+  if (leftHeight === rightHeight) {
+    return (1 << leftHeight) - 1; // 2^leftHeight - 1
+  }
+
+  // Otherwise, left subtree is perfect
+  return (1 << (leftHeight - 1)) - 1 + 1 + countNodesOptimized(root.right);
+}
+
+/**
+ * Iterative BFS approach
+ * Time: O(n), Space: O(w)
+ */
+function countNodesIterative(root) {
+  if (root === null) return 0;
+
+  let count = 0;
+  const queue = [root];
+
+  while (queue.length > 0) {
+    const node = queue.shift();
+    count++;
+
+    if (node.left !== null) queue.push(node.left);
+    if (node.right !== null) queue.push(node.right);
+  }
+
+  return count;
+}
+```
+
+### TypeScript
+
+```typescript
+// Definition for a binary tree node
+class TreeNode {
+  val: number;
+  left: TreeNode | null;
+  right: TreeNode | null;
+
+  constructor(val: number = 0, left: TreeNode | null = null, right: TreeNode | null = null) {
+    this.val = val;
+    this.left = left;
+    this.right = right;
+  }
+}
+
+/**
+ * Simple DFS approach
+ * Time: O(n), Space: O(h)
+ */
+function countNodes(root: TreeNode | null): number {
+  if (root === null) {
+    return 0;
+  }
+
+  return 1 + countNodes(root.left) + countNodes(root.right);
+}
+
+/**
+ * Optimized for complete binary tree
+ * Time: O((log n)^2), Space: O(log n)
+ */
+function countNodesOptimized(root: TreeNode | null): number {
+  if (root === null) return 0;
+
+  let leftHeight: number = 0;
+  let left: TreeNode | null = root;
+  while (left !== null) {
+    leftHeight++;
+    left = left.left;
+  }
+
+  let rightHeight: number = 0;
+  let right: TreeNode | null = root;
+  while (right !== null) {
+    rightHeight++;
+    right = right.right;
+  }
+
+  if (leftHeight === rightHeight) {
+    return (1 << leftHeight) - 1;
+  }
+
+  return (1 << (leftHeight - 1)) - 1 + 1 + countNodesOptimized(root.right);
+}
+
+/**
+ * Iterative BFS approach
+ * Time: O(n), Space: O(w)
+ */
+function countNodesIterative(root: TreeNode | null): number {
+  if (root === null) return 0;
+
+  let count: number = 0;
+  const queue: TreeNode[] = [root];
+
+  while (queue.length > 0) {
+    const node = queue.shift() as TreeNode;
+    count++;
+
+    if (node.left !== null) queue.push(node.left);
+    if (node.right !== null) queue.push(node.right);
+  }
+
+  return count;
+}
+```
+
+## Key Properties
+
+- **Complete Binary Tree:** All levels filled except possibly last level (filled left to right)
+- **Perfect Binary Tree:** All nodes at all levels, height h has exactly 2^h - 1 nodes
+- **Optimization:** Complete tree can be counted in O((log n)^2) time
+
+## Complexity Analysis
+
+- **Simple DFS:** O(n) time, O(h) space
+- **Optimized (complete tree):** O((log n)^2) time, O(log n) space
+- **BFS:** O(n) time, O(w) space where w is max width

@@ -1,0 +1,330 @@
+---
+title: Balanced Binary Search Tree
+slug: balanced-binary-search-tree
+category: tree
+summary: BST with height difference at most 1 between left and right
+description: A balanced binary search tree maintains O(log n) time complexity for search, insert, and delete operations by ensuring the height difference between left and right subtrees is at most 1 at every node. AVL trees and Red-Black trees are common implementations.
+dataStructures:
+  - binary-search-tree
+  - balanced-tree
+  - avl-tree
+techniques:
+  - tree-rotation
+  - height-balancing
+difficulty: hard
+interviewFrequency: high
+complexity:
+  time: O(log n) for search, insert, delete
+  space: O(n)
+  notes: AVL trees maintain O(log n) operations through rotations
+interviewSignals:
+  - balance factors
+  - rotations
+  - tree invariants
+source: geeksforgeeks
+related:
+  - binary-search-tree
+  - is-binary-tree-balanced
+  - insert-a-node-in-a-binary-search-tree
+---
+
+## Problem
+
+Understand balanced binary search trees - BSTs that maintain balance properties to guarantee O(log n) operations even in worst-case scenarios.
+
+### Examples
+
+**Balanced Tree:**
+```
+       2
+      / \
+     1   3
+
+Height difference at each node: 0 or 1
+Search/Insert/Delete: O(log 2) = O(1)
+```
+
+**Unbalanced Tree (Skewed):**
+```
+       1
+        \
+         2
+          \
+           3
+
+Height difference: 2
+Search/Insert/Delete: O(n) = O(3)
+```
+
+## Approach
+
+### Balance Factor
+Balance Factor = Height(left subtree) - Height(right subtree)
+- Valid values: -1, 0, +1
+- If |Balance Factor| > 1, rebalance with rotations
+
+### AVL Tree Rotations
+- **LL Case:** Right rotation
+- **RR Case:** Left rotation
+- **LR Case:** Left-Right rotation
+- **RL Case:** Right-Left rotation
+
+## Solution
+
+### JavaScript
+
+```javascript
+// Definition for a balanced tree node with height
+class BalancedNode {
+  constructor(val = 0, left = null, right = null) {
+    this.val = val;
+    this.left = left;
+    this.right = right;
+    this.height = 1;
+  }
+}
+
+/**
+ * Get height of node
+ */
+function getHeight(node) {
+  return node === null ? 0 : node.height;
+}
+
+/**
+ * Get balance factor
+ */
+function getBalance(node) {
+  return node === null ? 0 : getHeight(node.left) - getHeight(node.right);
+}
+
+/**
+ * Update node height
+ */
+function updateHeight(node) {
+  if (node !== null) {
+    node.height = Math.max(getHeight(node.left), getHeight(node.right)) + 1;
+  }
+}
+
+/**
+ * Right rotation
+ *     y                 x
+ *    / \               / \
+ *   x   C      --->   A   y
+ *  / \               / \
+ * A   B             B   C
+ */
+function rightRotate(y) {
+  const x = y.left;
+  const B = x.right;
+
+  x.right = y;
+  y.left = B;
+
+  updateHeight(y);
+  updateHeight(x);
+
+  return x;
+}
+
+/**
+ * Left rotation
+ *   x                   y
+ *  / \                 / \
+ * A   y       --->    x   C
+ *    / \             / \
+ *   B   C           A   B
+ */
+function leftRotate(x) {
+  const y = x.right;
+  const B = y.left;
+
+  y.left = x;
+  x.right = B;
+
+  updateHeight(x);
+  updateHeight(y);
+
+  return y;
+}
+
+/**
+ * Insert node with balancing
+ * Time: O(log n), Space: O(log n)
+ */
+function insert(root, val) {
+  if (root === null) {
+    return new BalancedNode(val);
+  }
+
+  if (val < root.val) {
+    root.left = insert(root.left, val);
+  } else if (val > root.val) {
+    root.right = insert(root.right, val);
+  } else {
+    return root; // Duplicate
+  }
+
+  updateHeight(root);
+
+  const balance = getBalance(root);
+
+  // LL case
+  if (balance > 1 && val < root.left.val) {
+    return rightRotate(root);
+  }
+
+  // RR case
+  if (balance < -1 && val > root.right.val) {
+    return leftRotate(root);
+  }
+
+  // LR case
+  if (balance > 1 && val > root.left.val) {
+    root.left = leftRotate(root.left);
+    return rightRotate(root);
+  }
+
+  // RL case
+  if (balance < -1 && val < root.right.val) {
+    root.right = rightRotate(root.right);
+    return leftRotate(root);
+  }
+
+  return root;
+}
+
+/**
+ * Check if tree is balanced
+ * Time: O(n), Space: O(h)
+ */
+function isBalanced(root) {
+  if (root === null) return true;
+
+  const balance = getBalance(root);
+  if (Math.abs(balance) > 1) return false;
+
+  return isBalanced(root.left) && isBalanced(root.right);
+}
+```
+
+### TypeScript
+
+```typescript
+// Definition for a balanced tree node with height
+class BalancedNode {
+  val: number;
+  left: BalancedNode | null;
+  right: BalancedNode | null;
+  height: number;
+
+  constructor(val: number = 0, left: BalancedNode | null = null, right: BalancedNode | null = null) {
+    this.val = val;
+    this.left = left;
+    this.right = right;
+    this.height = 1;
+  }
+}
+
+function getHeight(node: BalancedNode | null): number {
+  return node === null ? 0 : node.height;
+}
+
+function getBalance(node: BalancedNode | null): number {
+  return node === null ? 0 : getHeight(node.left) - getHeight(node.right);
+}
+
+function updateHeight(node: BalancedNode | null): void {
+  if (node !== null) {
+    node.height = Math.max(getHeight(node.left), getHeight(node.right)) + 1;
+  }
+}
+
+function rightRotate(y: BalancedNode): BalancedNode {
+  const x = y.left as BalancedNode;
+  const B = x.right;
+
+  x.right = y;
+  y.left = B;
+
+  updateHeight(y);
+  updateHeight(x);
+
+  return x;
+}
+
+function leftRotate(x: BalancedNode): BalancedNode {
+  const y = x.right as BalancedNode;
+  const B = y.left;
+
+  y.left = x;
+  x.right = B;
+
+  updateHeight(x);
+  updateHeight(y);
+
+  return y;
+}
+
+function insert(root: BalancedNode | null, val: number): BalancedNode {
+  if (root === null) {
+    return new BalancedNode(val);
+  }
+
+  if (val < root.val) {
+    root.left = insert(root.left, val);
+  } else if (val > root.val) {
+    root.right = insert(root.right, val);
+  } else {
+    return root;
+  }
+
+  updateHeight(root);
+
+  const balance = getBalance(root);
+
+  if (balance > 1 && val < (root.left as BalancedNode).val) {
+    return rightRotate(root);
+  }
+
+  if (balance < -1 && val > (root.right as BalancedNode).val) {
+    return leftRotate(root);
+  }
+
+  if (balance > 1 && val > (root.left as BalancedNode).val) {
+    root.left = leftRotate(root.left as BalancedNode);
+    return rightRotate(root);
+  }
+
+  if (balance < -1 && val < (root.right as BalancedNode).val) {
+    root.right = rightRotate(root.right as BalancedNode);
+    return leftRotate(root);
+  }
+
+  return root;
+}
+
+function isBalanced(root: BalancedNode | null): boolean {
+  if (root === null) return true;
+
+  const balance = getBalance(root);
+  if (Math.abs(balance) > 1) return false;
+
+  return isBalanced(root.left) && isBalanced(root.right);
+}
+```
+
+## Key Properties
+
+- **Height Guarantee:** Height is O(log n)
+- **Rotations:** Rebalancing via single or double rotations
+- **AVL Trees:** Strict balancing, more rotations
+- **Red-Black Trees:** Relaxed balancing, faster insertions
+
+## Complexity Analysis
+
+- **Search:** O(log n)
+- **Insert:** O(log n)
+- **Delete:** O(log n)
+- **Space:** O(n) for tree storage

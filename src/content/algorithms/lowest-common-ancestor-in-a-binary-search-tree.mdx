@@ -1,0 +1,243 @@
+---
+title: Lowest Common Ancestor in a Binary Search Tree
+slug: lowest-common-ancestor-in-a-binary-search-tree
+category: tree
+summary: Find the deepest node with two nodes as descendants
+description: The lowest common ancestor (LCA) of two nodes in a BST can be found efficiently by leveraging the BST property. The LCA is the first node where one value goes to the left and the other to the right, or it equals one of the target nodes.
+dataStructures:
+  - binary-search-tree
+techniques:
+  - tree-traversal
+  - binary-search
+difficulty: medium
+interviewFrequency: high
+complexity:
+  time: O(log n) average, O(n) worst case
+  space: O(1) iterative, O(h) recursive
+  notes: BST property enables efficient pruning
+interviewSignals:
+  - BST properties
+  - LCA patterns
+  - ancestor relationships
+source: geeksforgeeks
+related:
+  - search-in-a-binary-search-tree
+  - lowest-common-ancestor-lca
+  - path-sum-in-a-binary-tree
+---
+
+## Problem
+
+Given a binary search tree and two nodes with values p and q, find the lowest common ancestor (LCA) of the two nodes.
+
+### Examples
+
+**Example 1:**
+```
+Input: 
+       6
+      / \
+     2   8
+    / \  / \
+   0  4 7  9
+    / \
+   3   5
+
+p = 2, q = 8
+Output: 6
+```
+
+**Example 2:**
+```
+Input: 
+       6
+      / \
+     2   8
+    / \  / \
+   0  4 7  9
+    / \
+   3   5
+
+p = 2, q = 4
+Output: 2 (node 2 is ancestor of 4)
+```
+
+## Approach
+
+### BST Property-Based
+Since BST has ordering property (left < root < right):
+1. If both p and q are less than root, LCA is in left subtree
+2. If both p and q are greater than root, LCA is in right subtree
+3. Otherwise, root is the LCA
+
+This exploits BST structure for O(log n) average performance.
+
+## Solution
+
+### JavaScript
+
+```javascript
+// Definition for a binary tree node
+class TreeNode {
+  constructor(val = 0, left = null, right = null) {
+    this.val = val;
+    this.left = left;
+    this.right = right;
+  }
+}
+
+/**
+ * Recursive approach using BST property
+ * Time: O(log n) average, O(n) worst case
+ * Space: O(h) recursion depth
+ */
+function lowestCommonAncestor(root, p, q) {
+  if (root === null) return null;
+
+  if (p.val < root.val && q.val < root.val) {
+    // Both in left subtree
+    return lowestCommonAncestor(root.left, p, q);
+  } else if (p.val > root.val && q.val > root.val) {
+    // Both in right subtree
+    return lowestCommonAncestor(root.right, p, q);
+  } else {
+    // Split or one is root
+    return root;
+  }
+}
+
+/**
+ * Iterative approach
+ * Time: O(log n) average, O(n) worst case
+ * Space: O(1)
+ */
+function lowestCommonAncestorIterative(root, p, q) {
+  let current = root;
+
+  while (current !== null) {
+    if (p.val < current.val && q.val < current.val) {
+      current = current.left;
+    } else if (p.val > current.val && q.val > current.val) {
+      current = current.right;
+    } else {
+      // Found the split point or one equals current
+      return current;
+    }
+  }
+
+  return null;
+}
+
+/**
+ * With value comparison instead of node comparison
+ * Time: O(log n) average, O(n) worst case
+ * Space: O(h) or O(1)
+ */
+function lowestCommonAncestorByValue(root, pVal, qVal) {
+  let current = root;
+
+  while (current !== null) {
+    if (pVal < current.val && qVal < current.val) {
+      current = current.left;
+    } else if (pVal > current.val && qVal > current.val) {
+      current = current.right;
+    } else {
+      return current;
+    }
+  }
+
+  return null;
+}
+```
+
+### TypeScript
+
+```typescript
+// Definition for a binary tree node
+class TreeNode {
+  val: number;
+  left: TreeNode | null;
+  right: TreeNode | null;
+
+  constructor(val: number = 0, left: TreeNode | null = null, right: TreeNode | null = null) {
+    this.val = val;
+    this.left = left;
+    this.right = right;
+  }
+}
+
+/**
+ * Recursive approach using BST property
+ * Time: O(log n) average, O(n) worst case
+ * Space: O(h) recursion depth
+ */
+function lowestCommonAncestor(root: TreeNode | null, p: TreeNode, q: TreeNode): TreeNode | null {
+  if (root === null) return null;
+
+  if (p.val < root.val && q.val < root.val) {
+    return lowestCommonAncestor(root.left, p, q);
+  } else if (p.val > root.val && q.val > root.val) {
+    return lowestCommonAncestor(root.right, p, q);
+  } else {
+    return root;
+  }
+}
+
+/**
+ * Iterative approach
+ * Time: O(log n) average, O(n) worst case
+ * Space: O(1)
+ */
+function lowestCommonAncestorIterative(root: TreeNode | null, p: TreeNode, q: TreeNode): TreeNode | null {
+  let current = root;
+
+  while (current !== null) {
+    if (p.val < current.val && q.val < current.val) {
+      current = current.left;
+    } else if (p.val > current.val && q.val > current.val) {
+      current = current.right;
+    } else {
+      return current;
+    }
+  }
+
+  return null;
+}
+
+/**
+ * With value comparison
+ * Time: O(log n) average, O(n) worst case
+ * Space: O(1)
+ */
+function lowestCommonAncestorByValue(root: TreeNode | null, pVal: number, qVal: number): TreeNode | null {
+  let current = root;
+
+  while (current !== null) {
+    if (pVal < current.val && qVal < current.val) {
+      current = current.left;
+    } else if (pVal > current.val && qVal > current.val) {
+      current = current.right;
+    } else {
+      return current;
+    }
+  }
+
+  return null;
+}
+```
+
+## Key Properties
+
+- **Split Point:** LCA is where paths to p and q diverge
+- **BST Advantage:** Can prune half the tree at each step
+- **General Tree:** General binary tree LCA requires visiting all nodes
+- **Efficiency Gain:** O(log n) vs O(n) for unordered trees
+
+## Complexity Analysis
+
+- **Time:** 
+  - Average: O(log n) for balanced tree
+  - Worst: O(n) for skewed tree
+- **Space:**
+  - Recursive: O(h) for recursion depth
+  - Iterative: O(1) constant space

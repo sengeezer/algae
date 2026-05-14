@@ -2637,3 +2637,67 @@ The next clean frontier moves to GeeksforGeeks `Queue` now that `Stack` is exhau
 - After the easy Queue material and the duplicate-level skips for `Queue using Stacks`, `BFS for a Graph`, and `Reverse a Queue`, the clean source-order run is `Level Order Traversal (Breadth First Search) of Binary Tree`, `FIFO Page Replacement Algorithm`, `Implement k Queues in a single array`, `First Non Repeating Character`, `Minimum steps to reach target by a Knight | Set 1`, `Generate Binary Representations from 1 to n`, `Maximum cost path from source node to destination node via at most K intermediate nodes`, and `Minimum Cost Path in a directed graph via given set of intermediate nodes`.
 - `Queue using Stacks` and `Reverse a Queue` are already covered locally, `BFS for a Graph` is duplicate-level coverage of the published BFS graph entry, `Shortest path in a Binary Maze` and `Snake and Ladder Problem` are already covered locally, `All possible walks with K edges` is already covered locally, and `Minimum Cost Path` is already covered locally, so the Queue branch still yields an 8-item clean batch.
 - The next clean Queue queue is `Level Order Traversal (Breadth First Search) of Binary Tree`, `FIFO Page Replacement Algorithm`, `Implement k Queues in a single array`, `First Non Repeating Character`, `Minimum steps to reach target by a Knight | Set 1`, `Generate Binary Representations from 1 to n`, `Maximum cost path from source node to destination node via at most K intermediate nodes`, and `Minimum Cost Path in a directed graph via given set of intermediate nodes`.
+
+## Batch 204 added
+
+This two-hundred-fourth expansion slice lifts the catalog from 934 to 942 entries.
+
+- Level Order Traversal (Breadth First Search) of Binary Tree
+- FIFO Page Replacement Algorithm
+- Implement k Queues in a single array
+- First Non Repeating Character
+- Minimum steps to reach target by a Knight
+- Generate Binary Representations from 1 to n
+- Maximum cost path via at most K intermediate nodes
+- Minimum Cost Path in directed graph
+
+- Batch 204 was validated with catalog sync, lint, TypeScript, one clean dev-server smoke pass, and targeted Playwright route checks for all eight new algorithm routes.
+- The catalog now stands at 942 entries.
+- The GeeksforGeeks Queue section transitions toward specialized data structure applications after these foundational Queue algorithms.
+
+## Batch 205 frontier
+
+The next clean frontier moves to GeeksforGeeks `Tree` data structure, covering core binary tree operations, N-ary tree fundamentals, and tree transformation algorithms.
+
+## Batch 205 added
+
+This two-hundred-fifth expansion slice lifts the catalog from 942 to 967 entries.
+
+Core Binary Tree Traversals (3):
+- Inorder Traversal of Binary Tree
+- Preorder Traversal of Binary Tree
+- Postorder Traversal of Binary Tree
+
+Tree Operations & Analysis (9):
+- Maximum Depth or Height of a Binary Tree
+- Search in a Binary Search Tree
+- Insert a Node in a Binary Search Tree
+- Delete a Node in a Binary Search Tree
+- Count Leaf Nodes in a Binary Tree
+- Count Nodes in a Binary Tree
+- Find Minimum Element in a Binary Search Tree
+- Find Maximum Element in a Binary Search Tree
+- Lowest Common Ancestor in a Binary Search Tree
+
+N-ary & Generic Trees (3):
+- Level Order Traversal of a Generic Tree
+- Height of Generic Tree from Parent Array
+- Construct Tree from Parent Array
+
+BST & Balance (2):
+- Balanced Binary Search Tree
+- Check If Binary Tree Is Balanced
+
+Path & Advanced Problems (8):
+- Path Sum in a Binary Tree
+- Root to Leaf Paths in a Binary Tree
+- Sum of Leaf Nodes
+- Binary Tree to Binary Search Tree Conversion
+- Convert Binary Tree to Doubly Linked List
+- Mirror of Binary Tree
+- Lowest Common Ancestor of Two Nodes
+- Flatten Binary Tree to Linked List
+
+- Batch 205 was validated with catalog sync, lint, TypeScript, one clean dev-server smoke pass, and targeted Playwright route checks for all 25 new algorithm routes.
+- The catalog now stands at 967 entries.
+- Core binary tree fundamentals and operations are now comprehensively covered; next frontiers include advanced tree variants (Red-Black, 2-3 trees) and specialized tree algorithms.

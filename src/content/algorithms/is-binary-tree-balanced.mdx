@@ -1,0 +1,233 @@
+---
+title: Check If Binary Tree Is Balanced
+slug: is-binary-tree-balanced
+category: tree
+summary: Verify that height difference between left and right at each node is at most 1
+description: A balanced binary tree has the property that for every node, the height of its left subtree and right subtree differ by at most 1. This is a fundamental property checked in AVL trees and impacts search performance.
+dataStructures:
+  - binary-tree
+  - recursion
+techniques:
+  - tree-traversal
+  - depth-first-search
+  - height-calculation
+difficulty: easy
+interviewFrequency: high
+complexity:
+  time: O(n) naive, O(n) optimized
+  space: O(h) recursion depth
+  notes: Single-pass optimization reduces redundant calculations
+interviewSignals:
+  - balance factor
+  - tree properties
+  - recursive validation
+source: geeksforgeeks
+related:
+  - balanced-binary-search-tree
+  - maximum-depth-or-height-of-a-binary-tree
+  - binary-search-tree
+---
+
+## Problem
+
+Given a binary tree, determine if it is balanced. A balanced tree has the property that for every node, the absolute difference between the height of left and right subtrees is at most 1.
+
+### Examples
+
+**Example 1: Balanced**
+```
+Input:     
+      3
+     / \
+    9  20
+      /  \
+     15   7
+
+Output: true
+```
+
+**Example 2: Not Balanced**
+```
+Input:     
+       1
+      /
+     2
+    /
+   3
+
+Output: false
+(Height difference at root is 2)
+```
+
+## Approach
+
+### Naive (O(n²))
+For each node, compute left and right subtree heights and check balance.
+
+### Optimized (O(n))
+Return -1 on imbalance, height on balance. Stops early if subtree is unbalanced.
+
+## Solution
+
+### JavaScript
+
+```javascript
+// Definition for a binary tree node
+class TreeNode {
+  constructor(val = 0, left = null, right = null) {
+    this.val = val;
+    this.left = left;
+    this.right = right;
+  }
+}
+
+/**
+ * Optimized approach
+ * Time: O(n), Space: O(h)
+ */
+function isBalanced(root) {
+  return getHeight(root) !== -1;
+
+  function getHeight(node) {
+    if (node === null) return 0;
+
+    const leftHeight = getHeight(node.left);
+    if (leftHeight === -1) return -1; // Left unbalanced
+
+    const rightHeight = getHeight(node.right);
+    if (rightHeight === -1) return -1; // Right unbalanced
+
+    // Check balance at current node
+    if (Math.abs(leftHeight - rightHeight) > 1) {
+      return -1; // Unbalanced
+    }
+
+    return Math.max(leftHeight, rightHeight) + 1;
+  }
+}
+
+/**
+ * Naive approach (for comparison)
+ * Time: O(n²), Space: O(h)
+ */
+function isBalancedNaive(root) {
+  if (root === null) return true;
+
+  const leftHeight = getHeight(root.left);
+  const rightHeight = getHeight(root.right);
+
+  if (Math.abs(leftHeight - rightHeight) > 1) {
+    return false;
+  }
+
+  return isBalancedNaive(root.left) && isBalancedNaive(root.right);
+
+  function getHeight(node) {
+    if (node === null) return 0;
+    return Math.max(getHeight(node.left), getHeight(node.right)) + 1;
+  }
+}
+
+/**
+ * Alternative optimized with separate function
+ * Time: O(n), Space: O(h)
+ */
+function isBalancedAlt(root) {
+  function checkBalance(node) {
+    if (node === null) {
+      return [true, 0]; // [isBalanced, height]
+    }
+
+    const [leftBalanced, leftHeight] = checkBalance(node.left);
+    if (!leftBalanced) return [false, 0];
+
+    const [rightBalanced, rightHeight] = checkBalance(node.right);
+    if (!rightBalanced) return [false, 0];
+
+    const isBalanced = Math.abs(leftHeight - rightHeight) <= 1;
+    const height = Math.max(leftHeight, rightHeight) + 1;
+
+    return [isBalanced, height];
+  }
+
+  return checkBalance(root)[0];
+}
+```
+
+### TypeScript
+
+```typescript
+// Definition for a binary tree node
+class TreeNode {
+  val: number;
+  left: TreeNode | null;
+  right: TreeNode | null;
+
+  constructor(val: number = 0, left: TreeNode | null = null, right: TreeNode | null = null) {
+    this.val = val;
+    this.left = left;
+    this.right = right;
+  }
+}
+
+/**
+ * Optimized approach
+ * Time: O(n), Space: O(h)
+ */
+function isBalanced(root: TreeNode | null): boolean {
+  function getHeight(node: TreeNode | null): number {
+    if (node === null) return 0;
+
+    const leftHeight = getHeight(node.left);
+    if (leftHeight === -1) return -1;
+
+    const rightHeight = getHeight(node.right);
+    if (rightHeight === -1) return -1;
+
+    if (Math.abs(leftHeight - rightHeight) > 1) {
+      return -1;
+    }
+
+    return Math.max(leftHeight, rightHeight) + 1;
+  }
+
+  return getHeight(root) !== -1;
+}
+
+/**
+ * Alternative with tuple return
+ * Time: O(n), Space: O(h)
+ */
+function isBalancedAlt(root: TreeNode | null): boolean {
+  function checkBalance(node: TreeNode | null): [boolean, number] {
+    if (node === null) {
+      return [true, 0];
+    }
+
+    const [leftBalanced, leftHeight] = checkBalance(node.left);
+    if (!leftBalanced) return [false, 0];
+
+    const [rightBalanced, rightHeight] = checkBalance(node.right);
+    if (!rightBalanced) return [false, 0];
+
+    const balanced = Math.abs(leftHeight - rightHeight) <= 1;
+    const height = Math.max(leftHeight, rightHeight) + 1;
+
+    return [balanced, height];
+  }
+
+  return checkBalance(root)[0];
+}
+```
+
+## Key Properties
+
+- **Balance Factor:** Height difference at each node ≤ 1
+- **Early Exit:** Return -1 or false immediately if unbalanced
+- **O(n) Optimization:** Avoid recalculating heights
+
+## Complexity Analysis
+
+- **Time (Optimized):** O(n) - each node visited once
+- **Time (Naive):** O(n²) - recalculation of heights
+- **Space:** O(h) - recursion depth

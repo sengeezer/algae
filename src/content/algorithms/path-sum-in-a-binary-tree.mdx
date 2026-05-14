@@ -1,0 +1,268 @@
+---
+title: Path Sum in a Binary Tree
+slug: path-sum-in-a-binary-tree
+category: tree
+summary: Find root-to-leaf paths with given target sum
+description: Given a binary tree and a target sum, determine if the tree has a root-to-leaf path such that adding up all the values along the path equals the target. This classic backtracking problem is useful for constraint satisfaction and path analysis.
+dataStructures:
+  - binary-tree
+  - recursion
+  - backtracking
+techniques:
+  - depth-first-search
+  - path-finding
+difficulty: easy
+interviewFrequency: high
+complexity:
+  time: O(n)
+  space: O(h) recursion depth
+  notes: DFS with state tracking finds target-sum paths
+interviewSignals:
+  - path problems
+  - backtracking
+  - constraint checking
+source: geeksforgeeks
+related:
+  - root-to-leaf-paths-in-a-binary-tree
+  - tree-diameter
+  - lowest-common-ancestor-in-a-binary-search-tree
+---
+
+## Problem
+
+Given the root of a binary tree and an integer targetSum, return true if the tree has a root-to-leaf path such that adding up all the values along the path equals targetSum.
+
+### Examples
+
+**Example 1:**
+```
+Input:     
+      5
+     / \
+    4   8
+   /   / \
+  11  13  4
+ / \      \
+7   2      1
+
+targetSum = 22
+
+Output: true
+Path: 5 -> 4 -> 11 -> 2 = 22
+```
+
+**Example 2:**
+```
+Input:     
+      1
+     / \
+    2   3
+
+targetSum = 5
+
+Output: false
+```
+
+## Approach
+
+### DFS with Backtracking
+1. Subtract current node value from targetSum
+2. If leaf node and sum equals 0, return true
+3. Recursively check left and right subtrees
+4. Return true if either subtree has valid path
+
+## Solution
+
+### JavaScript
+
+```javascript
+// Definition for a binary tree node
+class TreeNode {
+  constructor(val = 0, left = null, right = null) {
+    this.val = val;
+    this.left = left;
+    this.right = right;
+  }
+}
+
+/**
+ * Check if path sum exists
+ * Time: O(n), Space: O(h)
+ */
+function hasPathSum(root, targetSum) {
+  if (root === null) return false;
+
+  // Check if leaf node
+  if (root.left === null && root.right === null) {
+    return root.val === targetSum;
+  }
+
+  // Subtract current value and check subtrees
+  const remaining = targetSum - root.val;
+  return hasPathSum(root.left, remaining) || hasPathSum(root.right, remaining);
+}
+
+/**
+ * Find all paths with given sum
+ * Time: O(n), Space: O(h)
+ */
+function pathSum(root, targetSum) {
+  const result = [];
+  const path = [];
+
+  function dfs(node, remaining) {
+    if (node === null) return;
+
+    path.push(node.val);
+    remaining -= node.val;
+
+    // Check if leaf
+    if (node.left === null && node.right === null && remaining === 0) {
+      result.push([...path]);
+    } else {
+      dfs(node.left, remaining);
+      dfs(node.right, remaining);
+    }
+
+    path.pop(); // Backtrack
+  }
+
+  dfs(root, targetSum);
+  return result;
+}
+
+/**
+ * Count paths with given sum (not just root-to-leaf)
+ * Time: O(n), Space: O(h)
+ */
+function pathSumCount(root, targetSum) {
+  const map = new Map(); // prefix sum -> count
+  map.set(0, 1);
+
+  let count = 0;
+
+  function dfs(node, currSum) {
+    if (node === null) return;
+
+    currSum += node.val;
+
+    // Check if we can form target sum
+    if (map.has(currSum - targetSum)) {
+      count += map.get(currSum - targetSum);
+    }
+
+    // Add current sum to map
+    map.set(currSum, (map.get(currSum) || 0) + 1);
+
+    dfs(node.left, currSum);
+    dfs(node.right, currSum);
+
+    // Remove current sum when backtracking
+    map.set(currSum, map.get(currSum) - 1);
+  }
+
+  dfs(root, 0);
+  return count;
+}
+```
+
+### TypeScript
+
+```typescript
+// Definition for a binary tree node
+class TreeNode {
+  val: number;
+  left: TreeNode | null;
+  right: TreeNode | null;
+
+  constructor(val: number = 0, left: TreeNode | null = null, right: TreeNode | null = null) {
+    this.val = val;
+    this.left = left;
+    this.right = right;
+  }
+}
+
+/**
+ * Check if path sum exists
+ * Time: O(n), Space: O(h)
+ */
+function hasPathSum(root: TreeNode | null, targetSum: number): boolean {
+  if (root === null) return false;
+
+  if (root.left === null && root.right === null) {
+    return root.val === targetSum;
+  }
+
+  const remaining = targetSum - root.val;
+  return hasPathSum(root.left, remaining) || hasPathSum(root.right, remaining);
+}
+
+/**
+ * Find all paths with given sum
+ * Time: O(n), Space: O(h)
+ */
+function pathSum(root: TreeNode | null, targetSum: number): number[][] {
+  const result: number[][] = [];
+  const path: number[] = [];
+
+  function dfs(node: TreeNode | null, remaining: number): void {
+    if (node === null) return;
+
+    path.push(node.val);
+    remaining -= node.val;
+
+    if (node.left === null && node.right === null && remaining === 0) {
+      result.push([...path]);
+    } else {
+      dfs(node.left, remaining);
+      dfs(node.right, remaining);
+    }
+
+    path.pop();
+  }
+
+  dfs(root, targetSum);
+  return result;
+}
+
+/**
+ * Count paths with given sum
+ * Time: O(n), Space: O(h)
+ */
+function pathSumCount(root: TreeNode | null, targetSum: number): number {
+  const map = new Map<number, number>();
+  map.set(0, 1);
+  let count: number = 0;
+
+  function dfs(node: TreeNode | null, currSum: number): void {
+    if (node === null) return;
+
+    currSum += node.val;
+
+    if (map.has(currSum - targetSum)) {
+      count += map.get(currSum - targetSum) as number;
+    }
+
+    map.set(currSum, (map.get(currSum) || 0) + 1);
+
+    dfs(node.left, currSum);
+    dfs(node.right, currSum);
+
+    map.set(currSum, (map.get(currSum) as number) - 1);
+  }
+
+  dfs(root, 0);
+  return count;
+}
+```
+
+## Key Properties
+
+- **Leaf Requirement:** Path must end at leaf node
+- **Backtracking:** Restore state when returning from recursion
+- **Prefix Sum:** Useful for counting paths (not just root-to-leaf)
+
+## Complexity Analysis
+
+- **Time:** O(n) - visit each node once
+- **Space:** O(h) - recursion stack depth

@@ -1,0 +1,273 @@
+---
+title: Lowest Common Ancestor of Two Nodes
+slug: lowest-common-ancestor-lca
+category: tree
+summary: Find the deepest node that is ancestor of both nodes
+description: The lowest common ancestor (LCA) of two nodes is the deepest node in the tree that has both nodes as descendants. This is a fundamental tree problem applicable to both general binary trees and BSTs.
+dataStructures:
+  - binary-tree
+  - recursion
+techniques:
+  - tree-traversal
+  - depth-first-search
+difficulty: medium
+interviewFrequency: high
+complexity:
+  time: O(n) general tree, O(log n) BST
+  space: O(h) recursion depth
+  notes: General tree requires full traversal; BST can prune
+interviewSignals:
+  - ancestor relationships
+  - tree traversal
+  - recursion patterns
+source: geeksforgeeks
+related:
+  - lowest-common-ancestor-in-a-binary-search-tree
+  - inorder-traversal-of-binary-tree
+  - preorder-traversal-of-binary-tree
+---
+
+## Problem
+
+Given a binary tree and two nodes with values p and q, find the lowest common ancestor (LCA) of the two nodes. The LCA is defined as the lowest node in the tree that has both p and q as descendants (a node can be a descendant of itself).
+
+### Examples
+
+**Example 1:**
+```
+Input:     
+       3
+      / \
+     5   1
+    / \ / \
+   6  2 0  8
+    / \
+   7   4
+
+p = 5, q = 1
+Output: 3 (LCA is root)
+```
+
+**Example 2:**
+```
+Input: Same tree
+p = 5, q = 4
+Output: 5 (node 5 is ancestor of 4)
+```
+
+## Approach
+
+### Recursive DFS
+1. If node is null, return null
+2. If node equals p or q, return node
+3. Recursively find LCA in left and right subtrees
+4. If both left and right return non-null, current node is LCA
+5. If only one is non-null, that one is LCA
+
+## Solution
+
+### JavaScript
+
+```javascript
+// Definition for a binary tree node
+class TreeNode {
+  constructor(val = 0, left = null, right = null) {
+    this.val = val;
+    this.left = left;
+    this.right = right;
+  }
+}
+
+/**
+ * Find LCA in general binary tree
+ * Time: O(n), Space: O(h)
+ */
+function lowestCommonAncestor(root, p, q) {
+  if (root === null) return null;
+
+  // If either p or q matches root, root is LCA
+  if (root.val === p.val || root.val === q.val) {
+    return root;
+  }
+
+  // Look for LCA in left and right subtrees
+  const left = lowestCommonAncestor(root.left, p, q);
+  const right = lowestCommonAncestor(root.right, p, q);
+
+  // If both left and right return non-null, root is LCA
+  if (left !== null && right !== null) {
+    return root;
+  }
+
+  // If only left is non-null, LCA is in left subtree
+  return left !== null ? left : right;
+}
+
+/**
+ * With value comparison instead of node reference
+ * Time: O(n), Space: O(h)
+ */
+function lowestCommonAncestorByValue(root, pVal, qVal) {
+  if (root === null) return null;
+
+  if (root.val === pVal || root.val === qVal) {
+    return root;
+  }
+
+  const left = lowestCommonAncestorByValue(root.left, pVal, qVal);
+  const right = lowestCommonAncestorByValue(root.right, pVal, qVal);
+
+  if (left !== null && right !== null) {
+    return root;
+  }
+
+  return left !== null ? left : right;
+}
+
+/**
+ * Find LCA and verify both nodes exist
+ * Time: O(n), Space: O(h)
+ */
+function lowestCommonAncestorVerified(root, p, q) {
+  function dfs(node) {
+    if (node === null) return null;
+
+    if (node.val === p.val || node.val === q.val) {
+      return node;
+    }
+
+    const left = dfs(node.left);
+    const right = dfs(node.right);
+
+    if (left !== null && right !== null) {
+      return node;
+    }
+
+    return left !== null ? left : right;
+  }
+
+  const lca = dfs(root);
+
+  // Verify both p and q exist in tree
+  function findNode(node, val) {
+    if (node === null) return false;
+    if (node.val === val) return true;
+    return findNode(node.left, val) || findNode(node.right, val);
+  }
+
+  if (!findNode(lca, p.val) || !findNode(lca, q.val)) {
+    return null; // One or both nodes not in tree
+  }
+
+  return lca;
+}
+```
+
+### TypeScript
+
+```typescript
+// Definition for a binary tree node
+class TreeNode {
+  val: number;
+  left: TreeNode | null;
+  right: TreeNode | null;
+
+  constructor(val: number = 0, left: TreeNode | null = null, right: TreeNode | null = null) {
+    this.val = val;
+    this.left = left;
+    this.right = right;
+  }
+}
+
+/**
+ * Find LCA in general binary tree
+ * Time: O(n), Space: O(h)
+ */
+function lowestCommonAncestor(root: TreeNode | null, p: TreeNode, q: TreeNode): TreeNode | null {
+  if (root === null) return null;
+
+  if (root.val === p.val || root.val === q.val) {
+    return root;
+  }
+
+  const left = lowestCommonAncestor(root.left, p, q);
+  const right = lowestCommonAncestor(root.right, p, q);
+
+  if (left !== null && right !== null) {
+    return root;
+  }
+
+  return left !== null ? left : right;
+}
+
+/**
+ * With value comparison
+ * Time: O(n), Space: O(h)
+ */
+function lowestCommonAncestorByValue(root: TreeNode | null, pVal: number, qVal: number): TreeNode | null {
+  if (root === null) return null;
+
+  if (root.val === pVal || root.val === qVal) {
+    return root;
+  }
+
+  const left = lowestCommonAncestorByValue(root.left, pVal, qVal);
+  const right = lowestCommonAncestorByValue(root.right, pVal, qVal);
+
+  if (left !== null && right !== null) {
+    return root;
+  }
+
+  return left !== null ? left : right;
+}
+
+/**
+ * Find LCA and verify both nodes exist
+ * Time: O(n), Space: O(h)
+ */
+function lowestCommonAncestorVerified(root: TreeNode | null, p: TreeNode, q: TreeNode): TreeNode | null {
+  function dfs(node: TreeNode | null): TreeNode | null {
+    if (node === null) return null;
+
+    if (node.val === p.val || node.val === q.val) {
+      return node;
+    }
+
+    const left = dfs(node.left);
+    const right = dfs(node.right);
+
+    if (left !== null && right !== null) {
+      return node;
+    }
+
+    return left !== null ? left : right;
+  }
+
+  const lca = dfs(root);
+
+  function findNode(node: TreeNode | null, val: number): boolean {
+    if (node === null) return false;
+    if (node.val === val) return true;
+    return findNode(node.left, val) || findNode(node.right, val);
+  }
+
+  if (lca === null || !findNode(lca, p.val) || !findNode(lca, q.val)) {
+    return null;
+  }
+
+  return lca;
+}
+```
+
+## Key Properties
+
+- **Node Can Be Ancestor of Itself:** A node is descendant of itself
+- **Both Below or One Is LCA:** If both in one subtree, that subtree root is LCA
+- **General Tree:** Requires full traversal, O(n) time
+- **BST:** Can optimize using BST property, O(log n) time
+
+## Complexity Analysis
+
+- **Time (General Tree):** O(n) - may visit all nodes
+- **Time (BST):** O(log n) - can prune subtrees
+- **Space:** O(h) - recursion depth

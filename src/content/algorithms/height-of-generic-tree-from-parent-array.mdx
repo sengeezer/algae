@@ -1,0 +1,304 @@
+---
+title: Height of Generic Tree from Parent Array
+slug: height-of-generic-tree-from-parent-array
+category: tree
+summary: Calculate tree height given parent array representation
+description: Given a parent array where each index represents a node and the value is its parent, compute the height of the generic tree. This problem tests understanding of tree structure from alternative representations.
+dataStructures:
+  - generic-tree
+  - n-ary-tree
+  - parent-pointer
+techniques:
+  - tree-traversal
+  - depth-first-search
+  - array-representation
+difficulty: medium
+interviewFrequency: medium
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: Memoization prevents recalculation from parent array
+interviewSignals:
+  - alternative tree representations
+  - parent pointers
+  - height calculation
+source: geeksforgeeks
+related:
+  - introduction-to-generic-trees-n-ary-trees
+  - maximum-depth-or-height-of-a-binary-tree
+  - level-order-traversal-of-a-generic-tree
+---
+
+## Problem
+
+Given a parent array where parent[i] is the parent of node i (with -1 for root), find the height of the tree.
+
+### Examples
+
+**Example 1:**
+```
+Input:
+parent = [-1, 0, 0, 1, 1]
+
+Tree:
+      0
+     / \
+    1   2
+   / \
+  3   4
+
+Output: 2
+```
+
+**Example 2:**
+```
+Input:
+parent = [-1, 0, 1, 2, 3]
+
+Tree (chain):
+0 -> 1 -> 2 -> 3 -> 4
+
+Output: 4
+```
+
+## Approach
+
+### Method 1: Build Tree Then Calculate Height
+1. Build adjacency list from parent array
+2. Find root (parent = -1)
+3. DFS from root to calculate height
+
+### Method 2: Direct Height Calculation
+For each node, traverse upward to root and count steps.
+
+## Solution
+
+### JavaScript
+
+```javascript
+/**
+ * Calculate height from parent array - using tree construction
+ * Time: O(n), Space: O(n)
+ */
+function treeHeight(parent) {
+  if (parent === null || parent.length === 0) return 0;
+
+  const n = parent.length;
+  const children = Array.from({ length: n }, () => []);
+  let root = -1;
+
+  // Build adjacency list
+  for (let i = 0; i < n; i++) {
+    if (parent[i] === -1) {
+      root = i;
+    } else {
+      children[parent[i]].push(i);
+    }
+  }
+
+  // DFS to calculate height
+  function getHeight(node) {
+    if (children[node].length === 0) {
+      return 0; // Leaf node
+    }
+
+    let maxHeight = 0;
+    for (const child of children[node]) {
+      maxHeight = Math.max(maxHeight, getHeight(child));
+    }
+
+    return maxHeight + 1;
+  }
+
+  return getHeight(root);
+}
+
+/**
+ * Calculate height by traversing upward
+ * Time: O(n²) worst case, Space: O(1)
+ */
+function treeHeightUpward(parent) {
+  if (parent === null || parent.length === 0) return 0;
+
+  let maxHeight = 0;
+
+  // For each node, count distance to root
+  for (let i = 0; i < parent.length; i++) {
+    let node = i;
+    let height = 0;
+
+    // Traverse up to root
+    while (parent[node] !== -1) {
+      height++;
+      node = parent[node];
+    }
+
+    maxHeight = Math.max(maxHeight, height);
+  }
+
+  return maxHeight;
+}
+
+/**
+ * Calculate height with memoization
+ * Time: O(n), Space: O(n)
+ */
+function treeHeightMemo(parent) {
+  if (parent === null || parent.length === 0) return 0;
+
+  const memo = new Map();
+
+  function getHeight(node) {
+    if (memo.has(node)) return memo.get(node);
+
+    if (parent[node] === -1) {
+      // Root has height 0
+      memo.set(node, 0);
+      return 0;
+    }
+
+    const height = 1 + getHeight(parent[node]);
+    memo.set(node, height);
+    return height;
+  }
+
+  let maxHeight = 0;
+  for (let i = 0; i < parent.length; i++) {
+    maxHeight = Math.max(maxHeight, getHeight(i));
+  }
+
+  return maxHeight;
+}
+
+/**
+ * Get tree height and also return node levels
+ * Time: O(n), Space: O(n)
+ */
+function treeHeightWithLevels(parent) {
+  if (parent === null || parent.length === 0) return { height: 0, levels: [] };
+
+  const levels = Array(parent.length).fill(0);
+  let maxHeight = 0;
+
+  for (let i = 0; i < parent.length; i++) {
+    let node = i;
+    let level = 0;
+
+    while (parent[node] !== -1) {
+      node = parent[node];
+      level++;
+    }
+
+    levels[i] = level;
+    maxHeight = Math.max(maxHeight, level);
+  }
+
+  return { height: maxHeight, levels };
+}
+```
+
+### TypeScript
+
+```typescript
+/**
+ * Calculate height from parent array
+ * Time: O(n), Space: O(n)
+ */
+function treeHeight(parent: number[]): number {
+  if (parent === null || parent.length === 0) return 0;
+
+  const n = parent.length;
+  const children: number[][] = Array.from({ length: n }, () => []);
+  let root: number = -1;
+
+  for (let i = 0; i < n; i++) {
+    if (parent[i] === -1) {
+      root = i;
+    } else {
+      children[parent[i]].push(i);
+    }
+  }
+
+  function getHeight(node: number): number {
+    if (children[node].length === 0) {
+      return 0;
+    }
+
+    let maxHeight = 0;
+    for (const child of children[node]) {
+      maxHeight = Math.max(maxHeight, getHeight(child));
+    }
+
+    return maxHeight + 1;
+  }
+
+  return getHeight(root);
+}
+
+/**
+ * Calculate height by traversing upward
+ * Time: O(n²) worst case, Space: O(1)
+ */
+function treeHeightUpward(parent: number[]): number {
+  if (parent === null || parent.length === 0) return 0;
+
+  let maxHeight: number = 0;
+
+  for (let i = 0; i < parent.length; i++) {
+    let node: number = i;
+    let height: number = 0;
+
+    while (parent[node] !== -1) {
+      height++;
+      node = parent[node];
+    }
+
+    maxHeight = Math.max(maxHeight, height);
+  }
+
+  return maxHeight;
+}
+
+/**
+ * Calculate height with memoization
+ * Time: O(n), Space: O(n)
+ */
+function treeHeightMemo(parent: number[]): number {
+  if (parent === null || parent.length === 0) return 0;
+
+  const memo = new Map<number, number>();
+
+  function getHeight(node: number): number {
+    if (memo.has(node)) return memo.get(node) as number;
+
+    if (parent[node] === -1) {
+      memo.set(node, 0);
+      return 0;
+    }
+
+    const height = 1 + getHeight(parent[node]);
+    memo.set(node, height);
+    return height;
+  }
+
+  let maxHeight: number = 0;
+  for (let i = 0; i < parent.length; i++) {
+    maxHeight = Math.max(maxHeight, getHeight(i));
+  }
+
+  return maxHeight;
+}
+```
+
+## Key Properties
+
+- **Parent Array:** Index represents node, value represents parent
+- **Root:** Node with parent = -1
+- **Chain:** Skewed tree has height O(n)
+- **Balanced:** Height O(log n)
+
+## Complexity Analysis
+
+- **Upward traversal:** O(n²) worst case - recalculates for each node
+- **With memoization:** O(n) - each node processed once
+- **With adjacency list:** O(n) - standard DFS

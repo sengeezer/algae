@@ -1,0 +1,279 @@
+---
+title: Postorder Traversal of Binary Tree
+slug: postorder-traversal-of-binary-tree
+category: tree
+summary: Visit left subtree, then right subtree, then node recursively
+description: Postorder traversal is a depth-first tree traversal method where each node is visited after its subtrees. This approach is essential for tree deletion, freeing memory, and generating postfix notation.
+dataStructures:
+  - binary-tree
+  - recursion
+  - stack
+techniques:
+  - depth-first-search
+  - tree-traversal
+difficulty: easy
+interviewFrequency: high
+complexity:
+  time: O(n)
+  space: O(h) where h is height
+  notes: Ideal for tree deletion and postfix evaluation
+interviewSignals:
+  - fundamental tree traversal
+  - postfix notation
+  - tree deletion patterns
+  - bottom-up processing
+source: geeksforgeeks
+related:
+  - inorder-traversal-of-binary-tree
+  - preorder-traversal-of-binary-tree
+  - level-order-traversal-breadth-first-search-of-binary-tree
+---
+
+## Problem
+
+Given a binary tree, perform a postorder traversal and return the node values in the order visited.
+
+### Examples
+
+**Example 1:**
+```
+Input:     
+      1
+     / \
+    2   3
+
+Output: [2, 3, 1]
+```
+
+**Example 2:**
+```
+Input:     
+        1
+       / \
+      2   3
+     / \   \
+    4   5   6
+
+Output: [4, 5, 2, 6, 3, 1]
+```
+
+## Approach
+
+### Recursive Approach
+The postorder traversal follows the pattern: **Left → Right → Root**
+
+For each node:
+1. Recursively traverse the left subtree
+2. Recursively traverse the right subtree
+3. Visit the current node
+
+The recursion terminates when we reach a null node.
+
+## Solution
+
+### JavaScript
+
+```javascript
+// Definition for a binary tree node
+class TreeNode {
+  constructor(val = 0, left = null, right = null) {
+    this.val = val;
+    this.left = left;
+    this.right = right;
+  }
+}
+
+/**
+ * Postorder traversal using recursion
+ * Time: O(n), Space: O(h)
+ */
+function postorderTraversal(root) {
+  const result = [];
+
+  function traverse(node) {
+    if (node === null) return;
+
+    // Traverse left subtree
+    traverse(node.left);
+
+    // Traverse right subtree
+    traverse(node.right);
+
+    // Visit current node
+    result.push(node.val);
+  }
+
+  traverse(root);
+  return result;
+}
+
+/**
+ * Iterative postorder traversal using two stacks
+ * Time: O(n), Space: O(h)
+ */
+function postorderTraversalIterative(root) {
+  if (root === null) return [];
+
+  const result = [];
+  const stack1 = [root];
+  const stack2 = [];
+
+  while (stack1.length > 0) {
+    const node = stack1.pop();
+    stack2.push(node);
+
+    if (node.left !== null) {
+      stack1.push(node.left);
+    }
+    if (node.right !== null) {
+      stack1.push(node.right);
+    }
+  }
+
+  while (stack2.length > 0) {
+    result.push(stack2.pop().val);
+  }
+
+  return result;
+}
+
+/**
+ * Iterative postorder using one stack (more efficient)
+ * Time: O(n), Space: O(h)
+ */
+function postorderTraversalOneStack(root) {
+  if (root === null) return [];
+
+  const result = [];
+  const stack = [];
+  let current = root;
+  let lastVisited = null;
+
+  while (stack.length > 0 || current !== null) {
+    if (current !== null) {
+      stack.push(current);
+      current = current.left;
+    } else {
+      const peekNode = stack[stack.length - 1];
+      if (peekNode.right !== null && lastVisited !== peekNode.right) {
+        current = peekNode.right;
+      } else {
+        result.push(peekNode.val);
+        lastVisited = stack.pop();
+      }
+    }
+  }
+
+  return result;
+}
+```
+
+### TypeScript
+
+```typescript
+// Definition for a binary tree node
+class TreeNode {
+  val: number;
+  left: TreeNode | null;
+  right: TreeNode | null;
+
+  constructor(val: number = 0, left: TreeNode | null = null, right: TreeNode | null = null) {
+    this.val = val;
+    this.left = left;
+    this.right = right;
+  }
+}
+
+/**
+ * Postorder traversal using recursion
+ * Time: O(n), Space: O(h)
+ */
+function postorderTraversal(root: TreeNode | null): number[] {
+  const result: number[] = [];
+
+  function traverse(node: TreeNode | null): void {
+    if (node === null) return;
+
+    traverse(node.left);
+    traverse(node.right);
+    result.push(node.val);
+  }
+
+  traverse(root);
+  return result;
+}
+
+/**
+ * Iterative postorder using two stacks
+ * Time: O(n), Space: O(h)
+ */
+function postorderTraversalIterative(root: TreeNode | null): number[] {
+  if (root === null) return [];
+
+  const result: number[] = [];
+  const stack1: TreeNode[] = [root];
+  const stack2: TreeNode[] = [];
+
+  while (stack1.length > 0) {
+    const node = stack1.pop() as TreeNode;
+    stack2.push(node);
+
+    if (node.left !== null) {
+      stack1.push(node.left);
+    }
+    if (node.right !== null) {
+      stack1.push(node.right);
+    }
+  }
+
+  while (stack2.length > 0) {
+    result.push((stack2.pop() as TreeNode).val);
+  }
+
+  return result;
+}
+
+/**
+ * Iterative postorder using one stack
+ * Time: O(n), Space: O(h)
+ */
+function postorderTraversalOneStack(root: TreeNode | null): number[] {
+  if (root === null) return [];
+
+  const result: number[] = [];
+  const stack: TreeNode[] = [];
+  let current: TreeNode | null = root;
+  let lastVisited: TreeNode | null = null;
+
+  while (stack.length > 0 || current !== null) {
+    if (current !== null) {
+      stack.push(current);
+      current = current.left;
+    } else {
+      const peekNode = stack[stack.length - 1];
+      if (peekNode.right !== null && lastVisited !== peekNode.right) {
+        current = peekNode.right;
+      } else {
+        result.push(peekNode.val);
+        lastVisited = stack.pop() as TreeNode;
+      }
+    }
+  }
+
+  return result;
+}
+```
+
+## Key Properties
+
+- **Tree Deletion:** Essential for freeing resources - children deleted before parent
+- **Expression Trees:** Postorder generates postfix notation (Reverse Polish notation)
+- **Bottom-up Processing:** All children's results available before processing parent
+- **Use Cases:** Tree deletion, dependency resolution, calculating subtree properties
+
+## Complexity Analysis
+
+- **Time:** O(n) - visit each node exactly once
+- **Space:** O(h) - recursion depth or explicit stack size, where h is tree height
+  - Worst case: O(n) for skewed tree
+  - Best case: O(log n) for balanced tree

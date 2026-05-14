@@ -1,0 +1,272 @@
+---
+title: Mirror of Binary Tree
+slug: mirror-of-binary-tree
+category: tree
+summary: Swap left and right children recursively to create mirror image
+description: Creating a mirror of a binary tree involves recursively swapping the left and right children of every node. This transforms the tree to its mirror image, useful for understanding tree symmetry and transformations.
+dataStructures:
+  - binary-tree
+  - recursion
+techniques:
+  - tree-transformation
+  - depth-first-search
+difficulty: easy
+interviewFrequency: medium
+complexity:
+  time: O(n)
+  space: O(h) recursion depth
+  notes: Swapping preserves subtree structure
+interviewSignals:
+  - tree transformation
+  - symmetry analysis
+  - pointer manipulation
+source: geeksforgeeks
+related:
+  - binary-tree-to-binary-search-tree-conversion
+  - inorder-traversal-of-binary-tree
+  - preorder-traversal-of-binary-tree
+---
+
+## Problem
+
+Given a binary tree, create its mirror image by swapping the left and right children of all nodes.
+
+### Examples
+
+**Example 1:**
+```
+Input:     
+       1
+      / \
+     2   3
+
+Output:    
+       1
+      / \
+     3   2
+```
+
+**Example 2:**
+```
+Input:     
+         1
+        / \
+       2   3
+      /     \
+     4       5
+
+Output:      
+         1
+        / \
+       3   2
+      /     \
+     5       4
+```
+
+## Approach
+
+### Recursive
+For each node:
+1. Recursively mirror left subtree
+2. Recursively mirror right subtree
+3. Swap left and right pointers
+
+Base case: null node returns immediately.
+
+## Solution
+
+### JavaScript
+
+```javascript
+// Definition for a binary tree node
+class TreeNode {
+  constructor(val = 0, left = null, right = null) {
+    this.val = val;
+    this.left = left;
+    this.right = right;
+  }
+}
+
+/**
+ * Create mirror of tree (modify in place)
+ * Time: O(n), Space: O(h)
+ */
+function mirrorTree(root) {
+  if (root === null) return null;
+
+  // Mirror left and right subtrees
+  mirrorTree(root.left);
+  mirrorTree(root.right);
+
+  // Swap left and right children
+  [root.left, root.right] = [root.right, root.left];
+
+  return root;
+}
+
+/**
+ * Create mirror without modifying original
+ * Time: O(n), Space: O(h)
+ */
+function mirrorTreeNonDestructive(root) {
+  if (root === null) return null;
+
+  const node = new TreeNode(root.val);
+
+  // Mirror right subtree as left, left as right
+  node.left = mirrorTreeNonDestructive(root.right);
+  node.right = mirrorTreeNonDestructive(root.left);
+
+  return node;
+}
+
+/**
+ * Iterative mirror using queue
+ * Time: O(n), Space: O(w)
+ */
+function mirrorTreeIterative(root) {
+  if (root === null) return root;
+
+  const queue = [root];
+
+  while (queue.length > 0) {
+    const node = queue.shift();
+
+    // Swap children
+    [node.left, node.right] = [node.right, node.left];
+
+    if (node.left !== null) queue.push(node.left);
+    if (node.right !== null) queue.push(node.right);
+  }
+
+  return root;
+}
+
+/**
+ * Check if tree is mirror of itself (palindromic)
+ * Time: O(n), Space: O(h)
+ */
+function isMirror(node1, node2) {
+  if (node1 === null && node2 === null) return true;
+  if (node1 === null || node2 === null) return false;
+
+  return (
+    node1.val === node2.val &&
+    isMirror(node1.left, node2.right) &&
+    isMirror(node1.right, node2.left)
+  );
+}
+
+/**
+ * Check if tree is symmetric
+ * Time: O(n), Space: O(h)
+ */
+function isSymmetric(root) {
+  if (root === null) return true;
+  return isMirror(root.left, root.right);
+}
+```
+
+### TypeScript
+
+```typescript
+// Definition for a binary tree node
+class TreeNode {
+  val: number;
+  left: TreeNode | null;
+  right: TreeNode | null;
+
+  constructor(val: number = 0, left: TreeNode | null = null, right: TreeNode | null = null) {
+    this.val = val;
+    this.left = left;
+    this.right = right;
+  }
+}
+
+/**
+ * Create mirror of tree (modify in place)
+ * Time: O(n), Space: O(h)
+ */
+function mirrorTree(root: TreeNode | null): TreeNode | null {
+  if (root === null) return null;
+
+  mirrorTree(root.left);
+  mirrorTree(root.right);
+
+  [root.left, root.right] = [root.right, root.left];
+
+  return root;
+}
+
+/**
+ * Create mirror without modifying original
+ * Time: O(n), Space: O(h)
+ */
+function mirrorTreeNonDestructive(root: TreeNode | null): TreeNode | null {
+  if (root === null) return null;
+
+  const node = new TreeNode(root.val);
+
+  node.left = mirrorTreeNonDestructive(root.right);
+  node.right = mirrorTreeNonDestructive(root.left);
+
+  return node;
+}
+
+/**
+ * Iterative mirror using queue
+ * Time: O(n), Space: O(w)
+ */
+function mirrorTreeIterative(root: TreeNode | null): TreeNode | null {
+  if (root === null) return root;
+
+  const queue: TreeNode[] = [root];
+
+  while (queue.length > 0) {
+    const node = queue.shift() as TreeNode;
+
+    [node.left, node.right] = [node.right, node.left];
+
+    if (node.left !== null) queue.push(node.left);
+    if (node.right !== null) queue.push(node.right);
+  }
+
+  return root;
+}
+
+/**
+ * Check if two trees are mirrors
+ * Time: O(n), Space: O(h)
+ */
+function isMirror(node1: TreeNode | null, node2: TreeNode | null): boolean {
+  if (node1 === null && node2 === null) return true;
+  if (node1 === null || node2 === null) return false;
+
+  return (
+    node1.val === node2.val &&
+    isMirror(node1.left, node2.right) &&
+    isMirror(node1.right, node2.left)
+  );
+}
+
+/**
+ * Check if tree is symmetric
+ * Time: O(n), Space: O(h)
+ */
+function isSymmetric(root: TreeNode | null): boolean {
+  if (root === null) return true;
+  return isMirror(root.left, root.right);
+}
+```
+
+## Key Properties
+
+- **Swap Recursively:** Process all nodes level by level
+- **In-place Possible:** Can modify original or create new
+- **Symmetry Check:** Mirror is special case of comparison
+
+## Complexity Analysis
+
+- **Time:** O(n) - visit each node once
+- **Space (Recursive):** O(h) - recursion depth
+- **Space (Iterative):** O(w) - queue size

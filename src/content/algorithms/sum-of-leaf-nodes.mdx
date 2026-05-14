@@ -1,0 +1,236 @@
+---
+title: Sum of Leaf Nodes in a Binary Tree
+slug: sum-of-leaf-nodes
+category: tree
+summary: Calculate the sum of all leaf node values
+description: Finding the sum of all leaf nodes is a tree traversal problem that identifies and sums only the leaf nodes (nodes with no children). Useful for analyzing tree structure and aggregate computations.
+dataStructures:
+  - binary-tree
+  - recursion
+techniques:
+  - tree-traversal
+  - depth-first-search
+difficulty: easy
+interviewFrequency: medium
+complexity:
+  time: O(n)
+  space: O(h) recursion depth
+  notes: Identifies and sums terminal nodes only
+interviewSignals:
+  - node classification
+  - aggregate computation
+  - traversal patterns
+source: geeksforgeeks
+related:
+  - count-leaf-nodes-in-a-binary-tree
+  - path-sum-in-a-binary-tree
+  - inorder-traversal-of-binary-tree
+---
+
+## Problem
+
+Given a binary tree, calculate the sum of all leaf node values. A leaf node is a node with no children.
+
+### Examples
+
+**Example 1:**
+```
+Input:     
+      1
+     / \
+    2   3
+
+Output: 5
+Leaves: 2, 3 => 2 + 3 = 5
+```
+
+**Example 2:**
+```
+Input:     
+        1
+       / \
+      2   3
+     / \
+    4   5
+
+Output: 12
+Leaves: 4, 5, 3 => 4 + 5 + 3 = 12
+```
+
+## Approach
+
+### DFS Traversal
+1. If node is null, return 0
+2. If node is leaf (both children null), return node value
+3. Otherwise, sum results from left and right subtrees
+
+## Solution
+
+### JavaScript
+
+```javascript
+// Definition for a binary tree node
+class TreeNode {
+  constructor(val = 0, left = null, right = null) {
+    this.val = val;
+    this.left = left;
+    this.right = right;
+  }
+}
+
+/**
+ * Sum of leaf nodes using recursion
+ * Time: O(n), Space: O(h)
+ */
+function sumOfLeafNodes(root) {
+  if (root === null) return 0;
+
+  // Check if leaf node
+  if (root.left === null && root.right === null) {
+    return root.val;
+  }
+
+  // Sum leaves from left and right subtrees
+  return sumOfLeafNodes(root.left) + sumOfLeafNodes(root.right);
+}
+
+/**
+ * Iterative DFS using stack
+ * Time: O(n), Space: O(h)
+ */
+function sumOfLeafNodesIterative(root) {
+  if (root === null) return 0;
+
+  let sum = 0;
+  const stack = [root];
+
+  while (stack.length > 0) {
+    const node = stack.pop();
+
+    // Check if leaf
+    if (node.left === null && node.right === null) {
+      sum += node.val;
+    } else {
+      if (node.right !== null) stack.push(node.right);
+      if (node.left !== null) stack.push(node.left);
+    }
+  }
+
+  return sum;
+}
+
+/**
+ * Level-order BFS approach
+ * Time: O(n), Space: O(w)
+ */
+function sumOfLeafNodesBFS(root) {
+  if (root === null) return 0;
+
+  let sum = 0;
+  const queue = [root];
+
+  while (queue.length > 0) {
+    const node = queue.shift();
+
+    if (node.left === null && node.right === null) {
+      sum += node.val;
+    } else {
+      if (node.left !== null) queue.push(node.left);
+      if (node.right !== null) queue.push(node.right);
+    }
+  }
+
+  return sum;
+}
+```
+
+### TypeScript
+
+```typescript
+// Definition for a binary tree node
+class TreeNode {
+  val: number;
+  left: TreeNode | null;
+  right: TreeNode | null;
+
+  constructor(val: number = 0, left: TreeNode | null = null, right: TreeNode | null = null) {
+    this.val = val;
+    this.left = left;
+    this.right = right;
+  }
+}
+
+/**
+ * Sum of leaf nodes using recursion
+ * Time: O(n), Space: O(h)
+ */
+function sumOfLeafNodes(root: TreeNode | null): number {
+  if (root === null) return 0;
+
+  if (root.left === null && root.right === null) {
+    return root.val;
+  }
+
+  return sumOfLeafNodes(root.left) + sumOfLeafNodes(root.right);
+}
+
+/**
+ * Iterative DFS using stack
+ * Time: O(n), Space: O(h)
+ */
+function sumOfLeafNodesIterative(root: TreeNode | null): number {
+  if (root === null) return 0;
+
+  let sum: number = 0;
+  const stack: TreeNode[] = [root];
+
+  while (stack.length > 0) {
+    const node = stack.pop() as TreeNode;
+
+    if (node.left === null && node.right === null) {
+      sum += node.val;
+    } else {
+      if (node.right !== null) stack.push(node.right);
+      if (node.left !== null) stack.push(node.left);
+    }
+  }
+
+  return sum;
+}
+
+/**
+ * Level-order BFS approach
+ * Time: O(n), Space: O(w)
+ */
+function sumOfLeafNodesBFS(root: TreeNode | null): number {
+  if (root === null) return 0;
+
+  let sum: number = 0;
+  const queue: TreeNode[] = [root];
+
+  while (queue.length > 0) {
+    const node = queue.shift() as TreeNode;
+
+    if (node.left === null && node.right === null) {
+      sum += node.val;
+    } else {
+      if (node.left !== null) queue.push(node.left);
+      if (node.right !== null) queue.push(node.right);
+    }
+  }
+
+  return sum;
+}
+```
+
+## Key Properties
+
+- **Leaf Identification:** Check if both left and right are null
+- **Base Case:** Null node contributes 0 to sum
+- **Accumulation:** Sum propagates up the tree
+
+## Complexity Analysis
+
+- **Time:** O(n) - visit each node once
+- **Space (DFS):** O(h) - recursion depth
+- **Space (BFS):** O(w) - maximum queue width

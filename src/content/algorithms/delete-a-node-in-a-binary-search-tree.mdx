@@ -1,0 +1,242 @@
+---
+title: Delete a Node in a Binary Search Tree
+slug: delete-a-node-in-a-binary-search-tree
+category: tree
+summary: Remove a node while maintaining BST ordering property
+description: Deleting a node from a binary search tree requires handling three cases - leaf nodes, nodes with one child, and nodes with two children. For two-child nodes, use in-order successor or predecessor.
+dataStructures:
+  - binary-search-tree
+  - recursion
+techniques:
+  - tree-modification
+  - in-order-successor
+difficulty: medium
+interviewFrequency: high
+complexity:
+  time: O(log n) average, O(n) worst case
+  space: O(h) recursion depth
+  notes: Three cases require careful handling; successor choice affects balance
+interviewSignals:
+  - BST maintenance
+  - tree restructuring
+  - successor/predecessor
+source: geeksforgeeks
+related:
+  - search-in-a-binary-search-tree
+  - insert-a-node-in-a-binary-search-tree
+  - find-minimum-element-in-a-binary-search-tree
+---
+
+## Problem
+
+Given a binary search tree and a value to delete, remove the node and return the root of the modified tree. Maintain the BST property after deletion.
+
+### Examples
+
+**Example 1: Delete leaf node**
+```
+Input: 
+       5
+      / \
+     3   6
+    / \   \
+   2   4   7
+   
+Delete: 2
+
+Output: 
+       5
+      / \
+     3   6
+      \   \
+       4   7
+```
+
+**Example 2: Delete node with one child**
+```
+Input: 
+       5
+      / \
+     3   6
+      \   \
+       4   7
+   
+Delete: 3
+
+Output: 
+       5
+      / \
+     4   6
+          \
+           7
+```
+
+**Example 3: Delete node with two children**
+```
+Input: 
+       5
+      / \
+     3   6
+    / \   \
+   2   4   7
+   
+Delete: 3
+
+Output: 
+       5
+      / \
+     4   6
+    /     \
+   2       7
+```
+
+## Approach
+
+### Three Cases
+1. **Leaf Node:** Simply remove it
+2. **One Child:** Replace node with its child
+3. **Two Children:** Replace with in-order successor (smallest in right subtree) or in-order predecessor (largest in left subtree), then delete the successor/predecessor
+
+## Solution
+
+### JavaScript
+
+```javascript
+// Definition for a binary tree node
+class TreeNode {
+  constructor(val = 0, left = null, right = null) {
+    this.val = val;
+    this.left = left;
+    this.right = right;
+  }
+}
+
+/**
+ * Find minimum value in tree
+ * Time: O(log n) average
+ */
+function findMin(node) {
+  while (node.left !== null) {
+    node = node.left;
+  }
+  return node.val;
+}
+
+/**
+ * Delete a node from BST
+ * Time: O(log n) average, O(n) worst case
+ * Space: O(h) recursion depth
+ */
+function deleteNode(root, key) {
+  if (root === null) return null;
+
+  if (key < root.val) {
+    root.left = deleteNode(root.left, key);
+  } else if (key > root.val) {
+    root.right = deleteNode(root.right, key);
+  } else {
+    // Node to delete found
+
+    // Case 1: Leaf node
+    if (root.left === null && root.right === null) {
+      return null;
+    }
+
+    // Case 2: One child
+    if (root.left === null) {
+      return root.right;
+    }
+    if (root.right === null) {
+      return root.left;
+    }
+
+    // Case 3: Two children
+    // Find in-order successor (minimum in right subtree)
+    const successor = findMin(root.right);
+    root.val = successor;
+    root.right = deleteNode(root.right, successor);
+  }
+
+  return root;
+}
+```
+
+### TypeScript
+
+```typescript
+// Definition for a binary tree node
+class TreeNode {
+  val: number;
+  left: TreeNode | null;
+  right: TreeNode | null;
+
+  constructor(val: number = 0, left: TreeNode | null = null, right: TreeNode | null = null) {
+    this.val = val;
+    this.left = left;
+    this.right = right;
+  }
+}
+
+/**
+ * Find minimum value in tree
+ * Time: O(log n) average
+ */
+function findMin(node: TreeNode): number {
+  let current = node;
+  while (current.left !== null) {
+    current = current.left;
+  }
+  return current.val;
+}
+
+/**
+ * Delete a node from BST
+ * Time: O(log n) average, O(n) worst case
+ * Space: O(h) recursion depth
+ */
+function deleteNode(root: TreeNode | null, key: number): TreeNode | null {
+  if (root === null) return null;
+
+  if (key < root.val) {
+    root.left = deleteNode(root.left, key);
+  } else if (key > root.val) {
+    root.right = deleteNode(root.right, key);
+  } else {
+    // Node to delete found
+
+    // Case 1: Leaf node
+    if (root.left === null && root.right === null) {
+      return null;
+    }
+
+    // Case 2: One child
+    if (root.left === null) {
+      return root.right;
+    }
+    if (root.right === null) {
+      return root.left;
+    }
+
+    // Case 3: Two children
+    const successor = findMin(root.right);
+    root.val = successor;
+    root.right = deleteNode(root.right, successor);
+  }
+
+  return root;
+}
+```
+
+## Key Properties
+
+- **In-order Successor:** Smallest value in right subtree
+- **In-order Predecessor:** Largest value in left subtree
+- **Replacement Strategy:** Either successor or predecessor maintains BST property
+- **Recursion:** Process both branches if needed
+
+## Complexity Analysis
+
+- **Time:** 
+  - Average: O(log n) for balanced tree
+  - Worst: O(n) for skewed tree
+- **Space:** O(h) for recursion depth

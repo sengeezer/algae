@@ -1,0 +1,209 @@
+---
+title: Preorder Traversal of Binary Tree
+slug: preorder-traversal-of-binary-tree
+category: tree
+summary: Visit node first, then left subtree, then right subtree recursively
+description: Preorder traversal is a depth-first tree traversal method where each node is visited before its subtrees. This approach is commonly used for tree copying, expression tree evaluation, and generating prefix notation.
+dataStructures:
+  - binary-tree
+  - recursion
+  - stack
+techniques:
+  - depth-first-search
+  - tree-traversal
+difficulty: easy
+interviewFrequency: high
+complexity:
+  time: O(n)
+  space: O(h) where h is height
+  notes: Used for BST construction and expression evaluation
+interviewSignals:
+  - fundamental tree traversal
+  - prefix notation
+  - tree copying patterns
+source: geeksforgeeks
+related:
+  - inorder-traversal-of-binary-tree
+  - postorder-traversal-of-binary-tree
+  - level-order-traversal-breadth-first-search-of-binary-tree
+---
+
+## Problem
+
+Given a binary tree, perform a preorder traversal and return the node values in the order visited.
+
+### Examples
+
+**Example 1:**
+```
+Input:     
+      1
+     / \
+    2   3
+
+Output: [1, 2, 3]
+```
+
+**Example 2:**
+```
+Input:     
+        1
+       / \
+      2   3
+     / \   \
+    4   5   6
+
+Output: [1, 2, 4, 5, 3, 6]
+```
+
+## Approach
+
+### Recursive Approach
+The preorder traversal follows the pattern: **Root → Left → Right**
+
+For each node:
+1. Visit the current node
+2. Recursively traverse the left subtree
+3. Recursively traverse the right subtree
+
+The recursion terminates when we reach a null node.
+
+## Solution
+
+### JavaScript
+
+```javascript
+// Definition for a binary tree node
+class TreeNode {
+  constructor(val = 0, left = null, right = null) {
+    this.val = val;
+    this.left = left;
+    this.right = right;
+  }
+}
+
+/**
+ * Preorder traversal using recursion
+ * Time: O(n), Space: O(h)
+ */
+function preorderTraversal(root) {
+  const result = [];
+
+  function traverse(node) {
+    if (node === null) return;
+
+    // Visit current node
+    result.push(node.val);
+
+    // Traverse left subtree
+    traverse(node.left);
+
+    // Traverse right subtree
+    traverse(node.right);
+  }
+
+  traverse(root);
+  return result;
+}
+
+/**
+ * Iterative preorder traversal using stack
+ * Time: O(n), Space: O(h)
+ */
+function preorderTraversalIterative(root) {
+  if (root === null) return [];
+
+  const result = [];
+  const stack = [root];
+
+  while (stack.length > 0) {
+    const node = stack.pop();
+    result.push(node.val);
+
+    // Push right first so left is processed first (stack LIFO)
+    if (node.right !== null) {
+      stack.push(node.right);
+    }
+    if (node.left !== null) {
+      stack.push(node.left);
+    }
+  }
+
+  return result;
+}
+```
+
+### TypeScript
+
+```typescript
+// Definition for a binary tree node
+class TreeNode {
+  val: number;
+  left: TreeNode | null;
+  right: TreeNode | null;
+
+  constructor(val: number = 0, left: TreeNode | null = null, right: TreeNode | null = null) {
+    this.val = val;
+    this.left = left;
+    this.right = right;
+  }
+}
+
+/**
+ * Preorder traversal using recursion
+ * Time: O(n), Space: O(h)
+ */
+function preorderTraversal(root: TreeNode | null): number[] {
+  const result: number[] = [];
+
+  function traverse(node: TreeNode | null): void {
+    if (node === null) return;
+
+    result.push(node.val);
+    traverse(node.left);
+    traverse(node.right);
+  }
+
+  traverse(root);
+  return result;
+}
+
+/**
+ * Iterative preorder traversal using stack
+ * Time: O(n), Space: O(h)
+ */
+function preorderTraversalIterative(root: TreeNode | null): number[] {
+  if (root === null) return [];
+
+  const result: number[] = [];
+  const stack: TreeNode[] = [root];
+
+  while (stack.length > 0) {
+    const node = stack.pop() as TreeNode;
+    result.push(node.val);
+
+    if (node.right !== null) {
+      stack.push(node.right);
+    }
+    if (node.left !== null) {
+      stack.push(node.left);
+    }
+  }
+
+  return result;
+}
+```
+
+## Key Properties
+
+- **Expression Trees:** Preorder generates prefix notation (Polish notation)
+- **Use Cases:** Tree copying, creating a new tree with same structure, prefix expression evaluation
+- **Root First:** Root is always first element, useful for verifying tree structure
+- **Visiting Order:** Critical for problems requiring parent processing before children
+
+## Complexity Analysis
+
+- **Time:** O(n) - visit each node exactly once
+- **Space:** O(h) - recursion depth or explicit stack size, where h is tree height
+  - Worst case: O(n) for skewed tree
+  - Best case: O(log n) for balanced tree

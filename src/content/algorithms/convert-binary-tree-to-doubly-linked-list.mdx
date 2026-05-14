@@ -1,0 +1,286 @@
+---
+title: Convert Binary Tree to Doubly Linked List
+slug: convert-binary-tree-to-doubly-linked-list
+category: tree
+summary: Transform tree structure into in-order doubly linked list
+description: Converting a binary tree to a doubly linked list (in-order) involves traversing the tree and rearranging node pointers to create a linked list while maintaining in-order sequence. This demonstrates tree-to-linear structure transformation.
+dataStructures:
+  - binary-tree
+  - doubly-linked-list
+  - recursion
+techniques:
+  - tree-traversal
+  - inorder-traversal
+  - pointer-manipulation
+difficulty: medium
+interviewFrequency: medium
+complexity:
+  time: O(n)
+  space: O(h) recursion depth
+  notes: In-order traversal with pointer swaps
+interviewSignals:
+  - tree transformation
+  - pointer manipulation
+  - in-order traversal
+source: geeksforgeeks
+related:
+  - inorder-traversal-of-binary-tree
+  - binary-tree-to-binary-search-tree-conversion
+  - binary-search-tree
+---
+
+## Problem
+
+Given a binary search tree, convert it to a doubly-linked list in in-order sequence. Use the left and right pointers of the tree nodes as previous and next pointers of the linked list.
+
+### Examples
+
+**Example 1:**
+```
+Input BST: 
+       2
+      / \
+     1   3
+
+Output DLL:
+1 <-> 2 <-> 3
+```
+
+**Example 2:**
+```
+Input BST: 
+         4
+        / \
+       2   6
+      / \ / \
+     1  3 5  7
+
+Output DLL:
+1 <-> 2 <-> 3 <-> 4 <-> 5 <-> 6 <-> 7
+```
+
+## Approach
+
+### In-order Traversal with Pointer Swap
+1. Perform in-order traversal
+2. For each node:
+   - Connect previous node's right to current (right becomes next)
+   - Connect current's left to previous (left becomes prev)
+   - Update previous pointer
+3. Disconnect last node's right pointer
+
+## Solution
+
+### JavaScript
+
+```javascript
+// Definition for a binary tree node
+class TreeNode {
+  constructor(val = 0, left = null, right = null) {
+    this.val = val;
+    this.left = left;    // Points to previous in DLL
+    this.right = right;   // Points to next in DLL
+  }
+}
+
+/**
+ * Convert BST to doubly linked list
+ * Time: O(n), Space: O(h)
+ */
+function treeToDoublyLinkedList(root) {
+  if (root === null) return null;
+
+  let prev = null;
+  let head = null;
+
+  function inorder(node) {
+    if (node === null) return;
+
+    // Process left subtree
+    inorder(node.left);
+
+    // Process current node
+    if (prev === null) {
+      head = node;
+    } else {
+      prev.right = node;
+      node.left = prev;
+    }
+    prev = node;
+
+    // Process right subtree
+    inorder(node.right);
+  }
+
+  inorder(root);
+
+  // Disconnect the last node
+  if (prev !== null) {
+    prev.right = null;
+  }
+
+  return head;
+}
+
+/**
+ * Convert and create circular DLL
+ * Time: O(n), Space: O(h)
+ */
+function treeToCircularDoublyLinkedList(root) {
+  if (root === null) return null;
+
+  let prev = null;
+  let head = null;
+
+  function inorder(node) {
+    if (node === null) return;
+
+    inorder(node.left);
+
+    if (prev === null) {
+      head = node;
+    } else {
+      prev.right = node;
+      node.left = prev;
+    }
+    prev = node;
+
+    inorder(node.right);
+  }
+
+  inorder(root);
+
+  // Make it circular
+  if (head !== null && prev !== null) {
+    head.left = prev;
+    prev.right = head;
+  }
+
+  return head;
+}
+
+/**
+ * Print doubly linked list
+ */
+function printDLL(head) {
+  const result = [];
+  let current = head;
+  while (current !== null) {
+    result.push(current.val);
+    current = current.right;
+  }
+  return result;
+}
+```
+
+### TypeScript
+
+```typescript
+// Definition for a binary tree node
+class TreeNode {
+  val: number;
+  left: TreeNode | null;  // Points to previous in DLL
+  right: TreeNode | null; // Points to next in DLL
+
+  constructor(val: number = 0, left: TreeNode | null = null, right: TreeNode | null = null) {
+    this.val = val;
+    this.left = left;
+    this.right = right;
+  }
+}
+
+/**
+ * Convert BST to doubly linked list
+ * Time: O(n), Space: O(h)
+ */
+function treeToDoublyLinkedList(root: TreeNode | null): TreeNode | null {
+  if (root === null) return null;
+
+  let prev: TreeNode | null = null;
+  let head: TreeNode | null = null;
+
+  function inorder(node: TreeNode | null): void {
+    if (node === null) return;
+
+    inorder(node.left);
+
+    if (prev === null) {
+      head = node;
+    } else {
+      prev!.right = node;
+      node.left = prev;
+    }
+    prev = node;
+
+    inorder(node.right);
+  }
+
+  inorder(root);
+
+  if (prev !== null) {
+    prev.right = null;
+  }
+
+  return head;
+}
+
+/**
+ * Convert to circular DLL
+ * Time: O(n), Space: O(h)
+ */
+function treeToCircularDoublyLinkedList(root: TreeNode | null): TreeNode | null {
+  if (root === null) return null;
+
+  let prev: TreeNode | null = null;
+  let head: TreeNode | null = null;
+
+  function inorder(node: TreeNode | null): void {
+    if (node === null) return;
+
+    inorder(node.left);
+
+    if (prev === null) {
+      head = node;
+    } else {
+      prev!.right = node;
+      node.left = prev;
+    }
+    prev = node;
+
+    inorder(node.right);
+  }
+
+  inorder(root);
+
+  if (head !== null && prev !== null) {
+    head.left = prev;
+    prev.right = head;
+  }
+
+  return head;
+}
+
+/**
+ * Print doubly linked list
+ */
+function printDLL(head: TreeNode | null): number[] {
+  const result: number[] = [];
+  let current = head;
+  while (current !== null) {
+    result.push(current.val);
+    current = current.right;
+  }
+  return result;
+}
+```
+
+## Key Properties
+
+- **In-order Sequence:** Maintains BST ordering
+- **Pointer Reuse:** Uses left/right for prev/next
+- **Circular Option:** Can create circular DLL for efficient bidirectional traversal
+
+## Complexity Analysis
+
+- **Time:** O(n) - visit each node once
+- **Space:** O(h) - recursion depth

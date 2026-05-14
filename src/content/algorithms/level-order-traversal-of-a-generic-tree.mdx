@@ -1,0 +1,265 @@
+---
+title: Level Order Traversal of a Generic Tree
+slug: level-order-traversal-of-a-generic-tree
+category: tree
+summary: Visit all nodes level by level in an N-ary tree
+description: Level-order traversal (BFS) of a generic tree or N-ary tree processes nodes at each level from left to right. This is fundamental for breadth-first tree exploration and is useful for calculating depth and analyzing tree structure.
+dataStructures:
+  - n-ary-tree
+  - generic-tree
+  - queue
+techniques:
+  - breadth-first-search
+  - level-order-traversal
+difficulty: easy
+interviewFrequency: high
+complexity:
+  time: O(n)
+  space: O(w) where w is maximum width
+  notes: Queue-based approach scales to any tree shape
+interviewSignals:
+  - n-ary tree processing
+  - BFS patterns
+  - level-based analysis
+source: geeksforgeeks
+related:
+  - level-order-traversal-breadth-first-search-of-binary-tree
+  - introduction-to-generic-trees-n-ary-trees
+  - height-of-generic-tree-from-parent-array
+---
+
+## Problem
+
+Given the root of a generic tree (N-ary tree), perform a level-order traversal and return the node values level by level.
+
+### Examples
+
+**Example 1:**
+```
+Input: 
+        1
+      / | \
+     2  3  4
+    /| \
+   5 6  7
+
+Output: [[1], [2, 3, 4], [5, 6, 7]]
+```
+
+**Example 2:**
+```
+Input:
+         1
+       / | \ \
+      2  3 4  5
+     /|  |  \
+    6 7  8   9
+
+Output: [[1], [2, 3, 4, 5], [6, 7, 8, 9]]
+```
+
+## Approach
+
+Using BFS with a queue:
+1. Initialize queue with root
+2. Process each level:
+   - Track current level size
+   - Visit all nodes at this level
+   - Enqueue their children
+   - Move to next level
+
+## Solution
+
+### JavaScript
+
+```javascript
+// Definition for a n-ary tree node
+class Node {
+  constructor(val = 0, children = []) {
+    this.val = val;
+    this.children = children;
+  }
+}
+
+/**
+ * Level-order traversal using queue
+ * Time: O(n), Space: O(w)
+ */
+function levelOrder(root) {
+  if (root === null) return [];
+
+  const result = [];
+  const queue = [root];
+
+  while (queue.length > 0) {
+    const levelSize = queue.length;
+    const currentLevel = [];
+
+    // Process all nodes at current level
+    for (let i = 0; i < levelSize; i++) {
+      const node = queue.shift();
+      currentLevel.push(node.val);
+
+      // Add all children to queue
+      for (const child of node.children) {
+        queue.push(child);
+      }
+    }
+
+    result.push(currentLevel);
+  }
+
+  return result;
+}
+
+/**
+ * Recursive level-order traversal
+ * Time: O(n), Space: O(h)
+ */
+function levelOrderRecursive(root) {
+  const result = [];
+
+  function traverse(node, level) {
+    if (node === null) return;
+
+    if (result.length === level) {
+      result.push([]);
+    }
+
+    result[level].push(node.val);
+
+    for (const child of node.children) {
+      traverse(child, level + 1);
+    }
+  }
+
+  traverse(root, 0);
+  return result;
+}
+
+/**
+ * Get flat level-order sequence
+ * Time: O(n), Space: O(w)
+ */
+function levelOrderFlat(root) {
+  if (root === null) return [];
+
+  const result = [];
+  const queue = [root];
+
+  while (queue.length > 0) {
+    const node = queue.shift();
+    result.push(node.val);
+
+    for (const child of node.children) {
+      queue.push(child);
+    }
+  }
+
+  return result;
+}
+```
+
+### TypeScript
+
+```typescript
+// Definition for a n-ary tree node
+class Node {
+  val: number;
+  children: Node[];
+
+  constructor(val: number = 0, children: Node[] = []) {
+    this.val = val;
+    this.children = children;
+  }
+}
+
+/**
+ * Level-order traversal using queue
+ * Time: O(n), Space: O(w)
+ */
+function levelOrder(root: Node | null): number[][] {
+  if (root === null) return [];
+
+  const result: number[][] = [];
+  const queue: Node[] = [root];
+
+  while (queue.length > 0) {
+    const levelSize = queue.length;
+    const currentLevel: number[] = [];
+
+    for (let i = 0; i < levelSize; i++) {
+      const node = queue.shift() as Node;
+      currentLevel.push(node.val);
+
+      for (const child of node.children) {
+        queue.push(child);
+      }
+    }
+
+    result.push(currentLevel);
+  }
+
+  return result;
+}
+
+/**
+ * Recursive level-order traversal
+ * Time: O(n), Space: O(h)
+ */
+function levelOrderRecursive(root: Node | null): number[][] {
+  const result: number[][] = [];
+
+  function traverse(node: Node | null, level: number): void {
+    if (node === null) return;
+
+    if (result.length === level) {
+      result.push([]);
+    }
+
+    result[level].push(node.val);
+
+    for (const child of node.children) {
+      traverse(child, level + 1);
+    }
+  }
+
+  traverse(root, 0);
+  return result;
+}
+
+/**
+ * Get flat level-order sequence
+ * Time: O(n), Space: O(w)
+ */
+function levelOrderFlat(root: Node | null): number[] {
+  if (root === null) return [];
+
+  const result: number[] = [];
+  const queue: Node[] = [root];
+
+  while (queue.length > 0) {
+    const node = queue.shift() as Node;
+    result.push(node.val);
+
+    for (const child of node.children) {
+      queue.push(child);
+    }
+  }
+
+  return result;
+}
+```
+
+## Key Properties
+
+- **Level-by-level:** All nodes at depth k processed before depth k+1
+- **Queue FIFO:** Naturally maintains level order
+- **Multiple Children:** Each node can have arbitrary number of children
+
+## Complexity Analysis
+
+- **Time:** O(n) - visit each node exactly once
+- **Space:** O(w) where w is maximum width of tree
+  - Could be O(n) for wide trees
+  - Better than DFS for shallow wide trees

@@ -1,0 +1,258 @@
+---
+title: Maximum Depth or Height of a Binary Tree
+slug: maximum-depth-or-height-of-a-binary-tree
+category: tree
+summary: Find the longest path from root to any leaf node
+description: Finding the maximum depth or height of a binary tree involves computing the longest path from the root to any leaf node. This can be solved using recursion or level-order traversal (BFS).
+dataStructures:
+  - binary-tree
+  - recursion
+  - queue
+techniques:
+  - depth-first-search
+  - breadth-first-search
+difficulty: easy
+interviewFrequency: high
+complexity:
+  time: O(n)
+  space: O(h) for recursion, O(w) for BFS
+  notes: Foundation for balance checking and optimization
+interviewSignals:
+  - tree properties
+  - recursive patterns
+  - BFS vs DFS tradeoffs
+source: geeksforgeeks
+related:
+  - inorder-traversal-of-binary-tree
+  - level-order-traversal-breadth-first-search-of-binary-tree
+  - balanced-binary-search-tree
+---
+
+## Problem
+
+Given the root of a binary tree, find the maximum depth. The maximum depth is the number of nodes along the longest path from the root node to any leaf node.
+
+### Examples
+
+**Example 1:**
+```
+Input:     
+      1
+     / \
+    2   3
+
+Output: 2
+```
+
+**Example 2:**
+```
+Input:     
+      1
+     / \
+    2   3
+   / \   \
+  4   5   6
+
+Output: 3
+```
+
+**Example 3:**
+```
+Input: Empty tree
+
+Output: 0
+```
+
+## Approach
+
+### Recursive DFS
+For each node, recursively compute the height of left and right subtrees. The height of the current node is `1 + max(leftHeight, rightHeight)`.
+
+### Level-Order BFS
+Process the tree level by level. Track the depth at each level. When the queue is empty, we have the maximum depth.
+
+## Solution
+
+### JavaScript
+
+```javascript
+// Definition for a binary tree node
+class TreeNode {
+  constructor(val = 0, left = null, right = null) {
+    this.val = val;
+    this.left = left;
+    this.right = right;
+  }
+}
+
+/**
+ * DFS recursive approach
+ * Time: O(n), Space: O(h)
+ */
+function maxDepth(root) {
+  if (root === null) return 0;
+
+  const leftHeight = maxDepth(root.left);
+  const rightHeight = maxDepth(root.right);
+
+  return Math.max(leftHeight, rightHeight) + 1;
+}
+
+/**
+ * BFS level-order traversal
+ * Time: O(n), Space: O(w) where w is max width
+ */
+function maxDepthBFS(root) {
+  if (root === null) return 0;
+
+  const queue = [root];
+  let depth = 0;
+
+  while (queue.length > 0) {
+    const levelSize = queue.length;
+
+    // Process all nodes at current level
+    for (let i = 0; i < levelSize; i++) {
+      const node = queue.shift();
+
+      if (node.left !== null) {
+        queue.push(node.left);
+      }
+      if (node.right !== null) {
+        queue.push(node.right);
+      }
+    }
+
+    depth++;
+  }
+
+  return depth;
+}
+
+/**
+ * Iterative DFS using stack
+ * Time: O(n), Space: O(h)
+ */
+function maxDepthIterative(root) {
+  if (root === null) return 0;
+
+  // Stack stores [node, depth] pairs
+  const stack = [[root, 1]];
+  let maxD = 0;
+
+  while (stack.length > 0) {
+    const [node, depth] = stack.pop();
+    maxD = Math.max(maxD, depth);
+
+    if (node.left !== null) {
+      stack.push([node.left, depth + 1]);
+    }
+    if (node.right !== null) {
+      stack.push([node.right, depth + 1]);
+    }
+  }
+
+  return maxD;
+}
+```
+
+### TypeScript
+
+```typescript
+// Definition for a binary tree node
+class TreeNode {
+  val: number;
+  left: TreeNode | null;
+  right: TreeNode | null;
+
+  constructor(val: number = 0, left: TreeNode | null = null, right: TreeNode | null = null) {
+    this.val = val;
+    this.left = left;
+    this.right = right;
+  }
+}
+
+/**
+ * DFS recursive approach
+ * Time: O(n), Space: O(h)
+ */
+function maxDepth(root: TreeNode | null): number {
+  if (root === null) return 0;
+
+  const leftHeight = maxDepth(root.left);
+  const rightHeight = maxDepth(root.right);
+
+  return Math.max(leftHeight, rightHeight) + 1;
+}
+
+/**
+ * BFS level-order traversal
+ * Time: O(n), Space: O(w) where w is max width
+ */
+function maxDepthBFS(root: TreeNode | null): number {
+  if (root === null) return 0;
+
+  const queue: TreeNode[] = [root];
+  let depth: number = 0;
+
+  while (queue.length > 0) {
+    const levelSize = queue.length;
+
+    for (let i = 0; i < levelSize; i++) {
+      const node = queue.shift() as TreeNode;
+
+      if (node.left !== null) {
+        queue.push(node.left);
+      }
+      if (node.right !== null) {
+        queue.push(node.right);
+      }
+    }
+
+    depth++;
+  }
+
+  return depth;
+}
+
+/**
+ * Iterative DFS using stack
+ * Time: O(n), Space: O(h)
+ */
+function maxDepthIterative(root: TreeNode | null): number {
+  if (root === null) return 0;
+
+  const stack: [TreeNode, number][] = [[root, 1]];
+  let maxD: number = 0;
+
+  while (stack.length > 0) {
+    const [node, depth] = stack.pop() as [TreeNode, number];
+    maxD = Math.max(maxD, depth);
+
+    if (node.left !== null) {
+      stack.push([node.left, depth + 1]);
+    }
+    if (node.right !== null) {
+      stack.push([node.right, depth + 1]);
+    }
+  }
+
+  return maxD;
+}
+```
+
+## Key Properties
+
+- **Leaf Node:** A node with no children counts as depth 1
+- **Empty Tree:** Maximum depth is 0
+- **Balanced Tree:** Minimum possible maximum depth is O(log n)
+- **Skewed Tree:** Maximum depth is O(n)
+
+## Complexity Analysis
+
+- **Time:** O(n) - visit each node exactly once
+- **Space (DFS):** O(h) - recursion or stack depth, where h is tree height
+  - Worst case: O(n) for skewed tree
+  - Best case: O(log n) for balanced tree
+- **Space (BFS):** O(w) - queue size equals maximum width at any level
+  - Worst case: O(n) for a complete tree

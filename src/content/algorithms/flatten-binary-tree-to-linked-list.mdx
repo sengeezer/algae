@@ -1,0 +1,306 @@
+---
+title: Flatten Binary Tree to Linked List
+slug: flatten-binary-tree-to-linked-list
+category: tree
+summary: Transform tree into linked list using right pointers in pre-order sequence
+description: Flattening a binary tree to a linked list involves converting the tree to a linked list representation where each node's right pointer points to the next node in pre-order traversal. Useful for space-efficient tree representation.
+dataStructures:
+  - binary-tree
+  - linked-list
+  - recursion
+techniques:
+  - tree-traversal
+  - preorder-traversal
+  - pointer-manipulation
+difficulty: medium
+interviewFrequency: high
+complexity:
+  time: O(n)
+  space: O(h) recursion depth
+  notes: Pre-order sequence becomes right-pointer chain
+interviewSignals:
+  - tree transformation
+  - pointer manipulation
+  - traversal order
+source: geeksforgeeks
+related:
+  - preorder-traversal-of-binary-tree
+  - convert-binary-tree-to-doubly-linked-list
+  - binary-tree-to-binary-search-tree-conversion
+---
+
+## Problem
+
+Given a binary tree, flatten it in-place to a linked list. The flattened tree should have the same structure as a pre-order traversal of the tree, where each node's left pointer is null and right pointer points to the next node.
+
+### Examples
+
+**Example 1:**
+```
+Input:     
+       1
+      / \
+     2   5
+    / \   \
+   3   4   6
+
+Flattened:
+1 -> 2 -> 3 -> 4 -> 5 -> 6
+(All left pointers null, right pointer follows pre-order)
+```
+
+**Example 2:**
+```
+Input:     
+       1
+        \
+         2
+        /
+       3
+
+Flattened:
+1 -> 2 -> 3
+```
+
+## Approach
+
+### Recursive Approach
+1. Recursively flatten left and right subtrees
+2. Connect current node's right to flattened left subtree
+3. Find the tail of left subtree and connect to right subtree
+4. Update current node's left to null
+
+### Iterative Approach
+Use pre-order traversal with stack to flatten.
+
+## Solution
+
+### JavaScript
+
+```javascript
+// Definition for a binary tree node
+class TreeNode {
+  constructor(val = 0, left = null, right = null) {
+    this.val = val;
+    this.left = left;
+    this.right = right;
+  }
+}
+
+/**
+ * Flatten binary tree to linked list
+ * Time: O(n), Space: O(h)
+ */
+function flatten(root) {
+  function flattenHelper(node) {
+    if (node === null) return null;
+
+    // Recursively flatten left and right subtrees
+    const leftTail = flattenHelper(node.left);
+    const rightTail = flattenHelper(node.right);
+
+    // If left subtree exists, connect it to right
+    if (leftTail !== null) {
+      leftTail.right = node.right;
+      node.right = node.left;
+      node.left = null;
+    }
+
+    // Return the tail of the flattened tree
+    return rightTail !== null ? rightTail : leftTail !== null ? leftTail : node;
+  }
+
+  flattenHelper(root);
+  return root;
+}
+
+/**
+ * Flatten using pre-order traversal with previous tracking
+ * Time: O(n), Space: O(h)
+ */
+function flattenPreorder(root) {
+  let prev = null;
+
+  function preorder(node) {
+    if (node === null) return;
+
+    const left = node.left;
+    const right = node.right;
+
+    // Process current node
+    if (prev !== null) {
+      prev.right = node;
+    }
+    node.left = null;
+    prev = node;
+
+    // Pre-order: root, left, right
+    preorder(left);
+    preorder(right);
+  }
+
+  preorder(root);
+  return root;
+}
+
+/**
+ * Iterative approach using stack
+ * Time: O(n), Space: O(h)
+ */
+function flattenIterative(root) {
+  if (root === null) return root;
+
+  const stack = [root];
+
+  while (stack.length > 0) {
+    const node = stack.pop();
+
+    // Push right before left so left is processed first
+    if (node.right !== null) {
+      stack.push(node.right);
+    }
+    if (node.left !== null) {
+      stack.push(node.left);
+    }
+
+    // Connect to next node
+    if (stack.length > 0) {
+      node.right = stack[stack.length - 1];
+    }
+    node.left = null;
+  }
+
+  return root;
+}
+
+/**
+ * Print flattened structure
+ */
+function printFlattened(root) {
+  const result = [];
+  let current = root;
+  while (current !== null) {
+    result.push(current.val);
+    current = current.right;
+  }
+  return result;
+}
+```
+
+### TypeScript
+
+```typescript
+// Definition for a binary tree node
+class TreeNode {
+  val: number;
+  left: TreeNode | null;
+  right: TreeNode | null;
+
+  constructor(val: number = 0, left: TreeNode | null = null, right: TreeNode | null = null) {
+    this.val = val;
+    this.left = left;
+    this.right = right;
+  }
+}
+
+/**
+ * Flatten binary tree to linked list
+ * Time: O(n), Space: O(h)
+ */
+function flatten(root: TreeNode | null): void {
+  function flattenHelper(node: TreeNode | null): TreeNode | null {
+    if (node === null) return null;
+
+    const leftTail = flattenHelper(node.left);
+    const rightTail = flattenHelper(node.right);
+
+    if (leftTail !== null) {
+      leftTail.right = node.right;
+      node.right = node.left;
+      node.left = null;
+    }
+
+    return rightTail !== null ? rightTail : leftTail !== null ? leftTail : node;
+  }
+
+  flattenHelper(root);
+}
+
+/**
+ * Flatten using pre-order traversal
+ * Time: O(n), Space: O(h)
+ */
+function flattenPreorder(root: TreeNode | null): void {
+  let prev: TreeNode | null = null;
+
+  function preorder(node: TreeNode | null): void {
+    if (node === null) return;
+
+    const left = node.left;
+    const right = node.right;
+
+    if (prev !== null) {
+      prev.right = node;
+    }
+    node.left = null;
+    prev = node;
+
+    preorder(left);
+    preorder(right);
+  }
+
+  preorder(root);
+}
+
+/**
+ * Iterative approach
+ * Time: O(n), Space: O(h)
+ */
+function flattenIterative(root: TreeNode | null): void {
+  if (root === null) return;
+
+  const stack: TreeNode[] = [root];
+
+  while (stack.length > 0) {
+    const node = stack.pop() as TreeNode;
+
+    if (node.right !== null) {
+      stack.push(node.right);
+    }
+    if (node.left !== null) {
+      stack.push(node.left);
+    }
+
+    if (stack.length > 0) {
+      node.right = stack[stack.length - 1];
+    }
+    node.left = null;
+  }
+}
+
+/**
+ * Print flattened structure
+ */
+function printFlattened(root: TreeNode | null): number[] {
+  const result: number[] = [];
+  let current = root;
+  while (current !== null) {
+    result.push(current.val);
+    current = current.right;
+  }
+  return result;
+}
+```
+
+## Key Properties
+
+- **Pre-order Sequence:** Flattened structure follows pre-order (root, left, right)
+- **Left Null:** All left pointers become null
+- **In-place:** Can modify tree structure without creating new nodes
+- **Linked List Form:** Traversing right pointers gives pre-order
+
+## Complexity Analysis
+
+- **Time:** O(n) - visit each node once
+- **Space (Recursive):** O(h) - recursion depth
+- **Space (Iterative):** O(h) - stack size

@@ -1,0 +1,214 @@
+---
+title: Find Minimum Element in a Binary Search Tree
+slug: find-minimum-element-in-a-binary-search-tree
+category: tree
+summary: Locate the smallest value by traversing left subtree
+description: Finding the minimum element in a BST leverages the BST property - the minimum value is always the leftmost node. This is useful for finding predecessors and range operations.
+dataStructures:
+  - binary-search-tree
+techniques:
+  - tree-traversal
+  - binary-search
+difficulty: easy
+interviewFrequency: high
+complexity:
+  time: O(log n) average, O(n) worst case
+  space: O(1) iterative, O(h) recursive
+  notes: Always traverse to leftmost node
+interviewSignals:
+  - BST properties
+  - extrema finding
+  - successor/predecessor operations
+source: geeksforgeeks
+related:
+  - find-maximum-element-in-a-binary-search-tree
+  - search-in-a-binary-search-tree
+  - delete-a-node-in-a-binary-search-tree
+---
+
+## Problem
+
+Given a binary search tree, find and return the minimum value (leftmost node).
+
+### Examples
+
+**Example 1:**
+```
+Input: 
+       4
+      / \
+     2   7
+    / \
+   1   3
+
+Output: 1
+```
+
+**Example 2:**
+```
+Input: 
+       10
+        \
+         20
+        /  \
+       15   30
+
+Output: 10
+```
+
+**Example 3:**
+```
+Input: Single node
+       5
+
+Output: 5
+```
+
+## Approach
+
+### Iterative
+Traverse left from the root until reaching a node with no left child.
+
+### Recursive
+If left child exists, recursively find minimum in left subtree. Otherwise, current node is minimum.
+
+## Solution
+
+### JavaScript
+
+```javascript
+// Definition for a binary tree node
+class TreeNode {
+  constructor(val = 0, left = null, right = null) {
+    this.val = val;
+    this.left = left;
+    this.right = right;
+  }
+}
+
+/**
+ * Iterative approach to find minimum
+ * Time: O(log n) average, O(n) worst case
+ * Space: O(1)
+ */
+function findMin(root) {
+  if (root === null) return null;
+
+  let current = root;
+  while (current.left !== null) {
+    current = current.left;
+  }
+
+  return current.val;
+}
+
+/**
+ * Recursive approach to find minimum
+ * Time: O(log n) average, O(n) worst case
+ * Space: O(h) recursion depth
+ */
+function findMinRecursive(root) {
+  if (root === null) return null;
+
+  if (root.left === null) {
+    return root.val;
+  }
+
+  return findMinRecursive(root.left);
+}
+
+/**
+ * Get the entire minimum node (not just value)
+ * Time: O(log n) average, O(n) worst case
+ * Space: O(1)
+ */
+function findMinNode(root) {
+  if (root === null) return null;
+
+  let current = root;
+  while (current.left !== null) {
+    current = current.left;
+  }
+
+  return current;
+}
+```
+
+### TypeScript
+
+```typescript
+// Definition for a binary tree node
+class TreeNode {
+  val: number;
+  left: TreeNode | null;
+  right: TreeNode | null;
+
+  constructor(val: number = 0, left: TreeNode | null = null, right: TreeNode | null = null) {
+    this.val = val;
+    this.left = left;
+    this.right = right;
+  }
+}
+
+/**
+ * Iterative approach to find minimum
+ * Time: O(log n) average, O(n) worst case
+ * Space: O(1)
+ */
+function findMin(root: TreeNode | null): number | null {
+  if (root === null) return null;
+
+  let current = root;
+  while (current.left !== null) {
+    current = current.left;
+  }
+
+  return current.val;
+}
+
+/**
+ * Recursive approach to find minimum
+ * Time: O(log n) average, O(n) worst case
+ * Space: O(h) recursion depth
+ */
+function findMinRecursive(root: TreeNode | null): number | null {
+  if (root === null) return null;
+
+  if (root.left === null) {
+    return root.val;
+  }
+
+  return findMinRecursive(root.left);
+}
+
+/**
+ * Get the entire minimum node
+ * Time: O(log n) average, O(n) worst case
+ * Space: O(1)
+ */
+function findMinNode(root: TreeNode | null): TreeNode | null {
+  if (root === null) return null;
+
+  let current = root;
+  while (current.left !== null) {
+    current = current.left;
+  }
+
+  return current;
+}
+```
+
+## Key Properties
+
+- **Always Left:** Minimum is always the leftmost reachable node
+- **No Right Child Needed:** Minimum node may have a right subtree
+- **In-order Predecessor:** Minimum in right subtree is successor to deletion
+
+## Complexity Analysis
+
+- **Time:** 
+  - Average: O(log n) for balanced tree
+  - Worst: O(n) for left-skewed tree
+- **Space:**
+  - Iterative: O(1) constant
+  - Recursive: O(h) for recursion depth

@@ -1,0 +1,292 @@
+---
+title: Construct Tree from Parent Array
+slug: construct-tree-from-parent-array
+category: tree
+summary: Build tree structure from parent array representation
+description: Given a parent array where parent[i] is the parent of node i, construct the actual tree. This demonstrates building tree data structures from alternative representations.
+dataStructures:
+  - generic-tree
+  - n-ary-tree
+  - parent-pointer
+techniques:
+  - tree-construction
+  - array-representation
+difficulty: easy
+interviewFrequency: medium
+complexity:
+  time: O(n)
+  space: O(n)
+  notes: Parent array is equivalent to tree with pointer redirection
+interviewSignals:
+  - tree construction
+  - alternative representations
+  - parent pointers
+source: geeksforgeeks
+related:
+  - height-of-generic-tree-from-parent-array
+  - introduction-to-generic-trees-n-ary-trees
+  - level-order-traversal-of-a-generic-tree
+---
+
+## Problem
+
+Given a parent array where parent[i] is the parent of node i (with -1 for root), construct the tree structure. Return the root node.
+
+### Examples
+
+**Example 1:**
+```
+Input:
+parent = [-1, 0, 0, 1, 1]
+
+Output Tree:
+      0
+     / \
+    1   2
+   / \
+  3   4
+```
+
+**Example 2:**
+```
+Input:
+parent = [-1, 0, 1, 2]
+
+Output Tree:
+0 -> 1 -> 2 -> 3
+```
+
+## Approach
+
+1. Create a node for each index
+2. Build adjacency list of children for each parent
+3. Find root (node with parent = -1)
+4. Construct tree using DFS/BFS from root
+
+## Solution
+
+### JavaScript
+
+```javascript
+// Definition for a generic tree node
+class Node {
+  constructor(val = 0) {
+    this.val = val;
+    this.children = [];
+  }
+}
+
+/**
+ * Construct tree from parent array
+ * Time: O(n), Space: O(n)
+ */
+function constructTree(parent) {
+  if (parent === null || parent.length === 0) return null;
+
+  const n = parent.length;
+  const nodes = Array.from({ length: n }, (_, i) => new Node(i));
+  let root = null;
+
+  // Build parent-child relationships
+  for (let i = 0; i < n; i++) {
+    if (parent[i] === -1) {
+      root = nodes[i];
+    } else {
+      nodes[parent[i]].children.push(nodes[i]);
+    }
+  }
+
+  return root;
+}
+
+/**
+ * Return both root and nodes map
+ * Time: O(n), Space: O(n)
+ */
+function constructTreeWithMap(parent) {
+  if (parent === null || parent.length === 0) return { root: null, nodes: new Map() };
+
+  const n = parent.length;
+  const nodes = new Map();
+  let root = null;
+
+  // Create nodes
+  for (let i = 0; i < n; i++) {
+    nodes.set(i, new Node(i));
+  }
+
+  // Build relationships
+  for (let i = 0; i < n; i++) {
+    if (parent[i] === -1) {
+      root = nodes.get(i);
+    } else {
+      nodes.get(parent[i]).children.push(nodes.get(i));
+    }
+  }
+
+  return { root, nodes };
+}
+
+/**
+ * Print tree to verify construction
+ */
+function printTree(root) {
+  if (root === null) return;
+
+  const result = [];
+  const queue = [root];
+
+  while (queue.length > 0) {
+    const levelSize = queue.length;
+    const level = [];
+
+    for (let i = 0; i < levelSize; i++) {
+      const node = queue.shift();
+      level.push(node.val);
+
+      for (const child of node.children) {
+        queue.push(child);
+      }
+    }
+
+    result.push(level);
+  }
+
+  return result;
+}
+
+/**
+ * Verify tree construction by checking parent-child relationships
+ */
+function verifyTree(root, parent) {
+  if (root === null) return true;
+
+  const queue = [{ node: root, parentVal: -1 }];
+
+  while (queue.length > 0) {
+    const { node, parentVal } = queue.shift();
+
+    // Find this node's value in parent array
+    for (let i = 0; i < parent.length; i++) {
+      if (i === node.val) {
+        if (parent[i] !== parentVal) {
+          return false;
+        }
+        break;
+      }
+    }
+
+    for (const child of node.children) {
+      queue.push({ node: child, parentVal: node.val });
+    }
+  }
+
+  return true;
+}
+```
+
+### TypeScript
+
+```typescript
+// Definition for a generic tree node
+class Node {
+  val: number;
+  children: Node[];
+
+  constructor(val: number = 0) {
+    this.val = val;
+    this.children = [];
+  }
+}
+
+/**
+ * Construct tree from parent array
+ * Time: O(n), Space: O(n)
+ */
+function constructTree(parent: number[]): Node | null {
+  if (parent === null || parent.length === 0) return null;
+
+  const n = parent.length;
+  const nodes: Node[] = Array.from({ length: n }, (_, i) => new Node(i));
+  let root: Node | null = null;
+
+  for (let i = 0; i < n; i++) {
+    if (parent[i] === -1) {
+      root = nodes[i];
+    } else {
+      nodes[parent[i]].children.push(nodes[i]);
+    }
+  }
+
+  return root;
+}
+
+/**
+ * Return both root and nodes map
+ * Time: O(n), Space: O(n)
+ */
+function constructTreeWithMap(
+  parent: number[]
+): { root: Node | null; nodes: Map<number, Node> } {
+  if (parent === null || parent.length === 0) {
+    return { root: null, nodes: new Map() };
+  }
+
+  const n = parent.length;
+  const nodes = new Map<number, Node>();
+  let root: Node | null = null;
+
+  for (let i = 0; i < n; i++) {
+    nodes.set(i, new Node(i));
+  }
+
+  for (let i = 0; i < n; i++) {
+    if (parent[i] === -1) {
+      root = nodes.get(i) as Node;
+    } else {
+      (nodes.get(parent[i]) as Node).children.push(nodes.get(i) as Node);
+    }
+  }
+
+  return { root, nodes };
+}
+
+/**
+ * Print tree to verify construction
+ */
+function printTree(root: Node | null): number[][] {
+  if (root === null) return [];
+
+  const result: number[][] = [];
+  const queue: Node[] = [root];
+
+  while (queue.length > 0) {
+    const levelSize = queue.length;
+    const level: number[] = [];
+
+    for (let i = 0; i < levelSize; i++) {
+      const node = queue.shift() as Node;
+      level.push(node.val);
+
+      for (const child of node.children) {
+        queue.push(child);
+      }
+    }
+
+    result.push(level);
+  }
+
+  return result;
+}
+```
+
+## Key Properties
+
+- **Root Identification:** Node with parent = -1
+- **Children Collection:** Multiple children per node in generic tree
+- **Array Mapping:** Index represents node value, value represents parent
+
+## Complexity Analysis
+
+- **Time:** O(n) - one pass to create nodes, one pass to build relationships
+- **Space:** O(n) - store all nodes and relationships
