@@ -30,6 +30,12 @@ export default async function TopicsPage() {
             >
               Open category directory
             </Link>
+            <Link
+              href="/problems"
+              className="pill inline-flex rounded-full px-4 py-2 text-sm font-medium hover:border-[var(--accent)]"
+            >
+              Open problem directory
+            </Link>
           </div>
           <div className="mt-6 max-w-3xl">
             <p className="text-xs uppercase tracking-[0.3em] text-[var(--muted)]">Primary Topics</p>

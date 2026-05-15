@@ -3,18 +3,18 @@ import type { Metadata } from "next";
 
 import { CuratedCatalogCard } from "@/components/curated-catalog";
 import {
-  describeCategoryBrowseShelf,
-  getCategoryBrowseShelves,
+  describeProblemBrowseShelf,
+  getProblemBrowseShelves,
 } from "@/lib/catalog-browse";
 
 export const metadata: Metadata = {
-  title: "Categories",
+  title: "Problems",
   description:
-    "Browse the Algae catalog by category-first shelves so large interview libraries stay navigable.",
+    "Browse the Algae catalog by problem shapes and interview prompt patterns.",
 };
 
-export default async function CategoriesPage() {
-  const shelves = await getCategoryBrowseShelves();
+export default async function ProblemsPage() {
+  const shelves = await getProblemBrowseShelves();
 
   return (
     <main className="shell-grid min-h-screen px-4 py-6 sm:px-6 lg:px-10">
@@ -28,25 +28,25 @@ export default async function CategoriesPage() {
               Back to catalog
             </Link>
             <Link
+              href="/categories"
+              className="pill inline-flex rounded-full px-4 py-2 text-sm font-medium hover:border-[var(--accent)]"
+            >
+              Open category directory
+            </Link>
+            <Link
               href="/topics"
               className="pill inline-flex rounded-full px-4 py-2 text-sm font-medium hover:border-[var(--accent)]"
             >
               Open topic directory
             </Link>
-            <Link
-              href="/problems"
-              className="pill inline-flex rounded-full px-4 py-2 text-sm font-medium hover:border-[var(--accent)]"
-            >
-              Open problem directory
-            </Link>
           </div>
           <div className="mt-6 max-w-3xl">
-            <p className="text-xs uppercase tracking-[0.3em] text-[var(--muted)]">Categories</p>
+            <p className="text-xs uppercase tracking-[0.3em] text-[var(--muted)]">Problems</p>
             <h1 className="mt-3 text-4xl font-semibold tracking-[-0.04em] sm:text-5xl">
-              Start from the most concrete shelf
+              Start from the prompt shape itself
             </h1>
             <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--muted)] sm:text-lg">
-              Category routes split the catalog into problem families first, which makes it faster to browse when you already know whether the prompt lives in mathematics, graphs, strings, or another concrete lane.
+              Problem routes group algorithms by the interview question patterns they feature in, so you can jump directly from prompt language to matching references.
             </p>
           </div>
         </section>
@@ -56,13 +56,13 @@ export default async function CategoriesPage() {
             <CuratedCatalogCard
               key={shelf.slug}
               algorithms={shelf.algorithms}
-              ctaLabel="Open category"
-              description={describeCategoryBrowseShelf(shelf)}
-              eyebrow={shelf.primaryTopics.slice(0, 2).join(" · ") || "Category Shelf"}
-              href={`/categories/${shelf.slug}`}
+              ctaLabel="Open problem"
+              description={describeProblemBrowseShelf(shelf)}
+              eyebrow="Problem Shelf"
+              href={`/problems/${shelf.slug}`}
               metricLabel="refs"
               metricValue={String(shelf.algorithms.length)}
-              title={shelf.category}
+              title={shelf.problem}
             />
           ))}
         </section>

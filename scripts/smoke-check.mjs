@@ -105,7 +105,7 @@ try {
 
   const fullCatalogCount = await getCatalogCards(page).count();
 
-  const techniqueFilter = page.getByLabel("Technique");
+  const techniqueFilter = page.getByLabel(/^Technique/);
   await techniqueFilter.selectOption("Memoization");
   await page.waitForURL(/\?technique=Memoization/);
   await page.getByRole("heading", { name: "Memoization DP" }).waitFor();

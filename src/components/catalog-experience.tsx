@@ -40,6 +40,7 @@ type CatalogExperienceProps = {
   dataStructures: string[];
   initialFilters: CatalogFilters;
   learningPaths: CatalogLearningPath[];
+  problems: string[];
   primaryTopics: CatalogPrimaryTopic[];
   techniques: string[];
 };
@@ -53,6 +54,7 @@ export function CatalogExperience({
   dataStructures,
   initialFilters,
   learningPaths,
+  problems,
   primaryTopics,
   techniques,
 }: CatalogExperienceProps) {
@@ -103,6 +105,26 @@ export function CatalogExperience({
   const activeFilterChips = getActiveFilterChips(filters);
   const visibleGroupCount =
     browseMode === "category" ? groupedCategoryAlgorithms.length : groupedTopicAlgorithms.length;
+  const popularProblems = Array.from(
+    algorithms.reduce((counts, algorithm) => {
+      for (const problem of uniqueValues([
+        ...algorithm.useCases,
+        ...algorithm.interviewSignals,
+      ])) {
+        counts.set(problem, (counts.get(problem) ?? 0) + 1);
+      }
+
+      return counts;
+    }, new Map<string, number>()),
+  )
+    .sort((left, right) => {
+      if (right[1] !== left[1]) {
+        return right[1] - left[1];
+      }
+
+      return left[0].localeCompare(right[0]);
+    })
+    .slice(0, 10);
 
   const studyEntries = algorithms.map((algorithm) => ({
     algorithm,
@@ -177,7 +199,7 @@ export function CatalogExperience({
               Browse interview algorithms by category before you search line by line.
             </h1>
             <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--muted)] sm:text-lg">
-              With {algorithms.length} references in play, the fastest way into the catalog is a shelf, not a flat list. Start from categories, swap to broader primary topics when the prompt is still fuzzy, and only then narrow by technique, structure, or study state.
+              With {algorithms.length} references in play, the fastest way into the catalog is a shelf, not a flat list. Start from categories, swap to broader primary topics when the prompt is still fuzzy, and only then narrow by problem, technique, structure, or study state.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Link
@@ -191,6 +213,12 @@ export function CatalogExperience({
                 className="pill rounded-full px-4 py-2 text-sm font-medium hover:border-[var(--accent)]"
               >
                 Topic routes
+              </Link>
+              <Link
+                href="/problems"
+                className="pill rounded-full px-4 py-2 text-sm font-medium hover:border-[var(--accent)]"
+              >
+                Problem routes
               </Link>
               <a
                 href="#browse-atlas"
@@ -283,6 +311,45 @@ export function CatalogExperience({
                 Reset shelf
               </button>
             ) : null}
+          </div>
+        </div>
+        <div className="mt-6 rounded-[28px] border border-black/10 bg-white/55 p-4 sm:p-5">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-xs uppercase tracking-[0.24em] text-[var(--muted)]">
+                Popular Problems
+              </p>
+              <h3 className="mt-2 text-xl font-semibold tracking-[-0.03em]">
+                Jump by prompt pattern
+              </h3>
+            </div>
+            <Link
+              href="/problems"
+              className="text-sm font-medium text-[var(--accent-strong)] transition hover:text-[var(--foreground)]"
+            >
+              Open full problem directory
+            </Link>
+          </div>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {popularProblems.map(([problem, count]) => (
+              <button
+                key={problem}
+                type="button"
+                onClick={() =>
+                  setFilters((current) => ({
+                    ...current,
+                    problem: current.problem === problem ? "" : problem,
+                  }))
+                }
+                className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+                  filters.problem === problem
+                    ? "bg-[var(--accent)] text-white"
+                    : "pill hover:border-[var(--accent)]"
+                }`}
+              >
+                {problem} · {count}
+              </button>
+            ))}
           </div>
         </div>
         {filteredAlgorithms.length > 0 ? (
@@ -390,10 +457,10 @@ export function CatalogExperience({
               <h2 className="mt-2 text-2xl font-semibold">Search inside the current browse lane</h2>
             </div>
             <p className="max-w-2xl text-sm leading-6 text-[var(--muted)]">
-              Category or topic picks decide the shelf. Structure, technique, difficulty, and study-state filters narrow within that shelf without collapsing the broader browse model.
+              Category or topic picks decide the shelf. Problem, structure, technique, difficulty, and study-state filters narrow within that shelf without collapsing the broader browse model.
             </p>
           </div>
-          <div className="grid gap-4 lg:grid-cols-[1.7fr_repeat(6,minmax(0,1fr))]">
+          <div className="grid gap-4 lg:grid-cols-[1.7fr_repeat(7,minmax(0,1fr))]">
           <label className="flex flex-col gap-2">
             <span className="text-xs uppercase tracking-[0.25em] text-[var(--muted)]">Search</span>
             <input
@@ -430,6 +497,12 @@ export function CatalogExperience({
                 topic: value as CatalogFilters["topic"],
               }));
             }}
+          />
+          <FilterSelect
+            label="Problem"
+            options={problems}
+            value={filters.problem}
+            onChange={(value) => setFilters((current) => ({ ...current, problem: value }))}
           />
           <FilterSelect
             label="Data Structure"
@@ -490,6 +563,7 @@ export function CatalogExperience({
                     query: "",
                     category: "",
                     topic: "",
+                    problem: "",
                     structure: "",
                     technique: "",
                     difficulty: "",
@@ -633,6 +707,12 @@ export function CatalogExperience({
                 className="pill rounded-full px-4 py-2 text-sm font-medium hover:border-[var(--accent)]"
               >
                 Open topic directory
+              </Link>
+              <Link
+                href="/problems"
+                className="pill rounded-full px-4 py-2 text-sm font-medium hover:border-[var(--accent)]"
+              >
+                Open problem directory
               </Link>
             </div>
             <div className="mt-4 flex flex-wrap gap-2">
@@ -938,6 +1018,10 @@ function getActiveFilterChips(filters: CatalogFilters): string[] {
     chips.push(`Topic: ${filters.topic}`);
   }
 
+  if (filters.problem) {
+    chips.push(`Problem: ${filters.problem}`);
+  }
+
   if (filters.structure) {
     chips.push(`Structure: ${filters.structure}`);
   }
@@ -998,6 +1082,13 @@ function CatalogCard({ algorithm, studyState }: CatalogCardProps) {
         {algorithm.grouping.techniqueFamilies.slice(0, 3).map((family) => (
           <span key={family} className="rounded-full bg-[var(--accent-soft)] px-3 py-1">
             {family}
+          </span>
+        ))}
+      </div>
+      <div className="mt-3 flex flex-wrap gap-2 text-xs font-medium text-[var(--muted)]">
+        {algorithm.useCases.slice(0, 2).map((problem) => (
+          <span key={problem} className="pill rounded-full px-3 py-1">
+            {problem}
           </span>
         ))}
       </div>

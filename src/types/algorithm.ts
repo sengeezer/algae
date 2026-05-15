@@ -67,6 +67,7 @@ export interface CatalogFilters {
   query: string;
   category: string;
   topic: CatalogPrimaryTopic | "";
+  problem: string;
   structure: string;
   technique: string;
   difficulty: Difficulty | "";

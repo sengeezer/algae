@@ -6,6 +6,7 @@ type HomePageProps = {
   searchParams: Promise<{
     category?: string;
     difficulty?: string;
+    problem?: string;
     q?: string;
     status?: string;
     structure?: string;
@@ -22,6 +23,7 @@ export default async function Home({ searchParams }: HomePageProps) {
     collections,
     dataStructures,
     learningPaths,
+    problems,
     primaryTopics,
     techniques,
   } = await getCatalogBrowseContext();
@@ -35,6 +37,7 @@ export default async function Home({ searchParams }: HomePageProps) {
         dataStructures={dataStructures}
         initialFilters={filters}
         learningPaths={learningPaths}
+        problems={problems}
         primaryTopics={primaryTopics}
         techniques={techniques}
       />

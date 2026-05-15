@@ -1,6 +1,10 @@
 import type { MetadataRoute } from "next";
 
-import { getCategoryBrowseShelves, getTopicBrowseShelves } from "@/lib/catalog-browse";
+import {
+  getCategoryBrowseShelves,
+  getProblemBrowseShelves,
+  getTopicBrowseShelves,
+} from "@/lib/catalog-browse";
 import {
   listCatalogCollections,
   listCatalogLearningPaths,
@@ -9,10 +13,12 @@ import { listAlgorithms } from "@/lib/content-source";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://algae.vercel.app";
-  const [categoryShelves, collections, learningPaths, topicShelves] = await Promise.all([
+  const [categoryShelves, collections, learningPaths, problemShelves, topicShelves] =
+    await Promise.all([
     getCategoryBrowseShelves(),
     listCatalogCollections(),
     listCatalogLearningPaths(),
+    getProblemBrowseShelves(),
     getTopicBrowseShelves(),
   ]);
 
@@ -42,6 +48,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly",
       priority: 0.85,
     },
+    {
+      url: `${baseUrl}/problems`,
+      changeFrequency: "weekly",
+      priority: 0.85,
+    },
     ...listAlgorithms().map((algorithm) => ({
       url: `${baseUrl}/algorithms/${algorithm.slug}`,
       changeFrequency: "monthly" as const,
@@ -64,6 +75,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
     ...topicShelves.map((shelf) => ({
       url: `${baseUrl}/topics/${shelf.slug}`,
+      changeFrequency: "weekly" as const,
+      priority: 0.75,
+    })),
+    ...problemShelves.map((shelf) => ({
+      url: `${baseUrl}/problems/${shelf.slug}`,
       changeFrequency: "weekly" as const,
       priority: 0.75,
     })),

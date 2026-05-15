@@ -19,6 +19,7 @@ export type CatalogBrowseContext = {
   collections: CatalogCollection[];
   dataStructures: string[];
   learningPaths: CatalogLearningPath[];
+  problems: string[];
   primaryTopics: CatalogPrimaryTopic[];
   techniques: string[];
 };
@@ -37,6 +38,15 @@ export type TopicBrowseShelf = {
   slug: string;
   techniqueFamilies: string[];
   topic: CatalogPrimaryTopic;
+};
+
+export type ProblemBrowseShelf = {
+  algorithms: CatalogIndexRecord[];
+  categories: string[];
+  primaryTopics: string[];
+  problem: string;
+  slug: string;
+  techniqueFamilies: string[];
 };
 
 function sortText(left: string, right: string) {
@@ -77,6 +87,9 @@ const getCachedCatalogMetadata = cache(async () => {
   const dataStructures = uniqueValues(
     algorithms.flatMap((algorithm) => algorithm.dataStructures),
   ).sort(sortText);
+  const problems = uniqueValues(
+    algorithms.flatMap((algorithm) => [...algorithm.useCases, ...algorithm.interviewSignals]),
+  ).sort(sortText);
   const techniques = uniqueValues(algorithms.flatMap((algorithm) => algorithm.techniques)).sort(
     sortText,
   );
@@ -87,6 +100,7 @@ const getCachedCatalogMetadata = cache(async () => {
   return {
     categories,
     dataStructures,
+    problems,
     primaryTopics,
     techniques,
   };
@@ -106,6 +120,7 @@ export const getCatalogBrowseContext = cache(async (): Promise<CatalogBrowseCont
     collections,
     dataStructures: metadata.dataStructures,
     learningPaths,
+    problems: metadata.problems,
     primaryTopics: metadata.primaryTopics,
     techniques: metadata.techniques,
   };
@@ -161,6 +176,42 @@ export const getTopicBrowseShelves = cache(async (): Promise<TopicBrowseShelf[]>
   });
 });
 
+export const getProblemBrowseShelves = cache(async (): Promise<ProblemBrowseShelf[]> => {
+  const { algorithms, problems } = await getCatalogBrowseContext();
+  const slugByProblem = createSlugMap(problems);
+
+  return problems
+    .map((problem) => {
+      const problemAlgorithms = algorithms.filter(
+        (algorithm) =>
+          algorithm.useCases.includes(problem) || algorithm.interviewSignals.includes(problem),
+      );
+
+      return {
+        problem,
+        slug: slugByProblem.get(problem) ?? createBrowseSlug(problem),
+        algorithms: sortAlgorithmsByTitle(problemAlgorithms),
+        categories: uniqueValues(problemAlgorithms.map((algorithm) => algorithm.category)).sort(
+          sortText,
+        ),
+        primaryTopics: uniqueValues(
+          problemAlgorithms.map((algorithm) => algorithm.grouping.primaryTopic),
+        ),
+        techniqueFamilies: uniqueValues(
+          problemAlgorithms.flatMap((algorithm) => algorithm.grouping.techniqueFamilies),
+        ),
+      };
+    })
+    .filter((shelf) => shelf.algorithms.length > 0)
+    .sort((left, right) => {
+      if (right.algorithms.length !== left.algorithms.length) {
+        return right.algorithms.length - left.algorithms.length;
+      }
+
+      return left.problem.localeCompare(right.problem);
+    });
+});
+
 export async function getCategoryBrowseShelfBySlug(
   slug: string,
 ): Promise<CategoryBrowseShelf | undefined> {
@@ -171,6 +222,12 @@ export async function getTopicBrowseShelfBySlug(
   slug: string,
 ): Promise<TopicBrowseShelf | undefined> {
   return (await getTopicBrowseShelves()).find((shelf) => shelf.slug === slug);
+}
+
+export async function getProblemBrowseShelfBySlug(
+  slug: string,
+): Promise<ProblemBrowseShelf | undefined> {
+  return (await getProblemBrowseShelves()).find((shelf) => shelf.slug === slug);
 }
 
 export function describeCategoryBrowseShelf(shelf: CategoryBrowseShelf): string {
@@ -201,4 +258,19 @@ export function describeTopicBrowseShelf(shelf: TopicBrowseShelf): string {
   }
 
   return `Use this shelf when you want to stay inside ${shelf.topic} without dropping into a single category too early.`;
+}
+
+export function describeProblemBrowseShelf(shelf: ProblemBrowseShelf): string {
+  const categoryPreview = shelf.categories.slice(0, 3).join(", ");
+  const topicPreview = shelf.primaryTopics.slice(0, 2).join(" and ");
+
+  if (categoryPreview && topicPreview) {
+    return `Use this shelf when the prompt features ${shelf.problem.toLowerCase()}. You can compare ${categoryPreview} references while staying aligned with ${topicPreview}.`;
+  }
+
+  if (categoryPreview) {
+    return `Use this shelf when the prompt features ${shelf.problem.toLowerCase()}. It gathers related references across categories such as ${categoryPreview}.`;
+  }
+
+  return `Use this shelf when the prompt features ${shelf.problem.toLowerCase()}. It gathers matching references into one dedicated route.`;
 }
